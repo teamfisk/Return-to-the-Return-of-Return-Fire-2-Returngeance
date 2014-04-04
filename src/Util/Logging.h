@@ -1,5 +1,5 @@
-#ifndef logging_h__
-#define logging_h__
+#ifndef Logging_h__
+#define Logging_h__
 
 #ifdef _WIN32
 // http://stackoverflow.com/a/2282433
@@ -80,4 +80,4 @@ static void _LOG(_LOG_LEVEL logLevel, char* file, char* func, unsigned int line,
 #define LOG_DEBUG(format, ...) \
 	LOG(LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
 
-#endif // logging_h__
+#endif // Logging_h__

@@ -1,9 +1,8 @@
-#ifndef glerror_h__
-#define glerror_h__
+#ifndef GLError_h__
+#define GLError_h__
 
+#include "PrecompiledHeader.h"
 #include <iostream>
-
-#include "logging.h"
 
 inline bool _GLERROR(char* info, char* file, char* func, unsigned int line)
 {
@@ -19,4 +18,4 @@ inline bool _GLERROR(char* info, char* file, char* func, unsigned int line)
 #define GLERROR(function) \
 	_GLERROR(function, __BASE_FILE__, __func__, __LINE__)
 
-#endif // glerror_h__
+#endif // GLError_h__
