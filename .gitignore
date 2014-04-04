@@ -31,4 +31,4 @@ ipch/
 Ankh.NoLoad
 
 assets/
-deploy.bat
+!lib/*.lib
