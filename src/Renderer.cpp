@@ -14,7 +14,7 @@ Renderer::Renderer()
 	m_DrawBounds = false;
 #endif
 
-	m_ShadowMapRes = 2048*8;
+	m_ShadowMapRes = 2048;
 	m_SunPosition = glm::vec3(0, 1.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
 	m_SunProjection = glm::ortho<float>(-200, 200, -100, 400, -800, 600);
@@ -30,9 +30,10 @@ void Renderer::Initialize()
 	}
 
 	// Create a window
-	WIDTH = 1920;
-	HEIGHT = 1080;
-	glfwWindowHint(GLFW_SAMPLES, 16);
+	WIDTH = 1280;
+	HEIGHT = 720;
+	// Antialiasing
+	//glfwWindowHint(GLFW_SAMPLES, 16);
 	m_Window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr);
 	if (!m_Window) {
 		LOG_ERROR("GLFW: Failed to create window");

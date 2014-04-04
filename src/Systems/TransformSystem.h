@@ -18,6 +18,7 @@ namespace Systems
 
 		glm::vec3 AbsolutePosition(EntityID entity);
 		glm::quat AbsoluteOrientation(EntityID entity);
+		glm::vec3 AbsoluteScale(EntityID entity);
 	};
 
 }

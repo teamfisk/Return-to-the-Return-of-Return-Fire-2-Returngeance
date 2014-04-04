@@ -1,6 +1,8 @@
 #ifndef Camera_h__
 #define Camera_h__
 
+//#include "PrecompiledHeader.h"
+
 class Camera
 {
 public:

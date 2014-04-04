@@ -46,3 +46,17 @@ glm::quat Systems::TransformSystem::AbsoluteOrientation(EntityID entity)
 
 	return absOrientation;
 }
+
+glm::vec3 Systems::TransformSystem::AbsoluteScale(EntityID entity)
+{
+	glm::vec3 absScale(1);
+
+	do
+	{
+		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		absScale *= transform->Scale;
+		entity = m_World->GetEntityParent(entity);
+	} while (entity != 0);
+
+	return absScale;
+}

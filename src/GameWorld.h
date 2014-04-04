@@ -4,12 +4,13 @@
 #include "World.h"
 #include "Renderer.h"
 
-//#include "Systems/TransformSystem.h"
+#include "Systems/TransformSystem.h"
 //#include "Systems/CollisionSystem.h"
-//#include "Systems/InputSystem.h"
+#include "Systems/InputSystem.h"
 //#include "Systems/LevelGenerationSystem.h"
 //#include "Systems/ParticleSystem.h"
 //#include "Systems/PlayerSystem.h"
+#include "Systems/FreeSteeringSystem.h"
 #include "Systems/RenderSystem.h"
 //#include "Systems/SoundSystem.h"
 

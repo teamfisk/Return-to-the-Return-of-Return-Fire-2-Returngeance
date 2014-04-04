@@ -25,7 +25,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		auto model = m_CachedModels[modelComponent->ModelFile];
 		glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 		glm::quat orientation = m_TransformSystem->AbsoluteOrientation(entity);
-		m_Renderer->AddModelToDraw(model, position, orientation, transformComponent->Scale, modelComponent->Visible, modelComponent->ShadowCaster);
+		glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);
+		m_Renderer->AddModelToDraw(model, position, orientation, scale, modelComponent->Visible, modelComponent->ShadowCaster);
 	}
 
 	// Debug draw bounds

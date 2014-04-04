@@ -19,6 +19,12 @@
     <ClCompile Include="..\..\src\Systems\TransformSystem.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\InputSystem.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -105,6 +111,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\TransformSystem.h">
       <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\InputSystem.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\FreeSteering.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
