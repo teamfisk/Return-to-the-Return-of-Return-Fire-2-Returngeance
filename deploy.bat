@@ -11,20 +11,21 @@ CALL :deploy Release
 GOTO:eof
 
 :deploy
-ECHO Deploying %~1
+SET Configuration=%~1
 SET ConfigPath=bin\%~1
+ECHO Deploying %Configuration%
 :: Asset folders
-MKLINK "%ConfigPath%\models\" "assets\models" /J
-MKLINK "%ConfigPath%\textures\" "assets\textures\" /J
+MKLINK "%ConfigPath%\Models\" "assets\Models" /J
+MKLINK "%ConfigPath%\Textures\" "assets\Textures\" /J
 :: Shaders
-MKLINK "%ConfigPath%\shaders\" "src\shaders\" /J
+MKLINK "%ConfigPath%\Shaders\" "src\Shaders\" /J
 :: DLLs
-MKLINK "%ConfigPath%\glfw3.dll" "libs\glfw-3.0.4\lib\%~1\glfw3.dll" /H
-MKLINK "%ConfigPath%\OpenAL32.dll" "libs\openal-soft-1.15.1\lib\Win32\%~1\OpenAL32.dll" /H
+MKLINK "%ConfigPath%\glfw3.dll" "libs\glfw-3.0.4\lib\%Configuration%\glfw3.dll" /H
+MKLINK "%ConfigPath%\OpenAL32.dll" "libs\openal-soft-1.15.1\lib\Win32\%Configuration%\OpenAL32.dll" /H
 IF %~1==Debug (
-	MKLINK "%ConfigPath%\glew32d.dll" "libs\glew-1.10.0\bin\%~1\Win32\glew32d.dll" /H
+	MKLINK "%ConfigPath%\glew32d.dll" "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32d.dll" /H
 )
 IF %~1==Release (
-	MKLINK "%ConfigPath%\glew32.dll" "libs\glew-1.10.0\bin\%~1\Win32\glew32.dll" /H
+	MKLINK "%ConfigPath%\glew32.dll" "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32.dll" /H
 )
 GOTO:eof
