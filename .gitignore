@@ -30,4 +30,5 @@ ipch/
 [Rr]elease*/
 Ankh.NoLoad
 
+assets/
 deploy.bat
