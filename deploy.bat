@@ -1,11 +1,5 @@
 @ECHO off
 
-:: Set custom path to asset folder here
-SET AssetSource=%UserProfile%\Google Drive\Fisk_ Litet Spelprojekt\Assets
-
-ECHO Copying assets from %AssetSource%
-RMDIR "assets\" /S /Q
-XCOPY "%AssetSource%" "assets\" /E /Y /Q
 CALL :deploy Debug
 CALL :deploy Release
 GOTO:eof
