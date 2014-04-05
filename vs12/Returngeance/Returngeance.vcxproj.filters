@@ -121,6 +121,18 @@
     <ClInclude Include="..\..\src\Components\FreeSteering.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Physics.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\SphereShape.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\BoxShape.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\CustomShape.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">
