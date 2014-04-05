@@ -10,19 +10,21 @@ void GameWorld::Initialize()
 
 	auto camera = CreateEntity();
 	transform = AddComponent<Components::Transform>(camera, "Transform");
-	transform->Position.z = 5.f;
+	transform->Position.y = 10.f;
 	auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+	cameraComp->FarClip = 2000.f;
 	AddComponent(camera, "Input");
 	auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
 	
-	/*auto terrain = CreateEntity();
+	auto terrain = CreateEntity();
 	transform = AddComponent<Components::Transform>(terrain, "Transform");
-	transform->Scale = glm::vec3(.0005f);
+	transform->Scale = glm::vec3(.05f);
 	model = AddComponent<Components::Model>(terrain, "Model");
-	model->ModelFile = "Models/terrain/terrain.obj";*/
+	model->ModelFile = "Models/terrain/terrain.obj";
 
 	auto tank = CreateEntity();
 	transform = AddComponent<Components::Transform>(tank, "Transform");
+	transform->Position.y = 10.f;
 	transform->Scale = glm::vec3(.01f);
 	model = AddComponent<Components::Model>(tank, "Model");
 	model->ModelFile = "Models/tank/tank_base.obj";
@@ -40,6 +42,14 @@ void GameWorld::Initialize()
 			model->ModelFile = "Models/tank/tank_barrel.obj";
 		}
 	}
+
+	//auto light = CreateEntity();
+	//transform = AddComponent<Components::Transform>(light, "Transform");
+	//transform->Position.y = 10.f;
+	//auto pointLight = AddComponent<Components::PointLight>(light, "PointLight");
+	//pointLight->Diffuse = glm::vec3(0.1f, 0.1f, 1.0f);
+	//pointLight->linearAttenuation = 1.0f;
+	//pointLight->quadraticAttenuation = 1.0f;
 }
 
 void GameWorld::Update(double dt)
