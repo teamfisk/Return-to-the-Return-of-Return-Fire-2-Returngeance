@@ -51,7 +51,7 @@ void main() {
 	//bias = clamp(bias, 0.0, 0.01);
 	float visibility = 1.0;
 	if (Input.ShadowCoord.x >= 0.0 && Input.ShadowCoord.x <= 1.0 && Input.ShadowCoord.y >= 0.0 && Input.ShadowCoord.y <= 1.0) {
-		float bias = 0.0005;
+		float bias = 0.00005;
 		vec4 shadowMapValue = texture(shadowMap, Input.ShadowCoord.xy);
 		if (shadowMapValue.z < clamp(Input.ShadowCoord.z - bias, 0, 1)) {
 			visibility = 0.3;

@@ -15,9 +15,9 @@ Renderer::Renderer()
 #endif
 
 	m_ShadowMapRes = 2048;
-	m_SunPosition = glm::vec3(0, 1.5f, 10);
+	m_SunPosition = glm::vec3(0, 3.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
-	m_SunProjection = glm::ortho<float>(-200, 200, -100, 400, -800, 600);
+	m_SunProjection = glm::ortho<float>(-100, 100, -100, 100, -100, 100);
 	Lights = 0;
 }
 
@@ -171,7 +171,7 @@ void Renderer::Draw(double dt)
 		}
 	}
 
-	//DrawDebugShadowMap();
+	DrawDebugShadowMap();
 #endif
 
 	ClearStuff();
