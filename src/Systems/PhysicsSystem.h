@@ -7,6 +7,9 @@
 #include "Components/CompoundShape.h"
 #include "Components/BoxShape.h"
 #include "Components/SphereShape.h"
+#include "Components/BallSocketConstraint.h"
+#include "Components/HingeConstraint.h"
+#include "Components/SliderConstraint.h"
 
 #include "btBulletDynamicsCommon.h"
 #include "LinearMath/btMatrix3x3.h"
@@ -37,13 +40,10 @@ namespace Systems
 			btCollisionShape*	CollisionShape;
 		};
 		std::map<EntityID, PhysicsData> m_PhysicsData;
-
+		std::map<std::pair<EntityID, EntityID>, btTypedConstraint*> m_Constraints;
 
 		void SetUpPhysicsState(EntityID entity, EntityID parent);
 		void TearDownPhysicsState(EntityID entity, EntityID parent);
-
-		
-
 	};
 }
 

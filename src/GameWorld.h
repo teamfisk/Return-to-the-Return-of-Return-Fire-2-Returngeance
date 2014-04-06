@@ -35,6 +35,10 @@
 #include "Components/SphereShape.h"
 #include "Components/Physics.h"
 
+#include "Components/BallSocketConstraint.h"
+#include "Components/HingeConstraint.h"
+#include "Components/SliderConstraint.h"
+
 class GameWorld : public World
 {
 public:

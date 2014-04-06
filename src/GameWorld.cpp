@@ -8,8 +8,8 @@ void GameWorld::Initialize()
 	{
 		auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
-		transform->Position.z = 150.f;
-		transform->Position.y = 100.f;
+		transform->Position.z = 20.f;
+		transform->Position.y = 20.f;
 		transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
 		cameraComp->FarClip = 2000.f;
@@ -21,67 +21,30 @@ void GameWorld::Initialize()
 		auto terrain = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(terrain, "Transform");
 		transform->Scale = glm::vec3(1000.0f);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, glm::pi<float>() / 20.f));
 		auto model = AddComponent<Components::Model>(terrain, "Model");
 		model->ModelFile = "Models/PhysicsTest/Plane.obj";
 		auto physics = AddComponent<Components::Physics>(terrain, "Physics");
 		auto Box = AddComponent<Components::BoxShape>(terrain, "BoxShape");
-		Box->Width = 1;
+		Box->Width = 0.5f;
 		Box->Height = 0;
-		Box->Depth = 1;
+		Box->Depth = 0.5f;
 		physics->Friction = 0.5f;
 	}
 
 	
 
 	{
-		auto entity = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(entity, "Transform");
-		transform->Scale = glm::vec3(1.0f);
-		transform->Position = glm::vec3(0, 15, 0);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		
-		auto physics = AddComponent<Components::Physics>(entity, "Physics");
-		physics->Mass = 10;
-		physics->Friction = 0.5;
-
-		auto compound = AddComponent<Components::CompoundShape>(entity, "CompoundShape");
-
-		{
-			auto entity0 = CreateEntity(entity);
-			auto transform = AddComponent<Components::Transform>(entity0, "Transform");
-			transform->Scale = glm::vec3(1.f);
-			auto model = AddComponent<Components::Model>(entity0, "Model");
-			model->ModelFile = "Models/PhysicsTest/Sphere.obj";
-
-			auto sphere = AddComponent<Components::SphereShape>(entity0, "SphereShape");
-			sphere->Radius = 0.5f;
-		}
-
-		{
-			auto entity1 = CreateEntity(entity);
-			auto transform = AddComponent<Components::Transform>(entity1, "Transform");
-			transform->Scale = glm::vec3(1.0f);
-			transform->Position = glm::vec3(-1, 1, 0);
-			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-			auto model = AddComponent<Components::Model>(entity1, "Model");
-			model->ModelFile = "Models/PhysicsTest/Cube.obj";
-
-			auto box = AddComponent<Components::BoxShape>(entity1, "BoxShape");
-			box->Width = 0.5;
-			box->Height = 0.5;
-			box->Depth = 0.5;
-		}
-
-
+		for (int i = 0; i < 1; i++)
 		{
 			auto entity = CreateEntity();
 			auto transform = AddComponent<Components::Transform>(entity, "Transform");
 			transform->Scale = glm::vec3(1.0f);
-			transform->Position = glm::vec3(1, 6, 0);
+			transform->Position = glm::vec3(0, 10+i, 0);
 			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 			auto model = AddComponent<Components::Model>(entity, "Model");
-			model->ModelFile = "Models/PhysicsTest/Cube.obj";
+			model->ModelFile = "Models/PhysicsTest/ArrowCube.obj";
 
 			auto physics = AddComponent<Components::Physics>(entity, "Physics");
 			physics->Mass = 10;
@@ -90,13 +53,46 @@ void GameWorld::Initialize()
 			box->Width = 0.5;
 			box->Height = 0.5;
 			box->Depth = 0.5;
+
+
+			{
+				auto entity1 = CreateEntity();
+				auto transform = AddComponent<Components::Transform>(entity1, "Transform");
+				transform->Scale = glm::vec3(1.0f);
+				transform->Position = glm::vec3(-5.f, 10+i, 0);
+				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+				auto model = AddComponent<Components::Model>(entity1, "Model");
+				model->ModelFile = "Models/PhysicsTest/ArrowCube.obj";
+
+				auto physics = AddComponent<Components::Physics>(entity1, "Physics");
+				physics->Mass = 0;
+
+				auto box = AddComponent<Components::BoxShape>(entity1, "BoxShape");
+				box->Width = 0.5;
+				box->Height = 0.5;
+				box->Depth = 0.5;
+
+				auto hingeConstraint = AddComponent<Components::HingeConstraint>(entity1, "HingeConstraint");
+				hingeConstraint->EntityA = entity;
+				hingeConstraint->EntityB = entity1;
+				hingeConstraint->AxisA = glm::vec3(0, 0, 1);
+				hingeConstraint->AxisB = glm::vec3(0, 0, 1);
+				hingeConstraint->LowLimit = -glm::pi<float>();
+				hingeConstraint->HighLimit = glm::pi<float>();
+				hingeConstraint->PivotA = glm::vec3(-5, 0, 0);
+				hingeConstraint->PivotB = glm::vec3(0, 0, 0);
+				
+			}
+
 		}
+
+
 
 	}
 
 	
-
 	
+
 }
 
 void GameWorld::Update(double dt)
@@ -125,6 +121,9 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register("SphereShape", []() { return new Components::SphereShape(); });
 	m_ComponentFactory.Register("BoxShape", []() { return new Components::BoxShape(); });
 
+	m_ComponentFactory.Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
+	m_ComponentFactory.Register("BallSocketConstraint", []() { return new Components::BallSocketConstraint(); });
+	m_ComponentFactory.Register("SliderConstraint", []() { return new Components::SliderConstraint(); });
 }
 
 void GameWorld::RegisterSystems()

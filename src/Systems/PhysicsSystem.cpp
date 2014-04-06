@@ -86,6 +86,73 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			TearDownPhysicsState(entity, parent);
 		}
 	}	
+
+	auto ballSocketComponent = m_World->GetComponent<Components::BallSocketConstraint>(entity, "BallSocketConstraint");
+	auto sliderComponent = m_World->GetComponent<Components::SliderConstraint>(entity, "SliderConstraint");
+	auto hingeComponent = m_World->GetComponent<Components::HingeConstraint>(entity, "HingeConstraint");
+
+	if (ballSocketComponent)
+	{
+		EntityID entityA = ballSocketComponent->EntityA;
+		EntityID entityB = ballSocketComponent->EntityB;
+
+		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
+		{
+			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
+			{
+				btVector3 pivotA = btVector3(ballSocketComponent->PivotA.x, ballSocketComponent->PivotA.y, ballSocketComponent->PivotA.z);
+				btVector3 pivotB = btVector3(ballSocketComponent->PivotB.x, ballSocketComponent->PivotB.y, ballSocketComponent->PivotB.z);
+
+				m_Constraints[std::make_pair(entityA, entityB)] = new btPoint2PointConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, pivotA, pivotB);
+				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
+			}
+		}
+	}
+	else if (sliderComponent)
+	{
+		EntityID entityA = sliderComponent->EntityA;
+		EntityID entityB = sliderComponent->EntityB;
+
+		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
+		{
+			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
+			{
+				btTransform transformA;
+				m_PhysicsData[entityA].MotionState->getWorldTransform(transformA);
+				btTransform transformB;
+				m_PhysicsData[entityB].MotionState->getWorldTransform(transformB);
+
+				m_Constraints[std::make_pair(entityA, entityB)] = new btSliderConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, transformA, transformB, true);
+				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
+			}
+		}
+	}
+	else if (hingeComponent)
+	{
+		EntityID entityA = hingeComponent->EntityA;
+		EntityID entityB = hingeComponent->EntityB;
+
+		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
+		{
+			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
+			{
+				btVector3 PivotA = btVector3(hingeComponent->PivotA.x, hingeComponent->PivotA.y, hingeComponent->PivotA.z);
+				btVector3 PivotB = btVector3(hingeComponent->PivotB.x, hingeComponent->PivotB.y, hingeComponent->PivotB.z);
+
+				btVector3 AxisA = btVector3(hingeComponent->AxisA.x, hingeComponent->AxisA.y, hingeComponent->AxisA.z);
+				btVector3 AxisB = btVector3(hingeComponent->AxisB.x, hingeComponent->AxisB.y, hingeComponent->AxisB.z);
+
+
+				btHingeConstraint *hingeConstraint = new btHingeConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, PivotA, PivotB, AxisA, AxisB, true);
+				hingeConstraint->setLimit(hingeComponent->LowLimit, hingeComponent->HighLimit, hingeComponent->Softness, hingeComponent->BiasFactor, hingeComponent->RelaxationFactor);
+
+
+				m_Constraints[std::make_pair(entityA, entityB)] = hingeConstraint;
+				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
+			}
+		}
+	}
+
 }
 
 void Systems::PhysicsSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
