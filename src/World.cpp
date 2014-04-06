@@ -56,6 +56,15 @@ EntityID World::GetEntityParent(EntityID entity)
 	return it == m_EntityParents.end() ? 0 : it->second;
 }
 
+EntityID World::GetEntityBaseParent(EntityID entity)
+{
+	EntityID parent = GetEntityParent(entity);
+	if (parent == 0)
+		return entity;
+	else
+		return GetEntityBaseParent(parent);
+}
+
 bool World::ValidEntity(EntityID entity)
 {
 	return m_EntityParents.find(entity) != m_EntityParents.end();

@@ -59,10 +59,10 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto sphereShapeComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
 	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
 
-	if (physicsComponent && (sphereShapeComponent || boxShapeComponent))
+	if (physicsComponent || sphereShapeComponent || boxShapeComponent)
 	{
 		if (m_PhysicsData.find(entity) == m_PhysicsData.end()) {
-			SetUpPhysicsState(entity);
+			SetUpPhysicsState(entity, parent);
 		}
 
 		if (parent != 0)
@@ -83,7 +83,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	else
 	{
 		if (m_PhysicsData.find(entity) != m_PhysicsData.end()) {
-			TearDownPhysicsState(entity);
+			TearDownPhysicsState(entity, parent);
 		}
 	}	
 }
@@ -98,51 +98,99 @@ void Systems::PhysicsSystem::OnComponentRemoved(std::string type, Component* com
 
 }
 
-void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity)
+void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 {
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	if (!transformComponent) {
+		LOG_WARNING("Physics component missing transform component on entity %i", entity);
+		return;
+	}
+
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
+	auto compoundShapeComponent = m_World->GetComponent<Components::CompoundShape>(entity, "CompoundShape");
 	auto sphereShapeComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
 	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
+
+	if (compoundShapeComponent && (sphereShapeComponent || boxShapeComponent)) {
+		LOG_WARNING("Entity %i has both compound shape and normal shape! Normal shapes must be children to entity with compound shape.", entity);
+	}
+
 	PhysicsData* physicsData = &m_PhysicsData[entity];
 
+	/*EntityID baseParent = m_World->GetEntityBaseParent(entity);
+	auto baseCompoundShape = m_World->GetComponent<Components::CompoundShape>(baseParent, "CompoundShape");*/
 
-	if (boxShapeComponent)
-	{
-		physicsData->CollisionShape = new btBoxShape(btVector3(boxShapeComponent->Width, boxShapeComponent->Height, boxShapeComponent->Depth));
-	}
-	else if(sphereShapeComponent)
-	{
-		physicsData->CollisionShape = new btSphereShape(sphereShapeComponent->Radius);
-	}
+	// Set-up compound shape
+	if (compoundShapeComponent) {
+		btCompoundShape* compoundShape = new btCompoundShape();
+		physicsData->CollisionShape = compoundShape;
 
-	if (transformComponent)
-	{
 		btTransform transform;
 		transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
 		physicsData->MotionState = new btDefaultMotionState(transform);
-	}
 
+		btVector3 inertia;
+		if (physicsComponent->Mass != 0) {
+			physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
+		}
 
-	btVector3 inertia;
-	if (physicsComponent->Mass != 0)
-		physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
+		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
+		physicsData->RigidBody = new btRigidBody(rigidBodyCI);
 
-	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
-	rigidBodyCI.m_friction = physicsComponent->Friction;
-	if (sphereShapeComponent)
-	{
-		rigidBodyCI.m_rollingFriction = sphereShapeComponent->RollingFriction;
+		m_DynamicsWorld->addRigidBody(physicsData->RigidBody);
 	}
 	
-	physicsData->RigidBody = new btRigidBody(rigidBodyCI);
+	// Set-up normal shapes
+	else if (boxShapeComponent) {
+		physicsData->CollisionShape = new btBoxShape(btVector3(boxShapeComponent->Width, boxShapeComponent->Height, boxShapeComponent->Depth));
+	} else if (sphereShapeComponent) {
+		physicsData->CollisionShape = new btSphereShape(sphereShapeComponent->Radius);
+	}
+	if (boxShapeComponent || sphereShapeComponent) {
+		btTransform transform;
+		transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
 
-	
+		// If there's a local physics component
+		if (physicsComponent) {
+			physicsData->MotionState = new btDefaultMotionState(transform);
 
-	m_DynamicsWorld->addRigidBody(physicsData->RigidBody);
+			btVector3 inertia;
+			if (physicsComponent->Mass != 0) {
+				physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
+			}
+
+			btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
+			physicsData->RigidBody = new btRigidBody(rigidBodyCI);
+
+			m_DynamicsWorld->addRigidBody(physicsData->RigidBody);
+		} else { 
+			// Otherwise, find our base parent and attach to compound shape
+			EntityID baseParent = m_World->GetEntityBaseParent(entity);
+			auto basePhysicsComponent = m_World->GetComponent<Components::Physics>(baseParent, "Physics");
+			if (!basePhysicsComponent) {
+				LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing physics component on base parent entity %i", entity, baseParent);
+				return;
+			}
+			auto baseCompoundShapeComponent = m_World->GetComponent<Components::CompoundShape>(baseParent, "CompoundShape");
+			if (!baseCompoundShapeComponent) {
+				LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing compound shape on base parent entity %i", entity, baseParent);
+				return;
+			}
+			PhysicsData* basePhysicsData = &m_PhysicsData.at(baseParent);
+
+			btCompoundShape* baseCompoundShape = dynamic_cast<btCompoundShape*>(basePhysicsData->CollisionShape);
+			baseCompoundShape->addChildShape(transform, physicsData->CollisionShape);
+
+			btVector3 inertia;
+			baseCompoundShape->calculateLocalInertia(basePhysicsComponent->Mass, inertia);
+
+			basePhysicsData->RigidBody->setMassProps(basePhysicsComponent->Mass, inertia);
+			basePhysicsData->RigidBody->updateInertiaTensor();
+		}
+	}
 }
 
-void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity)
+void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
 {
 	PhysicsData* physicsData = &m_PhysicsData[entity];
 	

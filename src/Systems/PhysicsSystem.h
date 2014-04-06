@@ -4,6 +4,7 @@
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/Physics.h"
+#include "Components/CompoundShape.h"
 #include "Components/BoxShape.h"
 #include "Components/SphereShape.h"
 
@@ -38,8 +39,8 @@ namespace Systems
 		std::map<EntityID, PhysicsData> m_PhysicsData;
 
 
-		void SetUpPhysicsState(EntityID entity);
-		void TearDownPhysicsState(EntityID entity);
+		void SetUpPhysicsState(EntityID entity, EntityID parent);
+		void TearDownPhysicsState(EntityID entity, EntityID parent);
 
 		
 

@@ -41,6 +41,7 @@ public:
 	bool ValidEntity(EntityID entity);
 
 	EntityID GetEntityParent(EntityID entity);
+	EntityID GetEntityBaseParent(EntityID entity);
 
 	template <class T>
 	T GetProperty(EntityID entity, std::string property)

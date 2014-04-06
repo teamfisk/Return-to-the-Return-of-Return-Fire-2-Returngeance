@@ -30,9 +30,10 @@
 #include "Components/Template.h" 
 #include "Components/Transform.h" 
 
-#include "Components\BoxShape.h"
-#include "Components\SphereShape.h"
-#include "Components\Physics.h"
+#include "Components/CompoundShape.h"
+#include "Components/BoxShape.h"
+#include "Components/SphereShape.h"
+#include "Components/Physics.h"
 
 class GameWorld : public World
 {
