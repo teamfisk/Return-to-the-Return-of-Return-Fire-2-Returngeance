@@ -254,7 +254,7 @@ void Renderer::DrawScene()
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups) {
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texGroup.Texture->texture); 
+			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}

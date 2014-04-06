@@ -2,6 +2,7 @@
 #define Texture_h__
 
 #include <string>
+#include <unordered_map>
 
 #include <SOIL.h>
 
@@ -9,13 +10,16 @@ class Texture
 {
 public:
 	Texture(std::string path);
-	
 	~Texture();
 
-	GLuint texture;
-	
 	void Load(std::string path);
 	void Bind();
+
+	operator GLuint() const { return m_Texture; }
+
+private:
+	GLuint m_Texture;
+	std::unordered_map<std::string, GLuint> m_TextureCache;
 };
 
 #endif // Texture_h__
