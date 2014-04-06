@@ -49,13 +49,13 @@ void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		}
 
 		if (input->MouseState[GLFW_MOUSE_BUTTON_LEFT]) {
-			// TOUCHING THIS CODE MIGHT COUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
+			// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS // spelling tobias :3
 			//---------------------------------------------------------------------
 			transform->Orientation = glm::angleAxis<float>(input->dY / 300.f, glm::vec3(1, 0, 0)) * transform->Orientation;
 
 			transform->Orientation = transform->Orientation * glm::angleAxis<float>(input->dX / 300.f, glm::vec3(0, 1, 0));
 			//---------------------------------------------------------------------
-			// TOUCHING THIS CODE MIGHT COUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
+			// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
 		}
 	}
 }
