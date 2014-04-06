@@ -8,7 +8,9 @@ namespace Components
 
 	struct BoxShape : Component
 	{
-		float height, width;
+		float Height;
+		float Width;
+		float Depth;
 	};
 
 }

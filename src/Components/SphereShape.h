@@ -8,7 +8,8 @@ namespace Components
 
 	struct SphereShape : Component
 	{
-		float radius;
+		float Radius;
+		float RollingFriction;
 	};
 
 }

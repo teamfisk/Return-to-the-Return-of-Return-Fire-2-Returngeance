@@ -1,7 +1,6 @@
 #ifndef Components_Physics_h__
 #define Components_Physics_h__
 
-//#include "btBulletDynamicsCommon.h"
 #include "Component.h"
 
 namespace Components
@@ -9,9 +8,9 @@ namespace Components
 
 	struct Physics : Component
 	{
-		float Mass;
-		float Inertia[3]; 
-		//btRigidBody RigidBody;
+		float Mass			= 0;
+		float Friction		= 0;
+		glm::vec3 Gravity = glm::vec3(0, -9.82f, 0);
 	};
 
 }

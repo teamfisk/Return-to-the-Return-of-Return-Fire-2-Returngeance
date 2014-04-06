@@ -13,6 +13,7 @@
 #include "Systems/FreeSteeringSystem.h"
 #include "Systems/RenderSystem.h"
 //#include "Systems/SoundSystem.h"
+#include "Systems/PhysicsSystem.h"
 
 #include "Components/Bounds.h"
 #include "Components/Camera.h" 
@@ -28,6 +29,10 @@
 #include "Components/Stat.h" 
 #include "Components/Template.h" 
 #include "Components/Transform.h" 
+
+#include "Components\BoxShape.h"
+#include "Components\SphereShape.h"
+#include "Components\Physics.h"
 
 class GameWorld : public World
 {
