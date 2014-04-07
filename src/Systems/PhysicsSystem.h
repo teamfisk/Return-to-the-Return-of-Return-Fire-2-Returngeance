@@ -7,6 +7,8 @@
 #include "Components/CompoundShape.h"
 #include "Components/BoxShape.h"
 #include "Components/SphereShape.h"
+#include "Components/MeshShape.h"
+#include "Components/StaticMeshShape.h"
 #include "Components/BallSocketConstraint.h"
 #include "Components/HingeConstraint.h"
 #include "Components/SliderConstraint.h"

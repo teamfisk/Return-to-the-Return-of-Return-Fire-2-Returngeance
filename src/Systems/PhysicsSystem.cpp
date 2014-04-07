@@ -58,8 +58,10 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
 	auto sphereShapeComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
 	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
+	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape>(entity, "MeshShape");
+	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
 
-	if (physicsComponent || sphereShapeComponent || boxShapeComponent)
+	if (physicsComponent || sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent)
 	{
 		if (m_PhysicsData.find(entity) == m_PhysicsData.end()) {
 			SetUpPhysicsState(entity, parent);
@@ -177,8 +179,10 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 	auto compoundShapeComponent = m_World->GetComponent<Components::CompoundShape>(entity, "CompoundShape");
 	auto sphereShapeComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
 	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
+	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape>(entity, "MeshShape");
+	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
 
-	if (compoundShapeComponent && (sphereShapeComponent || boxShapeComponent)) {
+	if (compoundShapeComponent && (sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent)) {
 		LOG_WARNING("Entity %i has both compound shape and normal shape! Normal shapes must be children to entity with compound shape.", entity);
 	}
 
@@ -212,8 +216,11 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 		physicsData->CollisionShape = new btBoxShape(btVector3(boxShapeComponent->Width, boxShapeComponent->Height, boxShapeComponent->Depth));
 	} else if (sphereShapeComponent) {
 		physicsData->CollisionShape = new btSphereShape(sphereShapeComponent->Radius);
+	} else if (meshShapeComponent) {
+		// TODO: Collision mesh things go here
+		//new btConvexTriangleMeshShape()
 	}
-	if (boxShapeComponent || sphereShapeComponent) {
+	if (boxShapeComponent || sphereShapeComponent || meshShapeComponent || staticMeshShapeComponent) {
 		btTransform transform;
 		transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
 

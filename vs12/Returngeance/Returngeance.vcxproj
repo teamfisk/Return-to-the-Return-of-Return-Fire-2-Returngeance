@@ -118,6 +118,7 @@
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
+    <ClInclude Include="..\..\src\Components\MeshShape.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="..\..\src\Components\SphereShape.h" />
     <ClInclude Include="..\..\src\Components\Sprite.h" />
     <ClInclude Include="..\..\src\Components\Stat.h" />
+    <ClInclude Include="..\..\src\Components\StaticMeshShape.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
