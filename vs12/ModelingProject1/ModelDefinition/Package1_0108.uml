@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ComponentDesigner" xmlns:dm9="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
+  dslVersion="1.0.0.0"
+  Id="7e7e552f-bf35-428c-abc5-12a0b7f81d8b"
+  name="Components" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <packagedElements>
+    <packageHasNamedElement>
+      <class
+        Id="9fa0cc33-d38c-4200-ae73-46e6ca81a0eb"
+        name="Transform"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <ownedAttributesInternal>
+          <property
+            Id="30323bf8-d075-443e-8cff-588c8859eb89"
+            name="Position"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="1d0ee20e-670d-4332-83c4-d5766677500d"
+                LastKnownName="Vector3"
+                LastKnownLocation="Package1_2346.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="4b7f205d-86e6-4647-87b6-181a19a6ded9"
+            name="Orientation"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="3d8ea861-d278-4b29-b99f-c541e12cb443"
+                LastKnownName="Quaternion"
+                LastKnownLocation="Package_0008.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="de3a86ca-f928-446a-9894-2a83885523f0"
+            name="Velocity"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="1d0ee20e-670d-4332-83c4-d5766677500d"
+                LastKnownName="Vector3"
+                LastKnownLocation="Package1_2346.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="dd66413d-34bc-43a1-9a5a-27c5630bb42e"
+            name="Scale"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="abf6232c-7432-4662-913b-e73b0447b228"
+                LastKnownName="Float"
+                LastKnownLocation="Package_2342.uml" />
+            </type_NamedElement>
+          </property>
+        </ownedAttributesInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="aae98821-edea-430a-81fb-21de796c3dd4"
+        name="Template"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+  </packagedElements>
+</package>
