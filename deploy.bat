@@ -11,6 +11,7 @@ ECHO Deploying %Configuration%
 :: Asset folders
 MKLINK "%ConfigPath%\Models\" "assets\Models" /J
 MKLINK "%ConfigPath%\Textures\" "assets\Textures\" /J
+MKLINK "%ConfigPath%\Sounds\" "assets\Sounds\" /J
 :: Shaders
 MKLINK "%ConfigPath%\Shaders\" "src\Shaders\" /J
 :: DLLs

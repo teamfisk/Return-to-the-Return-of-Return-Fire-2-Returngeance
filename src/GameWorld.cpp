@@ -23,7 +23,7 @@ void GameWorld::Initialize()
 		transform->Scale = glm::vec3(1000.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, glm::pi<float>() / 20.f));
 		auto model = AddComponent<Components::Model>(terrain, "Model");
-		model->ModelFile = "Models/PhysicsTest/Plane.obj";
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Plane.obj";
 		auto physics = AddComponent<Components::Physics>(terrain, "Physics");
 		auto Box = AddComponent<Components::BoxShape>(terrain, "BoxShape");
 		Box->Width = 0.5f;
@@ -44,7 +44,7 @@ void GameWorld::Initialize()
 			transform->Position = glm::vec3(0, 10+i, 0);
 			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 			auto model = AddComponent<Components::Model>(entity, "Model");
-			model->ModelFile = "Models/PhysicsTest/ArrowCube.obj";
+			model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
 
 			auto physics = AddComponent<Components::Physics>(entity, "Physics");
 			physics->Mass = 10;
@@ -62,7 +62,7 @@ void GameWorld::Initialize()
 				transform->Position = glm::vec3(-5.f, 10+i, 0);
 				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 				auto model = AddComponent<Components::Model>(entity1, "Model");
-				model->ModelFile = "Models/PhysicsTest/ArrowCube.obj";
+				model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
 
 				auto physics = AddComponent<Components::Physics>(entity1, "Physics");
 				physics->Mass = 0;
@@ -90,7 +90,14 @@ void GameWorld::Initialize()
 
 	}
 
-	
+	{
+		auto entity = CreateEntity();
+		AddComponent(entity, "Transform");
+		auto emitter = AddComponent<Components::SoundEmitter>(entity, "SoundEmitter");
+		emitter->Path = "Sounds/korvring.wav";
+		emitter->Loop = true;
+		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
+	}
 	
 
 }
@@ -135,7 +142,7 @@ void GameWorld::RegisterSystems()
 	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
 	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this); });
-	//m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
+	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
 	
 	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this); });
 
@@ -153,7 +160,7 @@ void GameWorld::AddSystems()
 	////AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
 	AddSystem("FreeSteeringSystem");
-	//AddSystem("SoundSystem");
+	AddSystem("SoundSystem");
 
 	AddSystem("PhysicsSystem");
 	

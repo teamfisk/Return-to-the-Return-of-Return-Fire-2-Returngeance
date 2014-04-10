@@ -31,6 +31,9 @@
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\SoundSystem.cpp">
+      <Filter>Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -159,6 +162,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\StaticMeshShape.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\SoundSystem.h">
+      <Filter>Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

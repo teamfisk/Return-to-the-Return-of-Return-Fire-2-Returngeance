@@ -10,11 +10,11 @@ namespace Components
 
 struct SoundEmitter : Component
 {
-	float Gain;
-	float MaxDistance;
-	float ReferenceDistance;
-	float Pitch;
-	bool Loop;
+	float Gain = 1.f;
+	float MaxDistance = 1.f;
+	float ReferenceDistance = 1.f;
+	float Pitch = 1.f;
+	bool Loop = false;
 	std::string Path;
 };
 

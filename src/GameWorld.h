@@ -12,7 +12,7 @@
 //#include "Systems/PlayerSystem.h"
 #include "Systems/FreeSteeringSystem.h"
 #include "Systems/RenderSystem.h"
-//#include "Systems/SoundSystem.h"
+#include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
 
 #include "Components/Bounds.h"
