@@ -11,7 +11,6 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 	m_Solver = new btSequentialImpulseConstraintSolver();
 
 	m_DynamicsWorld = new btDiscreteDynamicsWorld(m_Dispatcher, m_Broadphase, m_Solver, m_CollisionConfiguration);
-
 	m_DynamicsWorld->setGravity(btVector3(0, -9.82f, 0));
 
 }
@@ -57,8 +56,10 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
 	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape>(entity, "MeshShape");
 	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(entity, "Vehicle");
+	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity, "Wheel");
 
-	if (physicsComponent || sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent)
+	if (physicsComponent || sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent)	
 	{	if (m_PhysicsData.find(entity) == m_PhysicsData.end())
 		{	SetUpPhysicsState(entity, parent);
 		}
@@ -99,6 +100,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 
 				m_Constraints[std::make_pair(entityA, entityB)] = new btPoint2PointConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, pivotA, pivotB);
 				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
+				
 			}
 		}
 	}
@@ -140,6 +142,64 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			}
 		}
 	}
+
+
+	if (vehicleComponent )
+	{
+		if (m_Vehicles.find(entity) == m_Vehicles.end()) {
+			if (m_PhysicsData.find(entity) == m_PhysicsData.end()){
+				LOG_WARNING("Chassi missing rigidbody on vehicle i%", entity);
+				return;
+			}
+			
+			m_Vehicles[entity].VehicleRaycaster = new btDefaultVehicleRaycaster(m_DynamicsWorld);
+			m_Vehicles[entity].RaycastVehicle = new btRaycastVehicle(m_Vehicles[entity].Tuning, m_PhysicsData[entity].RigidBody, m_Vehicles[entity].VehicleRaycaster);
+			
+			//m_Vehicles[entity].RaycastVehicle->setCoordinateSystem(0, 1, 2);
+			m_DynamicsWorld->addVehicle(m_Vehicles[entity].RaycastVehicle);
+
+		}
+
+
+
+// 		for (int i = 0; i < m_Vehicles[entity].RaycastVehicle->getNumWheels(); i++)
+// 		{
+// 			m_Vehicles[entity].RaycastVehicle->applyEngineForce(10, i);
+// 
+// 		}
+	}
+	if (wheelComponent)
+	{
+		
+		EntityID carID = wheelComponent->CarID;
+		if (m_Vehicles.find(carID) != m_Vehicles.end()){
+			auto wheels = &m_Vehicles[carID].Wheels;
+			if (wheels->find(entity) == wheels->end())
+			{
+				wheels->insert(entity);
+
+				btVector3 connectionPoint = btVector3(wheelComponent->ConnectionPoint.x, wheelComponent->ConnectionPoint.y, wheelComponent->ConnectionPoint.z);
+				btVector3 direction = btVector3(wheelComponent->Direction.x, wheelComponent->Direction.y, wheelComponent->Direction.z);
+				btVector3 axle = btVector3(wheelComponent->Axle.x, wheelComponent->Axle.y, wheelComponent->Axle.z);
+
+				btWheelInfo& wheel = m_Vehicles[carID].RaycastVehicle->addWheel(connectionPoint, direction, axle, wheelComponent->SuspensionRestLength, wheelComponent->Radius, m_Vehicles[entity].Tuning, wheelComponent->IsFrontWheel);
+
+				wheel.m_suspensionStiffness = wheelComponent->SuspensionStiffness;
+				wheel.m_wheelsDampingRelaxation = wheelComponent->SuspensionDamping;
+				wheel.m_wheelsDampingCompression = wheelComponent->SuspensionCompression;
+				wheel.m_frictionSlip = wheelComponent->FrictionSlip;
+				wheel.m_rollInfluence = 0.1f;
+				
+
+			}
+		}
+
+		
+	}
+
+	
+	
+	
 
 }
 

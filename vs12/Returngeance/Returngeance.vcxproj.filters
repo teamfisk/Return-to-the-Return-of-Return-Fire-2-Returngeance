@@ -158,7 +158,13 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\MeshShape.h">
+     <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Vehicle.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Wheel.h">
+    <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\StaticMeshShape.h">
       <Filter>Components</Filter>

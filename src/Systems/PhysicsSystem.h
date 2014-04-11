@@ -12,9 +12,12 @@
 #include "Components/BallSocketConstraint.h"
 #include "Components/HingeConstraint.h"
 #include "Components/SliderConstraint.h"
+#include "Components/Vehicle.h"
+#include "Components/Wheel.h"
 
 #include "btBulletDynamicsCommon.h"
 #include "LinearMath/btMatrix3x3.h"
+#include <unordered_set>
 
 namespace Systems
 {
@@ -35,6 +38,10 @@ private:
 	btSequentialImpulseConstraintSolver*	m_Solver;
 	btDiscreteDynamicsWorld*				m_DynamicsWorld;
 
+		
+		//m_DynamicsWorld = new btDiscreteDynamicsWorld(m_Dispatcher, m_Broadphase, m_Solver, m_CollisionConfiguration);
+		
+
 	struct PhysicsData
 	{	btRigidBody*		RigidBody;
 		btMotionState*		MotionState;
@@ -42,6 +49,17 @@ private:
 	};
 	std::map<EntityID, PhysicsData> m_PhysicsData;
 	std::map<std::pair<EntityID, EntityID>, btTypedConstraint*> m_Constraints;
+
+
+		struct Vehicle
+		{
+			btVehicleRaycaster*					VehicleRaycaster;
+			btRaycastVehicle*					RaycastVehicle;
+			btRaycastVehicle::btVehicleTuning	Tuning;
+			std::unordered_set<EntityID>		Wheels;
+		};
+
+		std::map<EntityID, Vehicle> m_Vehicles;
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);

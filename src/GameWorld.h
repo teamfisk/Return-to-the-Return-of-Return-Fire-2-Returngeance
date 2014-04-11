@@ -39,6 +39,9 @@
 #include "Components/HingeConstraint.h"
 #include "Components/SliderConstraint.h"
 
+#include "Components/Vehicle.h"
+#include "Components/Wheel.h"
+
 class GameWorld : public World
 {
 public:

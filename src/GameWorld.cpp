@@ -17,21 +17,24 @@ void GameWorld::Initialize()
 
 	{	auto terrain = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(terrain, "Transform");
-		transform->Scale = glm::vec3(1000.0f);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, glm::pi<float>() / 20.f));
+		transform->Position = glm::vec3(0, -5, 0);
+		transform->Scale = glm::vec3(1000.0f, 1, 1000.0f);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(terrain, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Plane.obj";
 		auto physics = AddComponent<Components::Physics>(terrain, "Physics");
+		physics->Friction = 0.5f;
 		auto Box = AddComponent<Components::BoxShape>(terrain, "BoxShape");
 		Box->Width = 0.5f;
-		Box->Height = 0;
+		Box->Height = 0.5;
 		Box->Depth = 0.5f;
-		physics->Friction = 0.5f;
+		
 	}
 
 
 
 	{
+
 
 		for (int i = 0; i < 1; i++)
 		{	auto entity = CreateEntity();
@@ -41,7 +44,6 @@ void GameWorld::Initialize()
 			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 			auto model = AddComponent<Components::Model>(entity, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
-
 			auto physics = AddComponent<Components::Physics>(entity, "Physics");
 			physics->Mass = 10;
 
@@ -52,6 +54,9 @@ void GameWorld::Initialize()
 
 
 			{	auto entity1 = CreateEntity();
+				
+
+
 				auto transform = AddComponent<Components::Transform>(entity1, "Transform");
 				transform->Scale = glm::vec3(1.0f);
 				transform->Position = glm::vec3(-5.f, 10+i, 0);
@@ -123,6 +128,9 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
 	m_ComponentFactory.Register("BallSocketConstraint", []() { return new Components::BallSocketConstraint(); });
 	m_ComponentFactory.Register("SliderConstraint", []() { return new Components::SliderConstraint(); });
+
+	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
+	m_ComponentFactory.Register("Wheel", []() { return new Components::Wheel(); });
 }
 
 void GameWorld::RegisterSystems()
