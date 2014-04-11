@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
   dslVersion="1.0.0.0"
-  Id="4afdd1d5-f3c3-40b0-a70e-777d89b12070"
+  Id="a578b302-eb5e-4231-a4d8-6182f4ed7e1d"
   name="Systems" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
   <packagedElements>
     <packageHasNamedElement>
       <class
-        Id="defc146c-eb70-4912-969d-3ed3d34c5f5f"
-        name="SoundSystem"
+        Id="0e973b4a-f216-44f5-84ef-793970051a6a"
+        name="InputSystem"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
         <suppliersInternal>
           <interfaceRealization
-            Id="28077688-b80c-483c-9b46-947ce2ad5e20">
+            Id="fb0feb0c-92dd-40f3-8a34-48d92c3e06f9">
             <interfaceMoniker
               Id="443f17bb-330b-495b-99fb-03ed57410a6b"
               LastKnownName="System"
@@ -22,7 +22,7 @@
         </suppliersInternal>
         <ownedOperationsInternal>
           <operation
-            Id="4cbcdc49-e7e3-476f-91c8-c95b8c5bde8d"
+            Id="c1925f05-c9e5-4edb-9d5a-e9749823a7a0"
             name="Initialize"
             isLeaf="false"
             isStatic="false"
@@ -30,7 +30,7 @@
             concurrency="Sequential"
             isQuery="false" />
           <operation
-            Id="8774bc31-2b25-4879-b77f-1866e85e131c"
+            Id="ec97624d-8472-46a3-baf5-6b3cc05247c9"
             name="Update"
             isLeaf="false"
             isStatic="false"
@@ -40,7 +40,7 @@
             <ownedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="20e784e4-09e4-44c6-bd16-c3dcf6c42d02"
+                  Id="68e7620a-f0e6-4cf4-8669-b783d98b6445"
                   name="dt"
                   direction="In"
                   isUnique="false">
@@ -55,7 +55,7 @@
             </ownedParameters>
           </operation>
           <operation
-            Id="f6f7c802-fc3f-411f-a9d4-391fd10971d0"
+            Id="01e34f64-de05-462d-ab34-64dc2034c59b"
             name="UpdateEntity"
             isLeaf="false"
             isStatic="false"
@@ -65,7 +65,7 @@
             <ownedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="cdfc1b04-12fa-4376-b8fe-191116e68cf0"
+                  Id="edc4c0f1-a5a0-4cca-b4f2-d6a31444f8e5"
                   name="dt"
                   direction="In"
                   isUnique="false">
@@ -79,7 +79,7 @@
               </operationHasOwnedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="c21907a8-8a16-4fd4-9146-82837e732674"
+                  Id="93dcaa30-dd51-4341-bf06-9a94c6c82cad"
                   name="entity"
                   direction="In"
                   isUnique="false">
@@ -93,7 +93,7 @@
               </operationHasOwnedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="d0bf88e6-6a0d-40c7-b2da-232adb51fba5"
+                  Id="ff7c28e8-ab7b-4306-9b20-3792ea25171e"
                   name="parent"
                   direction="In"
                   isUnique="false">
@@ -108,7 +108,7 @@
             </ownedParameters>
           </operation>
           <operation
-            Id="bd5f82e4-3a7f-4812-90c2-be1f60d5c1c1"
+            Id="f7799b8e-5758-407f-9892-17cbbee8a6b2"
             name="OnComponentCreated"
             isLeaf="false"
             isStatic="false"
@@ -118,7 +118,7 @@
             <ownedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="18df19c9-d7bc-4fed-90a8-9c905ab7c865"
+                  Id="05c8a0a0-05f3-4149-9a27-10c7cbfd6475"
                   name="type"
                   direction="In"
                   isUnique="false">
@@ -132,7 +132,7 @@
               </operationHasOwnedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="13a8fafa-3742-449c-9945-cb2782533f9e"
+                  Id="b5b17f94-798d-4348-8f45-68534f436487"
                   name="component"
                   direction="In"
                   isUnique="false">
@@ -147,7 +147,7 @@
             </ownedParameters>
           </operation>
           <operation
-            Id="6611e7f7-cc32-4455-9c0c-4d6f9faf711e"
+            Id="86290ac2-f9d9-48c9-8108-e263e0d7559d"
             name="OnComponentRemoved"
             isLeaf="false"
             isStatic="false"
@@ -157,7 +157,7 @@
             <ownedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="a31eb1e5-b00d-4e29-aa6f-b93880e6994c"
+                  Id="a0c56e00-5ef1-4963-99e5-f69c66cc3dd9"
                   name="type"
                   direction="In"
                   isUnique="false">
@@ -171,7 +171,7 @@
               </operationHasOwnedParameters>
               <operationHasOwnedParameters>
                 <parameter
-                  Id="27cbc759-4d60-4c8a-b50e-51936c512216"
+                  Id="f92eaab4-4a11-438f-9883-de9e947c2d3b"
                   name="component"
                   direction="In"
                   isUnique="false">
@@ -185,102 +185,8 @@
               </operationHasOwnedParameters>
             </ownedParameters>
           </operation>
-          <operation
-            Id="2835f2c3-baec-42a3-961a-584a26b273a3"
-            name="PlaySound"
-            isLeaf="false"
-            isStatic="false"
-            isAbstract="false"
-            concurrency="Sequential"
-            isQuery="false">
-            <ownedParameters>
-              <operationHasOwnedParameters>
-                <parameter
-                  Id="afc2eaf7-a1c2-4936-b799-5571858f02de"
-                  name="emitter"
-                  direction="In"
-                  isUnique="false">
-                  <type_NamedElement>
-                    <undefinedTypeMoniker
-                      Id="effb9c78-b666-4fe5-8903-84e70257eda4"
-                      LastKnownName="SoundEmitter*"
-                      LastKnownLocation="Package_0101.uml" />
-                  </type_NamedElement>
-                </parameter>
-              </operationHasOwnedParameters>
-              <operationHasOwnedParameters>
-                <parameter
-                  Id="084c1f63-733a-4223-a958-32c25b930d92"
-                  name="soundPath"
-                  direction="In"
-                  isUnique="false">
-                  <type_NamedElement>
-                    <primitiveTypeMoniker
-                      Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
-                      LastKnownName="String"
-                      LastKnownLocation="ModelingProject1.uml" />
-                  </type_NamedElement>
-                </parameter>
-              </operationHasOwnedParameters>
-            </ownedParameters>
-          </operation>
-          <operation
-            Id="92648a19-de32-419b-8f78-0c236707f686"
-            name="PlaySound"
-            isLeaf="false"
-            isStatic="false"
-            isAbstract="false"
-            concurrency="Sequential"
-            isQuery="false">
-            <ownedParameters>
-              <operationHasOwnedParameters>
-                <parameter
-                  Id="b5d3c29f-6a65-44bb-937d-6aada5fad05f"
-                  name="emitter"
-                  direction="In"
-                  isUnique="false">
-                  <type_NamedElement>
-                    <undefinedTypeMoniker
-                      Id="effb9c78-b666-4fe5-8903-84e70257eda4"
-                      LastKnownName="SoundEmitter*"
-                      LastKnownLocation="Package_0101.uml" />
-                  </type_NamedElement>
-                </parameter>
-              </operationHasOwnedParameters>
-            </ownedParameters>
-          </operation>
-          <operation
-            Id="4e4d0ac2-11ab-4bf6-a812-619ec7fa9b1c"
-            name="StopSound"
-            isLeaf="false"
-            isStatic="false"
-            isAbstract="false"
-            concurrency="Sequential"
-            isQuery="false">
-            <ownedParameters>
-              <operationHasOwnedParameters>
-                <parameter
-                  Id="8198ac2b-1ade-4535-ac21-549d0771aa3f"
-                  name="emitter"
-                  direction="In"
-                  isUnique="false">
-                  <type_NamedElement>
-                    <undefinedTypeMoniker
-                      Id="effb9c78-b666-4fe5-8903-84e70257eda4"
-                      LastKnownName="SoundEmitter*"
-                      LastKnownLocation="Package_0101.uml" />
-                  </type_NamedElement>
-                </parameter>
-              </operationHasOwnedParameters>
-            </ownedParameters>
-          </operation>
         </ownedOperationsInternal>
       </class>
-    </packageHasNamedElement>
-    <packageHasNamedElement>
-      <undefinedType
-        Id="effb9c78-b666-4fe5-8903-84e70257eda4"
-        name="SoundEmitter*" />
     </packageHasNamedElement>
   </packagedElements>
 </package>
