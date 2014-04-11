@@ -7,7 +7,8 @@ namespace Components
 {
 struct FreeSteering : Component
 {
-	float Speed = 35;
+	FreeSteering() : Speed(35) { }
+	float Speed;
 };
 }
 

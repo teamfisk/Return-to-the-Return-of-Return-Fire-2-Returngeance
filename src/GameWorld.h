@@ -15,32 +15,17 @@
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
 
-#include "Components/Bounds.h"
 #include "Components/Camera.h"
-#include "Components/Collision.h"
 #include "Components/DirectionalLight.h"
 #include "Components/Input.h"
 #include "Components/Model.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/PointLight.h"
-#include "Components/PowerUp.h"
 #include "Components/SoundEmitter.h"
 #include "Components/Sprite.h"
 #include "Components/Stat.h"
 #include "Components/Template.h"
 #include "Components/Transform.h"
-
-#include "Components/CompoundShape.h"
-#include "Components/BoxShape.h"
-#include "Components/SphereShape.h"
-#include "Components/Physics.h"
-
-#include "Components/BallSocketConstraint.h"
-#include "Components/HingeConstraint.h"
-#include "Components/SliderConstraint.h"
-
-#include "Components/Vehicle.h"
-#include "Components/Wheel.h"
 
 class GameWorld : public World
 {

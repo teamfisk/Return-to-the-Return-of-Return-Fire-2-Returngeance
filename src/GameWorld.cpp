@@ -25,73 +25,6 @@ void GameWorld::Initialize()
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(terrain, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Plane.obj";
-		auto physics = AddComponent<Components::Physics>(terrain, "Physics");
-		physics->Friction = 0.5f;
-		auto Box = AddComponent<Components::BoxShape>(terrain, "BoxShape");
-		Box->Width = 0.5f;
-		Box->Height = 0.5;
-		Box->Depth = 0.5f;
-		
-	}
-
-
-
-	{
-
-
-		for (int i = 0; i < 1; i++)
-		{
-			auto entity = CreateEntity();
-			auto transform = AddComponent<Components::Transform>(entity, "Transform");
-			transform->Scale = glm::vec3(1.0f);
-			transform->Position = glm::vec3(0, 10+i, 0);
-			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-			auto model = AddComponent<Components::Model>(entity, "Model");
-			model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
-			auto physics = AddComponent<Components::Physics>(entity, "Physics");
-			physics->Mass = 10;
-
-			auto box = AddComponent<Components::BoxShape>(entity, "BoxShape");
-			box->Width = 0.5;
-			box->Height = 0.5;
-			box->Depth = 0.5;
-
-
-			{
-				auto entity1 = CreateEntity();
-
-
-				auto transform = AddComponent<Components::Transform>(entity1, "Transform");
-				transform->Scale = glm::vec3(1.0f);
-				transform->Position = glm::vec3(-5.f, 10+i, 0);
-				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-				auto model = AddComponent<Components::Model>(entity1, "Model");
-				model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
-
-				auto physics = AddComponent<Components::Physics>(entity1, "Physics");
-				physics->Mass = 0;
-
-				auto box = AddComponent<Components::BoxShape>(entity1, "BoxShape");
-				box->Width = 0.5;
-				box->Height = 0.5;
-				box->Depth = 0.5;
-
-				auto hingeConstraint = AddComponent<Components::HingeConstraint>(entity1, "HingeConstraint");
-				hingeConstraint->EntityA = entity;
-				hingeConstraint->EntityB = entity1;
-				hingeConstraint->AxisA = glm::vec3(0, 0, 1);
-				hingeConstraint->AxisB = glm::vec3(0, 0, 1);
-				hingeConstraint->LowLimit = -glm::pi<float>();
-				hingeConstraint->HighLimit = glm::pi<float>();
-				hingeConstraint->PivotA = glm::vec3(-5, 0, 0);
-				hingeConstraint->PivotB = glm::vec3(0, 0, 0);
-
-			}
-
-		}
-
-
-
 	}
 
 	{
@@ -102,8 +35,6 @@ void GameWorld::Initialize()
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
 	}
-
-
 }
 
 void GameWorld::Update(double dt)
@@ -113,9 +44,7 @@ void GameWorld::Update(double dt)
 
 void GameWorld::RegisterComponents()
 {
-	m_ComponentFactory.Register("Bounds", []() { return new Components::Bounds(); });
 	m_ComponentFactory.Register("Camera", []() { return new Components::Camera(); });
-	m_ComponentFactory.Register("Collision", []() { return new Components::Collision(); });
 	m_ComponentFactory.Register("DirectionalLight", []() { return new Components::DirectionalLight(); });
 	m_ComponentFactory.Register("Input", []() { return new Components::Input(); });
 	m_ComponentFactory.Register("Model", []() { return new Components::Model(); });
@@ -127,17 +56,7 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); });
 	m_ComponentFactory.Register("FreeSteering", []() { return new Components::FreeSteering(); });
 
-	m_ComponentFactory.Register("Physics", []() { return new Components::Physics(); });
-	m_ComponentFactory.Register("CompoundShape", []() { return new Components::CompoundShape(); });
-	m_ComponentFactory.Register("SphereShape", []() { return new Components::SphereShape(); });
-	m_ComponentFactory.Register("BoxShape", []() { return new Components::BoxShape(); });
-
-	m_ComponentFactory.Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
-	m_ComponentFactory.Register("BallSocketConstraint", []() { return new Components::BallSocketConstraint(); });
-	m_ComponentFactory.Register("SliderConstraint", []() { return new Components::SliderConstraint(); });
-
-	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
-	m_ComponentFactory.Register("Wheel", []() { return new Components::Wheel(); });
+	///m_ComponentFactory.Register("Physics", []() { return new Components::Physics(); });
 }
 
 void GameWorld::RegisterSystems()
