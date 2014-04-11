@@ -4,18 +4,15 @@
 
 Systems::SoundSystem::SoundSystem(World* world)
 	: System(world)
-{
-	//initialize OpenAL
+{	//initialize OpenAL
 	ALCdevice* Device = alcOpenDevice(NULL);
 	ALCcontext* context;
 	if(Device)
-	{
-		context = alcCreateContext(Device, NULL);
+	{	context = alcCreateContext(Device, NULL);
 		alcMakeContextCurrent(context);
 	}
 	else
-	{
-		LOG_ERROR("OMG OPEN AL FAIL");
+	{	LOG_ERROR("OMG OPEN AL FAIL");
 	}
 
 	alGetError();
@@ -30,15 +27,13 @@ void Systems::SoundSystem::Update(double dt)
 }
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
-{
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+{	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 	if (transformComponent == nullptr)
 		return;
 
 	auto entityName = m_World->GetProperty<std::string>(entity, "Name");
 	if (entityName == "Camera")
-	{
-		glm::vec3 playerPos = transformComponent->Position;
+	{	glm::vec3 playerPos = transformComponent->Position;
 		ALfloat listenerPos[3] = { playerPos.x, playerPos.y, -playerPos.z };
 
 		glm::vec3 playerVel = transformComponent->Velocity;
@@ -57,8 +52,7 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 
 	auto soundEmitter = m_World->GetComponent<Components::SoundEmitter>(entity, "SoundEmitter");
 	if(soundEmitter != nullptr)
-	{
-		ALuint source = m_Sources[soundEmitter];
+	{	ALuint source = m_Sources[soundEmitter];
 		alSourcef(source, AL_GAIN, soundEmitter->Gain);
 		//alSourcef(source, AL_MAX_DISTANCE, soundEmitter->MaxDistance);
 		alSourcef(source, AL_REFERENCE_DISTANCE, soundEmitter->ReferenceDistance);
@@ -77,8 +71,7 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 }
 
 void Systems::SoundSystem::PlaySound(Components::SoundEmitter* emitter, std::string fileName)
-{
-	if (m_Sources.find(emitter) == m_Sources.end())
+{	if (m_Sources.find(emitter) == m_Sources.end())
 		return;
 
 	ALuint buffer = LoadFile(fileName);
@@ -90,73 +83,61 @@ void Systems::SoundSystem::PlaySound(Components::SoundEmitter* emitter, std::str
 }
 
 void Systems::SoundSystem::PlaySound(std::shared_ptr<Components::SoundEmitter> emitter)
-{
-	ALuint buffer = LoadFile(emitter->Path);
+{	ALuint buffer = LoadFile(emitter->Path);
 	ALuint source = m_Sources[emitter.get()];
 	alSourcei(source, AL_BUFFER, buffer);
 	alSourcePlay(m_Sources[emitter.get()]);
 }
 
 void Systems::SoundSystem::StopSound(std::shared_ptr<Components::SoundEmitter> emitter)
-{
-	alSourceStop(m_Sources[emitter.get()]);
+{	alSourceStop(m_Sources[emitter.get()]);
 }
 
 void Systems::SoundSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
-{
-	if(type == "SoundEmitter")
-	{
-		ALuint source = CreateSource();
+{	if(type == "SoundEmitter")
+	{	ALuint source = CreateSource();
 		m_Sources[component.get()] = source;
 	}
 }
 
 void Systems::SoundSystem::OnComponentRemoved(std::string type, Component* component)
-{
-	if(type == "SoundEmitter")
-	{
-		if (m_Sources.find(component) != m_Sources.end())
-		{
-			ALuint source = m_Sources[component];
+{	if(type == "SoundEmitter")
+	{	if (m_Sources.find(component) != m_Sources.end())
+		{	ALuint source = m_Sources[component];
 			alDeleteSources(1, &source);
 		}
 	}
 }
 
 ALuint Systems::SoundSystem::LoadFile(std::string path)
-{
-	if (m_BufferCache.find(path) != m_BufferCache.end())
+{	if (m_BufferCache.find(path) != m_BufferCache.end())
 		return m_BufferCache[path];
 
 	FILE* fp = NULL;
 	fp = fopen(path.c_str(), "rb");
 
 	if (fp == NULL)
-	{
-		LOG_ERROR("Failed to load sound file \"%s\"", path.c_str());
+	{	LOG_ERROR("Failed to load sound file \"%s\"", path.c_str());
 		return 0;
 	}
 
 	//CHECK FOR VALID WAVE-FILE
 	fread(type, sizeof(char), 4, fp);
 	if(type[0]!='R' || type[1]!='I' || type[2]!='F' || type[3]!='F')
-	{
-		LOG_ERROR("ERROR: No RIFF in WAVE-file");
+	{	LOG_ERROR("ERROR: No RIFF in WAVE-file");
 		return 0;
 	}
 
 	fread(&size, sizeof(unsigned long), 1, fp);
 	fread(type, sizeof(char), 4, fp);
 	if(type[0]!='W' || type[1]!='A' || type[2]!='V' || type[3]!='E')
-	{
-		LOG_ERROR("ERROR: Not WAVE-file");
+	{	LOG_ERROR("ERROR: Not WAVE-file");
 		return 0;
 	}
 
 	fread(type, sizeof(char), 4, fp);
 	if(type[0]!='f' || type[1]!='m' || type[2]!='t' || type[3]!=' ')
-	{
-		LOG_ERROR("ERROR: No fmt in WAVE-file");
+	{	LOG_ERROR("ERROR: No fmt in WAVE-file");
 		return 0;
 	}
 
@@ -171,8 +152,7 @@ ALuint Systems::SoundSystem::LoadFile(std::string path)
 
 	fread(type, sizeof(char), 4, fp);
 	if(type[0]!='d' || type[1]!='a' || type[2]!='t' || type[3]!='a')
-	{
-		LOG_ERROR("ERROR: WAVE-file Missing data");
+	{	LOG_ERROR("ERROR: WAVE-file Missing data");
 		return 0;
 	}
 
@@ -185,15 +165,13 @@ ALuint Systems::SoundSystem::LoadFile(std::string path)
 	// Create buffer
 	ALuint format = 0;
 	if(bitsPerSample == 8)
-	{
-		if(channels == 1)
+	{	if(channels == 1)
 			format = AL_FORMAT_MONO8;
 		else if(channels == 2)
 			format = AL_FORMAT_STEREO8;
 	}
 	if(bitsPerSample == 16)
-	{
-		if (channels == 1)
+	{	if (channels == 1)
 			format = AL_FORMAT_MONO16;
 		else if (channels == 2)
 			format = AL_FORMAT_STEREO16;
@@ -209,8 +187,7 @@ ALuint Systems::SoundSystem::LoadFile(std::string path)
 }
 
 ALuint Systems::SoundSystem::CreateSource()
-{
-	ALuint source;
+{	ALuint source;
 	alGenSources((ALuint)1, &source);
 
 	alDopplerFactor(1); // Numbers greater than 1 will increase Doppler effect, numbers lower than 1 will decrease the Doppler effect

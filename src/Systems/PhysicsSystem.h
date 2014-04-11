@@ -36,8 +36,7 @@ private:
 	btDiscreteDynamicsWorld*				m_DynamicsWorld;
 
 	struct PhysicsData
-	{
-		btRigidBody*		RigidBody;
+	{	btRigidBody*		RigidBody;
 		btMotionState*		MotionState;
 		btCollisionShape*	CollisionShape;
 	};

@@ -7,8 +7,7 @@ namespace Components
 {
 
 struct Bounds : Component
-{
-	//Axis Aligned Bounding Box
+{	//Axis Aligned Bounding Box
 	glm::vec3 Origin;
 	glm::vec3 VolumeVector; //The vector that defines the volume of the BB, it goes from one corner to the opposite one
 };

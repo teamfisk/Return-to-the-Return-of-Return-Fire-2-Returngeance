@@ -5,8 +5,7 @@
 #include "Entity.h"
 
 struct Component
-{
-	EntityID Entity;
+{	EntityID Entity;
 };
 
 class ComponentFactory : public Factory<Component*> { };

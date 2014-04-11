@@ -10,8 +10,7 @@ namespace Components
 {
 
 struct Sprite : Component
-{
-	std::string SpriteFile;
+{	std::string SpriteFile;
 	Color Color;
 };
 

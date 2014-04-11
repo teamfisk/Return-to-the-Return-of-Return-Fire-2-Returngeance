@@ -5,8 +5,7 @@
 
 
 Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
-{
-	m_Broadphase = new btDbvtBroadphase();
+{	m_Broadphase = new btDbvtBroadphase();
 	m_CollisionConfiguration = new btDefaultCollisionConfiguration();
 	m_Dispatcher = new btCollisionDispatcher(m_CollisionConfiguration);
 	m_Solver = new btSequentialImpulseConstraintSolver();
@@ -18,19 +17,16 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 }
 
 void Systems::PhysicsSystem::Update(double dt)
-{
-	// Update entity transform in physics world
+{	// Update entity transform in physics world
 	for (auto pair : *m_World->GetEntities())
-	{
-		EntityID entity = pair.first;
+	{	EntityID entity = pair.first;
 		EntityID parent = pair.second;
 
 		if (parent != 0)
 			continue;
 
 		if (m_PhysicsData.find(entity) != m_PhysicsData.end())
-		{
-			PhysicsData* physicsData = &m_PhysicsData[entity];
+		{	PhysicsData* physicsData = &m_PhysicsData[entity];
 			auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 
 			btTransform transform;
@@ -52,8 +48,7 @@ void Systems::PhysicsSystem::Update(double dt)
 }
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
-{
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+{	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 	if (!transformComponent)
 		return;
 
@@ -64,10 +59,8 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
 
 	if (physicsComponent || sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent)
-	{
-		if (m_PhysicsData.find(entity) == m_PhysicsData.end())
-		{
-			SetUpPhysicsState(entity, parent);
+	{	if (m_PhysicsData.find(entity) == m_PhysicsData.end())
+		{	SetUpPhysicsState(entity, parent);
 		}
 
 		if (parent != 0)
@@ -86,10 +79,8 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		transformComponent->Orientation.w = transform.getRotation().w();
 	}
 	else
-	{
-		if (m_PhysicsData.find(entity) != m_PhysicsData.end())
-		{
-			TearDownPhysicsState(entity, parent);
+	{	if (m_PhysicsData.find(entity) != m_PhysicsData.end())
+		{	TearDownPhysicsState(entity, parent);
 		}
 	}
 
@@ -98,15 +89,12 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto hingeComponent = m_World->GetComponent<Components::HingeConstraint>(entity, "HingeConstraint");
 
 	if (ballSocketComponent)
-	{
-		EntityID entityA = ballSocketComponent->EntityA;
+	{	EntityID entityA = ballSocketComponent->EntityA;
 		EntityID entityB = ballSocketComponent->EntityB;
 
 		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
-		{
-			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
-			{
-				btVector3 pivotA = btVector3(ballSocketComponent->PivotA.x, ballSocketComponent->PivotA.y, ballSocketComponent->PivotA.z);
+		{	if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
+			{	btVector3 pivotA = btVector3(ballSocketComponent->PivotA.x, ballSocketComponent->PivotA.y, ballSocketComponent->PivotA.z);
 				btVector3 pivotB = btVector3(ballSocketComponent->PivotB.x, ballSocketComponent->PivotB.y, ballSocketComponent->PivotB.z);
 
 				m_Constraints[std::make_pair(entityA, entityB)] = new btPoint2PointConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, pivotA, pivotB);
@@ -115,15 +103,12 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		}
 	}
 	else if (sliderComponent)
-	{
-		EntityID entityA = sliderComponent->EntityA;
+	{	EntityID entityA = sliderComponent->EntityA;
 		EntityID entityB = sliderComponent->EntityB;
 
 		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
-		{
-			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
-			{
-				btTransform transformA;
+		{	if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
+			{	btTransform transformA;
 				m_PhysicsData[entityA].MotionState->getWorldTransform(transformA);
 				btTransform transformB;
 				m_PhysicsData[entityB].MotionState->getWorldTransform(transformB);
@@ -134,15 +119,12 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		}
 	}
 	else if (hingeComponent)
-	{
-		EntityID entityA = hingeComponent->EntityA;
+	{	EntityID entityA = hingeComponent->EntityA;
 		EntityID entityB = hingeComponent->EntityB;
 
 		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
-		{
-			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
-			{
-				btVector3 PivotA = btVector3(hingeComponent->PivotA.x, hingeComponent->PivotA.y, hingeComponent->PivotA.z);
+		{	if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
+			{	btVector3 PivotA = btVector3(hingeComponent->PivotA.x, hingeComponent->PivotA.y, hingeComponent->PivotA.z);
 				btVector3 PivotB = btVector3(hingeComponent->PivotB.x, hingeComponent->PivotB.y, hingeComponent->PivotB.z);
 
 				btVector3 AxisA = btVector3(hingeComponent->AxisA.x, hingeComponent->AxisA.y, hingeComponent->AxisA.z);
@@ -172,11 +154,9 @@ void Systems::PhysicsSystem::OnComponentRemoved(std::string type, Component* com
 }
 
 void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
-{
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+{	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 	if (!transformComponent)
-	{
-		LOG_WARNING("Physics component missing transform component on entity %i", entity);
+	{	LOG_WARNING("Physics component missing transform component on entity %i", entity);
 		return;
 	}
 
@@ -188,8 +168,7 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
 
 	if (compoundShapeComponent && (sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent))
-	{
-		LOG_WARNING("Entity %i has both compound shape and normal shape! Normal shapes must be children to entity with compound shape.", entity);
+	{	LOG_WARNING("Entity %i has both compound shape and normal shape! Normal shapes must be children to entity with compound shape.", entity);
 	}
 
 	PhysicsData* physicsData = &m_PhysicsData[entity];
@@ -199,8 +178,7 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 
 	// Set-up compound shape
 	if (compoundShapeComponent)
-	{
-		btCompoundShape* compoundShape = new btCompoundShape();
+	{	btCompoundShape* compoundShape = new btCompoundShape();
 		physicsData->CollisionShape = compoundShape;
 
 		btTransform transform;
@@ -209,8 +187,7 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 
 		btVector3 inertia;
 		if (physicsComponent->Mass != 0)
-		{
-			physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
+		{	physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
 		}
 
 		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
@@ -221,32 +198,26 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 
 	// Set-up normal shapes
 	else if (boxShapeComponent)
-	{
-		physicsData->CollisionShape = new btBoxShape(btVector3(boxShapeComponent->Width, boxShapeComponent->Height, boxShapeComponent->Depth));
+	{	physicsData->CollisionShape = new btBoxShape(btVector3(boxShapeComponent->Width, boxShapeComponent->Height, boxShapeComponent->Depth));
 	}
 	else if (sphereShapeComponent)
-	{
-		physicsData->CollisionShape = new btSphereShape(sphereShapeComponent->Radius);
+	{	physicsData->CollisionShape = new btSphereShape(sphereShapeComponent->Radius);
 	}
 	else if (meshShapeComponent)
-	{
-		// TODO: Collision mesh things go here
+	{	// TODO: Collision mesh things go here
 		//new btConvexTriangleMeshShape()
 	}
 	if (boxShapeComponent || sphereShapeComponent || meshShapeComponent || staticMeshShapeComponent)
-	{
-		btTransform transform;
+	{	btTransform transform;
 		transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
 
 		// If there's a local physics component
 		if (physicsComponent)
-		{
-			physicsData->MotionState = new btDefaultMotionState(transform);
+		{	physicsData->MotionState = new btDefaultMotionState(transform);
 
 			btVector3 inertia;
 			if (physicsComponent->Mass != 0)
-			{
-				physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
+			{	physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
 			}
 
 			btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
@@ -255,19 +226,16 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 			m_DynamicsWorld->addRigidBody(physicsData->RigidBody);
 		}
 		else
-		{
-			// Otherwise, find our base parent and attach to compound shape
+		{	// Otherwise, find our base parent and attach to compound shape
 			EntityID baseParent = m_World->GetEntityBaseParent(entity);
 			auto basePhysicsComponent = m_World->GetComponent<Components::Physics>(baseParent, "Physics");
 			if (!basePhysicsComponent)
-			{
-				LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing physics component on base parent entity %i", entity, baseParent);
+			{	LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing physics component on base parent entity %i", entity, baseParent);
 				return;
 			}
 			auto baseCompoundShapeComponent = m_World->GetComponent<Components::CompoundShape>(baseParent, "CompoundShape");
 			if (!baseCompoundShapeComponent)
-			{
-				LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing compound shape on base parent entity %i", entity, baseParent);
+			{	LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing compound shape on base parent entity %i", entity, baseParent);
 				return;
 			}
 			PhysicsData* basePhysicsData = &m_PhysicsData.at(baseParent);
@@ -285,8 +253,7 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 }
 
 void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
-{
-	PhysicsData* physicsData = &m_PhysicsData[entity];
+{	PhysicsData* physicsData = &m_PhysicsData[entity];
 
 	delete physicsData->RigidBody;
 	delete physicsData->MotionState;

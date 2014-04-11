@@ -9,8 +9,7 @@ namespace Components
 {
 
 struct ParticleEmitter : Component
-{
-	int ParticleTemplate;
+{	int ParticleTemplate;
 	float SpawnFrequency;
 	int SpawnCount;
 	std::vector<Color> ColorSpectrum;

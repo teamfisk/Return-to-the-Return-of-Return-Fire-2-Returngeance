@@ -6,8 +6,7 @@
 namespace Components
 {
 struct StaticMeshShape : Component
-{
-	std::string Filename;
+{	std::string Filename;
 };
 }
 

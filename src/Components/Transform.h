@@ -7,8 +7,7 @@ namespace Components
 {
 
 struct Transform : Component
-{
-	Transform()
+{	Transform()
 		: Scale(glm::vec3(1.f)) { }
 
 	glm::vec3 Position;

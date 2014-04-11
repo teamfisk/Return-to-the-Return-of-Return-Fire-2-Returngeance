@@ -15,8 +15,7 @@ class OBJ
 {
 public:
 	struct MaterialInfo
-	{
-		std::string TextureFile;
+	{	std::string TextureFile;
 		std::tuple<float, float, float> AmbientColor;
 		std::tuple<float, float, float> DiffuseColor;
 		std::tuple<float, float, float> SpecularColor;
@@ -28,15 +27,13 @@ public:
 	};
 
 	struct FaceDefinition
-	{
-		int VertexIndex;
+	{	int VertexIndex;
 		int TextureCoordIndex;
 		int NormalIndex;
 	};
 
 	struct Face
-	{
-		Face() : Material(nullptr) { }
+	{	Face() : Material(nullptr) { }
 		std::vector<FaceDefinition> Definitions;
 		MaterialInfo* Material;
 	};

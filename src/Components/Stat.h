@@ -7,8 +7,7 @@ namespace Components
 {
 
 struct Stat : Component
-{
-	float Health;
+{	float Health;
 	bool Destroyable;
 };
 

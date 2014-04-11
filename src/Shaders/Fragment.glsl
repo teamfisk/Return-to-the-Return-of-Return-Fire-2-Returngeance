@@ -17,8 +17,7 @@ uniform float quadraticAttenuation[maxNumberOfLights];
 uniform float spotExponent[maxNumberOfLights];
 
 in VertexData
-{
-	vec3 Position;
+{	vec3 Position;
 	vec3 Normal;
 	vec2 TextureCoord;
 	vec3 ShadowCoord;
@@ -53,12 +52,10 @@ void main()
 	//bias = clamp(bias, 0.0, 0.01);
 	float visibility = 1.0;
 	if (Input.ShadowCoord.x >= 0.0 && Input.ShadowCoord.x <= 1.0 && Input.ShadowCoord.y >= 0.0 && Input.ShadowCoord.y <= 1.0)
-	{
-		float bias = 0.00005;
+	{	float bias = 0.00005;
 		vec4 shadowMapValue = texture(shadowMap, Input.ShadowCoord.xy);
 		if (shadowMapValue.z < clamp(Input.ShadowCoord.z - bias, 0, 1))
-		{
-			visibility = 0.3;
+		{	visibility = 0.3;
 		}
 	}
 
@@ -67,8 +64,7 @@ void main()
 	float attenuation;
 
 	for(int i = 0; i < numberOfLights && i < maxNumberOfLights; i++)
-	{
-		// Light
+	{	// Light
 		//vec3 lightPosition = vec3(0, 0, 2);
 		vec3 Ls = specular[i];	// Specular light
 		vec3 Ld = diffuse[i];	// Diffuse light

@@ -2,8 +2,7 @@
 #define Color_h__
 
 struct Color
-{
-	float r;
+{	float r;
 	float g;
 	float b;
 };

@@ -8,8 +8,7 @@ namespace Components
 {
 
 struct PointLight : Component
-{
-	float Intensity;
+{	float Intensity;
 	float MaxRange;
 	glm::vec3 Specular;
 	glm::vec3 Diffuse;

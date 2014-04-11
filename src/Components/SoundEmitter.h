@@ -9,8 +9,7 @@ namespace Components
 {
 
 struct SoundEmitter : Component
-{
-	float Gain = 1.f;
+{	float Gain = 1.f;
 	float MaxDistance = 1.f;
 	float ReferenceDistance = 1.f;
 	float Pitch = 1.f;

@@ -8,8 +8,7 @@ namespace Components
 {
 
 struct DirectionalLight : Component
-{
-	float Intensity;
+{	float Intensity;
 	float MaxRange;
 	float SpecularIntensity;
 	Color Color;

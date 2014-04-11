@@ -2,8 +2,7 @@
 #include "Skybox.h"
 
 Skybox::Skybox(std::string skyboxPath, std::string extension /* = "png" */)
-{
-	m_Cubemap = std::make_shared<CubemapTexture>(
+{	m_Cubemap = std::make_shared<CubemapTexture>(
 	                skyboxPath + "/right." + extension,
 	                skyboxPath + "/left." + extension,
 	                skyboxPath + "/top." + extension,
@@ -15,10 +14,8 @@ Skybox::Skybox(std::string skyboxPath, std::string extension /* = "png" */)
 }
 
 void Skybox::Initialize()
-{
-	float cubeVertices[] =
-	{
-		-1.0f, -1.0f, -1.0f,
+{	float cubeVertices[] =
+	{	-1.0f, -1.0f, -1.0f,
 		1.0f, -1.0f, -1.0f,
 		1.0f, 1.0f, -1.0f,
 		-1.0f, 1.0f, -1.0f,
@@ -31,8 +28,7 @@ void Skybox::Initialize()
 	//std::copy(cubeVertices, cubeVertices + (3*8 - 1), m_CubeVertices);
 
 	unsigned int cubeIndices[] =
-	{
-		// Back
+	{	// Back
 		0, 2, 3,
 		0, 1, 2,
 
@@ -82,8 +78,7 @@ Skybox::~Skybox()
 }
 
 void Skybox::Draw()
-{
-	m_Cubemap->Bind(GL_TEXTURE0);
+{	m_Cubemap->Bind(GL_TEXTURE0);
 
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);

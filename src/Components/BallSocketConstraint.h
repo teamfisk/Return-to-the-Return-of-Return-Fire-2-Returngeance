@@ -7,8 +7,7 @@ namespace Components
 {
 // http://bulletphysics.org/mediawiki-1.5.8/index.php/Constraints
 struct BallSocketConstraint : Component
-{
-	// Create constraint between these entities
+{	// Create constraint between these entities
 	EntityID EntityA;
 	EntityID EntityB;
 	// The pivot point in local coordinates

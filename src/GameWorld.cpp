@@ -2,11 +2,9 @@
 #include "GameWorld.h"
 
 void GameWorld::Initialize()
-{
-	World::Initialize();
+{	World::Initialize();
 
-	{
-		auto camera = CreateEntity();
+	{	auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
 		transform->Position.z = 20.f;
 		transform->Position.y = 20.f;
@@ -17,8 +15,7 @@ void GameWorld::Initialize()
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
 	}
 
-	{
-		auto terrain = CreateEntity();
+	{	auto terrain = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(terrain, "Transform");
 		transform->Scale = glm::vec3(1000.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, glm::pi<float>() / 20.f));
@@ -37,8 +34,7 @@ void GameWorld::Initialize()
 	{
 
 		for (int i = 0; i < 1; i++)
-		{
-			auto entity = CreateEntity();
+		{	auto entity = CreateEntity();
 			auto transform = AddComponent<Components::Transform>(entity, "Transform");
 			transform->Scale = glm::vec3(1.0f);
 			transform->Position = glm::vec3(0, 10+i, 0);
@@ -55,8 +51,7 @@ void GameWorld::Initialize()
 			box->Depth = 0.5;
 
 
-			{
-				auto entity1 = CreateEntity();
+			{	auto entity1 = CreateEntity();
 				auto transform = AddComponent<Components::Transform>(entity1, "Transform");
 				transform->Scale = glm::vec3(1.0f);
 				transform->Position = glm::vec3(-5.f, 10+i, 0);
@@ -90,8 +85,7 @@ void GameWorld::Initialize()
 
 	}
 
-	{
-		auto entity = CreateEntity();
+	{	auto entity = CreateEntity();
 		AddComponent(entity, "Transform");
 		auto emitter = AddComponent<Components::SoundEmitter>(entity, "SoundEmitter");
 		emitter->Path = "Sounds/korvring.wav";
@@ -103,13 +97,11 @@ void GameWorld::Initialize()
 }
 
 void GameWorld::Update(double dt)
-{
-	World::Update(dt);
+{	World::Update(dt);
 }
 
 void GameWorld::RegisterComponents()
-{
-	m_ComponentFactory.Register("Bounds", []() { return new Components::Bounds(); });
+{	m_ComponentFactory.Register("Bounds", []() { return new Components::Bounds(); });
 	m_ComponentFactory.Register("Camera", []() { return new Components::Camera(); });
 	m_ComponentFactory.Register("Collision", []() { return new Components::Collision(); });
 	m_ComponentFactory.Register("DirectionalLight", []() { return new Components::DirectionalLight(); });
@@ -134,8 +126,7 @@ void GameWorld::RegisterComponents()
 }
 
 void GameWorld::RegisterSystems()
-{
-	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this); });
+{	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this); });
 	//m_SystemFactory.Register("LevelGenerationSystem", [this]() { return new Systems::LevelGenerationSystem(this); });
 	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_Renderer); });
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
@@ -152,8 +143,7 @@ void GameWorld::RegisterSystems()
 }
 
 void GameWorld::AddSystems()
-{
-	AddSystem("TransformSystem");
+{	AddSystem("TransformSystem");
 	//AddSystem("LevelGenerationSystem");
 	AddSystem("InputSystem");
 	//AddSystem("CollisionSystem");
