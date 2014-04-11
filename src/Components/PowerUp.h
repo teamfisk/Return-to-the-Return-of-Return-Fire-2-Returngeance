@@ -7,7 +7,8 @@ namespace Components
 {
 
 struct PowerUp : Component
-{	float Speed;
+{
+	float Speed;
 };
 
 }

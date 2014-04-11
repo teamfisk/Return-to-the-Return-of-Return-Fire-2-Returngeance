@@ -6,7 +6,8 @@
 namespace Components
 {
 struct MeshShape : Component
-{	std::string Filename;
+{
+	std::string Filename;
 };
 }
 

@@ -8,7 +8,8 @@ class Engine
 {
 public:
 	Engine(int argc, char* argv[])
-	{	m_Renderer = std::make_shared<Renderer>();
+	{
+		m_Renderer = std::make_shared<Renderer>();
 		m_Renderer->Initialize();
 
 		m_World = std::make_shared<GameWorld>(m_Renderer);
@@ -20,7 +21,8 @@ public:
 	bool Running() const { return !glfwWindowShouldClose(m_Renderer->GetWindow()); }
 
 	void Tick()
-	{	double currentTime = glfwGetTime();
+	{
+		double currentTime = glfwGetTime();
 		double dt =  currentTime - m_LastTime;
 		m_LastTime = currentTime;
 

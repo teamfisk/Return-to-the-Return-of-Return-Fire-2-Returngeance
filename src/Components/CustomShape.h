@@ -8,7 +8,8 @@ namespace Components
 {
 
 struct CustomShape : Component
-{	std::string fileName;
+{
+	std::string fileName;
 };
 
 }

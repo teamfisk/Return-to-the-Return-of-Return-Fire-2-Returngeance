@@ -2,7 +2,8 @@
 #include "Renderer.h"
 
 Renderer::Renderer()
-{	m_VSync = false;
+{
+	m_VSync = false;
 #ifdef DEBUG
 	m_DrawNormals = false;
 	m_DrawWireframe = false;
@@ -21,9 +22,11 @@ Renderer::Renderer()
 }
 
 void Renderer::Initialize()
-{	// Initialize GLFW
+{
+	// Initialize GLFW
 	if (!glfwInit())
-	{	LOG_ERROR("GLFW: Initialization failed");
+	{
+		LOG_ERROR("GLFW: Initialization failed");
 		exit(EXIT_FAILURE);
 	}
 
@@ -34,7 +37,8 @@ void Renderer::Initialize()
 	//glfwWindowHint(GLFW_SAMPLES, 16);
 	m_Window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr);
 	if (!m_Window)
-	{	LOG_ERROR("GLFW: Failed to create window");
+	{
+		LOG_ERROR("GLFW: Failed to create window");
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(m_Window);
@@ -53,7 +57,8 @@ void Renderer::Initialize()
 
 	// Initialize GLEW
 	if (glewInit() != GLEW_OK)
-	{	LOG_ERROR("GLEW: Initialization failed");
+	{
+		LOG_ERROR("GLEW: Initialization failed");
 		exit(EXIT_FAILURE);
 	}
 
@@ -70,7 +75,8 @@ void Renderer::Initialize()
 }
 
 void Renderer::LoadContent()
-{	auto standardVS = std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex.glsl"));
+{
+	auto standardVS = std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex.glsl"));
 	auto standardFS = std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment.glsl"));
 
 	m_ShaderProgram.AddShader(standardVS);
@@ -112,7 +118,8 @@ void Renderer::LoadContent()
 }
 
 void Renderer::CreateShadowMap(int resolution)
-{	glGenFramebuffers(1, &m_ShadowFrameBuffer);
+{
+	glGenFramebuffers(1, &m_ShadowFrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
 
 	// Depth texture
@@ -131,12 +138,14 @@ void Renderer::CreateShadowMap(int resolution)
 	glDrawBuffer(GL_NONE);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{	LOG_ERROR("Framebuffer incomplete!");
+	{
+		LOG_ERROR("Framebuffer incomplete!");
 		return;
 	}
 }
 void Renderer::Draw(double dt)
-{	glDisable(GL_BLEND);
+{
+	glDisable(GL_BLEND);
 
 	DrawSkybox();
 	DrawShadowMap();
@@ -145,11 +154,13 @@ void Renderer::Draw(double dt)
 #ifdef DEBUG
 	// Draw bounding boxes
 	if (m_DrawBounds)
-	{	glEnable(GL_BLEND);
+	{
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
 		m_ShaderProgramDebugAABB.Bind();
 		for (auto tuple : AABBsToRender)
-		{	glm::mat4 modelMatrix;
+		{
+			glm::mat4 modelMatrix;
 			bool colliding;
 			std::tie(modelMatrix, colliding) = tuple;
 			// Model matrix
@@ -174,7 +185,8 @@ void Renderer::Draw(double dt)
 }
 
 void Renderer::DrawSkybox()
-{	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, WIDTH, HEIGHT);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -186,7 +198,8 @@ void Renderer::DrawSkybox()
 }
 
 void Renderer::DrawScene()
-{	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, WIDTH, HEIGHT);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -220,7 +233,8 @@ void Renderer::DrawScene()
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "quadraticAttenuation"), Lights, Light_quadraticAttenuation.data());
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "spotExponent"), Lights, Light_spotExponent.data());
 	if (m_DrawWireframe)
-	{	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
@@ -230,7 +244,8 @@ void Renderer::DrawScene()
 	glm::mat4 MVP;
 	glm::mat4 depthMVP;
 	for (auto tuple : ModelsToRender)
-	{	Model* model;
+	{
+		Model* model;
 		glm::mat4 modelMatrix;
 		bool visible;
 		std::tie(model, modelMatrix, visible, std::ignore) = tuple;
@@ -245,7 +260,8 @@ void Renderer::DrawScene()
 		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "view"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
-		{	glActiveTexture(GL_TEXTURE0);
+		{
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
@@ -254,7 +270,8 @@ void Renderer::DrawScene()
 #ifdef DEBUG
 	// Debug draw model normals
 	if (m_DrawNormals)
-	{	m_ShaderProgramNormals.Bind();
+	{
+		m_ShaderProgramNormals.Bind();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		DrawModels(m_ShaderProgramNormals);
 	}
@@ -262,7 +279,8 @@ void Renderer::DrawScene()
 }
 
 void Renderer::DrawShadowMap()
-{	glEnable(GL_DEPTH_TEST);
+{
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
@@ -283,7 +301,8 @@ void Renderer::DrawShadowMap()
 	m_ShaderProgramShadows.Bind();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	for (auto tuple : ModelsToRender)
-	{	Model* model;
+	{
+		Model* model;
 		glm::mat4 modelMatrix;
 		bool shadow;
 		std::tie(model, modelMatrix, std::ignore, shadow) = tuple;
@@ -295,13 +314,15 @@ void Renderer::DrawShadowMap()
 
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
-		{	glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
+		{
+			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
 }
 
 void Renderer::DrawDebugShadowMap()
-{	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, 400, 400);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -315,7 +336,8 @@ void Renderer::DrawDebugShadowMap()
 }
 
 void Renderer::DrawModels(ShaderProgram &shader)
-{	/*glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
+{
+	/*glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
 
 	glm::mat4 MVP;
 	for (auto tuple : ModelsToRender)
@@ -338,15 +360,18 @@ void Renderer::DrawModels(ShaderProgram &shader)
 }
 
 void Renderer::DrawText()
-{	//DrawShitInTextForm
+{
+	//DrawShitInTextForm
 }
 
 void Renderer::AddTextToDraw()
-{	//Add to draw shit vector
+{
+	//Add to draw shit vector
 }
 
 void Renderer::AddModelToDraw(std::shared_ptr<Model> model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster)
-{	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
+{
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
 	// You can now use ModelMatrix to build the MVP matrix
 	ModelsToRender.push_back(std::make_tuple(model.get(), modelMatrix, visible, shadowCaster));
 }
@@ -360,7 +385,8 @@ void Renderer::AddPointLightToDraw(
     float _quadraticAttenuation,
     float _spotExponent
 )
-{	Light_position.push_back(_position.x);
+{
+	Light_position.push_back(_position.x);
 	Light_position.push_back(_position.y);
 	Light_position.push_back(_position.z);
 	Light_specular.push_back(_specular.x);
@@ -377,15 +403,18 @@ void Renderer::AddPointLightToDraw(
 }
 
 void Renderer::AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding)
-{	glm::mat4 model;
+{
+	glm::mat4 model;
 	model *= glm::translate(origin);
 	model *= glm::scale(volumeVector);
 	AABBsToRender.push_back(std::make_tuple(model, colliding));
 }
 
 GLuint Renderer::CreateQuad()
-{	float quadVertices[] =
-	{	-1.0f, -1.0f, 0.0f,
+{
+	float quadVertices[] =
+	{
+		-1.0f, -1.0f, 0.0f,
 		1.0f, 1.0f, 0.0f,
 		-1.0f, 1.0f, 0.0f,
 
@@ -394,7 +423,8 @@ GLuint Renderer::CreateQuad()
 		1.0f, 1.0f, 0.0f,
 	};
 	float quadTexCoords[] =
-	{	0.0f, 0.0f,
+	{
+		0.0f, 0.0f,
 		1.0f, 1.0f,
 		0.0f, 1.0f,
 
@@ -424,8 +454,10 @@ GLuint Renderer::CreateQuad()
 }
 
 GLuint Renderer::CreateAABB()
-{	float vertices[] =
-	{	// Bottom
+{
+	float vertices[] =
+	{
+		// Bottom
 		-1.0f, -1.0f, 1.0f, // 0
 		1.0f, -1.0f, 1.0f, // 1
 		1.0f, -1.0f, 1.0f, // 1
@@ -474,8 +506,10 @@ GLuint Renderer::CreateAABB()
 }
 
 GLuint Renderer::CreateSkybox()
-{	glm::vec3 skyBoxVertices[] =
-	{	glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f),
+{
+	glm::vec3 skyBoxVertices[] =
+	{
+		glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f),
 		glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(-1.0f, -1.0f,  1.0f),
 		glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(-1.0f,  1.0f, -1.0f),
 		glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(-1.0f, -1.0f,  1.0f),
@@ -499,7 +533,8 @@ GLuint Renderer::CreateSkybox()
 	return vao;
 }
 void Renderer::ClearStuff()
-{	AABBsToRender.clear();
+{
+	AABBsToRender.clear();
 	ModelsToRender.clear();
 	Light_position.clear();
 	Light_specular.clear();

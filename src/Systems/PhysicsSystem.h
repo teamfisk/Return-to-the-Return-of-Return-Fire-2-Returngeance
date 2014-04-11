@@ -43,7 +43,8 @@ private:
 		
 
 	struct PhysicsData
-	{	btRigidBody*		RigidBody;
+	{
+		btRigidBody*		RigidBody;
 		btMotionState*		MotionState;
 		btCollisionShape*	CollisionShape;
 	};

@@ -11,16 +11,20 @@ class Factory
 {
 public:
 	void Register(std::string name, std::function<T(void)> factoryFunction)
-	{	m_FactoryFunctions[name] = factoryFunction;
+	{
+		m_FactoryFunctions[name] = factoryFunction;
 	}
 
 	T Create(std::string name)
-	{	auto it = m_FactoryFunctions.find(name);
+	{
+		auto it = m_FactoryFunctions.find(name);
 		if (it != m_FactoryFunctions.end())
-		{	return it->second();
+		{
+			return it->second();
 		}
 		else
-		{	return nullptr;
+		{
+			return nullptr;
 		}
 	}
 

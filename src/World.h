@@ -45,7 +45,8 @@ public:
 
 	template <class T>
 	T GetProperty(EntityID entity, std::string property)
-	{	if(m_EntityProperties.find(entity) == m_EntityProperties.end())
+	{
+		if(m_EntityProperties.find(entity) == m_EntityProperties.end())
 			return T();
 		if(m_EntityProperties[entity].find(property) == m_EntityProperties[entity].end())
 			return T();
@@ -54,7 +55,8 @@ public:
 	}
 
 	void SetProperty(EntityID entity, std::string property, boost::any value)
-	{	m_EntityProperties[entity][property] = value;
+	{
+		m_EntityProperties[entity][property] = value;
 	}
 
 	template <class T>
@@ -97,8 +99,10 @@ protected:
 
 template <class T>
 std::shared_ptr<T> World::GetSystem(std::string systemType)
-{	if (m_Systems.find(systemType) == m_Systems.end())
-	{	LOG_WARNING("Tried to get pointer to unregistered system \"%s\"!", systemType.c_str());
+{
+	if (m_Systems.find(systemType) == m_Systems.end())
+	{
+		LOG_WARNING("Tried to get pointer to unregistered system \"%s\"!", systemType.c_str());
 		return nullptr;
 	}
 
@@ -107,9 +111,11 @@ std::shared_ptr<T> World::GetSystem(std::string systemType)
 
 template <class T>
 std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentType)
-{	std::shared_ptr<T> component = std::shared_ptr<T>(static_cast<T*>(m_ComponentFactory.Create(componentType)));
+{
+	std::shared_ptr<T> component = std::shared_ptr<T>(static_cast<T*>(m_ComponentFactory.Create(componentType)));
 	if (component == nullptr)
-	{	LOG_ERROR("Failed to attach invalid component \"%s\" to entity #%i", componentType.c_str(), entity);
+	{
+		LOG_ERROR("Failed to attach invalid component \"%s\" to entity #%i", componentType.c_str(), entity);
 		return nullptr;
 	}
 
@@ -117,7 +123,8 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 	m_ComponentsOfType[componentType].push_back(component);
 	m_EntityComponents[entity][componentType] = component;
 	for (auto pair : m_Systems)
-	{	auto system = pair.second;
+	{
+		auto system = pair.second;
 		system->OnComponentCreated(componentType, component);
 	}
 	return component;
@@ -126,7 +133,8 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 
 template <class T>
 T* World::GetComponent(EntityID entity, std::string componentType)
-{	return (T*)m_EntityComponents[entity][componentType].get();
+{
+	return (T*)m_EntityComponents[entity][componentType].get();
 }
 
 #endif // World_h__

@@ -10,7 +10,8 @@ namespace Components
 {
 
 struct Model : Component
-{	Model() : Visible(true), ShadowCaster(true) { }
+{
+	Model() : Visible(true), ShadowCaster(true) { }
 	std::string ModelFile;
 	Color Color;
 	bool Visible;

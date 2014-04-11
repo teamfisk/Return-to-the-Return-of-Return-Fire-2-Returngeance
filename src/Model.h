@@ -20,7 +20,8 @@ public:
 	Model(const char* path);
 
 	struct TextureGroup
-	{	std::shared_ptr<Texture> Texture;
+	{
+		std::shared_ptr<Texture> Texture;
 		unsigned int StartIndex;
 		unsigned int EndIndex;
 	};

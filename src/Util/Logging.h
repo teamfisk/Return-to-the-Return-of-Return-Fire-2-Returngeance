@@ -20,7 +20,8 @@
 #include <stdarg.h>
 
 enum _LOG_LEVEL
-{	LOG_LEVEL_ERROR,
+{
+	LOG_LEVEL_ERROR,
 	LOG_LEVEL_WARNING,
 	LOG_LEVEL_INFO,
 	LOG_LEVEL_DEBUG
@@ -33,14 +34,16 @@ static _LOG_LEVEL LOG_LEVEL = LOG_LEVEL_INFO;
 #endif
 
 const static char* _LOG_LEVEL_PREFIX[] =
-{	"E: ",
+{
+	"E: ",
 	"W: ",
 	"",
 	"D: "
 };
 
 static void _LOG(_LOG_LEVEL logLevel, char* file, char* func, unsigned int line, const char* format, ...)
-{	if (logLevel > LOG_LEVEL)
+{
+	if (logLevel > LOG_LEVEL)
 		return;
 
 	va_list args;
@@ -53,11 +56,13 @@ static void _LOG(_LOG_LEVEL logLevel, char* file, char* func, unsigned int line,
 	va_end(args);
 
 	if (logLevel == LOG_LEVEL_ERROR)
-	{	std::cerr << file << ":" << line << " " << func << std::endl;
+	{
+		std::cerr << file << ":" << line << " " << func << std::endl;
 		std::cerr << _LOG_LEVEL_PREFIX[logLevel] << message << std::endl;
 	}
 	else
-	{	std::cout << _LOG_LEVEL_PREFIX[logLevel] << message << std::endl;
+	{
+		std::cout << _LOG_LEVEL_PREFIX[logLevel] << message << std::endl;
 	}
 
 	delete[] message;
