@@ -31,4 +31,4 @@ ipch/
 Ankh.NoLoad
 
 assets/
-!lib/*.lib
+!libs/*.lib
