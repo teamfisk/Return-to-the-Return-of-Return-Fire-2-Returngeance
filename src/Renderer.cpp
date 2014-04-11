@@ -24,7 +24,8 @@ Renderer::Renderer()
 void Renderer::Initialize()
 {
 	// Initialize GLFW
-	if (!glfwInit()) {
+	if (!glfwInit())
+	{
 		LOG_ERROR("GLFW: Initialization failed");
 		exit(EXIT_FAILURE);
 	}
@@ -35,7 +36,8 @@ void Renderer::Initialize()
 	// Antialiasing
 	//glfwWindowHint(GLFW_SAMPLES, 16);
 	m_Window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr);
-	if (!m_Window) {
+	if (!m_Window)
+	{
 		LOG_ERROR("GLFW: Failed to create window");
 		exit(EXIT_FAILURE);
 	}
@@ -54,11 +56,12 @@ void Renderer::Initialize()
 	glfwSetWindowTitle(m_Window, ss.str().c_str());
 
 	// Initialize GLEW
-	if (glewInit() != GLEW_OK) {
+	if (glewInit() != GLEW_OK)
+	{
 		LOG_ERROR("GLEW: Initialization failed");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// Create Camera
 	m_Camera = std::make_shared<Camera>(45.f, (float)WIDTH / HEIGHT, 0.01f, 1000.f);
 	m_Camera->Position(glm::vec3(0.0f, 0.0f, 2.f));
@@ -134,7 +137,8 @@ void Renderer::CreateShadowMap(int resolution)
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_ShadowDepthTexture, 0);
 	glDrawBuffer(GL_NONE);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
 		LOG_ERROR("Framebuffer incomplete!");
 		return;
 	}
@@ -149,11 +153,13 @@ void Renderer::Draw(double dt)
 
 #ifdef DEBUG
 	// Draw bounding boxes
-	if (m_DrawBounds) {
+	if (m_DrawBounds)
+	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
 		m_ShaderProgramDebugAABB.Bind();
-		for (auto tuple : AABBsToRender) {
+		for (auto tuple : AABBsToRender)
+		{
 			glm::mat4 modelMatrix;
 			bool colliding;
 			std::tie(modelMatrix, colliding) = tuple;
@@ -211,11 +217,11 @@ void Renderer::DrawScene()
 	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(-m_Camera->Position() * glm::vec3(1, 0, 0));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
 	glm::mat4 biasMatrix(
-		0.5, 0.0, 0.0, 0.0,
-		0.0, 0.5, 0.0, 0.0,
-		0.0, 0.0, 0.5, 0.0,
-		0.5, 0.5, 0.5, 1.0
-		);
+	    0.5, 0.0, 0.0, 0.0,
+	    0.0, 0.5, 0.0, 0.0,
+	    0.0, 0.0, 0.5, 0.0,
+	    0.5, 0.5, 0.5, 1.0
+	);
 
 	m_ShaderProgram.Bind();
 	glUniform1i(glGetUniformLocation(m_ShaderProgram.GetHandle(), "numberOfLights"), Lights);
@@ -226,7 +232,8 @@ void Renderer::DrawScene()
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "linearAttenuation"), Lights, Light_linearAttenuation.data());
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "quadraticAttenuation"), Lights, Light_quadraticAttenuation.data());
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "spotExponent"), Lights, Light_spotExponent.data());
-	if (m_DrawWireframe) {
+	if (m_DrawWireframe)
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	glActiveTexture(GL_TEXTURE1);
@@ -252,16 +259,18 @@ void Renderer::DrawScene()
 		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "view"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 		glBindVertexArray(model->VAO);
-		for (auto texGroup : model->TextureGroups) {
+		for (auto texGroup : model->TextureGroups)
+		{
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
-	 
+
 #ifdef DEBUG
 	// Debug draw model normals
-	if (m_DrawNormals) {
+	if (m_DrawNormals)
+	{
 		m_ShaderProgramNormals.Bind();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		DrawModels(m_ShaderProgramNormals);
@@ -304,7 +313,8 @@ void Renderer::DrawShadowMap()
 		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramShadows.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 
 		glBindVertexArray(model->VAO);
-		for (auto texGroup : model->TextureGroups) {
+		for (auto texGroup : model->TextureGroups)
+		{
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
@@ -343,7 +353,7 @@ void Renderer::DrawModels(ShaderProgram &shader)
 	glBindVertexArray(model->VAO);
 	for (auto texGroup : model->TextureGroups) {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texGroup.Texture->texture); 
+	glBindTexture(GL_TEXTURE_2D, texGroup.Texture->texture);
 	glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 	}
 	}*/
@@ -367,14 +377,14 @@ void Renderer::AddModelToDraw(std::shared_ptr<Model> model, glm::vec3 position, 
 }
 
 void Renderer::AddPointLightToDraw(
-	glm::vec3 _position,
-	glm::vec3 _specular, 
-	glm::vec3 _diffuse, 
-	float _constantAttenuation, 
-	float _linearAttenuation, 
-	float _quadraticAttenuation, 
-	float _spotExponent
-	)
+    glm::vec3 _position,
+    glm::vec3 _specular,
+    glm::vec3 _diffuse,
+    float _constantAttenuation,
+    float _linearAttenuation,
+    float _quadraticAttenuation,
+    float _spotExponent
+)
 {
 	Light_position.push_back(_position.x);
 	Light_position.push_back(_position.y);
@@ -402,7 +412,8 @@ void Renderer::AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool coll
 
 GLuint Renderer::CreateQuad()
 {
-	float quadVertices[] = {
+	float quadVertices[] =
+	{
 		-1.0f, -1.0f, 0.0f,
 		1.0f, 1.0f, 0.0f,
 		-1.0f, 1.0f, 0.0f,
@@ -411,7 +422,8 @@ GLuint Renderer::CreateQuad()
 		1.0f, -1.0f, 0.0f,
 		1.0f, 1.0f, 0.0f,
 	};
-	float quadTexCoords[] = {
+	float quadTexCoords[] =
+	{
 		0.0f, 0.0f,
 		1.0f, 1.0f,
 		0.0f, 1.0f,
@@ -443,7 +455,8 @@ GLuint Renderer::CreateQuad()
 
 GLuint Renderer::CreateAABB()
 {
-	float vertices[] = {
+	float vertices[] =
+	{
 		// Bottom
 		-1.0f, -1.0f, 1.0f, // 0
 		1.0f, -1.0f, 1.0f, // 1
@@ -494,14 +507,14 @@ GLuint Renderer::CreateAABB()
 
 GLuint Renderer::CreateSkybox()
 {
-	glm::vec3 skyBoxVertices[] = 
+	glm::vec3 skyBoxVertices[] =
 	{
 		glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f),
 		glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(-1.0f, -1.0f,  1.0f),
 		glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(-1.0f,  1.0f, -1.0f),
 		glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(-1.0f, -1.0f,  1.0f),
-		glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f, -1.0f,  1.0f), 
-		glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(-1.0f, -1.0f, -1.0f) 
+		glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3( 1.0f, -1.0f,  1.0f),
+		glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(-1.0f, -1.0f, -1.0f)
 	};
 
 	GLuint vbo, vao;

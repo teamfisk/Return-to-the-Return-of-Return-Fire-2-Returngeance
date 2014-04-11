@@ -7,7 +7,8 @@
 inline bool _GLERROR(char* info, char* file, char* func, unsigned int line)
 {
 	GLenum error = glGetError();
-	if (error != GL_NO_ERROR) {
+	if (error != GL_NO_ERROR)
+	{
 		_LOG(LOG_LEVEL_ERROR, file, func, line, "GL Error: %s %i %s", info, error, gluErrorString(error));
 		return true;
 	}

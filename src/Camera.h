@@ -30,7 +30,7 @@ public:
 
 	glm::mat4 ViewMatrix() const { return m_ViewMatrix; }
 	void ViewMatrix(glm::mat4 val) { m_ViewMatrix = val; }
-	
+
 	float FOV() const { return m_FOV; }
 	void FOV(float val);
 

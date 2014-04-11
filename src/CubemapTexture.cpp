@@ -15,7 +15,8 @@ CubemapTexture::CubemapTexture(std::string posXFile, std::string negXFile, std::
 
 CubemapTexture::~CubemapTexture()
 {
-	if (m_Texture != 0) {
+	if (m_Texture != 0)
+	{
 		//glDeleteTextures(1, &m_Texture);
 	}
 }
@@ -25,17 +26,18 @@ void CubemapTexture::Load()
 	m_Loaded = true;
 
 	m_Texture = SOIL_load_OGL_cubemap(
-		m_TextureFiles[0].c_str(),
-		m_TextureFiles[1].c_str(),
-		m_TextureFiles[2].c_str(),
-		m_TextureFiles[3].c_str(),
-		m_TextureFiles[4].c_str(),
-		m_TextureFiles[5].c_str(),
-		SOIL_LOAD_AUTO,
-		SOIL_CREATE_NEW_ID,
-		0);
+	                m_TextureFiles[0].c_str(),
+	                m_TextureFiles[1].c_str(),
+	                m_TextureFiles[2].c_str(),
+	                m_TextureFiles[3].c_str(),
+	                m_TextureFiles[4].c_str(),
+	                m_TextureFiles[5].c_str(),
+	                SOIL_LOAD_AUTO,
+	                SOIL_CREATE_NEW_ID,
+	                0);
 
-	if (m_Texture == 0) {
+	if (m_Texture == 0)
+	{
 		LOG_ERROR("SOIL cubemap loading error: %s", SOIL_last_result());
 		return;
 	}
@@ -49,7 +51,8 @@ void CubemapTexture::Load()
 
 void CubemapTexture::Bind(GLenum textureUnit)
 {
-	if (!m_Loaded) {
+	if (!m_Loaded)
+	{
 		LOG_WARNING("Cubemap \"%s\" was not loaded before being bound! Attempting to load now...", m_TextureFiles[0].c_str());
 		Load();
 	}

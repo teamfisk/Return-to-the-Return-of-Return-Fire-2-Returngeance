@@ -68,11 +68,11 @@ void Camera::Orientation(glm::quat val)
 void Camera::UpdateProjectionMatrix()
 {
 	m_ProjectionMatrix = glm::perspective(
-		m_FOV,
-		m_AspectRatio,
-		m_NearClip,
-		m_FarClip
-		);
+	                         m_FOV,
+	                         m_AspectRatio,
+	                         m_NearClip,
+	                         m_FarClip
+	                     );
 }
 
 void Camera::UpdateViewMatrix()

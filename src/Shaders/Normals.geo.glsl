@@ -5,13 +5,15 @@ uniform mat4 MVP;
 layout(triangles) in;
 layout(line_strip, max_vertices = 6) out;
 
-in VertexData {
+in VertexData
+{
 	vec3 Position;
 	vec3 Normal;
 	vec2 TextureCoord;
 } Input[3];
 
-out VertexData {
+out VertexData
+{
 	vec3 Position;
 	vec3 Normal;
 	vec2 TextureCoord;

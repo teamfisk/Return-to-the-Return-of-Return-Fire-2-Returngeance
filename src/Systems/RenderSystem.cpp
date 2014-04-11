@@ -4,7 +4,8 @@
 
 void Systems::RenderSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
 {
-	if(type == "Model")	{
+	if(type == "Model")
+	{
 		auto modelComponent = std::static_pointer_cast<Components::Model>(component);
 	}
 }
@@ -17,8 +18,10 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 
 	// Draw models
 	auto modelComponent = m_World->GetComponent<Components::Model>(entity, "Model");
-	if (modelComponent != nullptr) {
-		if (m_CachedModels.find(modelComponent->ModelFile) == m_CachedModels.end()){
+	if (modelComponent != nullptr)
+	{
+		if (m_CachedModels.find(modelComponent->ModelFile) == m_CachedModels.end())
+		{
 			m_CachedModels[modelComponent->ModelFile] = std::make_shared<Model>(OBJ(modelComponent->ModelFile));
 		}
 
@@ -33,7 +36,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 #ifdef DEBUG
 	auto collision = m_World->GetComponent<Components::Collision>(entity, "Collision");
 	auto bounds = m_World->GetComponent<Components::Bounds>(entity, "Bounds");
-	if (bounds != nullptr) {
+	if (bounds != nullptr)
+	{
 		glm::vec3 origin = m_TransformSystem->AbsolutePosition(entity) + (transformComponent->Scale * bounds->Origin);
 		glm::vec3 volumeVector = transformComponent->Scale * bounds->VolumeVector;
 		m_Renderer->AddAABBToDraw(origin, volumeVector, (collision != nullptr && collision->CollidingEntities.size() > 0));
@@ -41,20 +45,22 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 #endif
 
 	auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity, "PointLight");
-	if (pointLightComponent != nullptr)	{
+	if (pointLightComponent != nullptr)
+	{
 		glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 		m_Renderer->AddPointLightToDraw(
-			position, 
-			pointLightComponent->Specular,
-			pointLightComponent->Diffuse,
-			pointLightComponent->constantAttenuation,
-			pointLightComponent->linearAttenuation,
-			pointLightComponent->quadraticAttenuation,
-			pointLightComponent->spotExponent);
+		    position,
+		    pointLightComponent->Specular,
+		    pointLightComponent->Diffuse,
+		    pointLightComponent->constantAttenuation,
+		    pointLightComponent->linearAttenuation,
+		    pointLightComponent->quadraticAttenuation,
+		    pointLightComponent->spotExponent);
 	}
 
 	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity, "Camera");
-	if (cameraComponent != nullptr)	{
+	if (cameraComponent != nullptr)
+	{
 		m_Renderer->GetCamera()->Position(transformComponent->Position);
 		m_Renderer->GetCamera()->Orientation(transformComponent->Orientation);
 

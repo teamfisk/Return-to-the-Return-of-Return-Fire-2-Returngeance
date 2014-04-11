@@ -4,19 +4,20 @@
 Skybox::Skybox(std::string skyboxPath, std::string extension /* = "png" */)
 {
 	m_Cubemap = std::make_shared<CubemapTexture>(
-		skyboxPath + "/right." + extension,
-		skyboxPath + "/left." + extension,
-		skyboxPath + "/top." + extension,
-		skyboxPath + "/bottom." + extension,
-		skyboxPath + "/front." + extension,
-		skyboxPath + "/back." + extension);
+	                skyboxPath + "/right." + extension,
+	                skyboxPath + "/left." + extension,
+	                skyboxPath + "/top." + extension,
+	                skyboxPath + "/bottom." + extension,
+	                skyboxPath + "/front." + extension,
+	                skyboxPath + "/back." + extension);
 	m_Cubemap->Load();
 	Initialize();
 }
 
 void Skybox::Initialize()
 {
-	float cubeVertices[] = {
+	float cubeVertices[] =
+	{
 		-1.0f, -1.0f, -1.0f,
 		1.0f, -1.0f, -1.0f,
 		1.0f, 1.0f, -1.0f,
@@ -29,7 +30,8 @@ void Skybox::Initialize()
 	};
 	//std::copy(cubeVertices, cubeVertices + (3*8 - 1), m_CubeVertices);
 
-	unsigned int cubeIndices[] = {
+	unsigned int cubeIndices[] =
+	{
 		// Back
 		0, 2, 3,
 		0, 1, 2,

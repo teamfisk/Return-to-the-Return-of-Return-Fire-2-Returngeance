@@ -33,7 +33,7 @@ glm::vec3 Systems::TransformSystem::AbsolutePosition(EntityID entity)
 	return absPosition * accumulativeOrientation;
 }
 
-glm::quat Systems::TransformSystem::AbsoluteOrientation(EntityID entity) 
+glm::quat Systems::TransformSystem::AbsoluteOrientation(EntityID entity)
 {
 	glm::quat absOrientation;
 

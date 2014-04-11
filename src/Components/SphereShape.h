@@ -6,11 +6,11 @@
 namespace Components
 {
 
-	struct SphereShape : Component
-	{
-		float Radius;
-		float RollingFriction;
-	};
+struct SphereShape : Component
+{
+	float Radius;
+	float RollingFriction;
+};
 
 }
 

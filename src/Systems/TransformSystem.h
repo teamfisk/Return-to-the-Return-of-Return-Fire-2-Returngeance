@@ -7,19 +7,19 @@
 namespace Systems
 {
 
-	class TransformSystem : public System
-	{
-	public:
-		TransformSystem(World* world)
-			: System(world) { }
+class TransformSystem : public System
+{
+public:
+	TransformSystem(World* world)
+		: System(world) { }
 
-		//void Update(double dt) override;
-		//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
+	//void Update(double dt) override;
+	//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
-		glm::vec3 AbsolutePosition(EntityID entity);
-		glm::quat AbsoluteOrientation(EntityID entity);
-		glm::vec3 AbsoluteScale(EntityID entity);
-	};
+	glm::vec3 AbsolutePosition(EntityID entity);
+	glm::quat AbsoluteOrientation(EntityID entity);
+	glm::vec3 AbsoluteScale(EntityID entity);
+};
 
 }
 

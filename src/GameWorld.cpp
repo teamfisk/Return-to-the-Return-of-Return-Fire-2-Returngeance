@@ -32,10 +32,10 @@ void GameWorld::Initialize()
 		physics->Friction = 0.5f;
 	}
 
-	
+
 
 	{
-		
+
 		for (int i = 0; i < 1; i++)
 		{
 			auto entity = CreateEntity();
@@ -81,7 +81,7 @@ void GameWorld::Initialize()
 				hingeConstraint->HighLimit = glm::pi<float>();
 				hingeConstraint->PivotA = glm::vec3(-5, 0, 0);
 				hingeConstraint->PivotB = glm::vec3(0, 0, 0);
-				
+
 			}
 
 		}
@@ -98,7 +98,7 @@ void GameWorld::Initialize()
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
 	}
-	
+
 
 }
 
@@ -143,12 +143,12 @@ void GameWorld::RegisterSystems()
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
 	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this); });
 	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
-	
+
 	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this); });
 
 	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_Renderer); });
 
-	
+
 }
 
 void GameWorld::AddSystems()
@@ -163,8 +163,8 @@ void GameWorld::AddSystems()
 	AddSystem("SoundSystem");
 
 	AddSystem("PhysicsSystem");
-	
+
 	AddSystem("RenderSystem");
 
-	
+
 }

@@ -2,7 +2,8 @@
 
 uniform vec4 Color;
 
-in VertexData {
+in VertexData
+{
 	vec3 Position;
 	vec3 Normal;
 	vec2 TextureCoord;
@@ -11,7 +12,8 @@ in VertexData {
 
 out vec4 FragmentColor;
 
-void main() {
+void main()
+{
 	//FragmentColor = vec4(1.0 - gl_Color.r, 1.0 - gl_Color.g, 1.0 - gl_Color.b, 0.0);
 	FragmentColor = Color;
 }

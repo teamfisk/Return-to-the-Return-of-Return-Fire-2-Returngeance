@@ -9,7 +9,8 @@ Texture::Texture(std::string path)
 void Texture::Load(std::string path)
 {
 	auto cachedTexture = m_TextureCache.find(path);
-	if (cachedTexture == m_TextureCache.end()) {
+	if (cachedTexture == m_TextureCache.end())
+	{
 		m_TextureCache[path] = SOIL_load_OGL_texture(path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
 	}
 

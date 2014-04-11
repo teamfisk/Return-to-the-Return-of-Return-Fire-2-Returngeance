@@ -5,10 +5,10 @@
 
 namespace Components
 {
-	struct CompoundShape : Component
-	{
-		
-	};
+struct CompoundShape : Component
+{
+
+};
 }
 
 #endif // Components_CompoundShape_h__

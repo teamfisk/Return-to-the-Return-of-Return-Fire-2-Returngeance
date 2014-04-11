@@ -35,9 +35,9 @@ private:
 	unsigned long sampleRate, avgBytesPerSec;
 	short bytesPerSample, bitsPerSample;
 	unsigned long dataSize;
-	
-	
-	std::map<Component*, ALuint> m_Sources; 
+
+
+	std::map<Component*, ALuint> m_Sources;
 	std::map<std::string, ALuint> m_BufferCache; // string = fileName
 };
 

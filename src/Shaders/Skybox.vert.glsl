@@ -4,7 +4,8 @@ uniform mat4 MVP;
 
 layout(location = 0) in vec3 Position;
 
-out VertexData {
+out VertexData
+{
 	vec3 TextureCoord;
 } Output;
 

@@ -17,23 +17,23 @@
 namespace Systems
 {
 
-	class  RenderSystem : public System
-	{
-	public:
-		RenderSystem(World* world, std::shared_ptr<Renderer> renderer)
-			: System(world), m_Renderer(renderer){ }
+class  RenderSystem : public System
+{
+public:
+	RenderSystem(World* world, std::shared_ptr<Renderer> renderer)
+		: System(world), m_Renderer(renderer) { }
 
-		void Initialize() override;
+	void Initialize() override;
 
-		std::unordered_map<std::string, std::shared_ptr<Model>> m_CachedModels;
+	std::unordered_map<std::string, std::shared_ptr<Model>> m_CachedModels;
 
-		void OnComponentCreated(std::string type, std::	shared_ptr<Component> component) override;
-		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
+	void OnComponentCreated(std::string type, std::	shared_ptr<Component> component) override;
+	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
-	private:
-		std::shared_ptr<Renderer> m_Renderer;
-		std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
-	};
+private:
+	std::shared_ptr<Renderer> m_Renderer;
+	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
+};
 
 
 }

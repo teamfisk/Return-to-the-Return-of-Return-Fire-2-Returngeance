@@ -6,12 +6,12 @@
 namespace Components
 {
 
-	struct BoxShape : Component
-	{
-		float Height;
-		float Width;
-		float Depth;
-	};
+struct BoxShape : Component
+{
+	float Height;
+	float Width;
+	float Depth;
+};
 
 }
 

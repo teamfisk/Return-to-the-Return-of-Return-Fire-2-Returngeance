@@ -16,7 +16,7 @@
 class Renderer
 {
 public:
-	
+
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
@@ -42,14 +42,14 @@ public:
 	void AddModelToDraw(std::shared_ptr<Model> model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextToDraw();
 	void AddPointLightToDraw(
-		glm::vec3 _position,
-		glm::vec3 _specular, 
-		glm::vec3 _diffuse, 
-		float _constantAttenuation, 
-		float _linearAttenuation, 
-		float _quadraticAttenuation, 
-		float _spotExponent
-		);
+	    glm::vec3 _position,
+	    glm::vec3 _specular,
+	    glm::vec3 _diffuse,
+	    float _constantAttenuation,
+	    float _linearAttenuation,
+	    float _quadraticAttenuation,
+	    float _spotExponent
+	);
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
 	void LoadContent();
@@ -65,7 +65,7 @@ public:
 	void DrawBounds(bool val) { m_DrawBounds = val; }
 	void DrawSkybox();
 
-	
+
 
 private:
 	GLFWwindow* m_Window;
@@ -96,7 +96,7 @@ private:
 	ShaderProgram m_ShaderProgramShadowsDrawDepth;
 	ShaderProgram m_ShaderProgramDebugAABB;
 	ShaderProgram m_ShaderProgramSkybox;
-	
+
 	void ClearStuff();
 	void DrawScene();
 	void DrawModels(ShaderProgram &shader);

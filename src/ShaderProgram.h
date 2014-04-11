@@ -32,7 +32,7 @@ template <int SHADERTYPE>
 class ShaderType : public Shader
 {
 public:
-	ShaderType(std::string fileName) 
+	ShaderType(std::string fileName)
 		: Shader(SHADERTYPE, fileName) { }
 };
 
@@ -60,10 +60,10 @@ public:
 class ShaderProgram
 {
 public:
-	ShaderProgram() 
+	ShaderProgram()
 		: m_ShaderProgramHandle(0) { }
 	~ShaderProgram();
-	
+
 	void AddShader(std::shared_ptr<Shader> shader);
 	void Compile();
 	GLuint Link();

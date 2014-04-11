@@ -5,10 +5,10 @@
 
 namespace Components
 {
-	struct FreeSteering : Component
-	{
-		float Speed = 35;
-	};
+struct FreeSteering : Component
+{
+	float Speed = 35;
+};
 }
 
 #endif // FreeSteering_h__

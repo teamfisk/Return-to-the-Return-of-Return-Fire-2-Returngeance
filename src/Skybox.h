@@ -9,7 +9,7 @@ class Skybox
 {
 public:
 	Skybox(std::string skyboxPath, std::string extension = "png");
-	Skybox(std::shared_ptr<CubemapTexture> cubemap) 
+	Skybox(std::shared_ptr<CubemapTexture> cubemap)
 		: m_Cubemap(cubemap) { Initialize(); }
 	~Skybox();
 

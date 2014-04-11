@@ -3,7 +3,8 @@
 layout(location = 0) in vec3 Position;
 layout(location = 2) in vec2 TextureCoord;
 
-out VertexData {
+out VertexData
+{
 	vec3 Position;
 	vec2 TextureCoord;
 } Output;

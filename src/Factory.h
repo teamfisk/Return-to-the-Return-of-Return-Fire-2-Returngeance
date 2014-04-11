@@ -18,9 +18,12 @@ public:
 	T Create(std::string name)
 	{
 		auto it = m_FactoryFunctions.find(name);
-		if (it != m_FactoryFunctions.end()) {
+		if (it != m_FactoryFunctions.end())
+		{
 			return it->second();
-		} else {
+		}
+		else
+		{
 			return nullptr;
 		}
 	}

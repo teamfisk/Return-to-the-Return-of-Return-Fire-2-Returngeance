@@ -7,15 +7,15 @@
 namespace Systems
 {
 
-	class DebugSystem : public System
-	{
-	public:
-		DebugSystem(World* world)
-			: System(world) { }
+class DebugSystem : public System
+{
+public:
+	DebugSystem(World* world)
+		: System(world) { }
 
-		void Update(double dt) override;
-		//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	};
+	void Update(double dt) override;
+	//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
+};
 
 }
 #endif // DebugSystem_h__

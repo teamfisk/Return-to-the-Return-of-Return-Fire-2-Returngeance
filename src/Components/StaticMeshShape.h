@@ -5,10 +5,10 @@
 
 namespace Components
 {
-	struct StaticMeshShape : Component
-	{
-		std::string Filename;
-	};
+struct StaticMeshShape : Component
+{
+	std::string Filename;
+};
 }
 
 #endif // Components_StaticMeshShape_h__

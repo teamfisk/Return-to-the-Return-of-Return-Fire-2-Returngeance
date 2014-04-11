@@ -28,7 +28,7 @@ public:
 	virtual void RegisterSystems() = 0;
 	virtual void AddSystems() = 0;
 	virtual void RegisterComponents() = 0;
-	
+
 
 	void AddSystem(std::string systemType);
 	template <class T>
@@ -68,7 +68,7 @@ public:
 	/*std::vector<EntityID> GetEntityChildren(EntityID entity);*/
 
 	virtual void Update(double dt);
-	// Recursively update through the scene graph 
+	// Recursively update through the scene graph
 	void RecursiveUpdate(std::shared_ptr<System> system, double dt, EntityID parentEntity);
 
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
@@ -100,7 +100,8 @@ protected:
 template <class T>
 std::shared_ptr<T> World::GetSystem(std::string systemType)
 {
-	if (m_Systems.find(systemType) == m_Systems.end()) {
+	if (m_Systems.find(systemType) == m_Systems.end())
+	{
 		LOG_WARNING("Tried to get pointer to unregistered system \"%s\"!", systemType.c_str());
 		return nullptr;
 	}
@@ -112,7 +113,8 @@ template <class T>
 std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentType)
 {
 	std::shared_ptr<T> component = std::shared_ptr<T>(static_cast<T*>(m_ComponentFactory.Create(componentType)));
-	if (component == nullptr) {
+	if (component == nullptr)
+	{
 		LOG_ERROR("Failed to attach invalid component \"%s\" to entity #%i", componentType.c_str(), entity);
 		return nullptr;
 	}
@@ -120,7 +122,8 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 	component->Entity = entity;
 	m_ComponentsOfType[componentType].push_back(component);
 	m_EntityComponents[entity][componentType] = component;
-	for (auto pair : m_Systems) {
+	for (auto pair : m_Systems)
+	{
 		auto system = pair.second;
 		system->OnComponentCreated(componentType, component);
 	}

@@ -8,22 +8,27 @@ void World::RecycleEntityID(EntityID id)
 
 EntityID World::GenerateEntityID()
 {
-	if (!m_RecycledEntityIDs.empty()) {
+	if (!m_RecycledEntityIDs.empty())
+	{
 		EntityID id = m_RecycledEntityIDs.top();
 		m_RecycledEntityIDs.pop();
 		return id;
-	} else {
+	}
+	else
+	{
 		return ++m_LastEntityID;
 	}
 }
 
 void World::RecursiveUpdate(std::shared_ptr<System> system, double dt, EntityID parentEntity)
 {
-	for (auto pair : m_EntityParents) {
+	for (auto pair : m_EntityParents)
+	{
 		EntityID child = pair.first;
 		EntityID parent = pair.second;
 
-		if (parent == parentEntity)	{
+		if (parent == parentEntity)
+		{
 			system->UpdateEntity(dt, child, parent);
 			RecursiveUpdate(system, dt, child);
 		}
@@ -32,7 +37,8 @@ void World::RecursiveUpdate(std::shared_ptr<System> system, double dt, EntityID 
 
 void World::Update(double dt)
 {
-	for (auto pair : m_Systems) {
+	for (auto pair : m_Systems)
+	{
 		auto system = pair.second;
 		system->Update(dt);
 		RecursiveUpdate(system, dt, 0);
@@ -73,8 +79,10 @@ bool World::ValidEntity(EntityID entity)
 void World::RemoveEntity(EntityID entity)
 {
 	m_EntitiesToRemove.push_back(entity);
-	for (auto pair : m_EntityParents) {
-		if (pair.second == entity) {
+	for (auto pair : m_EntityParents)
+	{
+		if (pair.second == entity)
+		{
 			m_EntitiesToRemove.push_back(pair.first);
 		}
 	}
@@ -82,14 +90,17 @@ void World::RemoveEntity(EntityID entity)
 
 void World::ProcessEntityRemovals()
 {
-	for (auto entity : m_EntitiesToRemove) {
+	for (auto entity : m_EntitiesToRemove)
+	{
 		m_EntityParents.erase(entity);
 		// Remove components
-		for (auto pair : m_EntityComponents[entity]) {
+		for (auto pair : m_EntityComponents[entity])
+		{
 			auto type = pair.first;
 			auto component = pair.second;
 			// Trigger events
-			for (auto pair : m_Systems) {
+			for (auto pair : m_Systems)
+			{
 				auto system = pair.second;
 				system->OnComponentRemoved(type, component.get());
 			}
@@ -123,7 +134,8 @@ void World::Initialize()
 {
 	RegisterSystems();
 	AddSystems();
-	for (auto system : m_Systems) {
+	for (auto system : m_Systems)
+	{
 		system.second->Initialize();
 	}
 

@@ -55,10 +55,13 @@ static void _LOG(_LOG_LEVEL logLevel, char* file, char* func, unsigned int line,
 	vsnprintf(message, size, format, args);
 	va_end(args);
 
-	if (logLevel == LOG_LEVEL_ERROR) {
+	if (logLevel == LOG_LEVEL_ERROR)
+	{
 		std::cerr << file << ":" << line << " " << func << std::endl;
 		std::cerr << _LOG_LEVEL_PREFIX[logLevel] << message << std::endl;
-	} else {
+	}
+	else
+	{
 		std::cout << _LOG_LEVEL_PREFIX[logLevel] << message << std::endl;
 	}
 

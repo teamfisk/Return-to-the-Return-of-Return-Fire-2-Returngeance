@@ -12,13 +12,16 @@ Model::Model(OBJ &obj)
 	OBJ::MaterialInfo* currentMaterial = nullptr;
 	TextureGroup* currentTexGroup = nullptr;
 	int index = 0;
-	for (auto face : obj.Faces) {
-		if (face.Material == nullptr) {
+	for (auto face : obj.Faces)
+	{
+		if (face.Material == nullptr)
+		{
 			LOG_ERROR("Missing material for .obj file \"%s\"", obj.Path().string().c_str());
 			return;
-		} 
+		}
 		// New material
-		if (face.Material != currentMaterial) {
+		if (face.Material != currentMaterial)
+		{
 			currentMaterial = face.Material;
 			// Load texture
 			std::shared_ptr<Texture> texture = std::make_shared<Texture>(currentMaterial->TextureFile);
@@ -30,18 +33,21 @@ Model::Model(OBJ &obj)
 		}
 
 		// Face definitions
-		for (auto faceDef : face.Definitions) {
+		for (auto faceDef : face.Definitions)
+		{
 			glm::vec3 vertex;
 			std::tie(vertex.x, vertex.y, vertex.z) = obj.Vertices.at(faceDef.VertexIndex - 1);
 			Vertices.push_back(vertex);
 
-			if (faceDef.NormalIndex != 0) {
+			if (faceDef.NormalIndex != 0)
+			{
 				glm::vec3 normal;
 				std::tie(normal.x, normal.y, normal.z) = obj.Normals.at(faceDef.NormalIndex - 1);
 				Normals.push_back(normal);
 			}
 
-			if (faceDef.TextureCoordIndex != 0) {
+			if (faceDef.TextureCoordIndex != 0)
+			{
 				glm::vec2 texCoord;
 				// TODO: W-coord?
 				std::tie(texCoord.x, texCoord.y, std::ignore) = obj.TextureCoords.at(faceDef.TextureCoordIndex - 1);
@@ -53,19 +59,20 @@ Model::Model(OBJ &obj)
 		}
 	}
 
-	if (Vertices.size() > 0) {
+	if (Vertices.size() > 0)
+	{
 		CreateBuffers(Vertices, Normals, TextureCoords);
 	}
 }
 
-bool Model::Loadobj(const char* path, std::vector <glm::vec3> & out_vertices, std::vector <glm::vec3> &out_normals, std::vector <glm::vec2> & out_TextureCoords)
+bool Model::Loadobj(const char* path, std::vector <glm::vec3> &out_vertices, std::vector <glm::vec3> &out_normals, std::vector <glm::vec2> &out_TextureCoords)
 {
 	std::vector< unsigned int > vertexIndices, TextureCoordIndices, normalIndices;
 	std::vector< glm::vec3 > temp_vertices;
 	std::vector< glm::vec2 > temp_TextureCoords;
 	std::vector< glm::vec3 > temp_normals;
 
-	FILE * file = fopen(path, "r");
+	FILE* file = fopen(path, "r");
 	LOG_INFO("Loading .obj file");
 	if( file == NULL )
 	{
@@ -76,7 +83,7 @@ bool Model::Loadobj(const char* path, std::vector <glm::vec3> & out_vertices, st
 
 	while(true)
 	{
-		
+
 		//read the first word of the line
 		int res = fscanf(file, "%s", lineHeader);
 
@@ -147,14 +154,14 @@ bool Model::Loadobj(const char* path, std::vector <glm::vec3> & out_vertices, st
 			normalIndices.push_back(normalIndex[2]);
 
 		}
-		else if ( strcmp( lineHeader, "mtllib" ) == 0 ) 
+		else if ( strcmp( lineHeader, "mtllib" ) == 0 )
 		{
 
 			char fileName[512];
 			fscanf(file, "%s\n", &fileName);
 
 
-			FILE * mtlfile = fopen(fileName, "r");
+			FILE* mtlfile = fopen(fileName, "r");
 			LOG_INFO("Loading .mtl file");
 			if( mtlfile == NULL )
 			{
@@ -171,10 +178,10 @@ bool Model::Loadobj(const char* path, std::vector <glm::vec3> & out_vertices, st
 
 				if( mtlres == EOF ) // EOF - End Of File
 				{
-					
+
 					break;
 				}
-				else if ( strcmp( mtllineHeader, "map_Kd" ) == 0 ) 
+				else if ( strcmp( mtllineHeader, "map_Kd" ) == 0 )
 				{
 					char textureFileName[512];
 					fscanf(mtlfile, "%s", textureFileName);
@@ -182,7 +189,7 @@ bool Model::Loadobj(const char* path, std::vector <glm::vec3> & out_vertices, st
 					LOG_INFO("Texture Loaded\n");
 				}
 			}
-			
+
 
 
 		}
@@ -197,32 +204,41 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 
 	LOG_INFO("Generating VertexBuffer");
 	glGenBuffers(1, &VertexBuffer);
-	if (vertices.size() > 0) {
+	if (vertices.size() > 0)
+	{
 		glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 		GLERROR("GLEW: BufferFail, VertexBuffer");
-	} else {
+	}
+	else
+	{
 		LOG_WARNING("Created empty vertex buffer!");
 	}
 
 	LOG_INFO("Generating NormalBuffer");
 	glGenBuffers(1, &NormalBuffer);
-	if (normals.size() > 0) {
+	if (normals.size() > 0)
+	{
 		glBindBuffer(GL_ARRAY_BUFFER, NormalBuffer);
 		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
 		GLERROR("GLEW: BufferFail, NormalBuffer");
-	} else {
+	}
+	else
+	{
 		LOG_WARNING("Created empty normal buffer!");
 	}
 
 
 	LOG_INFO("Generating textureCoordBuffer");
 	glGenBuffers(1, &TextureCoordBuffer);
-	if (textureCoords.size() > 0) {
+	if (textureCoords.size() > 0)
+	{
 		glBindBuffer(GL_ARRAY_BUFFER, TextureCoordBuffer);
 		glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), &textureCoords[0], GL_STATIC_DRAW);
 		GLERROR("GLEW: BufferFail, TextureCoordBuffer");
-	} else {
+	}
+	else
+	{
 		LOG_WARNING("Created empty texture coordinate buffer!");
 	}
 

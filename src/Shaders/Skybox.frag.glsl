@@ -2,7 +2,8 @@
 
 uniform samplerCube CubemapTexture;
 
-in VertexData {
+in VertexData
+{
 	vec3 TextureCoord;
 } Input;
 

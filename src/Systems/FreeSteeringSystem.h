@@ -7,12 +7,12 @@
 
 namespace Systems
 {
-	class FreeSteeringSystem : public System
-	{
-	public:
-		FreeSteeringSystem(World* world);
+class FreeSteeringSystem : public System
+{
+public:
+	FreeSteeringSystem(World* world);
 
-		void Update(double dt) override;
-		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	};
+	void Update(double dt) override;
+	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
+};
 }

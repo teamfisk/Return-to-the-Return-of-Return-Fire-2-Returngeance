@@ -7,12 +7,12 @@ class CubemapTexture
 {
 public:
 	CubemapTexture(
-		std::string posXFile,
-		std::string negXFile,
-		std::string posYFile,
-		std::string negYFile,
-		std::string posZFile,
-		std::string negZFile);
+	    std::string posXFile,
+	    std::string negXFile,
+	    std::string posYFile,
+	    std::string negYFile,
+	    std::string posZFile,
+	    std::string negZFile);
 	~CubemapTexture();
 
 	void Load();

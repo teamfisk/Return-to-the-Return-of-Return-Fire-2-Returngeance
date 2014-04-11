@@ -7,7 +7,8 @@ GLuint Shader::CompileShader(GLenum shaderType, std::string fileName)
 
 	std::string shaderFile;
 	std::ifstream in(fileName, std::ios::in);
-	if (!in)	{
+	if (!in)
+	{
 		LOG_ERROR("Error: Failed to open shader file \"%s\"", fileName.c_str());
 		return 0;
 	}
@@ -31,7 +32,8 @@ GLuint Shader::CompileShader(GLenum shaderType, std::string fileName)
 
 	GLint compileStatus;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-	if(compileStatus != GL_TRUE) {
+	if(compileStatus != GL_TRUE)
+	{
 		LOG_ERROR("Shader compilation failed");
 		GLsizei infoLogLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
@@ -54,7 +56,8 @@ Shader::Shader(GLenum shaderType, std::string fileName) : m_ShaderType(shaderTyp
 
 Shader::~Shader()
 {
-	if (m_ShaderHandle != 0) {
+	if (m_ShaderHandle != 0)
+	{
 		glDeleteShader(m_ShaderHandle);
 	}
 }
@@ -87,7 +90,8 @@ bool Shader::IsCompiled() const
 
 ShaderProgram::~ShaderProgram()
 {
-	if (m_ShaderProgramHandle != 0) {
+	if (m_ShaderProgramHandle != 0)
+	{
 		glDeleteProgram(m_ShaderProgramHandle);
 	}
 }
@@ -99,8 +103,10 @@ void ShaderProgram::AddShader(std::shared_ptr<Shader> shader)
 
 void ShaderProgram::Compile()
 {
-	for (auto &shader : m_Shaders) {
-		if (!shader->IsCompiled()) {
+	for (auto &shader : m_Shaders)
+	{
+		if (!shader->IsCompiled())
+		{
 			shader->Compile();
 		}
 	}
@@ -108,14 +114,16 @@ void ShaderProgram::Compile()
 
 GLuint ShaderProgram::Link()
 {
-	if (m_Shaders.size() == 0) {
+	if (m_Shaders.size() == 0)
+	{
 		LOG_ERROR("Failed to link shader program: No shaders bound");
 		return 0;
 	}
 
 	LOG_INFO("Linking shader program");
 	m_ShaderProgramHandle = glCreateProgram();
-	for (auto &shader : m_Shaders) {
+	for (auto &shader : m_Shaders)
+	{
 		glAttachShader(m_ShaderProgramHandle, shader->GetHandle());
 	}
 	glLinkProgram(m_ShaderProgramHandle);

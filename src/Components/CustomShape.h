@@ -7,10 +7,10 @@
 namespace Components
 {
 
-	struct CustomShape : Component
-	{
-		std::string fileName;
-	};
+struct CustomShape : Component
+{
+	std::string fileName;
+};
 
 }
 
