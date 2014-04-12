@@ -32,18 +32,6 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		m_Renderer->AddModelToDraw(model, position, orientation, scale, modelComponent->Visible, modelComponent->ShadowCaster);
 	}
 
-	// Debug draw bounds
-#ifdef DEBUG
-	auto collision = m_World->GetComponent<Components::Collision>(entity, "Collision");
-	auto bounds = m_World->GetComponent<Components::Bounds>(entity, "Bounds");
-	if (bounds != nullptr)
-	{
-		glm::vec3 origin = m_TransformSystem->AbsolutePosition(entity) + (transformComponent->Scale * bounds->Origin);
-		glm::vec3 volumeVector = transformComponent->Scale * bounds->VolumeVector;
-		m_Renderer->AddAABBToDraw(origin, volumeVector, (collision != nullptr && collision->CollidingEntities.size() > 0));
-	}
-#endif
-
 	auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity, "PointLight");
 	if (pointLightComponent != nullptr)
 	{

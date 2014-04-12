@@ -113,9 +113,7 @@ void GameWorld::Update(double dt)
 
 void GameWorld::RegisterComponents()
 {
-	m_ComponentFactory.Register("Bounds", []() { return new Components::Bounds(); });
 	m_ComponentFactory.Register("Camera", []() { return new Components::Camera(); });
-	m_ComponentFactory.Register("Collision", []() { return new Components::Collision(); });
 	m_ComponentFactory.Register("DirectionalLight", []() { return new Components::DirectionalLight(); });
 	m_ComponentFactory.Register("Input", []() { return new Components::Input(); });
 	m_ComponentFactory.Register("Model", []() { return new Components::Model(); });
