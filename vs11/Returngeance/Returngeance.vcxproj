@@ -24,7 +24,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -39,14 +39,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(BOOST_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glew-1.10.0\lib\Debug\Win32;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Debug;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Debug;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Debug;$(SolutionDir)\..\libs\SOIL\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(HAVOK_ROOT)\Source;$(BOOST_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(HAVOK_ROOT)\Lib\win32_vs2012_win7\debug;$(BOOST_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glew-1.10.0\lib\Debug\Win32;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Debug;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Debug;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Debug;$(SolutionDir)\..\libs\SOIL\lib\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(BOOST_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Release;$(SolutionDir)\..\libs\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Release;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Release;$(SolutionDir)\..\libs\SOIL\lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(HAVOK_ROOT)\Source;$(BOOST_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(HAVOK_ROOT)\Lib\win32_vs2012_win7\release_dll;$(BOOST_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Release;$(SolutionDir)\..\libs\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Release;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Release;$(SolutionDir)\..\libs\SOIL\lib\Release;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\obj\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -55,14 +55,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;_WIN32;_DEBUG;HK_DEBUG;HK_DEBUG_SLOW;_XT_STATICLINK;_CONSOLE;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;HK_CONFIG_SIMD=1;DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <BrowseInformation>true</BrowseInformation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hkSceneData.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions> /ignore:4221</AdditionalOptions>
     </Link>
     <CustomBuildStep />
     <Bscmake>
@@ -84,7 +86,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep />
   </ItemDefinitionGroup>
