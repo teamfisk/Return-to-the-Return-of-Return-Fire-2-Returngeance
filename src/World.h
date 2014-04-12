@@ -10,12 +10,11 @@
 
 #include <boost/any.hpp>
 
-#include "Util/logging.h"
-
 #include "Factory.h"
 #include "Entity.h"
 #include "Component.h"
 #include "System.h"
+#include "ResourceManager.h"
 
 class World
 {
@@ -73,9 +72,12 @@ public:
 
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
 
+	const ResourceManager* GetResourceManager() const { return &m_ResourceManager; }
+
 protected:
 	SystemFactory m_SystemFactory;
 	ComponentFactory m_ComponentFactory;
+	ResourceManager m_ResourceManager;
 
 	std::unordered_map<std::string, std::shared_ptr<System>> m_Systems;
 

@@ -1,5 +1,5 @@
-#ifndef ContentManager_h__
-#define ContentManager_h__
+#ifndef ResourceManager_h__
+#define ResourceManager_h__
 
 #include <string>
 #include <functional>
@@ -13,11 +13,6 @@ class Resource
 public:
 	unsigned int TypeID;
 	unsigned int ResourceID;
-	std::string ResourceName;
-
-protected:
-	Resource(std::string resourceName) 
-		: ResourceName(resourceName) {}
 };
 
 class ResourceManager
@@ -33,7 +28,7 @@ public:
 	void PreCache();
 
 	template <typename T>
-	T* Fetch(std::string resourceName);
+	T* Fetch(std::string resourceName) const;
 
 private:
 	unsigned int m_ResourceTypeCount = 0;
@@ -49,7 +44,7 @@ private:
 };
 
 template <typename T>
-T* ContentManager::Fetch(std::string resourceName)
+T* ResourceManager::Fetch(std::string resourceName) const
 {
 	if (m_ResourceCache.find(resourceName) == m_ResourceCache.end())
 	{
@@ -58,8 +53,8 @@ T* ContentManager::Fetch(std::string resourceName)
 	}
 	else
 	{
-		return static_cast<T*>(m_ResourceCache[resourceName]);
+		return static_cast<T*>(m_ResourceCache.at(resourceName));
 	}
 }
 
-#endif // ContentManager_h__
+#endif // ResourceManager_h__

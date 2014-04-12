@@ -5,6 +5,12 @@ void GameWorld::Initialize()
 {
 	World::Initialize();
 
+	m_ResourceManager.RegisterResource("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
+	m_ResourceManager.RegisterResource("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
+	m_ResourceManager.PreCache();
+
+	RegisterComponents();
+
 	{
 		auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
@@ -113,14 +119,9 @@ void GameWorld::Update(double dt)
 
 void GameWorld::RegisterComponents()
 {
-	m_ComponentFactory.Register("Camera", []() { return new Components::Camera(); });
-	m_ComponentFactory.Register("DirectionalLight", []() { return new Components::DirectionalLight(); });
 	m_ComponentFactory.Register("Input", []() { return new Components::Input(); });
-	m_ComponentFactory.Register("Model", []() { return new Components::Model(); });
 	m_ComponentFactory.Register("ParticleEmitter", []() { return new Components::ParticleEmitter(); });
-	m_ComponentFactory.Register("PointLight", []() { return new Components::PointLight(); });
 	m_ComponentFactory.Register("SoundEmitter", []() { return new Components::SoundEmitter(); });
-	m_ComponentFactory.Register("Sprite", []() { return new Components::Sprite(); });
 	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); });
 	m_ComponentFactory.Register("FreeSteering", []() { return new Components::FreeSteering(); });

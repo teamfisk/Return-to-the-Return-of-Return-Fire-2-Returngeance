@@ -369,11 +369,11 @@ void Renderer::AddTextToDraw()
 	//Add to draw shit vector
 }
 
-void Renderer::AddModelToDraw(std::shared_ptr<Model> model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster)
+void Renderer::AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster)
 {
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
 	// You can now use ModelMatrix to build the MVP matrix
-	ModelsToRender.push_back(std::make_tuple(model.get(), modelMatrix, visible, shadowCaster));
+	ModelsToRender.push_back(std::make_tuple(model, modelMatrix, visible, shadowCaster));
 }
 
 void Renderer::AddPointLightToDraw(

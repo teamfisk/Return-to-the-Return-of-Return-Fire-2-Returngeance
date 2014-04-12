@@ -10,10 +10,11 @@
 #include <cstdlib>
 #include <stack>
 
+#include "ResourceManager.h"
 #include "Texture.h"
 #include "OBJ.h"
 
-class Model
+class Model : public Resource
 {
 public:
 	Model(OBJ &obj);

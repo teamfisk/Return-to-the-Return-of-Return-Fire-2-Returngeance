@@ -6,7 +6,7 @@
 
 #include <SOIL.h>
 
-#include "ContentManager.h"
+#include "ResourceManager.h"
 
 class Texture : public Resource
 {

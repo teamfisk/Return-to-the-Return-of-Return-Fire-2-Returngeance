@@ -39,7 +39,7 @@ public:
 	void Draw(double dt);
 	void DrawText();
 
-	void AddModelToDraw(std::shared_ptr<Model> model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
+	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextToDraw();
 	void AddPointLightToDraw(
 	    glm::vec3 _position,

@@ -134,12 +134,13 @@ void World::Initialize()
 {
 	RegisterSystems();
 	AddSystems();
-	for (auto system : m_Systems)
+	for (auto pair : m_Systems)
 	{
-		system.second->Initialize();
+		auto system = pair.second;
+		system->RegisterComponents(&m_ComponentFactory);
+		system->RegisterResourceTypes(&m_ResourceManager);
+		system->Initialize();
 	}
-
-	RegisterComponents();
 }
 
 std::shared_ptr<Component> World::AddComponent(EntityID entity, std::string componentType)

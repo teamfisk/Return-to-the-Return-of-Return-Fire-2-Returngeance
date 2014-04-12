@@ -1,7 +1,7 @@
 #include "PrecompiledHeader.h"
-#include "ContentManager.h"
+#include "ResourceManager.h"
 
-Resource* ContentManager::CreateResource(std::string resourceType, std::string resourceName)
+Resource* ResourceManager::CreateResource(std::string resourceType, std::string resourceName)
 {
 	auto it = m_FactoryFunctions.find(resourceType);
 	if (it != m_FactoryFunctions.end())
@@ -14,7 +14,7 @@ Resource* ContentManager::CreateResource(std::string resourceType, std::string r
 	}
 }
 
-void ContentManager::PreCache()
+void ResourceManager::PreCache()
 {
 	LOG_INFO("Pre-caching resources...");
 	for (auto pair : m_RegisteredResources)
@@ -39,13 +39,13 @@ void ContentManager::PreCache()
 	}
 }
 
-void ContentManager::RegisterResource(std::string resourceType, std::string resourceName)
+void ResourceManager::RegisterResource(std::string resourceType, std::string resourceName)
 {
 	m_RegisteredResources[resourceName] = resourceType;
 	m_ResourceTypeIDs[resourceName] = m_ResourceTypeCount++;
 }
 
-void ContentManager::RegisterType(std::string resourceType, std::function<Resource*(std::string)> factoryFunction)
+void ResourceManager::RegisterType(std::string resourceType, std::function<Resource*(std::string)> factoryFunction)
 {
 	m_FactoryFunctions[resourceType] = factoryFunction;
 }
