@@ -1,9 +1,9 @@
 #include "PrecompiledHeader.h"
-#include <Common/Base/keycode.cxx>
+
 // We’re not using anything product specific yet. We undef these so we don’t get the usual
 // product initialization for the products.
 #undef HK_FEATURE_PRODUCT_AI
-//#undef HK_FEATURE_PRODUCT_ANIMATION
+#undef HK_FEATURE_PRODUCT_ANIMATION
 #undef HK_FEATURE_PRODUCT_CLOTH
 #undef HK_FEATURE_PRODUCT_DESTRUCTION_2012
 #undef HK_FEATURE_PRODUCT_DESTRUCTION
@@ -15,8 +15,12 @@
 #define HK_EXCLUDE_FEATURE_RegisterVersionPatches
 #define HK_EXCLUDE_FEATURE_RegisterReflectedClasses
 #define HK_EXCLUDE_FEATURE_MemoryTracker
+#define HK_CLASSES_FILE "Common/Serialize/classlist/hkClasses.h"
+#include "Common/Serialize/Util/hkBuiltinTypeRegistry.cxx"
+#define HK_COMPAT_FILE "Common/Compat/hkCompatVersions.h"
 // This include generates an initialization function based on the products
 // and the excluded features.
+#include <Common/Base/keycode.cxx>
 #include <Common/Base/Config/hkProductFeatures.cxx>
 #include "PhysicsSystem.h"
 #include "World.h"
@@ -30,7 +34,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
 	hkBaseSystem::init(memoryRouter, HavokErrorReport);
 
-	{
+	
 		hkpWorldCinfo worldInfo;
 		worldInfo.setupSolverInfo(hkpWorldCinfo::SOLVER_TYPE_4ITERS_MEDIUM);
 		worldInfo.m_gravity = hkVector4(0.0f, -9.8f, 0.0f);
@@ -39,7 +43,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
 		worldInfo.setBroadPhaseWorldSize(1000.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
-	}
+	
 	// Register all collision agents, even though only box - box will be used in this particular example.
 	// It's important to register collision agents before adding any entities to the world.
 	hkpAgentRegisterUtil::registerAllAgents(m_PhysicsWorld->getCollisionDispatcher());
@@ -59,7 +63,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 
 void Systems::PhysicsSystem::Update(double dt)
 {	
-	m_PhysicsWorld->stepDeltaTime(dt);
+	m_PhysicsWorld->stepDeltaTime(0.0166f);
 
 	// Step the visual debugger
 	StepVisualDebugger();
@@ -118,7 +122,7 @@ void Systems::PhysicsSystem::StepVisualDebugger()
 
 void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 {
-	LOG_ERROR("%s", msg);
+	LOG_DEBUG("%s", msg);
 }
 
 

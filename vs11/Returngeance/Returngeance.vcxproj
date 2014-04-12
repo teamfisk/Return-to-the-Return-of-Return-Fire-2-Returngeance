@@ -40,7 +40,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(HAVOK_ROOT)\Source;$(BOOST_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(HAVOK_ROOT)\Lib\win32_vs2012_win7\debug;$(BOOST_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glew-1.10.0\lib\Debug\Win32;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Debug;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Debug;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Debug;$(SolutionDir)\..\libs\SOIL\lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(HAVOK_ROOT)\Lib\win32_vs2012_win7\debug_dll;$(BOOST_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glew-1.10.0\lib\Debug\Win32;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Debug;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Debug;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Debug;$(SolutionDir)\..\libs\SOIL\lib\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\obj\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -59,11 +59,13 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <BrowseInformation>true</BrowseInformation>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hkSceneData.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /ignore:4221</AdditionalOptions>
     </Link>
     <CustomBuildStep />
@@ -81,12 +83,13 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;hkaAnimation.lib;hkaInternal.lib;hkaPhysics2012Bridge.lib;hkBase.lib;hkcdCollide.lib;hkcdInternal.lib;hkCompat.lib;hkgBridge.lib;hkgCommon.lib;hkgDx11.lib;hkgDx9s.lib;hkGeometryUtilities.lib;hkgOglES.lib;hkgOglES2.lib;hkgOgls.lib;hkgSoundCommon.lib;hkgSoundXAudio2.lib;hkInternal.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hkSceneData.lib;hkSerialize.lib;hkVisualize.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep />
   </ItemDefinitionGroup>
