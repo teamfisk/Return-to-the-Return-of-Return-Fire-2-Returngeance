@@ -114,10 +114,8 @@
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
     <ClInclude Include="..\..\src\Components\BallSocketConstraint.h" />
-    <ClInclude Include="..\..\src\Components\Bounds.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
-    <ClInclude Include="..\..\src\Components\Collision.h" />
     <ClInclude Include="..\..\src\Components\CompoundShape.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
@@ -128,12 +126,10 @@
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
     <ClInclude Include="..\..\src\Components\PointLight.h" />
-    <ClInclude Include="..\..\src\Components\PowerUp.h" />
     <ClInclude Include="..\..\src\Components\SliderConstraint.h" />
     <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
     <ClInclude Include="..\..\src\Components\SphereShape.h" />
     <ClInclude Include="..\..\src\Components\Sprite.h" />
-    <ClInclude Include="..\..\src\Components\Stat.h" />
     <ClInclude Include="..\..\src\Components\StaticMeshShape.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
