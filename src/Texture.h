@@ -6,7 +6,9 @@
 
 #include <SOIL.h>
 
-class Texture
+#include "ContentManager.h"
+
+class Texture : public Resource
 {
 public:
 	Texture(std::string path);

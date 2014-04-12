@@ -2,6 +2,7 @@
 #include "Texture.h"
 
 Texture::Texture(std::string path)
+	: Resource(path)
 {
 	Load(path);
 }

@@ -48,6 +48,7 @@
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp">
       <Filter>Input\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -236,6 +237,7 @@
     <ClInclude Include="..\..\src\Components\DirectionalLight.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

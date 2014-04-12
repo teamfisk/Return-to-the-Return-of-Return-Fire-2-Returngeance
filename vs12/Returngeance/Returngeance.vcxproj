@@ -97,6 +97,7 @@
     <ClCompile Include="..\..\src\OBJ.cpp" />
     <ClCompile Include="..\..\src\PrecompiledHeader.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
+    <ClCompile Include="..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\ShaderProgram.cpp" />
     <ClCompile Include="..\..\src\Skybox.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="..\..\src\OBJ.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />
     <ClInclude Include="..\..\src\Renderer.h" />
+    <ClInclude Include="..\..\src\ResourceManager.h" />
     <ClInclude Include="..\..\src\ShaderProgram.h" />
     <ClInclude Include="..\..\src\Skybox.h" />
     <ClInclude Include="..\..\src\System.h" />
