@@ -2,9 +2,9 @@
 #include "FreeSteeringSystem.h"
 #include "World.h"
 
-Systems::FreeSteeringSystem::FreeSteeringSystem(World* world) : System(world)
+void Systems::FreeSteeringSystem::RegisterComponents(ComponentFactory* cf)
 {
-
+	cf->Register("FreeSteering", []() { return new Components::FreeSteering(); });
 }
 
 void Systems::FreeSteeringSystem::Update(double dt)

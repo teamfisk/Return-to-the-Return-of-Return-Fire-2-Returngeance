@@ -14,8 +14,8 @@ public:
 	System(World* world) : m_World(world) { }
 	virtual ~System() { }
 
-	virtual void RegisterComponents(ComponentFactory* cf) { } // TODO: Make abstract
-	virtual void RegisterResourceTypes(ResourceManager* rm) { } // TODO: Make abstract
+	virtual void RegisterComponents(ComponentFactory* cf) { }
+	virtual void RegisterResourceTypes(ResourceManager* rm) { }
 
 	virtual void Initialize() { }
 

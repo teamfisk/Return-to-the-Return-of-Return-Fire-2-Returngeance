@@ -26,6 +26,8 @@ class PhysicsSystem : public System
 {
 public:
 	PhysicsSystem(World* world);
+	void RegisterComponents(ComponentFactory* cf) override;
+
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;

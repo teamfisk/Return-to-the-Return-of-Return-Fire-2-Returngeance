@@ -16,6 +16,22 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 
 }
 
+void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
+{
+	cf->Register("Physics", []() { return new Components::Physics(); });
+
+	cf->Register("CompoundShape", []() { return new Components::CompoundShape(); });
+	cf->Register("SphereShape", []() { return new Components::SphereShape(); });
+	cf->Register("BoxShape", []() { return new Components::BoxShape(); });
+
+	cf->Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
+	cf->Register("BallSocketConstraint", []() { return new Components::BallSocketConstraint(); });
+	cf->Register("SliderConstraint", []() { return new Components::SliderConstraint(); });
+
+	cf->Register("Vehicle", []() { return new Components::Vehicle(); });
+	cf->Register("Wheel", []() { return new Components::Wheel(); });
+}
+
 void Systems::PhysicsSystem::Update(double dt)
 {
 	// Update entity transform in physics world
@@ -354,4 +370,3 @@ void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID pare
 
 	m_PhysicsData.erase(entity);
 }
-

@@ -10,7 +10,9 @@ namespace Systems
 class FreeSteeringSystem : public System
 {
 public:
-	FreeSteeringSystem(World* world);
+	FreeSteeringSystem(World* world)
+		: System(world) { }
+	void RegisterComponents(ComponentFactory* cf) override;
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;

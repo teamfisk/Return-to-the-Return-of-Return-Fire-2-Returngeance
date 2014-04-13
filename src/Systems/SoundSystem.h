@@ -1,12 +1,13 @@
 #ifndef SoundEmitter_h__
 #define SoundEmitter_h__
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <vector>
 
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/SoundEmitter.h"
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <vector>
+#include "Sound.h"
 
 namespace Systems
 {
@@ -15,6 +16,8 @@ class SoundSystem : public System
 {
 public:
 	SoundSystem(World* world);
+	void RegisterComponents(ComponentFactory* cf) override;
+	void RegisterResourceTypes(ResourceManager* rm) override;
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
@@ -29,13 +32,12 @@ private:
 	ALuint CreateSource();
 
 	//File-info
-	char type[4];
-	unsigned long size, chunkSize;
-	short formatType, channels;
-	unsigned long sampleRate, avgBytesPerSec;
-	short bytesPerSample, bitsPerSample;
-	unsigned long dataSize;
-
+	//char type[4];
+	//unsigned long size, chunkSize;
+	//short formatType, channels;
+	//unsigned long sampleRate, avgBytesPerSec;
+	//short bytesPerSample, bitsPerSample;
+	//unsigned long dataSize;
 
 	std::map<Component*, ALuint> m_Sources;
 	std::map<std::string, ALuint> m_BufferCache; // string = fileName

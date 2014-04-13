@@ -118,24 +118,8 @@ void GameWorld::Update(double dt)
 
 void GameWorld::RegisterComponents()
 {
-	m_ComponentFactory.Register("Input", []() { return new Components::Input(); });
-	m_ComponentFactory.Register("ParticleEmitter", []() { return new Components::ParticleEmitter(); });
-	m_ComponentFactory.Register("SoundEmitter", []() { return new Components::SoundEmitter(); });
-	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });
-	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); });
-	m_ComponentFactory.Register("FreeSteering", []() { return new Components::FreeSteering(); });
-
-	m_ComponentFactory.Register("Physics", []() { return new Components::Physics(); });
-	m_ComponentFactory.Register("CompoundShape", []() { return new Components::CompoundShape(); });
-	m_ComponentFactory.Register("SphereShape", []() { return new Components::SphereShape(); });
-	m_ComponentFactory.Register("BoxShape", []() { return new Components::BoxShape(); });
-
-	m_ComponentFactory.Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
-	m_ComponentFactory.Register("BallSocketConstraint", []() { return new Components::BallSocketConstraint(); });
-	m_ComponentFactory.Register("SliderConstraint", []() { return new Components::SliderConstraint(); });
-
-	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
-	m_ComponentFactory.Register("Wheel", []() { return new Components::Wheel(); });
+	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); }); 
+	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });	
 }
 
 void GameWorld::RegisterSystems()
@@ -148,12 +132,8 @@ void GameWorld::RegisterSystems()
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
 	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this); });
 	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
-
 	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this); });
-
 	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_Renderer); });
-
-
 }
 
 void GameWorld::AddSystems()
@@ -166,10 +146,6 @@ void GameWorld::AddSystems()
 	//AddSystem("PlayerSystem");
 	AddSystem("FreeSteeringSystem");
 	AddSystem("SoundSystem");
-
 	AddSystem("PhysicsSystem");
-
 	AddSystem("RenderSystem");
-
-
 }

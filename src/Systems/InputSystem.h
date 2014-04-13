@@ -15,6 +15,7 @@ class InputSystem : public System
 public:
 	InputSystem(World* world, std::shared_ptr<Renderer> renderer)
 		: System(world), m_Renderer(renderer) {	}
+	void RegisterComponents(ComponentFactory* cf) override;
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;

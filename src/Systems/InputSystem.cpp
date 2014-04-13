@@ -2,6 +2,11 @@
 #include "InputSystem.h"
 #include "World.h"
 
+void Systems::InputSystem::RegisterComponents(ComponentFactory* cf)
+{
+	cf->Register("Input", []() { return new Components::Input(); });
+}
+
 void Systems::InputSystem::Update(double dt)
 {
 	m_LastKeyState = m_CurrentKeyState;
