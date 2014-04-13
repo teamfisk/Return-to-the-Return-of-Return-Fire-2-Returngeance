@@ -72,7 +72,7 @@ public:
 
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
 
-	const ResourceManager* GetResourceManager() const { return &m_ResourceManager; }
+	ResourceManager* GetResourceManager() { return &m_ResourceManager; }
 
 protected:
 	SystemFactory m_SystemFactory;

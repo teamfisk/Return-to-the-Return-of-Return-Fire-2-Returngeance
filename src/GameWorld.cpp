@@ -5,9 +5,8 @@ void GameWorld::Initialize()
 {
 	World::Initialize();
 
-	m_ResourceManager.RegisterResource("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
-	m_ResourceManager.RegisterResource("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
-	m_ResourceManager.PreCache();
+	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
+	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
 	RegisterComponents();
 

@@ -17,8 +17,7 @@
 class Model : public Resource
 {
 public:
-	Model(OBJ &obj);
-	Model(const char* path);
+	Model(OBJ &obj, ResourceManager* rm);
 
 	struct TextureGroup
 	{

@@ -20,16 +20,14 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 	auto modelComponent = m_World->GetComponent<Components::Model>(entity, "Model");
 	if (modelComponent != nullptr)
 	{
-		if (m_CachedModels.find(modelComponent->ModelFile) == m_CachedModels.end())
+		auto model = m_World->GetResourceManager()->Load<Model>("Model", modelComponent->ModelFile);
+		if (model != nullptr)
 		{
-			m_CachedModels[modelComponent->ModelFile] = std::make_shared<Model>(OBJ(modelComponent->ModelFile));
+			glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
+			glm::quat orientation = m_TransformSystem->AbsoluteOrientation(entity);
+			glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);
+			m_Renderer->AddModelToDraw(model, position, orientation, scale, modelComponent->Visible, modelComponent->ShadowCaster);
 		}
-
-		auto model = m_World->GetResourceManager()->Fetch<Model>(modelComponent->ModelFile);
-		glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
-		glm::quat orientation = m_TransformSystem->AbsoluteOrientation(entity);
-		glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);
-		m_Renderer->AddModelToDraw(model, position, orientation, scale, modelComponent->Visible, modelComponent->ShadowCaster);
 	}
 
 	auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity, "PointLight");
@@ -74,8 +72,8 @@ void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)
 {
+	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(OBJ(resourceName), rm); });
 	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
-	rm->RegisterType("Model", [](std::string resourceName) { return new Model(OBJ(resourceName)); });
 }
 
 

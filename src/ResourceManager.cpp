@@ -3,49 +3,48 @@
 
 Resource* ResourceManager::CreateResource(std::string resourceType, std::string resourceName)
 {
-	auto it = m_FactoryFunctions.find(resourceType);
-	if (it != m_FactoryFunctions.end())
+	auto facIt = m_FactoryFunctions.find(resourceType);
+	if (facIt == m_FactoryFunctions.end())
 	{
-		return it->second(resourceName);
-	}
-	else
-	{
+		LOG_ERROR("Failed to load resource \"%s\" of type \"%s\": Type not registered", resourceName.c_str(), resourceType.c_str());
 		return nullptr;
 	}
-}
 
-void ResourceManager::PreCache()
-{
-	LOG_INFO("Pre-caching resources...");
-	for (auto pair : m_RegisteredResources)
-	{
-		std::string name = pair.first;
-		std::string type = pair.second;
+	auto resIt = m_ResourceCache.find(resourceName);
+	if (resIt != m_ResourceCache.end())
+		return resIt->second;
+	
+	// Call the factory function
+	Resource* resource = facIt->second(resourceName);
+	// Store IDs
+	resource->TypeID = GetTypeID(resourceType);
+	resource->ResourceID = GetNewResourceID(resource->TypeID);
+	// Cache
+	m_ResourceCache[resourceName] = resource;
 
-		Resource* resource = CreateResource(type, name);
-		if (resource == nullptr)
-		{
-			LOG_WARNING("Failed to pre-cache %s resource \"%s\": Resource not registered!", type.c_str(), name.c_str());
-			continue;
-		}
-
-		unsigned int typeID = m_ResourceTypeIDs[type];
-		unsigned int resourceID = m_ResourceCount[typeID]++;
-		resource->TypeID = typeID;
-		resource->ResourceID = resourceID;
-		m_ResourceIDs[name] = resourceID;
-
-		m_ResourceCache[name] = resource;
-	}
-}
-
-void ResourceManager::RegisterResource(std::string resourceType, std::string resourceName)
-{
-	m_RegisteredResources[resourceName] = resourceType;
-	m_ResourceTypeIDs[resourceName] = m_ResourceTypeCount++;
+	return resource;
 }
 
 void ResourceManager::RegisterType(std::string resourceType, std::function<Resource*(std::string)> factoryFunction)
 {
 	m_FactoryFunctions[resourceType] = factoryFunction;
+}
+
+void ResourceManager::Preload(std::string resourceType, std::string resourceName)
+{
+	CreateResource(resourceType, resourceName);
+}
+
+unsigned int ResourceManager::GetTypeID(std::string resourceType)
+{
+	if (m_ResourceTypeIDs.find(resourceType) == m_ResourceTypeIDs.end())
+	{
+		m_ResourceTypeIDs[resourceType] = m_CurrentResourceTypeID++;
+	}
+	return m_ResourceTypeIDs[resourceType];
+}
+
+unsigned int ResourceManager::GetNewResourceID(unsigned int typeID)
+{
+	return m_ResourceCount[typeID]++;
 }
