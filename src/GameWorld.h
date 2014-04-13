@@ -27,6 +27,10 @@
 #include "Components/Template.h"
 #include "Components/Transform.h"
 
+#include "Components/Physics.h"
+#include "Components/Sphere.h"
+#include "Components/Box.h"
+
 class GameWorld : public World
 {
 public:

@@ -28,13 +28,13 @@
 
 
 Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
-{	
+{
+	{
+		hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
+		hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
+		hkBaseSystem::init(memoryRouter, HavokErrorReport);
 
-	hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
-	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
-	hkBaseSystem::init(memoryRouter, HavokErrorReport);
 
-	
 		hkpWorldCinfo worldInfo;
 		worldInfo.setupSolverInfo(hkpWorldCinfo::SOLVER_TYPE_4ITERS_MEDIUM);
 		worldInfo.m_gravity = hkVector4(0.0f, -9.8f, 0.0f);
@@ -43,7 +43,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
 		worldInfo.setBroadPhaseWorldSize(1000.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
-	
+	}
 	// Register all collision agents, even though only box - box will be used in this particular example.
 	// It's important to register collision agents before adding any entities to the world.
 	hkpAgentRegisterUtil::registerAllAgents(m_PhysicsWorld->getCollisionDispatcher());
@@ -58,7 +58,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 	context->addWorld(m_PhysicsWorld); // add the physics world so the viewers can see it
 	SetupVisualDebugger(context);
 
-	SetupPhysics(m_PhysicsWorld);
+	//SetupPhysics(m_PhysicsWorld);
 }
 
 void Systems::PhysicsSystem::Update(double dt)
@@ -70,6 +70,83 @@ void Systems::PhysicsSystem::Update(double dt)
 }
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
+{	
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	if (!transformComponent)
+		return;
+
+	if (m_RigidBodies.find(entity) == m_RigidBodies.end())
+	{
+		SetUpPhysicsState(entity, parent);
+	}
+	else
+	{
+		hkVector4 position = m_RigidBodies[entity]->getPosition();
+		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
+		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
+		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+	}
+
+
+}
+
+void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
+{
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	if (!transformComponent)
+		return;
+
+	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
+	if (!physicsComponent)
+		return;
+
+	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
+	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
+	
+	
+	hkpConvexShape* shape;
+	hkpRigidBodyCinfo rigidBodyInfo;
+	hkMassProperties massProperties;
+	
+
+	if (sphereComponent)
+	{
+		shape = new hkpSphereShape(sphereComponent->Radius);
+		rigidBodyInfo.m_shape = shape;
+		rigidBodyInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
+		
+		hkpInertiaTensorComputer::computeSphereVolumeMassProperties(sphereComponent->Radius, physicsComponent->Mass, massProperties);
+		
+	}
+	else if (boxComponent)
+	{
+		shape = new hkpBoxShape(hkVector4(boxComponent->Width, boxComponent->Height, boxComponent->Depth));
+		rigidBodyInfo.m_shape = shape;
+		rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		hkReal thickness = 0.1;
+		hkpInertiaTensorComputer::computeBoxSurfaceMassProperties(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness), physicsComponent->Mass, thickness, massProperties);
+	}
+	else
+	{
+		return;
+	}
+	
+	rigidBodyInfo.m_position.set(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+	rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
+	rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
+	rigidBodyInfo.m_mass = massProperties.m_mass;
+
+	// Create RigidBody
+	hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+	shape->removeReference();
+
+	m_PhysicsWorld->addEntity(rigidBody);
+	m_RigidBodies[entity] = rigidBody;
+	rigidBody->removeReference();
+
+}
+
+void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
 {	
 
 }
@@ -84,15 +161,6 @@ void Systems::PhysicsSystem::OnComponentRemoved(std::string type, Component* com
 
 }
 
-void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
-{	
-
-}
-
-void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
-{	
-
-}
 
 void Systems::PhysicsSystem::SetupVisualDebugger(hkpPhysicsContext* worlds)
 {
@@ -125,50 +193,3 @@ void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 	LOG_DEBUG("%s", msg);
 }
 
-
-void Systems::PhysicsSystem::SetupPhysics(hkpWorld* physicsWorld)
-{
-	// Create the floor as a fixed box
-	{
-		hkpRigidBodyCinfo boxInfo;
-		hkVector4 boxSize(5.0f, 0.5f, 5.0f);
-		hkpBoxShape* boxShape = new hkpBoxShape(boxSize);
-		boxInfo.m_shape = boxShape;
-		boxInfo.m_motionType = hkpMotion::MOTION_FIXED;
-		boxInfo.m_position.set(0.0f, 0.0f, 0.0f);
-		boxInfo.m_restitution = 0.9f;
-
-		hkpRigidBody* floor = new hkpRigidBody(boxInfo);
-		boxShape->removeReference();
-
-		physicsWorld->addEntity(floor);
-		floor->removeReference();
-	}
-
-	// Create a moving sphere
-	{
-		hkReal sphereRadius = 0.5f;
-		hkpConvexShape* sphereShape = new hkpSphereShape(sphereRadius);
-
-		hkpRigidBodyCinfo sphereInfo;
-		sphereInfo.m_shape = sphereShape;
-		sphereInfo.m_position.set(0.0f, 5.0f, 0.0f);
-		sphereInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
-
-		// Compute mass properties
-		hkReal sphereMass = 10.0f;
-		hkMassProperties sphereMassProperties;
-		hkpInertiaTensorComputer::computeSphereVolumeMassProperties(sphereRadius, sphereMass, sphereMassProperties);
-		sphereInfo.m_inertiaTensor = sphereMassProperties.m_inertiaTensor;
-		sphereInfo.m_centerOfMass = sphereMassProperties.m_centerOfMass;
-		sphereInfo.m_mass = sphereMassProperties.m_mass;
-
-		// Create sphere RigidBody
-		hkpRigidBody* sphereRigidBody = new hkpRigidBody(sphereInfo);
-		sphereShape->removeReference();
-
-		physicsWorld->addEntity(sphereRigidBody);
-		g_ball = sphereRigidBody;
-		sphereRigidBody->removeReference();
-	}
-}

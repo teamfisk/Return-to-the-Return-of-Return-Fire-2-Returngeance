@@ -118,14 +118,17 @@
     <ClInclude Include="..\..\src\Camera.h" />
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
+    <ClInclude Include="..\..\src\Components\Box.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
+    <ClInclude Include="..\..\src\Components\Physics.h" />
     <ClInclude Include="..\..\src\Components\PointLight.h" />
     <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
+    <ClInclude Include="..\..\src\Components\Sphere.h" />
     <ClInclude Include="..\..\src\Components\Sprite.h" />
     <ClInclude Include="..\..\src\Components\Stat.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />

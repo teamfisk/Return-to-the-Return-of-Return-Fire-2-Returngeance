@@ -7,8 +7,9 @@
 
 #include "System.h"
 #include "Components/Transform.h"
-
-
+#include "Components/Physics.h"
+#include "Components/Sphere.h"
+#include "Components/Box.h"
 
 // Math and base include
 
@@ -38,7 +39,7 @@
 #include <Common/Visualize/hkVisualDebugger.h>
 #include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
 
-
+#include <unordered_map>
 namespace Systems
 {
 
@@ -63,10 +64,10 @@ private:
 	void SetupVisualDebugger(hkpPhysicsContext* worlds);
 	void StepVisualDebugger();
 	static void HK_CALL HavokErrorReport(const char* msg, void*);
-
 	void SetupPhysics(hkpWorld* physicsWorld);
 
-	hkpRigidBody* g_ball;
+	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+
 };
 
 }
