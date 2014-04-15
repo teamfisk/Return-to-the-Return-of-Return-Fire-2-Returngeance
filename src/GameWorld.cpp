@@ -22,93 +22,47 @@ void GameWorld::Initialize()
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
 	}
 
+
 	{
-		auto terrain = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(terrain, "Transform");
-		transform->Position = glm::vec3(0, -5, 0);
-		transform->Scale = glm::vec3(1000.0f, 1, 1000.0f);
+		auto ground = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground, "Transform");
+		transform->Position = glm::vec3(0, 0, 0);
+		transform->Scale = glm::vec3(1000.0f, 1.0f, 1000.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(terrain, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Plane.obj";
-		auto physics = AddComponent<Components::Physics>(terrain, "Physics");
-		physics->Friction = 0.5f;
-		auto Box = AddComponent<Components::BoxShape>(terrain, "BoxShape");
-		Box->Width = 0.5f;
-		Box->Height = 0.5;
-		Box->Depth = 0.5f;
-		
+		auto model = AddComponent<Components::Model>(ground, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+		auto box = AddComponent<Components::Box>(ground, "Box");
+		box->Width = 500;
+		box->Height = 0.5;
+		box->Depth = 500;
+
+		auto physics = AddComponent<Components::Physics>(ground, "Physics");
+		physics->Mass = 10;
 	}
 
-
-
+	for(int i = 0; i < 10; i++)
 	{
-
-
-		for (int i = 0; i < 1; i++)
-		{
-			auto entity = CreateEntity();
-			auto transform = AddComponent<Components::Transform>(entity, "Transform");
-			transform->Scale = glm::vec3(1.0f);
-			transform->Position = glm::vec3(0, 10+i, 0);
-			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-			auto model = AddComponent<Components::Model>(entity, "Model");
-			model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
-			auto physics = AddComponent<Components::Physics>(entity, "Physics");
-			physics->Mass = 10;
-
-			auto box = AddComponent<Components::BoxShape>(entity, "BoxShape");
-			box->Width = 0.5;
-			box->Height = 0.5;
-			box->Depth = 0.5;
-
-
-			{
-				auto entity1 = CreateEntity();
-
-
-				auto transform = AddComponent<Components::Transform>(entity1, "Transform");
-				transform->Scale = glm::vec3(1.0f);
-				transform->Position = glm::vec3(-5.f, 10+i, 0);
-				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-				auto model = AddComponent<Components::Model>(entity1, "Model");
-				model->ModelFile = "Models/Placeholders/PhysicsTest/ArrowCube.obj";
-
-				auto physics = AddComponent<Components::Physics>(entity1, "Physics");
-				physics->Mass = 0;
-
-				auto box = AddComponent<Components::BoxShape>(entity1, "BoxShape");
-				box->Width = 0.5;
-				box->Height = 0.5;
-				box->Depth = 0.5;
-
-				auto hingeConstraint = AddComponent<Components::HingeConstraint>(entity1, "HingeConstraint");
-				hingeConstraint->EntityA = entity;
-				hingeConstraint->EntityB = entity1;
-				hingeConstraint->AxisA = glm::vec3(0, 0, 1);
-				hingeConstraint->AxisB = glm::vec3(0, 0, 1);
-				hingeConstraint->LowLimit = -glm::pi<float>();
-				hingeConstraint->HighLimit = glm::pi<float>();
-				hingeConstraint->PivotA = glm::vec3(-5, 0, 0);
-				hingeConstraint->PivotB = glm::vec3(0, 0, 0);
-
-			}
-
-		}
-
-
-
+		auto ball = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ball, "Transform");
+		transform->Position = glm::vec3(0, 5 + i*2, 0);
+		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(ball, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Sphere.obj";
+		auto sphere = AddComponent<Components::Sphere>(ball, "Sphere");
+		sphere->Radius = 0.5;
+		auto physics = AddComponent<Components::Physics>(ball, "Physics");
+		physics->Mass = 1;
 	}
 
-	{
+	/*{
 		auto entity = CreateEntity();
 		AddComponent(entity, "Transform");
 		auto emitter = AddComponent<Components::SoundEmitter>(entity, "SoundEmitter");
 		emitter->Path = "Sounds/korvring.wav";
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
-	}
-
-
+	}*/
 }
 
 void GameWorld::Update(double dt)
@@ -120,6 +74,8 @@ void GameWorld::RegisterComponents()
 {
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });	
+	m_ComponentFactory.Register("Sphere", []() { return new Components::Sphere(); });
+	m_ComponentFactory.Register("Box", []() { return new Components::Box (); });
 }
 
 void GameWorld::RegisterSystems()

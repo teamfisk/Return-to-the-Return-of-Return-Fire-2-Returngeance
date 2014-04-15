@@ -8,11 +8,12 @@ namespace Components
 
 struct Physics : Component
 {
-	float Mass			= 0;
-	float Friction		= 0;
-	glm::vec3 Gravity = glm::vec3(0, -9.82f, 0);
+	Physics()
+		: Mass(0.f) { }
+
+	float Mass;
 };
 
 }
 
-#endif // !Components_Physics_h__
+#endif // Components_Physics_h__

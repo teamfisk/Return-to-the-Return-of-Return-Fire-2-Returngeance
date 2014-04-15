@@ -1,4 +1,27 @@
 #include "PrecompiledHeader.h"
+
+// We’re not using anything product specific yet. We undef these so we don’t get the usual
+// product initialization for the products.
+#undef HK_FEATURE_PRODUCT_AI
+#undef HK_FEATURE_PRODUCT_ANIMATION
+#undef HK_FEATURE_PRODUCT_CLOTH
+#undef HK_FEATURE_PRODUCT_DESTRUCTION_2012
+#undef HK_FEATURE_PRODUCT_DESTRUCTION
+#undef HK_FEATURE_PRODUCT_BEHAVIOR
+#undef HK_FEATURE_PRODUCT_PHYSICS_2012
+//#undef HK_FEATURE_PRODUCT_PHYSICS
+// Also we’re not using any serialization/versioning so we don’t need any of these.
+#define HK_EXCLUDE_FEATURE_SerializeDeprecatedPre700
+#define HK_EXCLUDE_FEATURE_RegisterVersionPatches
+#define HK_EXCLUDE_FEATURE_RegisterReflectedClasses
+#define HK_EXCLUDE_FEATURE_MemoryTracker
+#define HK_CLASSES_FILE "Common/Serialize/classlist/hkClasses.h"
+#include "Common/Serialize/Util/hkBuiltinTypeRegistry.cxx"
+#define HK_COMPAT_FILE "Common/Compat/hkCompatVersions.h"
+// This include generates an initialization function based on the products
+// and the excluded features.
+#include <Common/Base/keycode.cxx>
+#include <Common/Base/Config/hkProductFeatures.cxx>
 #include "PhysicsSystem.h"
 #include "World.h"
 
@@ -6,234 +29,130 @@
 
 Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
-	m_Broadphase = new btDbvtBroadphase();
-	m_CollisionConfiguration = new btDefaultCollisionConfiguration();
-	m_Dispatcher = new btCollisionDispatcher(m_CollisionConfiguration);
-	m_Solver = new btSequentialImpulseConstraintSolver();
+	{
+		hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
+		hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
+		hkBaseSystem::init(memoryRouter, HavokErrorReport);
 
-	m_DynamicsWorld = new btDiscreteDynamicsWorld(m_Dispatcher, m_Broadphase, m_Solver, m_CollisionConfiguration);
-	m_DynamicsWorld->setGravity(btVector3(0, -9.82f, 0));
 
+		hkpWorldCinfo worldInfo;
+		worldInfo.setupSolverInfo(hkpWorldCinfo::SOLVER_TYPE_4ITERS_MEDIUM);
+		worldInfo.m_gravity = hkVector4(0.0f, -9.8f, 0.0f);
+		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY; // just fix the entity if the object falls off too far
+
+		// You must specify the size of the broad phase - objects should not be simulated outside this region
+		worldInfo.setBroadPhaseWorldSize(1000.0f);
+		m_PhysicsWorld = new hkpWorld(worldInfo);
+	}
+	// Register all collision agents, even though only box - box will be used in this particular example.
+	// It's important to register collision agents before adding any entities to the world.
+	hkpAgentRegisterUtil::registerAllAgents(m_PhysicsWorld->getCollisionDispatcher());
+	
+	//
+	// Initialize the visual debugger so we can connect remotely to the simulation
+	// The context must exist beyond the use of the VDB instance, and you can make
+	// whatever contexts you like for your own viewer types.
+	//
+	hkpPhysicsContext* context = new hkpPhysicsContext;
+	hkpPhysicsContext::registerAllPhysicsProcesses(); // all the physics viewers
+	context->addWorld(m_PhysicsWorld); // add the physics world so the viewers can see it
+	SetupVisualDebugger(context);
+
+	//SetupPhysics(m_PhysicsWorld);
 }
 
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 {
 	cf->Register("Physics", []() { return new Components::Physics(); });
-
-	cf->Register("CompoundShape", []() { return new Components::CompoundShape(); });
-	cf->Register("SphereShape", []() { return new Components::SphereShape(); });
-	cf->Register("BoxShape", []() { return new Components::BoxShape(); });
-
-	cf->Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
-	cf->Register("BallSocketConstraint", []() { return new Components::BallSocketConstraint(); });
-	cf->Register("SliderConstraint", []() { return new Components::SliderConstraint(); });
-
-	cf->Register("Vehicle", []() { return new Components::Vehicle(); });
-	cf->Register("Wheel", []() { return new Components::Wheel(); });
 }
 
 void Systems::PhysicsSystem::Update(double dt)
-{
-	// Update entity transform in physics world
-	for (auto pair : *m_World->GetEntities())
+{	
+	m_PhysicsWorld->stepDeltaTime(0.0166f);
+
+	// Step the visual debugger
+	StepVisualDebugger();
+}
+
+void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
+{	
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	if (!transformComponent)
+		return;
+
+	if (m_RigidBodies.find(entity) == m_RigidBodies.end())
 	{
-		EntityID entity = pair.first;
-		EntityID parent = pair.second;
-
-		if (parent != 0)
-			continue;
-
-		if (m_PhysicsData.find(entity) != m_PhysicsData.end())
-		{
-			PhysicsData* physicsData = &m_PhysicsData[entity];
-			auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
-
-			btTransform transform;
-			transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
-			physicsData->MotionState->setWorldTransform(transform);
-			physicsData->CollisionShape->setLocalScaling(btVector3(transformComponent->Scale.x, transformComponent->Scale.y, transformComponent->Scale.z));
-
-
-			auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
-			physicsData->RigidBody->setGravity(btVector3(physicsComponent->Gravity.x, physicsComponent->Gravity.y, physicsComponent->Gravity.z));
-		}
+		SetUpPhysicsState(entity, parent);
 	}
-
-	m_DynamicsWorld->stepSimulation(dt, 10, 1.0f/60.0f);
-
-
+	else
+	{
+		hkVector4 position = m_RigidBodies[entity]->getPosition();
+		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
+		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
+		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+	}
 
 
 }
 
-void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
+void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 {
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 	if (!transformComponent)
 		return;
 
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
-	auto sphereShapeComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
-	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
-	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape>(entity, "MeshShape");
-	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
-	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(entity, "Vehicle");
-	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity, "Wheel");
+	if (!physicsComponent)
+		return;
 
-	if (physicsComponent || sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent)	
+	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
+	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
+	
+	
+	hkpConvexShape* shape;
+	hkpRigidBodyCinfo rigidBodyInfo;
+	hkMassProperties massProperties;
+	
+
+	if (sphereComponent)
 	{
-		if (m_PhysicsData.find(entity) == m_PhysicsData.end())
-		{
-			SetUpPhysicsState(entity, parent);
-		}
-
-		if (parent != 0)
-			return;
-		PhysicsData* physicsData = &m_PhysicsData[entity];
-
-		btTransform transform;
-		physicsData->MotionState->getWorldTransform(transform);
-		transformComponent->Position.x = transform.getOrigin().x();
-		transformComponent->Position.y = transform.getOrigin().y();
-		transformComponent->Position.z = transform.getOrigin().z();
-		btVector3 angle = transform.getRotation().getAxis();
-		transformComponent->Orientation.x = transform.getRotation().x();
-		transformComponent->Orientation.y = transform.getRotation().y();
-		transformComponent->Orientation.z = transform.getRotation().z();
-		transformComponent->Orientation.w = transform.getRotation().w();
+		shape = new hkpSphereShape(sphereComponent->Radius);
+		rigidBodyInfo.m_shape = shape;
+		rigidBodyInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
+		
+		hkpInertiaTensorComputer::computeSphereVolumeMassProperties(sphereComponent->Radius, physicsComponent->Mass, massProperties);
+		
+	}
+	else if (boxComponent)
+	{
+		shape = new hkpBoxShape(hkVector4(boxComponent->Width, boxComponent->Height, boxComponent->Depth));
+		rigidBodyInfo.m_shape = shape;
+		rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		hkReal thickness = 0.1;
+		hkpInertiaTensorComputer::computeBoxSurfaceMassProperties(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness), physicsComponent->Mass, thickness, massProperties);
 	}
 	else
 	{
-		if (m_PhysicsData.find(entity) != m_PhysicsData.end())
-		{
-			TearDownPhysicsState(entity, parent);
-		}
+		return;
 	}
-
-	auto ballSocketComponent = m_World->GetComponent<Components::BallSocketConstraint>(entity, "BallSocketConstraint");
-	auto sliderComponent = m_World->GetComponent<Components::SliderConstraint>(entity, "SliderConstraint");
-	auto hingeComponent = m_World->GetComponent<Components::HingeConstraint>(entity, "HingeConstraint");
-
-	if (ballSocketComponent)
-	{
-		EntityID entityA = ballSocketComponent->EntityA;
-		EntityID entityB = ballSocketComponent->EntityB;
-
-		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
-		{
-			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
-			{
-				btVector3 pivotA = btVector3(ballSocketComponent->PivotA.x, ballSocketComponent->PivotA.y, ballSocketComponent->PivotA.z);
-				btVector3 pivotB = btVector3(ballSocketComponent->PivotB.x, ballSocketComponent->PivotB.y, ballSocketComponent->PivotB.z);
-
-				m_Constraints[std::make_pair(entityA, entityB)] = new btPoint2PointConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, pivotA, pivotB);
-				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
-				
-			}
-		}
-	}
-	else if (sliderComponent)
-	{
-		EntityID entityA = sliderComponent->EntityA;
-		EntityID entityB = sliderComponent->EntityB;
-
-		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
-		{
-			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
-			{
-				btTransform transformA;
-				m_PhysicsData[entityA].MotionState->getWorldTransform(transformA);
-				btTransform transformB;
-				m_PhysicsData[entityB].MotionState->getWorldTransform(transformB);
-
-				m_Constraints[std::make_pair(entityA, entityB)] = new btSliderConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, transformA, transformB, true);
-				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
-			}
-		}
-	}
-	else if (hingeComponent)
-	{
-		EntityID entityA = hingeComponent->EntityA;
-		EntityID entityB = hingeComponent->EntityB;
-
-		if (m_Constraints.find(std::make_pair(entityA, entityB)) == m_Constraints.end())
-		{
-			if (m_PhysicsData.find(entityA) != m_PhysicsData.end() && m_PhysicsData.find(entityB) != m_PhysicsData.end())
-			{
-				btVector3 PivotA = btVector3(hingeComponent->PivotA.x, hingeComponent->PivotA.y, hingeComponent->PivotA.z);
-				btVector3 PivotB = btVector3(hingeComponent->PivotB.x, hingeComponent->PivotB.y, hingeComponent->PivotB.z);
-
-				btVector3 AxisA = btVector3(hingeComponent->AxisA.x, hingeComponent->AxisA.y, hingeComponent->AxisA.z);
-				btVector3 AxisB = btVector3(hingeComponent->AxisB.x, hingeComponent->AxisB.y, hingeComponent->AxisB.z);
-
-
-				btHingeConstraint* hingeConstraint = new btHingeConstraint(*m_PhysicsData[entityA].RigidBody, *m_PhysicsData[entityB].RigidBody, PivotA, PivotB, AxisA, AxisB, true);
-				hingeConstraint->setLimit(hingeComponent->LowLimit, hingeComponent->HighLimit, hingeComponent->Softness, hingeComponent->BiasFactor, hingeComponent->RelaxationFactor);
-
-
-				m_Constraints[std::make_pair(entityA, entityB)] = hingeConstraint;
-				m_DynamicsWorld->addConstraint(m_Constraints[std::make_pair(entityA, entityB)]);
-			}
-		}
-	}
-
-
-	if (vehicleComponent )
-	{
-		if (m_Vehicles.find(entity) == m_Vehicles.end()) {
-			if (m_PhysicsData.find(entity) == m_PhysicsData.end()){
-				LOG_WARNING("Chassi missing rigidbody on vehicle i%", entity);
-				return;
-			}
-			
-			m_Vehicles[entity].VehicleRaycaster = new btDefaultVehicleRaycaster(m_DynamicsWorld);
-			m_Vehicles[entity].RaycastVehicle = new btRaycastVehicle(m_Vehicles[entity].Tuning, m_PhysicsData[entity].RigidBody, m_Vehicles[entity].VehicleRaycaster);
-			
-			//m_Vehicles[entity].RaycastVehicle->setCoordinateSystem(0, 1, 2);
-			m_DynamicsWorld->addVehicle(m_Vehicles[entity].RaycastVehicle);
-
-		}
-
-
-
-// 		for (int i = 0; i < m_Vehicles[entity].RaycastVehicle->getNumWheels(); i++)
-// 		{
-// 			m_Vehicles[entity].RaycastVehicle->applyEngineForce(10, i);
-// 
-// 		}
-	}
-	if (wheelComponent)
-	{
-		
-		EntityID carID = wheelComponent->CarID;
-		if (m_Vehicles.find(carID) != m_Vehicles.end()){
-			auto wheels = &m_Vehicles[carID].Wheels;
-			if (wheels->find(entity) == wheels->end())
-			{
-				wheels->insert(entity);
-
-				btVector3 connectionPoint = btVector3(wheelComponent->ConnectionPoint.x, wheelComponent->ConnectionPoint.y, wheelComponent->ConnectionPoint.z);
-				btVector3 direction = btVector3(wheelComponent->Direction.x, wheelComponent->Direction.y, wheelComponent->Direction.z);
-				btVector3 axle = btVector3(wheelComponent->Axle.x, wheelComponent->Axle.y, wheelComponent->Axle.z);
-
-				btWheelInfo& wheel = m_Vehicles[carID].RaycastVehicle->addWheel(connectionPoint, direction, axle, wheelComponent->SuspensionRestLength, wheelComponent->Radius, m_Vehicles[entity].Tuning, wheelComponent->IsFrontWheel);
-
-				wheel.m_suspensionStiffness = wheelComponent->SuspensionStiffness;
-				wheel.m_wheelsDampingRelaxation = wheelComponent->SuspensionDamping;
-				wheel.m_wheelsDampingCompression = wheelComponent->SuspensionCompression;
-				wheel.m_frictionSlip = wheelComponent->FrictionSlip;
-				wheel.m_rollInfluence = 0.1f;
-				
-
-			}
-		}
-
-		
-	}
-
 	
-	
-	
+	rigidBodyInfo.m_position.set(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+	rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
+	rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
+	rigidBodyInfo.m_mass = massProperties.m_mass;
+
+	// Create RigidBody
+	hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+	shape->removeReference();
+
+	m_PhysicsWorld->addEntity(rigidBody);
+	m_RigidBodies[entity] = rigidBody;
+	rigidBody->removeReference();
+
+}
+
+void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
+{	
 
 }
 
@@ -247,126 +166,34 @@ void Systems::PhysicsSystem::OnComponentRemoved(std::string type, Component* com
 
 }
 
-void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
+
+void Systems::PhysicsSystem::SetupVisualDebugger(hkpPhysicsContext* worlds)
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
-	if (!transformComponent)
-	{
-		LOG_WARNING("Physics component missing transform component on entity %i", entity);
-		return;
-	}
+	// Setup the visual debugger
+	hkArray<hkProcessContext*> contexts;
+	contexts.pushBack(worlds);
 
-	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
-	auto compoundShapeComponent = m_World->GetComponent<Components::CompoundShape>(entity, "CompoundShape");
-	auto sphereShapeComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
-	auto boxShapeComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
-	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape>(entity, "MeshShape");
-	auto staticMeshShapeComponent = m_World->GetComponent<Components::StaticMeshShape>(entity, "StaticMeshShape");
+	m_VisualDebugger = new hkVisualDebugger(contexts);
+	m_VisualDebugger->serve();
 
-	if (compoundShapeComponent && (sphereShapeComponent || boxShapeComponent || meshShapeComponent || staticMeshShapeComponent))
-	{
-		LOG_WARNING("Entity %i has both compound shape and normal shape! Normal shapes must be children to entity with compound shape.", entity);
-	}
+	// Allocate memory for internal profiling information
+	// You can discard this if you do not want Havok profiling information
+	hkMonitorStream& stream = hkMonitorStream::getInstance();
+	stream.resize(500 * 1024);	// 500K for timer info
+	stream.reset();
 
-	PhysicsData* physicsData = &m_PhysicsData[entity];
-
-	/*EntityID baseParent = m_World->GetEntityBaseParent(entity);
-	auto baseCompoundShape = m_World->GetComponent<Components::CompoundShape>(baseParent, "CompoundShape");*/
-
-	// Set-up compound shape
-	if (compoundShapeComponent)
-	{
-		btCompoundShape* compoundShape = new btCompoundShape();
-		physicsData->CollisionShape = compoundShape;
-
-		btTransform transform;
-		transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
-		physicsData->MotionState = new btDefaultMotionState(transform);
-
-		btVector3 inertia;
-		if (physicsComponent->Mass != 0)
-		{
-			physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
-		}
-
-		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
-		physicsData->RigidBody = new btRigidBody(rigidBodyCI);
-
-		m_DynamicsWorld->addRigidBody(physicsData->RigidBody);
-	}
-
-	// Set-up normal shapes
-	else if (boxShapeComponent)
-	{
-		physicsData->CollisionShape = new btBoxShape(btVector3(boxShapeComponent->Width, boxShapeComponent->Height, boxShapeComponent->Depth));
-	}
-	else if (sphereShapeComponent)
-	{
-		physicsData->CollisionShape = new btSphereShape(sphereShapeComponent->Radius);
-	}
-	else if (meshShapeComponent)
-	{
-		// TODO: Collision mesh things go here
-		//new btConvexTriangleMeshShape()
-	}
-	if (boxShapeComponent || sphereShapeComponent || meshShapeComponent || staticMeshShapeComponent)
-	{
-		btTransform transform;
-		transform.setFromOpenGLMatrix(glm::value_ptr(glm::translate(glm::mat4(), transformComponent->Position) * glm::toMat4(transformComponent->Orientation)));
-
-		// If there's a local physics component
-		if (physicsComponent)
-		{
-			physicsData->MotionState = new btDefaultMotionState(transform);
-
-			btVector3 inertia;
-			if (physicsComponent->Mass != 0)
-			{
-				physicsData->CollisionShape->calculateLocalInertia(physicsComponent->Mass, inertia);
-			}
-
-			btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(physicsComponent->Mass, physicsData->MotionState, physicsData->CollisionShape, inertia);
-			physicsData->RigidBody = new btRigidBody(rigidBodyCI);
-
-			m_DynamicsWorld->addRigidBody(physicsData->RigidBody);
-		}
-		else
-		{
-			// Otherwise, find our base parent and attach to compound shape
-			EntityID baseParent = m_World->GetEntityBaseParent(entity);
-			auto basePhysicsComponent = m_World->GetComponent<Components::Physics>(baseParent, "Physics");
-			if (!basePhysicsComponent)
-			{
-				LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing physics component on base parent entity %i", entity, baseParent);
-				return;
-			}
-			auto baseCompoundShapeComponent = m_World->GetComponent<Components::CompoundShape>(baseParent, "CompoundShape");
-			if (!baseCompoundShapeComponent)
-			{
-				LOG_WARNING("Failed to attach orphan collision shape on entity %i: missing compound shape on base parent entity %i", entity, baseParent);
-				return;
-			}
-			PhysicsData* basePhysicsData = &m_PhysicsData.at(baseParent);
-
-			btCompoundShape* baseCompoundShape = dynamic_cast<btCompoundShape*>(basePhysicsData->CollisionShape);
-			baseCompoundShape->addChildShape(transform, physicsData->CollisionShape);
-
-			btVector3 inertia;
-			baseCompoundShape->calculateLocalInertia(basePhysicsComponent->Mass, inertia);
-
-			basePhysicsData->RigidBody->setMassProps(basePhysicsComponent->Mass, inertia);
-			basePhysicsData->RigidBody->updateInertiaTensor();
-		}
-	}
 }
 
-void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
+void Systems::PhysicsSystem::StepVisualDebugger()
 {
-	PhysicsData* physicsData = &m_PhysicsData[entity];
+	// Step the debugger
+	m_VisualDebugger->step();
 
-	delete physicsData->RigidBody;
-	delete physicsData->MotionState;
-	delete physicsData->CollisionShape;
+	// Reset internal profiling info for next frame
+	hkMonitorStream::getInstance().reset();
+}
 
-	m_PhysicsData.erase(entity);
+void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
+{
+	LOG_DEBUG("%s", msg);
 }

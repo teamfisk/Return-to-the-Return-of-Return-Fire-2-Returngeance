@@ -1,24 +1,45 @@
 #ifndef PhysicsSystem_h__
 #define PhysicsSystem_h__
 
+
+
+
+
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/Physics.h"
-#include "Components/CompoundShape.h"
-#include "Components/BoxShape.h"
-#include "Components/SphereShape.h"
-#include "Components/MeshShape.h"
-#include "Components/StaticMeshShape.h"
-#include "Components/BallSocketConstraint.h"
-#include "Components/HingeConstraint.h"
-#include "Components/SliderConstraint.h"
-#include "Components/Vehicle.h"
-#include "Components/Wheel.h"
+#include "Components/Sphere.h"
+#include "Components/Box.h"
 
-#include "btBulletDynamicsCommon.h"
-#include "LinearMath/btMatrix3x3.h"
-#include <unordered_set>
+// Math and base include
 
+#include <Common/Base/hkBase.h>
+#include <Common/Base/Memory/System/Util/hkMemoryInitUtil.h>
+#include <Common/Base/System/Error/hkDefaultError.h>
+#include <Common/Base/Monitor/hkMonitorStream.h>
+#include <Common/Base/Config/hkConfigVersion.h>
+#include <Common/Base/Memory/System/hkMemorySystem.h>
+#include <Common/Base/Memory/Allocator/Malloc/hkMallocAllocator.h>
+#include <Common/Base/Container/String/hkStringBuf.h>
+
+// Dynamics includes
+#include <Physics2012/Collide/hkpCollide.h>
+#include <Physics2012/Collide/Agent/ConvexAgent/SphereBox/hkpSphereBoxAgent.h>
+#include <Physics2012/Collide/Shape/Convex/Box/hkpBoxShape.h>
+#include <Physics2012/Collide/Shape/Convex/Sphere/hkpSphereShape.h>
+#include <Physics2012/Collide/Dispatch/hkpAgentRegisterUtil.h>
+
+
+
+#include <Physics2012/Dynamics/World/hkpWorld.h>
+#include <Physics2012/Dynamics/Entity/hkpRigidBody.h>
+#include <Physics2012/Utilities/Dynamics/Inertia/hkpInertiaTensorComputer.h>
+
+// Visual Debugger includes
+#include <Common/Visualize/hkVisualDebugger.h>
+#include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
+
+#include <unordered_map>
 namespace Systems
 {
 
@@ -32,41 +53,25 @@ public:
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(std::string type, Component* component) override;
+	
 
 private:
-	btBroadphaseInterface*					m_Broadphase;
-	btDefaultCollisionConfiguration*		m_CollisionConfiguration;
-	btCollisionDispatcher*					m_Dispatcher;
-	btSequentialImpulseConstraintSolver*	m_Solver;
-	btDiscreteDynamicsWorld*				m_DynamicsWorld;
 
-		
-		//m_DynamicsWorld = new btDiscreteDynamicsWorld(m_Dispatcher, m_Broadphase, m_Solver, m_CollisionConfiguration);
-		
-
-	struct PhysicsData
-	{
-		btRigidBody*		RigidBody;
-		btMotionState*		MotionState;
-		btCollisionShape*	CollisionShape;
-	};
-	std::map<EntityID, PhysicsData> m_PhysicsData;
-	std::map<std::pair<EntityID, EntityID>, btTypedConstraint*> m_Constraints;
-
-
-		struct Vehicle
-		{
-			btVehicleRaycaster*					VehicleRaycaster;
-			btRaycastVehicle*					RaycastVehicle;
-			btRaycastVehicle::btVehicleTuning	Tuning;
-			std::unordered_set<EntityID>		Wheels;
-		};
-
-		std::map<EntityID, Vehicle> m_Vehicles;
+	hkpWorld* m_PhysicsWorld;
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);
+
+	hkVisualDebugger* m_VisualDebugger;
+	void SetupVisualDebugger(hkpPhysicsContext* worlds);
+	void StepVisualDebugger();
+	static void HK_CALL HavokErrorReport(const char* msg, void*);
+	void SetupPhysics(hkpWorld* physicsWorld);
+
+	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+
 };
+
 }
 
 #endif // PhysicsSystem_h__

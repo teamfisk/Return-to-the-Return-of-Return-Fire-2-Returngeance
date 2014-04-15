@@ -26,17 +26,9 @@
 #include "Components/Template.h"
 #include "Components/Transform.h"
 
-#include "Components/CompoundShape.h"
-#include "Components/BoxShape.h"
-#include "Components/SphereShape.h"
 #include "Components/Physics.h"
-
-#include "Components/BallSocketConstraint.h"
-#include "Components/HingeConstraint.h"
-#include "Components/SliderConstraint.h"
-
-#include "Components/Vehicle.h"
-#include "Components/Wheel.h"
+#include "Components/Sphere.h"
+#include "Components/Box.h"
 
 class GameWorld : public World
 {

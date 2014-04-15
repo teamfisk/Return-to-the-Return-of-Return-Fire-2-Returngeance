@@ -18,6 +18,9 @@ public:
 class ResourceManager
 {
 public:
+	ResourceManager() 
+		: m_CurrentResourceTypeID(0) { }
+
 	// Registers the factory function of a resource type
 	void RegisterType(std::string resourceType, std::function<Resource*(std::string)> factoryFunction);
 
@@ -37,7 +40,7 @@ private:
 	std::unordered_map<std::string, Resource*> m_ResourceCache; // name -> resource
 
 	// TODO: Getters for IDs
-	unsigned int m_CurrentResourceTypeID = 0;
+	unsigned int m_CurrentResourceTypeID;
 	std::unordered_map<std::string, unsigned int> m_ResourceTypeIDs;
 	// Number of resources of a type. Doubles as local ID.
 	std::unordered_map<unsigned int, unsigned int> m_ResourceCount;

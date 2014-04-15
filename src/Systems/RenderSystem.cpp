@@ -35,13 +35,13 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 	{
 		glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 		m_Renderer->AddPointLightToDraw(
-		    position,
-		    pointLightComponent->Specular,
-		    pointLightComponent->Diffuse,
-		    pointLightComponent->constantAttenuation,
-		    pointLightComponent->linearAttenuation,
-		    pointLightComponent->quadraticAttenuation,
-		    pointLightComponent->spotExponent);
+			position,
+			pointLightComponent->Specular,
+			pointLightComponent->Diffuse,
+			pointLightComponent->constantAttenuation,
+			pointLightComponent->linearAttenuation,
+			pointLightComponent->quadraticAttenuation,
+			pointLightComponent->spotExponent);
 	}
 
 	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity, "Camera");

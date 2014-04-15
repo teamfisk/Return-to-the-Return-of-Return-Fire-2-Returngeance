@@ -3,13 +3,13 @@
 
 Skybox::Skybox(std::string skyboxPath, std::string extension /* = "png" */)
 {
-	m_Cubemap = std::make_shared<CubemapTexture>(
-	                skyboxPath + "/right." + extension,
+	m_Cubemap = std::shared_ptr<CubemapTexture>(new CubemapTexture(
+			skyboxPath + "/right." + extension,
 	                skyboxPath + "/left." + extension,
 	                skyboxPath + "/top." + extension,
 	                skyboxPath + "/bottom." + extension,
 	                skyboxPath + "/front." + extension,
-	                skyboxPath + "/back." + extension);
+	                skyboxPath + "/back." + extension));
 	m_Cubemap->Load();
 	Initialize();
 }
