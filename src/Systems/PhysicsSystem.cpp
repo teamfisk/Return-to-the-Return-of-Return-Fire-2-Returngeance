@@ -29,6 +29,7 @@
 
 Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
+	m_Accumulator = 0;
 	{
 		hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
 		hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
@@ -63,7 +64,30 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 
 void Systems::PhysicsSystem::Update(double dt)
 {	
-	m_PhysicsWorld->stepDeltaTime(0.0166f);
+	for (auto pair : *m_World->GetEntities())
+	{
+		EntityID entity = pair.first;
+
+		if (m_RigidBodies.find(entity) == m_RigidBodies.end())
+			continue;
+
+		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		if (!transformComponent)
+			continue;
+
+
+		hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+		hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
+		m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+	}
+
+	static const double timestep = 1 / 60.0;
+	m_Accumulator += dt;
+	while (m_Accumulator >= timestep)
+	{
+		m_PhysicsWorld->stepDeltaTime(timestep);
+		m_Accumulator -= timestep;
+	}
 
 	// Step the visual debugger
 	StepVisualDebugger();
@@ -113,17 +137,32 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 	{
 		shape = new hkpSphereShape(sphereComponent->Radius);
 		rigidBodyInfo.m_shape = shape;
-		rigidBodyInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
+
+		if (physicsComponent->Static)
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		}
+		else
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
+		}
 		
 		hkpInertiaTensorComputer::computeSphereVolumeMassProperties(sphereComponent->Radius, physicsComponent->Mass, massProperties);
 		
 	}
 	else if (boxComponent)
 	{
-		shape = new hkpBoxShape(hkVector4(boxComponent->Width, boxComponent->Height, boxComponent->Depth));
+		hkReal thickness = 0.05;
+		shape = new hkpBoxShape(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness));
 		rigidBodyInfo.m_shape = shape;
-		rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
-		hkReal thickness = 0.1;
+		if (physicsComponent->Static)
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		}
+		else
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_BOX_INERTIA;
+		}
 		hkpInertiaTensorComputer::computeBoxSurfaceMassProperties(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness), physicsComponent->Mass, thickness, massProperties);
 	}
 	else
@@ -138,13 +177,38 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 
 	// Create RigidBody
 	hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
-	shape->removeReference();
+	
 
-	m_PhysicsWorld->addEntity(rigidBody);
-	m_RigidBodies[entity] = rigidBody;
-	rigidBody->removeReference();
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity, "Vehicle");
+	if (vehicleComponent && m_Vehicles.find(entity) == m_Vehicles.end())
+	{
+			VehicleSetup vehicleSetup;
 
+			// Create the vehicle.
+			m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
+			// Create the basic vehicle.
+			m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
+			vehicleSetup.buildVehicle(m_PhysicsWorld, *m_Vehicles[entity]);
+			// Add the vehicle's entities and phantoms to the world
+			m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
+			// The vehicle is an action
+			m_PhysicsWorld->addAction(m_Vehicles[entity]);
+
+			m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
+
+			shape->removeReference();
+			rigidBody->removeReference();
+	}
+	else
+	{
+		m_PhysicsWorld->addEntity(rigidBody);
+		m_RigidBodies[entity] = rigidBody;
+		shape->removeReference();
+		rigidBody->removeReference();
+	}
 }
+
+
 
 void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
 {	

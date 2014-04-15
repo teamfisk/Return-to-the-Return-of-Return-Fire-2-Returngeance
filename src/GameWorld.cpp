@@ -5,6 +5,7 @@ void GameWorld::Initialize()
 {
 	World::Initialize();
 
+
 	{
 		auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
@@ -33,13 +34,14 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
+		physics->Static = true;
 	}
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 1; i++)
 	{
 		auto ball = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ball, "Transform");
-		transform->Position = glm::vec3(0, 5 + i*2, 0);
+		transform->Position = glm::vec3(0, 5, 0);
 		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ball, "Model");
@@ -48,6 +50,23 @@ void GameWorld::Initialize()
 		sphere->Radius = 0.5;
 		auto physics = AddComponent<Components::Physics>(ball, "Physics");
 		physics->Mass = 1;
+	}
+
+	{
+		auto car = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(car, "Transform");
+		transform->Position = glm::vec3(0, 5, 0);
+		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(car, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Box.obj";
+		auto physics = AddComponent<Components::Physics>(car, "Physics");
+		physics->Mass = 1;
+		auto box = AddComponent<Components::Box>(car, "Box");
+		box->Width = 3;
+		box->Height = 1;
+		box->Depth = 5;
+		auto vehicle = AddComponent<Components::Vehicle>(car, "Vehicle");
 	}
 
 	/*{
@@ -82,6 +101,8 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register("Physics", []() { return new Components::Physics(); });
 	m_ComponentFactory.Register("Sphere", []() { return new Components::Sphere(); });
 	m_ComponentFactory.Register("Box", []() { return new Components::Box (); });
+
+	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
 }
 
 void GameWorld::RegisterSystems()

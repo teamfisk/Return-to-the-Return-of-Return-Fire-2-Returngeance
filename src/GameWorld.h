@@ -30,6 +30,7 @@
 #include "Components/Physics.h"
 #include "Components/Sphere.h"
 #include "Components/Box.h"
+#include "Components/Vehicle.h"
 
 class GameWorld : public World
 {

@@ -10,6 +10,7 @@
 #include "Components/Physics.h"
 #include "Components/Sphere.h"
 #include "Components/Box.h"
+#include "Components/Vehicle.h"
 
 // Math and base include
 
@@ -39,6 +40,11 @@
 #include <Common/Visualize/hkVisualDebugger.h>
 #include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
 
+
+
+#include "Physics/VehicleSetup.h"
+
+
 #include <unordered_map>
 namespace Systems
 {
@@ -54,7 +60,7 @@ public:
 	
 
 private:
-
+	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
@@ -67,7 +73,10 @@ private:
 	void SetupPhysics(hkpWorld* physicsWorld);
 
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+	std::unordered_map<EntityID, hkpVehicleInstance*> m_Vehicles;
 
+
+	hkpVehicleInstance* Systems::PhysicsSystem::createVehicle(VehicleSetup& vehicleSetup, hkpRigidBody* chassis);
 };
 
 }
