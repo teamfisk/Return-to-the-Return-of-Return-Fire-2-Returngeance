@@ -68,7 +68,13 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::PhysicsSystem::Update(double dt)
 {	
-	m_PhysicsWorld->stepDeltaTime(0.0166f);
+	static const double timestep = 1 / 60.0;
+	m_Accumulator += dt;
+	while (m_Accumulator >= timestep)
+	{
+		m_PhysicsWorld->stepDeltaTime(timestep);
+		m_Accumulator -= timestep;
+	}
 
 	// Step the visual debugger
 	StepVisualDebugger();
