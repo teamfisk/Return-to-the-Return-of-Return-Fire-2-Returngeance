@@ -41,7 +41,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY; // just fix the entity if the object falls off too far
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
-		worldInfo.setBroadPhaseWorldSize(1000.0f);
+		worldInfo.setBroadPhaseWorldSize(10000.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
 	}
 	// Register all collision agents, even though only box - box will be used in this particular example.

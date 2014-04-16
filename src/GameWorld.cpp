@@ -40,11 +40,38 @@ void GameWorld::Initialize()
 		physics->Mass = 10;
 	}
 
-	for(int i = 0; i < 10; i++)
+	{
+		auto TankTest = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(TankTest, "Transform");
+		transform->Position = glm::vec3(1.5f, 0.7f, 5.f);
+
+		auto model = AddComponent<Components::Model>(TankTest, "Model");
+		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
+	}
+
+	for(int i = 0; i < 83; i++)
+	{
+		auto light = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(light, "Transform");
+		transform->Position = glm::vec3((float)(2*i)*glm::sin((float)i), 3, (float)(2*i)*glm::cos((float)i));
+
+		auto pointLight = AddComponent<Components::PointLight>(light, "PointLight");
+		pointLight->Specular = glm::vec3(0.1f, 0.1f, 0.1f);
+		pointLight->Diffuse = glm::vec3(0.05f, 0.36f, 1.f);
+		pointLight->constantAttenuation = 0.03f;
+		pointLight->linearAttenuation = 0.009f;
+		pointLight->quadraticAttenuation = 0.07f;
+		pointLight->spotExponent = 0.0f;
+
+		auto model = AddComponent<Components::Model>(light, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	}
+
+	for(int i = 0; i < 500; i++)
 	{
 		auto ball = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ball, "Transform");
-		transform->Position = glm::vec3(0, 5 + i*2, 0);
+		transform->Position = glm::vec3(i/5.f, 5 + i*2, i/5.f);
 		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ball, "Model");
@@ -84,7 +111,7 @@ void GameWorld::RegisterSystems()
 	//m_SystemFactory.Register("LevelGenerationSystem", [this]() { return new Systems::LevelGenerationSystem(this); });
 	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_Renderer); });
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
-	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
+	m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
 	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this); });
 	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
@@ -98,7 +125,7 @@ void GameWorld::AddSystems()
 	//AddSystem("LevelGenerationSystem");
 	AddSystem("InputSystem");
 	//AddSystem("CollisionSystem");
-	//AddSystem("ParticleSystem");
+	AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
 	AddSystem("FreeSteeringSystem");
 	AddSystem("SoundSystem");

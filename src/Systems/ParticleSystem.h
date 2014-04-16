@@ -13,16 +13,15 @@ namespace Systems
 class ParticleSystem : public System
 {
 public:
-	ParticleSystem(World* world);
+	ParticleSystem(World* world)
+		:System(world) { };
 	void RegisterComponents(ComponentFactory* cf) override;
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-
+	void Draw(double dt);
 private:
 	void SpawnParticles();
-
-
 	
 };
 
