@@ -98,7 +98,7 @@ void GameWorld::AddSystems()
 	//AddSystem("LevelGenerationSystem");
 	AddSystem("InputSystem");
 	//AddSystem("CollisionSystem");
-	////AddSystem("ParticleSystem");
+	//AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
 	AddSystem("FreeSteeringSystem");
 	AddSystem("SoundSystem");

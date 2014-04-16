@@ -109,6 +109,7 @@
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\RenderSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\SoundSystem.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
+    <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />
     <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\src\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\src\Systems\SoundSystem.h" />
