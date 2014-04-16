@@ -57,6 +57,7 @@ public:
 
 private:
 
+	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
