@@ -280,16 +280,19 @@ void Renderer::DrawScene()
 
 void Renderer::DrawShadowMap()
 {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
+	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
+	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
+	glCullFace(GL_FRONT);	//Make it so that only the back faces are rendered
 
+	//Binds the FBO and sets the veiwport, witch in effect is how large the shadowmap is and what resolution it has.
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
 	glViewport(0, 0, m_ShadowMapRes, m_ShadowMapRes);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+
+	//Creates the "camera" for the shadowmap from the direction of the sun.
 	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(-m_Camera->Position() * glm::vec3(1, 0, 0));
 //	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
@@ -299,7 +302,9 @@ void Renderer::DrawShadowMap()
 	glm::mat4 MVP;
 
 	m_ShaderProgramShadows.Bind();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draws filled polygons
+
+	//For each model, render them to the shadowmap
 	for (auto tuple : ModelsToRender)
 	{
 		Model* model;
