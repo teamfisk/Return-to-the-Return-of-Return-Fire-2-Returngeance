@@ -22,14 +22,14 @@ void GameWorld::Initialize()
 	{
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground, "Transform");
-		transform->Position = glm::vec3(0, 0, 0);
-		transform->Scale = glm::vec3(1000.0f, 1.0f, 1000.0f);
+		transform->Position = glm::vec3(0, -5, 0);
+		transform->Scale = glm::vec3(1000.0f, 10.0f, 1000.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
 		auto box = AddComponent<Components::Box>(ground, "Box");
 		box->Width = 500;
-		box->Height = 0.5;
+		box->Height = 5;
 		box->Depth = 500;
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
@@ -37,36 +37,40 @@ void GameWorld::Initialize()
 		physics->Static = true;
 	}
 
-	for(int i = 0; i < 1; i++)
-	{
-		auto ball = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ball, "Transform");
-		transform->Position = glm::vec3(0, 5, 0);
-		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(ball, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Sphere.obj";
-		auto sphere = AddComponent<Components::Sphere>(ball, "Sphere");
-		sphere->Radius = 0.5;
-		auto physics = AddComponent<Components::Physics>(ball, "Physics");
-		physics->Mass = 1;
-	}
 
 	{
 		auto car = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(car, "Transform");
 		transform->Position = glm::vec3(0, 5, 0);
-		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		transform->Scale = glm::vec3(3, 1, 5);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(car, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Box.obj";
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
 		auto physics = AddComponent<Components::Physics>(car, "Physics");
-		physics->Mass = 1;
+		physics->Mass = 1200;
 		auto box = AddComponent<Components::Box>(car, "Box");
-		box->Width = 3;
-		box->Height = 1;
-		box->Depth = 5;
+		box->Width = 1.5f;
+		box->Height = 0.5f;
+		box->Depth = 2.5f;
 		auto vehicle = AddComponent<Components::Vehicle>(car, "Vehicle");
+	}
+
+	for(int i = 0; i < 50; i++)
+	{
+		auto ball = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ball, "Transform");
+		transform->Position = glm::vec3(243, 10 + i*10, 0);
+		transform->Scale = glm::vec3(10);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(ball, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+		auto physics = AddComponent<Components::Physics>(ball, "Physics");
+		physics->Mass = 100;
+		auto box = AddComponent<Components::Box>(ball, "Box");
+		box->Width = 5.f;
+		box->Height = 5.f;
+		box->Depth = 5.f;
+		
 	}
 
 	/*{

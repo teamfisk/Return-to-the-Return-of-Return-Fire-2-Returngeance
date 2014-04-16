@@ -24,7 +24,6 @@
 #include <Physics2012/Vehicle/Suspension/Default/hkpVehicleDefaultSuspension.h>
 #include <Physics2012/Vehicle/Transmission/Default/hkpVehicleDefaultTransmission.h>
 #include <Physics2012/Vehicle/WheelCollide/RayCast/hkpVehicleRayCastWheelCollide.h>
-#include <Physics2012/Vehicle/TyreMarks/hkpTyremarksInfo.h>
 
 #include <Physics2012/Vehicle/WheelCollide/RayCast/hkpVehicleRayCastWheelCollide.h>
 
@@ -48,7 +47,6 @@ public:
 	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper);
 
 	virtual void setupWheelCollide(const hkpWorld* world, const hkpVehicleInstance& vehicle, hkpVehicleRayCastWheelCollide& wheelCollide);
-	virtual void setupTyremarks(const hkpVehicleData& data, hkpTyremarksInfo& tyremarkscontroller);
 };
 
 #endif // Physics_Vehicle_h__

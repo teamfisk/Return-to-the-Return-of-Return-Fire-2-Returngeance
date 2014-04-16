@@ -75,13 +75,17 @@ void Systems::PhysicsSystem::Update(double dt)
 		if (!transformComponent)
 			continue;
 
+		
 
 		hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
 		hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
 		m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
 	}
 
-	static const double timestep = 1 / 60.0;
+	
+	
+
+	static const double timestep = 1 / 30.0;
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
@@ -184,17 +188,18 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 	{
 			VehicleSetup vehicleSetup;
 
-			// Create the vehicle.
-			m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
 			// Create the basic vehicle.
 			m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
 			vehicleSetup.buildVehicle(m_PhysicsWorld, *m_Vehicles[entity]);
 			// Add the vehicle's entities and phantoms to the world
 			m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
+		
+			m_RigidBodies[entity] = rigidBody;
+			
 			// The vehicle is an action
 			m_PhysicsWorld->addAction(m_Vehicles[entity]);
 
-			m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
+			//m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
 
 			shape->removeReference();
 			rigidBody->removeReference();

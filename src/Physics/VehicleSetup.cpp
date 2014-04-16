@@ -21,12 +21,10 @@ void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehic
 
 	// For illustrative purposes we use a custom hkpVehicleRayCastWheelCollide
 	// which implements varying 'ground' friction in a very simple way.
-	//vehicle.m_wheelCollide = new hkpVehicleRayCastWheelCollide;
+	vehicle.m_wheelCollide = new hkpVehicleRayCastWheelCollide;
 
 	setupVehicleData(world, *vehicle.m_data);
 
-	// initialise the tyremarks controller with 128 tyremark points.
-	vehicle.m_tyreMarks = new hkpTyremarksInfo(*vehicle.m_data, 128);
 
 	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultAnalogDriverInput*>(vehicle.m_driverInput));
 	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultSteering*>(vehicle.m_steering));
@@ -39,7 +37,6 @@ void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehic
 
 	setupWheelCollide(world, vehicle, *static_cast<hkpVehicleRayCastWheelCollide*>(vehicle.m_wheelCollide));
 
-	setupTyremarks(*vehicle.m_data, *static_cast<hkpTyremarksInfo*>(vehicle.m_tyreMarks));
 
 	//
 	// Check that all components are present.
@@ -53,7 +50,6 @@ void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehic
 	HK_ASSERT(0x7a7ade23, vehicle.m_suspension);
 	HK_ASSERT(0x6ec4d0ed, vehicle.m_aerodynamics);
 	HK_ASSERT(0x67161206, vehicle.m_wheelCollide);
-	HK_ASSERT(0x295015f1, vehicle.m_tyreMarks);
 
 	//
 	// Set up any variables that store cached data.
@@ -92,7 +88,7 @@ void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data)
 
 	// The coordinates of the chassis system, used for steering the vehicle.
 	//										up					forward				right
-	data.m_chassisOrientation.setCols(hkVector4(0, 1, 0), hkVector4(1, 0, 0), hkVector4(0, 0, 1));
+	data.m_chassisOrientation.setCols(hkVector4(0, 1, 0), hkVector4(0, 0, 1), hkVector4(-1, 0, 0));
 
 	data.m_frictionEqualizer = 0.5f;
 
@@ -138,8 +134,8 @@ void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data)
 	for (int i = 0; i < data.m_numWheels; i++)
 	{
 		// This value is also used to calculate the m_primaryTransmissionRatio.
-		data.m_wheelParams[i].m_radius = 0.4f;
-		data.m_wheelParams[i].m_width = 0.2f;
+		data.m_wheelParams[i].m_radius = 0.6f;
+		data.m_wheelParams[i].m_width = 0.3f;
 		data.m_wheelParams[i].m_mass = 10.0f;
 
 		data.m_wheelParams[i].m_viscosityFriction = 0.25f;
@@ -215,8 +211,8 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_wheelsTorqueRatio[2] = 0.3f;
 	transmission.m_wheelsTorqueRatio[3] = 0.3f;
 
-	const hkReal vehicleTopSpeed = 130.0f;
-	const hkReal wheelRadius = 0.4f;
+	const hkReal vehicleTopSpeed = 50.0f;
+	const hkReal wheelRadius = 0.6f;
 	const hkReal maxEngineRpm = 7500.0f;
 	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(vehicleTopSpeed,
 		wheelRadius,
@@ -332,8 +328,3 @@ void VehicleSetup::setupWheelCollide(const hkpWorld* world, const hkpVehicleInst
 	wheelCollide.m_wheelCollisionFilterInfo = vehicle.getChassis()->getCollisionFilterInfo();
 }
 
-void VehicleSetup::setupTyremarks(const hkpVehicleData& data, hkpTyremarksInfo& tyreMarks)
-{
-	tyreMarks.m_minTyremarkEnergy = 100.0f;
-	tyreMarks.m_maxTyremarkEnergy = 1000.0f;
-}
