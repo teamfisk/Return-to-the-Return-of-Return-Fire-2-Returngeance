@@ -59,18 +59,13 @@ void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehic
 	// Give driver input default values so that the vehicle (if this input is a default for non
 	// player cars) will drive, even if it is in circles!
 
-	// Accelerate.
+	// Steering Defaults
 	vehicle.m_deviceStatus = new hkpVehicleDriverInputAnalogStatus;
 	hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)vehicle.m_deviceStatus;
-	deviceStatus->m_positionY = -0.4f;
-
-	// Turn.
-	deviceStatus->m_positionX = 0.3f;
-
-	// Defaults
+	deviceStatus->m_positionY = 0.f;
+	deviceStatus->m_positionX = 0.f;
 	deviceStatus->m_handbrakeButtonPressed = false;
 	deviceStatus->m_reverseButtonPressed = false;
-
 
 	//
 	// Don't forget to call init! (This function is necessary to set up derived data)
@@ -88,7 +83,7 @@ void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data)
 
 	// The coordinates of the chassis system, used for steering the vehicle.
 	//										up					forward				right
-	data.m_chassisOrientation.setCols(hkVector4(0, 1, 0), hkVector4(0, 0, 1), hkVector4(-1, 0, 0));
+	data.m_chassisOrientation.setCols(hkVector4(0, 1, 0), hkVector4(0, 0, -1), hkVector4(1, 0, 0));
 
 	data.m_frictionEqualizer = 0.5f;
 
@@ -273,15 +268,19 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultS
 	// NB: The hardpoints MUST be positioned INSIDE the chassis.
 	//
 	{
-		const hkReal hardPointFrontX = 1.3f;
-		const hkReal hardPointBackX = -1.1f;
+		const hkReal hardPointFrontZ = -1.3f;
+		const hkReal hardPointBackZ = 1.1f;
 		const hkReal hardPointY = -0.05f;
-		const hkReal hardPointZ = 1.1f;
+		const hkReal hardPointX = 1.1f;
 
-		suspension.m_wheelParams[0].m_hardpointChassisSpace.set(hardPointFrontX, hardPointY, -hardPointZ);
-		suspension.m_wheelParams[1].m_hardpointChassisSpace.set(hardPointFrontX, hardPointY, hardPointZ);
-		suspension.m_wheelParams[2].m_hardpointChassisSpace.set(hardPointBackX, hardPointY, -hardPointZ);
-		suspension.m_wheelParams[3].m_hardpointChassisSpace.set(hardPointBackX, hardPointY, hardPointZ);
+		//suspension.m_wheelParams[0].m_hardpointChassisSpace.set(hardPointFrontX, hardPointY, -hardPointZ);
+		suspension.m_wheelParams[0].m_hardpointChassisSpace.set(-hardPointX, hardPointY, hardPointFrontZ);
+		//suspension.m_wheelParams[1].m_hardpointChassisSpace.set(hardPointFrontX, hardPointY, hardPointZ);
+		suspension.m_wheelParams[1].m_hardpointChassisSpace.set(hardPointX, hardPointY, hardPointFrontZ);
+		//suspension.m_wheelParams[2].m_hardpointChassisSpace.set(hardPointBackX, hardPointY, -hardPointZ);
+		suspension.m_wheelParams[2].m_hardpointChassisSpace.set(-hardPointX, hardPointY, hardPointBackZ);
+		//suspension.m_wheelParams[3].m_hardpointChassisSpace.set(hardPointBackX, hardPointY, hardPointZ);
+		suspension.m_wheelParams[3].m_hardpointChassisSpace.set(hardPointX, hardPointY, hardPointBackZ);
 	}
 
 	const hkVector4 downDirection(0.0f, -1.0f, 0.0f);
