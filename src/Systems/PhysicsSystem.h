@@ -11,6 +11,7 @@
 #include "Components/Sphere.h"
 #include "Components/Box.h"
 #include "Components/Vehicle.h"
+#include "Components/Input.h"
 
 // Math and base include
 

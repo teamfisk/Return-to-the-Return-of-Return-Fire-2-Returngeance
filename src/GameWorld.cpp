@@ -53,6 +53,7 @@ void GameWorld::Initialize()
 		box->Height = 0.5f;
 		box->Depth = 2.5f;
 		auto vehicle = AddComponent<Components::Vehicle>(car, "Vehicle");
+		AddComponent<Components::Input>(car, "Input");
 	}
 
 	for(int i = 0; i < 50; i++)

@@ -115,7 +115,16 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
 	}
 
-
+	// HACK: Vehicle test-controls
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(entity, "Vehicle");
+	auto inputComponent = m_World->GetComponent<Components::Input>(entity, "Input");
+	if (vehicleComponent && inputComponent)
+	{
+		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[entity]->m_deviceStatus;
+		deviceStatus->m_positionY = inputComponent->KeyState[GLFW_KEY_UP] * -1 + inputComponent->KeyState[GLFW_KEY_DOWN] * 1;
+		deviceStatus->m_positionX = inputComponent->KeyState[GLFW_KEY_LEFT] * -1 + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1;
+		deviceStatus->m_handbrakeButtonPressed = inputComponent->KeyState[GLFW_KEY_RIGHT_CONTROL];
+	}
 }
 
 void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
