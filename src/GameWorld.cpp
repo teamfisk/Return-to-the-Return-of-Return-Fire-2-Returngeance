@@ -20,6 +20,7 @@ void GameWorld::Initialize()
 		cameraComp->FarClip = 2000.f;
 		AddComponent(camera, "Input");
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+		CommitEntity(camera);
 	}
 
 
@@ -38,6 +39,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
+		CommitEntity(ground);
 	}
 
 	{
@@ -47,6 +49,7 @@ void GameWorld::Initialize()
 
 		auto model = AddComponent<Components::Model>(TankTest, "Model");
 		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
+		CommitEntity(TankTest);
 	}
 
 	for(int i = 0; i < 83; i++)
@@ -65,6 +68,7 @@ void GameWorld::Initialize()
 
 		auto model = AddComponent<Components::Model>(light, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+		CommitEntity(light);
 	}
 
 	for(int i = 0; i < 500; i++)
@@ -80,6 +84,7 @@ void GameWorld::Initialize()
 		sphere->Radius = 0.5;
 		auto physics = AddComponent<Components::Physics>(ball, "Physics");
 		physics->Mass = 1;
+		CommitEntity(ball);
 	}
 
 	/*{
