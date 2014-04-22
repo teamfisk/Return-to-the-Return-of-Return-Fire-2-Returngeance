@@ -112,6 +112,9 @@
     <Filter Include="Particle System\Systems">
       <UniqueIdentifier>{9f45f029-46c8-4c0d-b44c-dc9bffd3c6a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{6e633434-4aed-453d-b2f9-8c51ca7f78db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\World.h" />
@@ -214,6 +217,10 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Box.h" />
     <ClInclude Include="..\..\src\Components\Sphere.h" />
+    <ClInclude Include="..\..\src\GUI\Frame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MessageRelay.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">
