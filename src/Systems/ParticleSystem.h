@@ -4,11 +4,17 @@
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/ParticleEmitter.h"
+#include "Components/Particle.h"
 
 
 namespace Systems
 {
 
+	struct ParticleData
+	{
+		EntityID ParticleID;
+		double TimeLived;
+	};
 
 class ParticleSystem : public System
 {
@@ -21,12 +27,13 @@ public:
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void Draw(double dt);
 private:
-	void SpawnParticles();
+	void SpawnParticles(EntityID emitterID, float spawnCount, float spreadAngle);
+	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
+	double m_TimeSinceLastSpawn;
 	
 };
-
 
 }
 
 
-#endif // ParticleSystem_h__
+#endif // !ParticleSystem_h__

@@ -220,6 +220,9 @@
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h">
       <Filter>Particle System\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Particle.h">
+      <Filter>Particle System\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

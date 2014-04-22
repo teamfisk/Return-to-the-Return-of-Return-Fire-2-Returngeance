@@ -20,6 +20,7 @@
 #include "Components/Input.h"
 #include "Components/Model.h"
 #include "Components/ParticleEmitter.h"
+#include "Components/Particle.h"
 #include "Components/PointLight.h"
 #include "Components/SoundEmitter.h"
 #include "Components/Sprite.h"

@@ -1,10 +1,7 @@
 #ifndef Components_ParticleEmitter_h__
 #define Components_ParticleEmitter_h__
 
-#include "System.h"
 #include "Component.h"
-#include "Components/Transform.h"
-#include "Components/ParticleEmitter.h"
 #include "Color.h"
 #include <vector>
 
@@ -13,15 +10,15 @@ namespace Components
 
 struct ParticleEmitter : Component
 {
-	int ParticleTemplate;
+	EntityID ParticleTemplate;
 	float SpawnFrequency;
 	int SpawnCount;
 	std::vector<Color> ColorSpectrum;
 	std::vector<float> ScaleSpectrum;
 	float SpreadAngle;
-	float LifeTime;
-	std::vector<float[3]> VelocitySpectrum;
-	std::vector<float[3]> AngularVelocitySpectrum;
+	double LifeTime;
+	std::vector<glm::vec3> VelocitySpectrum;
+	std::vector<glm::vec3> AngularVelocitySpectrum;
 };
 
 }

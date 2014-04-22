@@ -127,6 +127,7 @@
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />
+    <ClInclude Include="..\..\src\Components\Particle.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
     <ClInclude Include="..\..\src\Components\PointLight.h" />
