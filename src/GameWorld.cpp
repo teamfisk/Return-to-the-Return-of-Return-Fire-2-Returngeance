@@ -9,8 +9,8 @@ void GameWorld::Initialize()
 	{
 		auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
-		transform->Position.z = 20.f;
-		transform->Position.y = 20.f;
+		transform->Position.z = 70.f;
+		transform->Position.y = 25.f;
 		transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
 		cameraComp->FarClip = 2000.f;
@@ -56,22 +56,48 @@ void GameWorld::Initialize()
 		AddComponent<Components::Input>(car, "Input");
 	}
 
-	for(int i = 0; i < 50; i++)
+	/*for(int i = 0; i < 83; i++)
+	{
+		auto light = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(light, "Transform");
+		transform->Position = glm::vec3((float)(2*i)*glm::sin((float)i), 3, (float)(2*i)*glm::cos((float)i));
+
+		auto pointLight = AddComponent<Components::PointLight>(light, "PointLight");
+		pointLight->Specular = glm::vec3(0.1f, 0.1f, 0.1f);
+		pointLight->Diffuse = glm::vec3(0.05f, 0.36f, 1.f);
+		pointLight->constantAttenuation = 0.03f;
+		pointLight->linearAttenuation = 0.009f;
+		pointLight->quadraticAttenuation = 0.07f;
+		pointLight->spotExponent = 0.0f;
+
+		auto model = AddComponent<Components::Model>(light, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	}*/
+
+	for(int i = 0; i < 100; i++)
 	{
 		auto ball = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ball, "Transform");
-		transform->Position = glm::vec3(243, 10 + i*10, 0);
-		transform->Scale = glm::vec3(10);
+		transform->Position = glm::vec3(i/5.f, 5 + i*2, i/5.f);
+		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ball, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Sphere.obj";
+		auto sphere = AddComponent<Components::Sphere>(ball, "Sphere");
+		sphere->Radius = 0.5;
 		auto physics = AddComponent<Components::Physics>(ball, "Physics");
-		physics->Mass = 100;
-		auto box = AddComponent<Components::Box>(ball, "Box");
-		box->Width = 5.f;
-		box->Height = 5.f;
-		box->Depth = 5.f;
-		
+		physics->Mass = 1;
+
+		auto pointLight = AddComponent<Components::PointLight>(ball, "PointLight");
+		pointLight->Specular = glm::vec3(0.1f, 0.1f, 0.1f);
+		pointLight->Diffuse = glm::vec3(0.05f, 0.36f, 1.f);
+		/*pointLight->constantAttenuation = 0.13f;
+		pointLight->linearAttenuation = 0.009f;
+		pointLight->quadraticAttenuation = 0.007f;*/
+		pointLight->constantAttenuation = 0.03f;
+		pointLight->linearAttenuation = 0.119f;
+		pointLight->quadraticAttenuation = 0.07f;
+		pointLight->spotExponent = 0.0f;
 	}
 
 	/*{
