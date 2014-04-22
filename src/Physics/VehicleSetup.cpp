@@ -3,12 +3,23 @@
 
 
 
-void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehicle)
+
+
+void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpVehicleInstance& vehicle, EntityID vehicleEntity, std::vector<EntityID> wheelEntities)
 {
+	auto vehicleComponent = world->GetComponent<Components::Vehicle>(vehicleEntity, "Vehicle");
+	
+	WheelData wheelData;
+	for (int i = 0; i < wheelEntities.size(); i++)
+	{
+		wheelData.WheelComponent = world->GetComponent<Components::Wheel>(wheelEntities[i], "Wheel");
+		wheelData.TransformComponent = world->GetComponent<Components::Transform>(wheelEntities[i], "Transform");
+		m_Wheels.push_back(wheelData);	
+	}
+	
 	//
 	// All memory allocations are made here.
 	//
-
 	vehicle.m_data = new hkpVehicleData;
 	vehicle.m_driverInput = new hkpVehicleDefaultAnalogDriverInput;
 	vehicle.m_steering = new hkpVehicleDefaultSteering;
@@ -23,25 +34,25 @@ void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehic
 	// which implements varying 'ground' friction in a very simple way.
 	vehicle.m_wheelCollide = new hkpVehicleRayCastWheelCollide;
 
-	setupVehicleData(world, *vehicle.m_data);
+	setupVehicleData(physicsWorld, *vehicle.m_data);
 
 
 	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultAnalogDriverInput*>(vehicle.m_driverInput));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultSteering*>(vehicle.m_steering));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultEngine*>(vehicle.m_engine));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultTransmission*>(vehicle.m_transmission));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultBrake*>(vehicle.m_brake));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultSuspension*>(vehicle.m_suspension));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultAerodynamics*>(vehicle.m_aerodynamics));
-	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultVelocityDamper*>(vehicle.m_velocityDamper));
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultSteering*>(vehicle.m_steering), *vehicleComponent);
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultEngine*>(vehicle.m_engine), *vehicleComponent);
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultTransmission*>(vehicle.m_transmission), *vehicleComponent);
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultBrake*>(vehicle.m_brake), *vehicleComponent);
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultSuspension*>(vehicle.m_suspension), *vehicleComponent);
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultAerodynamics*>(vehicle.m_aerodynamics), *vehicleComponent);
+	setupComponent(*vehicle.m_data, *static_cast<hkpVehicleDefaultVelocityDamper*>(vehicle.m_velocityDamper), *vehicleComponent);
 
-	setupWheelCollide(world, vehicle, *static_cast<hkpVehicleRayCastWheelCollide*>(vehicle.m_wheelCollide));
+	setupWheelCollide(physicsWorld, vehicle, *static_cast<hkpVehicleRayCastWheelCollide*>(vehicle.m_wheelCollide));
 
 
 	//
 	// Check that all components are present.
 	//
-	HK_ASSERT(0x0, vehicle.m_data);
+	HK_ASSERT(0x0		, vehicle.m_data);
 	HK_ASSERT(0x7708674a, vehicle.m_driverInput);
 	HK_ASSERT(0x5a324a2d, vehicle.m_steering);
 	HK_ASSERT(0x7bcb2aff, vehicle.m_engine);
@@ -73,7 +84,7 @@ void VehicleSetup::buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehic
 	vehicle.init();
 }
 
-void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data)
+void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data )
 {
 	data.m_gravity = world->getGravity();
 
@@ -107,39 +118,33 @@ void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data)
 	//
 	// Wheel specifications
 	//
-	data.m_numWheels = 4;
+	data.m_numWheels = m_Wheels.size();
 
 	data.m_wheelParams.setSize(data.m_numWheels);
 
-	data.m_wheelParams[0].m_axle = 0;
-	data.m_wheelParams[1].m_axle = 0;
-	data.m_wheelParams[2].m_axle = 1;
-	data.m_wheelParams[3].m_axle = 1;
-
-	data.m_wheelParams[0].m_friction = 1.5f;
-	data.m_wheelParams[1].m_friction = 1.5f;
-	data.m_wheelParams[2].m_friction = 1.5f;
-	data.m_wheelParams[3].m_friction = 1.5f;
-
-	data.m_wheelParams[0].m_slipAngle = 0.0f;
-	data.m_wheelParams[1].m_slipAngle = 0.0f;
-	data.m_wheelParams[2].m_slipAngle = 0.0f;
-	data.m_wheelParams[3].m_slipAngle = 0.0f;
-
-	for (int i = 0; i < data.m_numWheels; i++)
+	for (int i = 0; i < m_Wheels.size(); i++)
 	{
-		// This value is also used to calculate the m_primaryTransmissionRatio.
-		data.m_wheelParams[i].m_radius = 0.6f;
-		data.m_wheelParams[i].m_width = 0.3f;
-		data.m_wheelParams[i].m_mass = 10.0f;
+		data.m_wheelParams[i].m_axle = m_Wheels[i].WheelComponent->AxleID;
+		data.m_wheelParams[i].m_friction = m_Wheels[i].WheelComponent->Friction;
+		data.m_wheelParams[i].m_slipAngle = m_Wheels[i].WheelComponent->SlipAngle;
 
+		// This value is also used to calculate the m_primaryTransmissionRatio.
+		data.m_wheelParams[i].m_radius = m_Wheels[i].WheelComponent->Radius;
+		data.m_wheelParams[i].m_width = m_Wheels[i].WheelComponent->Width;
+		data.m_wheelParams[i].m_mass = m_Wheels[i].WheelComponent->Mass;
+
+
+		// May be in wheelcomponent later
 		data.m_wheelParams[i].m_viscosityFriction = 0.25f;
 		data.m_wheelParams[i].m_maxFriction = 2.0f * data.m_wheelParams[i].m_friction;
 		data.m_wheelParams[i].m_forceFeedbackMultiplier = 0.1f;
 		data.m_wheelParams[i].m_maxContactBodyAcceleration = hkReal(data.m_gravity.length3()) * 2;
 	}
-}
 
+	
+		
+	
+}
 
 void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultAnalogDriverInput& driverInput)
 {
@@ -151,45 +156,46 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultA
 	driverInput.m_autoReverse = true;
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSteering& steering)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSteering& steering, Components::Vehicle vehicleComponent )
 {
 	steering.m_doesWheelSteer.setSize(data.m_numWheels);
 
 	// degrees
-	steering.m_maxSteeringAngle = 35 * (HK_REAL_PI / 180);
+	steering.m_maxSteeringAngle = vehicleComponent.MaxSteeringAngle * (HK_REAL_PI / 180);
 
 	// [mph/h] The steering angle decreases linearly 
 	// based on your overall max speed of the vehicle. 
-	steering.m_maxSpeedFullSteeringAngle = 70.0f * (1.605f / 3.6f);
-	steering.m_doesWheelSteer[0] = true;
-	steering.m_doesWheelSteer[1] = true;
-	steering.m_doesWheelSteer[2] = false;
-	steering.m_doesWheelSteer[3] = false;
+	steering.m_maxSpeedFullSteeringAngle = 70.0f * (1.605f / 3.6f); //MPH???!
+
+	for (int i = 0; i < m_Wheels.size(); i++)
+	{
+		steering.m_doesWheelSteer[i] = m_Wheels[i].WheelComponent->Steering;
+	}
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultEngine& engine)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultEngine& engine, Components::Vehicle vehicleComponent)
 {
-	engine.m_maxTorque = 500.0f;
+	engine.m_maxTorque = vehicleComponent.MaxTorque;
 
-	engine.m_minRPM = 1000.0f;
-	engine.m_optRPM = 5500.0f;
+	engine.m_minRPM = vehicleComponent.MinRPM;
+	engine.m_optRPM = vehicleComponent.OptimalRPM;
 
 	// This value is also used to calculate the m_primaryTransmissionRatio.
-	engine.m_maxRPM = 7500.0f;
+	engine.m_maxRPM = vehicleComponent.MaxRPM;
+
+
 
 	engine.m_torqueFactorAtMinRPM = 0.8f;
 	engine.m_torqueFactorAtMaxRPM = 0.8f;
-
 	engine.m_resistanceFactorAtMinRPM = 0.05f;
 	engine.m_resistanceFactorAtOptRPM = 0.1f;
 	engine.m_resistanceFactorAtMaxRPM = 0.3f;
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultTransmission& transmission)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultTransmission& transmission, Components::Vehicle vehicleComponent )
 {
-	int numGears = 4;
-
-	transmission.m_gearsRatio.setSize(numGears);
+	int numberOfGears = 4;
+	transmission.m_gearsRatio.setSize(numberOfGears);
 	transmission.m_wheelsTorqueRatio.setSize(data.m_numWheels);
 
 	transmission.m_downshiftRPM = 3500.0f;
@@ -206,91 +212,52 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_wheelsTorqueRatio[2] = 0.3f;
 	transmission.m_wheelsTorqueRatio[3] = 0.3f;
 
-	const hkReal vehicleTopSpeed = 50.0f;
-	const hkReal wheelRadius = 0.6f;
-	const hkReal maxEngineRpm = 7500.0f;
-	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(vehicleTopSpeed,
-		wheelRadius,
-		maxEngineRpm,
-		transmission.m_gearsRatio[numGears - 1]);
+
+	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(
+		vehicleComponent.TopSpeed,
+		m_Wheels[0].WheelComponent->Radius, // HACK: All wheels are the same size right?
+		vehicleComponent.MaxRPM,
+		transmission.m_gearsRatio[numberOfGears - 1]);
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultBrake& brake)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultBrake& brake, Components::Vehicle vehicleComponent )
 {
 	brake.m_wheelBrakingProperties.setSize(data.m_numWheels);
 
-	const float bt = 1500.0f;
-	brake.m_wheelBrakingProperties[0].m_maxBreakingTorque = bt;
-	brake.m_wheelBrakingProperties[1].m_maxBreakingTorque = bt;
-	brake.m_wheelBrakingProperties[2].m_maxBreakingTorque = bt;
-	brake.m_wheelBrakingProperties[3].m_maxBreakingTorque = bt;
+	for (int i = 0; i < m_Wheels.size(); i++)
+	{
+		brake.m_wheelBrakingProperties[i].m_maxBreakingTorque = m_Wheels[i].WheelComponent->MaxBreakingTorque;
+		brake.m_wheelBrakingProperties[i].m_isConnectedToHandbrake = m_Wheels[i].WheelComponent->ConnectedToHandbrake;
 
-	// Handbrake is attached to rear wheels only.
-	brake.m_wheelBrakingProperties[0].m_isConnectedToHandbrake = false;
-	brake.m_wheelBrakingProperties[1].m_isConnectedToHandbrake = false;
-	brake.m_wheelBrakingProperties[2].m_isConnectedToHandbrake = true;
-	brake.m_wheelBrakingProperties[3].m_isConnectedToHandbrake = true;
-	brake.m_wheelBrakingProperties[0].m_minPedalInputToBlock = 0.9f;
-	brake.m_wheelBrakingProperties[1].m_minPedalInputToBlock = 0.9f;
-	brake.m_wheelBrakingProperties[2].m_minPedalInputToBlock = 0.9f;
-	brake.m_wheelBrakingProperties[3].m_minPedalInputToBlock = 0.9f;
+		brake.m_wheelBrakingProperties[i].m_minPedalInputToBlock = 0.9f;
+	}
+
 	brake.m_wheelsMinTimeToBlock = 1000.0f;
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSuspension& suspension)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSuspension& suspension, Components::Vehicle vehicleComponent)
 {
 	suspension.m_wheelParams.setSize(data.m_numWheels);
 	suspension.m_wheelSpringParams.setSize(data.m_numWheels);
 
-	suspension.m_wheelParams[0].m_length = 0.35f;
-	suspension.m_wheelParams[1].m_length = 0.35f;
-	suspension.m_wheelParams[2].m_length = 0.35f;
-	suspension.m_wheelParams[3].m_length = 0.35f;
-
-	const float str = 50.0f;
-	suspension.m_wheelSpringParams[0].m_strength = str;
-	suspension.m_wheelSpringParams[1].m_strength = str;
-	suspension.m_wheelSpringParams[2].m_strength = str;
-	suspension.m_wheelSpringParams[3].m_strength = str;
-
-	const float wd = 3.0f;
-	suspension.m_wheelSpringParams[0].m_dampingCompression = wd;
-	suspension.m_wheelSpringParams[1].m_dampingCompression = wd;
-	suspension.m_wheelSpringParams[2].m_dampingCompression = wd;
-	suspension.m_wheelSpringParams[3].m_dampingCompression = wd;
-
-	suspension.m_wheelSpringParams[0].m_dampingRelaxation = wd;
-	suspension.m_wheelSpringParams[1].m_dampingRelaxation = wd;
-	suspension.m_wheelSpringParams[2].m_dampingRelaxation = wd;
-	suspension.m_wheelSpringParams[3].m_dampingRelaxation = wd;
-
-	//
-	// NB: The hardpoints MUST be positioned INSIDE the chassis.
-	//
+	for (int i = 0; i < m_Wheels.size(); i++)
 	{
-		const hkReal hardPointFrontZ = -1.3f;
-		const hkReal hardPointBackZ = 1.1f;
-		const hkReal hardPointY = -0.05f;
-		const hkReal hardPointX = 1.1f;
+		float suspensionLength = glm::length(m_Wheels[i].TransformComponent->Position - m_Wheels[i].WheelComponent->Hardpoint);
+		suspension.m_wheelParams[i].m_length = suspensionLength;
+		suspension.m_wheelSpringParams[i].m_strength  = m_Wheels[i].WheelComponent->SuspensionStrength;
 
-		//suspension.m_wheelParams[0].m_hardpointChassisSpace.set(hardPointFrontX, hardPointY, -hardPointZ);
-		suspension.m_wheelParams[0].m_hardpointChassisSpace.set(-hardPointX, hardPointY, hardPointFrontZ);
-		//suspension.m_wheelParams[1].m_hardpointChassisSpace.set(hardPointFrontX, hardPointY, hardPointZ);
-		suspension.m_wheelParams[1].m_hardpointChassisSpace.set(hardPointX, hardPointY, hardPointFrontZ);
-		//suspension.m_wheelParams[2].m_hardpointChassisSpace.set(hardPointBackX, hardPointY, -hardPointZ);
-		suspension.m_wheelParams[2].m_hardpointChassisSpace.set(-hardPointX, hardPointY, hardPointBackZ);
-		//suspension.m_wheelParams[3].m_hardpointChassisSpace.set(hardPointBackX, hardPointY, hardPointZ);
-		suspension.m_wheelParams[3].m_hardpointChassisSpace.set(hardPointX, hardPointY, hardPointBackZ);
+		const float wd = 3.0f;
+		suspension.m_wheelSpringParams[i].m_dampingCompression = wd;
+		suspension.m_wheelSpringParams[i].m_dampingRelaxation = wd;
+
+
+		suspension.m_wheelParams[i].m_hardpointChassisSpace.set(m_Wheels[i].WheelComponent->Hardpoint.x, m_Wheels[i].WheelComponent->Hardpoint.y, m_Wheels[i].WheelComponent->Hardpoint.z);
+		
+		suspension.m_wheelParams[0].m_directionChassisSpace = hkVector4(m_Wheels[i].WheelComponent->DownDirection.x, m_Wheels[i].WheelComponent->DownDirection.y, m_Wheels[i].WheelComponent->DownDirection.z);
 	}
-
-	const hkVector4 downDirection(0.0f, -1.0f, 0.0f);
-	suspension.m_wheelParams[0].m_directionChassisSpace = downDirection;
-	suspension.m_wheelParams[1].m_directionChassisSpace = downDirection;
-	suspension.m_wheelParams[2].m_directionChassisSpace = downDirection;
-	suspension.m_wheelParams[3].m_directionChassisSpace = downDirection;
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultAerodynamics& aerodynamics)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultAerodynamics& aerodynamics, Components::Vehicle vehicleComponent )
 {
 	aerodynamics.m_airDensity = 1.3f;
 	// In m^2.
@@ -303,7 +270,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultA
 	aerodynamics.m_extraGravityws.set(0.0f, -5.0f, 0.0f);
 }
 
-void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper)
+void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper, Components::Vehicle vehicleComponent)
 {
 	// Caution: setting negative damping values will add energy to system. 
 	// Setting the value to 0 will not affect the angular velocity. 

@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\src\Components\Template.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\Entity.h" />

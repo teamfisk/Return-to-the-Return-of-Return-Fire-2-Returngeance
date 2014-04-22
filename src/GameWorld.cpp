@@ -54,7 +54,59 @@ void GameWorld::Initialize()
 		box->Depth = 2.5f;
 		auto vehicle = AddComponent<Components::Vehicle>(car, "Vehicle");
 		AddComponent<Components::Input>(car, "Input");
+	
+		{
+			// Front Right Wheel
+			auto ent = CreateEntity(car);
+			auto transform = AddComponent<Components::Transform>(ent, "Transform");
+			transform->Position = glm::vec3(1.1f, -0.5f, -1.3f);
+			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
+			Wheel->Hardpoint = glm::vec3(1.1f, 0.f, -1.3f);// HACK: make into component
+			Wheel->AxleID = 0;
+			Wheel->Mass = 10;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+		}
+		{
+			// Front Left Wheel
+			auto ent = CreateEntity(car);
+			auto transform = AddComponent<Components::Transform>(ent, "Transform");
+			transform->Position = glm::vec3(-1.1f, -0.5f, -1.3f);
+			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
+			Wheel->Hardpoint = glm::vec3(-1.1f, 0.f, -1.3f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 10;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+		}
+		{
+			// Back Right Wheel
+			auto ent = CreateEntity(car);
+			auto transform = AddComponent<Components::Transform>(ent, "Transform");
+			transform->Position = glm::vec3(1.1f, -0.5f, 1.3f);
+			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
+			Wheel->Hardpoint = glm::vec3(1.1f, 0.f, 1.3f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 10;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+		}
+		{
+			// Back Left Wheel
+			auto ent = CreateEntity(car);
+			auto transform = AddComponent<Components::Transform>(ent, "Transform");
+			transform->Position = glm::vec3(-1.1f, -0.5f, 1.3f);
+			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
+			Wheel->Hardpoint = glm::vec3(-1.1f, 0.f, 1.3f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 10;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+		}
+
 	}
+
+
 
 	for(int i = 0; i < 50; i++)
 	{
@@ -71,17 +123,16 @@ void GameWorld::Initialize()
 		box->Width = 5.f;
 		box->Height = 5.f;
 		box->Depth = 5.f;
-		
 	}
 
-	/*{
+	{
 		auto entity = CreateEntity();
 		AddComponent(entity, "Transform");
 		auto emitter = AddComponent<Components::SoundEmitter>(entity, "SoundEmitter");
 		emitter->Path = "Sounds/korvring.wav";
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
-	}*/
+	}
 }
 
 void GameWorld::Update(double dt)
@@ -102,12 +153,11 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); });
 	m_ComponentFactory.Register("FreeSteering", []() { return new Components::FreeSteering(); });
-
 	m_ComponentFactory.Register("Physics", []() { return new Components::Physics(); });
 	m_ComponentFactory.Register("Sphere", []() { return new Components::Sphere(); });
 	m_ComponentFactory.Register("Box", []() { return new Components::Box (); });
-
 	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
+	m_ComponentFactory.Register("Wheel", []() { return new Components::Wheel(); });
 }
 
 void GameWorld::RegisterSystems()

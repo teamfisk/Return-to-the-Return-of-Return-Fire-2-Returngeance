@@ -24,27 +24,38 @@
 #include <Physics2012/Vehicle/Suspension/Default/hkpVehicleDefaultSuspension.h>
 #include <Physics2012/Vehicle/Transmission/Default/hkpVehicleDefaultTransmission.h>
 #include <Physics2012/Vehicle/WheelCollide/RayCast/hkpVehicleRayCastWheelCollide.h>
-
 #include <Physics2012/Vehicle/WheelCollide/RayCast/hkpVehicleRayCastWheelCollide.h>
-
 #include <Physics2012/Collide/Filter/Group/hkpGroupFilter.h>
+
+#include "World.h"
+#include "Components/Vehicle.h"
+#include "Components/Wheel.h"
+#include "Components/Transform.h"
 
 class VehicleSetup
 {
 public:
-	virtual void buildVehicle(const hkpWorld* world, hkpVehicleInstance& vehicle);
+	virtual void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpVehicleInstance& vehicle, EntityID vehicleEntity, std::vector<EntityID> wheelEntities);
 
 public:
+	struct WheelData
+	{
+		Components::Wheel* WheelComponent;
+		Components::Transform* TransformComponent;
+	};
+
+	std::vector<WheelData> m_Wheels;
 
 	virtual void setupVehicleData(const hkpWorld* world, hkpVehicleData& data);
 	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultAnalogDriverInput& driverInput);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSteering& steering);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultEngine& engine);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultTransmission& transmission);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultBrake& brake);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSuspension& suspension);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultAerodynamics& aerodynamics);
-	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper);
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultEngine& engine, Components::Vehicle vehicleComponent);
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSteering& steering, Components::Vehicle vehicleComponent);
+	
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultTransmission& transmission, Components::Vehicle vehicleComponent);
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultBrake& brake, Components::Vehicle vehicleComponent );
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultSuspension& suspension, Components::Vehicle vehicleComponent);
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultAerodynamics& aerodynamics, Components::Vehicle vehicleComponent );
+	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper, Components::Vehicle vehicleComponent);
 
 	virtual void setupWheelCollide(const hkpWorld* world, const hkpVehicleInstance& vehicle, hkpVehicleRayCastWheelCollide& wheelCollide);
 };
