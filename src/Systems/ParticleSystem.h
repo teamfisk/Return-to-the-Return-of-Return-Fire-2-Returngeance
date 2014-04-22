@@ -18,13 +18,13 @@ namespace Systems
 		double SpawnTime;
 		float Scale;
 		Color color;
+		glm::vec3 Velocity;
 	};
 
 class ParticleSystem : public System
 {
 public:
-	ParticleSystem(World* world)
-		:System(world) { };
+	ParticleSystem(World* world);
 	void RegisterComponents(ComponentFactory* cf) override;
 
 	void Update(double dt) override;
