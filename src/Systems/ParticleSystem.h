@@ -5,6 +5,8 @@
 #include "Components/Transform.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
+#include "Color.h"
+#include <GLFW/glfw3.h>
 
 
 namespace Systems
@@ -13,7 +15,9 @@ namespace Systems
 	struct ParticleData
 	{
 		EntityID ParticleID;
-		double TimeLived;
+		double SpawnTime;
+		float Scale;
+		Color color;
 	};
 
 class ParticleSystem : public System
