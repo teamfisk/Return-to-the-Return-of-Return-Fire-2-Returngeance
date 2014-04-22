@@ -3,13 +3,15 @@
 
 #include "Component.h"
 
+
 namespace Components
 {
 
-	struct Vehicle : Component
-{	
+struct Vehicle : Component
+{
 	Vehicle()
 		: MaxTorque(500.0f), MinRPM(1000.0f), OptimalRPM(5500.0f), MaxRPM(7500.0f), MaxSteeringAngle(35), TopSpeed(50.0f) { }
+
 	float MaxTorque;
 	float MinRPM;
 	float OptimalRPM;

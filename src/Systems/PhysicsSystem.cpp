@@ -102,18 +102,36 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 	if (!transformComponent)
 		return;
-
-	if (m_RigidBodies.find(entity) == m_RigidBodies.end())
+	
+	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity, "Wheel");
+	if (wheelComponent)
 	{
-		SetUpPhysicsState(entity, parent);
+		EntityID car = m_World->GetEntityParent(entity);
+		if(m_Vehicles.find(car) != m_Vehicles.end())
+		{
+			hkVector4 position;
+			hkQuaternion orientation;
+			m_Vehicles[car]->calcCurrentPositionAndRotation(m_RigidBodies[car], m_Vehicles[car]->m_suspension, wheelComponent->ID, position, orientation);
+			hkVector4 chassisPosition =	m_RigidBodies[car]->getPosition();
+			hkQuaternion chassisOrientation = m_RigidBodies[car]->getRotation();
+			glm::vec3 relativePos = glm::vec3(chassisPosition(0), chassisPosition(1), chassisPosition(2)) - glm::vec3(position(0), position(1), position(2));
+			glm::quat relativeOrientation = glm::quat(orientation(3), orientation(0), orientation(1), orientation(2));
+
+			transformComponent->Position = relativePos;
+			//transformComponent->Orientation = relativeOrientation;
+		}
 	}
 	else
 	{
-		hkVector4 position = m_RigidBodies[entity]->getPosition();
-		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
-		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
-		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+		if(m_Vehicles.find(entity) != m_Vehicles.end())
+		{
+			hkVector4 position = m_RigidBodies[entity]->getPosition();
+			transformComponent->Position = glm::vec3(position(0), position(1), position(2));
+			hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
+			transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+		}
 	}
+	
 
 	// HACK: Vehicle test-controls
 	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(entity, "Vehicle");
@@ -126,6 +144,118 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		deviceStatus->m_handbrakeButtonPressed = inputComponent->KeyState[GLFW_KEY_RIGHT_CONTROL];
 	}
 }
+
+void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
+{
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	if (!transformComponent)
+		return;
+
+
+	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity, "Wheel");
+	if (wheelComponent)
+	{
+		wheelComponent->ID = m_Wheels.size();
+		m_Wheels.push_back(entity);
+	}
+
+	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
+	if (!physicsComponent)
+		return;
+
+	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
+	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
+
+
+	hkpConvexShape* shape;
+	hkpRigidBodyCinfo rigidBodyInfo;
+	hkMassProperties massProperties;
+
+
+	if (sphereComponent)
+	{
+		shape = new hkpSphereShape(sphereComponent->Radius);
+		rigidBodyInfo.m_shape = shape;
+
+		if (physicsComponent->Static)
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		}
+		else
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
+		}
+
+		hkpInertiaTensorComputer::computeSphereVolumeMassProperties(sphereComponent->Radius, physicsComponent->Mass, massProperties);
+
+	}
+	else if (boxComponent)
+	{
+		hkReal thickness = 0.05;
+		shape = new hkpBoxShape(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness));
+		rigidBodyInfo.m_shape = shape;
+		if (physicsComponent->Static)
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		}
+		else
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_BOX_INERTIA;
+		}
+		hkpInertiaTensorComputer::computeBoxSurfaceMassProperties(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness), physicsComponent->Mass, thickness, massProperties);
+	}
+	else
+	{
+		return;
+	}
+
+	rigidBodyInfo.m_position.set(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+	rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
+	rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
+	rigidBodyInfo.m_mass = massProperties.m_mass;
+
+	// Create RigidBody
+	hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+
+
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity, "Vehicle");
+	if (vehicleComponent && m_Vehicles.find(entity) == m_Vehicles.end())
+	{
+		for (int i = 0; i < m_Wheels.size(); i++)
+		{
+			if(m_World->GetEntityParent(m_Wheels[i]) != entity)
+			{
+				m_Wheels.erase(m_Wheels.begin() + i);
+				i--;
+			}
+		}
+		VehicleSetup vehicleSetup;
+
+		// Create the basic vehicle.
+		m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
+		vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
+		// Add the vehicle's entities and phantoms to the world
+		m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
+
+		m_RigidBodies[entity] = rigidBody;
+
+		// The vehicle is an action
+		m_PhysicsWorld->addAction(m_Vehicles[entity]);
+
+		//m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
+		m_Wheels.clear();
+		shape->removeReference();
+		rigidBody->removeReference();
+	}
+	else
+	{
+		m_PhysicsWorld->addEntity(rigidBody);
+		m_RigidBodies[entity] = rigidBody;
+		shape->removeReference();
+		rigidBody->removeReference();
+	}
+}
+/*
 
 void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 {
@@ -221,6 +351,8 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 		rigidBody->removeReference();
 	}
 }
+*/
+
 
 
 
@@ -268,6 +400,7 @@ void Systems::PhysicsSystem::StepVisualDebugger()
 
 void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 {
-	LOG_DEBUG("%s", msg);
+	LOG_INFO("%s", msg);
 }
+
 

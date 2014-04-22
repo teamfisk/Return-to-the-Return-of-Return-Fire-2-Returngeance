@@ -3,11 +3,15 @@
 
 #include "Component.h"
 
+namespace Systems { class PhysicsSystem; }
+
 namespace Components
 {
 
 struct Wheel : Component
 {	
+	friend class Systems::PhysicsSystem;
+
 	Wheel()
 		: AxleID(0), Radius(0), Width(0), Mass(0), Steering(false), DownDirection(glm::vec3(0, -1, 0)), Friction(1.5f), SlipAngle(0.0f),
 	MaxBreakingTorque(1500.0f), ConnectedToHandbrake(false), SuspensionStrength(50.0f) { }
@@ -26,6 +30,9 @@ struct Wheel : Component
 	float SlipAngle;
 	float MaxBreakingTorque;
 	bool ConnectedToHandbrake;
+
+private:
+	int ID;
 };
 
 }

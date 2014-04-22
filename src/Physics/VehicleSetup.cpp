@@ -253,7 +253,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultS
 
 		suspension.m_wheelParams[i].m_hardpointChassisSpace.set(m_Wheels[i].WheelComponent->Hardpoint.x, m_Wheels[i].WheelComponent->Hardpoint.y, m_Wheels[i].WheelComponent->Hardpoint.z);
 		
-		suspension.m_wheelParams[0].m_directionChassisSpace = hkVector4(m_Wheels[i].WheelComponent->DownDirection.x, m_Wheels[i].WheelComponent->DownDirection.y, m_Wheels[i].WheelComponent->DownDirection.z);
+		suspension.m_wheelParams[i].m_directionChassisSpace = hkVector4(m_Wheels[i].WheelComponent->DownDirection.x, m_Wheels[i].WheelComponent->DownDirection.y, m_Wheels[i].WheelComponent->DownDirection.z);
 	}
 }
 

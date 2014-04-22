@@ -58,7 +58,7 @@ public:
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(std::string type, Component* component) override;
-	
+	void OnEntityCommit(EntityID entity) override;
 
 private:
 	double m_Accumulator;
@@ -75,7 +75,7 @@ private:
 
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
 	std::unordered_map<EntityID, hkpVehicleInstance*> m_Vehicles;
-
+	std::vector<EntityID> m_Wheels;
 
 	hkpVehicleInstance* Systems::PhysicsSystem::createVehicle(VehicleSetup& vehicleSetup, hkpRigidBody* chassis);
 };
