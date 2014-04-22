@@ -159,6 +159,7 @@
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
+    <ClInclude Include="..\..\src\Util\Rectangle.h" />
     <ClInclude Include="..\..\src\Util\Logging.h" />
     <ClInclude Include="..\..\src\World.h" />
   </ItemGroup>

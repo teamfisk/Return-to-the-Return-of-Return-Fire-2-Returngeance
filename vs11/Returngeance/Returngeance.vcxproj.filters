@@ -221,6 +221,9 @@
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\MessageRelay.h" />
+    <ClInclude Include="..\..\src\Util\Rectangle.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">
