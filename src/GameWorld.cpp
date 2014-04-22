@@ -16,6 +16,7 @@ void GameWorld::Initialize()
 		cameraComp->FarClip = 2000.f;
 		AddComponent(camera, "Input");
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+		CommitEntity(camera);
 	}
 
 
@@ -35,6 +36,8 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
 		physics->Static = true;
+
+		CommitEntity(ground);
 	}
 
 
@@ -66,6 +69,7 @@ void GameWorld::Initialize()
 			Wheel->Mass = 10;
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
+			CommitEntity(ent);
 		}
 		{
 			// Front Left Wheel
@@ -78,6 +82,7 @@ void GameWorld::Initialize()
 			Wheel->Mass = 10;
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
+			CommitEntity(ent);
 		}
 		{
 			// Back Right Wheel
@@ -90,6 +95,7 @@ void GameWorld::Initialize()
 			Wheel->Mass = 10;
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
+			CommitEntity(ent);
 		}
 		{
 			// Back Left Wheel
@@ -102,8 +108,10 @@ void GameWorld::Initialize()
 			Wheel->Mass = 10;
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
+			CommitEntity(ent);
 		}
 
+		CommitEntity(car);
 	}
 
 
@@ -123,6 +131,7 @@ void GameWorld::Initialize()
 		box->Width = 5.f;
 		box->Height = 5.f;
 		box->Depth = 5.f;
+		CommitEntity(ball);
 	}
 
 	{
@@ -132,6 +141,7 @@ void GameWorld::Initialize()
 		emitter->Path = "Sounds/korvring.wav";
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
+		CommitEntity(entity);
 	}
 }
 

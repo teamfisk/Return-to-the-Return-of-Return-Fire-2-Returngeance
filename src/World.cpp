@@ -147,6 +147,15 @@ std::shared_ptr<Component> World::AddComponent(EntityID entity, std::string comp
 	return AddComponent<Component>(entity, componentType);
 }
 
+void World::CommitEntity(EntityID entity)
+{
+	for (auto pair : m_Systems)
+	{
+		auto system = pair.second;
+		system->OnEntityCommit(entity);
+	}
+}
+
 void World::AddSystem(std::string systemType)
 {
 	m_Systems[systemType] = std::shared_ptr<System>(m_SystemFactory.Create(systemType));

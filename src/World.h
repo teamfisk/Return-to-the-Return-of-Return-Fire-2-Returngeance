@@ -64,6 +64,8 @@ public:
 	std::shared_ptr<Component> AddComponent(EntityID entity, std::string componentType);
 	template <class T>
 	T* GetComponent(EntityID entity, std::string componentType);
+	// Triggers commit events in systems
+	void CommitEntity(EntityID entity);
 
 	/*std::vector<EntityID> GetEntityChildren(EntityID entity);*/
 
