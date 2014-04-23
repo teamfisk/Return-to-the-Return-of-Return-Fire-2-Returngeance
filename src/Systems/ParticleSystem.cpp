@@ -28,11 +28,14 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			SpawnParticles(entity, emitterComponent->SpawnCount, emitterComponent->SpreadAngle);
 			m_TimeSinceLastSpawn = 0;
 		}
+
 		std::cout<<m_TimeSinceLastSpawn<<std::endl;
 		std::list<ParticleData>::iterator it;
 		for(it = m_ParticleEmitter[entity].begin(); it == m_ParticleEmitter[entity].end();)
 		{
 			auto particleComponent = m_World->GetComponent<Components::Particle>(it->ParticleID, "Particle");
+			if(!particleComponent)
+				break;
 			
 			double timeLived = glfwGetTime() - it->SpawnTime; 
 			std::cout<<timeLived<<std::endl;

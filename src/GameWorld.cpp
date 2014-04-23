@@ -91,18 +91,18 @@ void GameWorld::Initialize()
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
 	}*/
 
-// 	{
-// 		// Particle emitter
-// 		auto ent = CreateEntity();
-// 		auto transform = AddComponent<Components::Transform>(ent, "Transform");
-// 		transform->Position = glm::vec3(0);
-// 		auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
-// 		emitter->LifeTime = 4;
-// 		emitter->SpawnCount = 3;
-// 		emitter->SpreadAngle = 35;
-// 		emitter->SpawnFrequency = 0.3;
-// 		//emitter->
-// 	}
+	{
+		// Particle emitter
+		auto ent = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ent, "Transform");
+		transform->Position = glm::vec3(0);
+		auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
+		emitter->LifeTime = 4;
+		emitter->SpawnCount = 3;
+		emitter->SpreadAngle = 35;
+		emitter->SpawnFrequency = 0.3;
+		//emitter->
+	}
 }
 
 void GameWorld::Update(double dt)
