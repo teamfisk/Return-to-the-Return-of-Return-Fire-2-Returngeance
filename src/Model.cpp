@@ -18,7 +18,7 @@ Model::Model(OBJ &obj, ResourceManager* rm)
 		{
 			currentMaterial = face.Material;
 			// Load texture
-			auto texture = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->TextureFile));
+			auto texture = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->DiffuseTexture.FileName));
 			// TODO: Load material parameters
 			// Create new texture group (start index of new group is upcoming index)
 			TextureGroup texGroup = { texture, index, index };
