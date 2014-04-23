@@ -3,8 +3,6 @@
 
 #include "System.h"
 #include "Component.h"
-#include "Components/Transform.h"
-#include "Components/ParticleEmitter.h"
 #include "Color.h"
 #include <vector>
 

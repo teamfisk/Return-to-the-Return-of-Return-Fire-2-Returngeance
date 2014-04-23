@@ -5,6 +5,7 @@
 #include "Components/Transform.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
+#include "Components/Model.h"
 #include "Color.h"
 #include <GLFW/glfw3.h>
 
@@ -18,6 +19,7 @@ namespace Systems
 		float Scale;
 		Color color;
 		glm::vec3 Velocity;
+		glm::vec3 Direction;
 	};
 
 class ParticleSystem : public System

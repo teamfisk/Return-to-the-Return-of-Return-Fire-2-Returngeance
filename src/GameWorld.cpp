@@ -98,9 +98,9 @@ void GameWorld::Initialize()
 		transform->Position = glm::vec3(0);
 		auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
 		emitter->LifeTime = 4;
-		emitter->SpawnCount = 3;
+		emitter->SpawnCount = 1;
 		emitter->SpreadAngle = 35;
-		emitter->SpawnFrequency = 0.01;
+		emitter->SpawnFrequency = 0.05;
 		//emitter->
 	}
 }
