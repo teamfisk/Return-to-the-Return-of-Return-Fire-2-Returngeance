@@ -34,21 +34,24 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 		}
 		
 		std::list<ParticleData>::iterator it;
-		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end(); it++)
+		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end();)
 		{
 			EntityID particleID = it->ParticleID;
 			auto particleComponent = m_World->GetComponent<Components::Particle>(particleID, "Particle");
 			double timeLived = glfwGetTime() - it->SpawnTime; 
 			if(timeLived > particleComponent->LifeTime)
 			{
+				
+				m_World->RemoveEntity(particleID);
 				m_ParticleEmitter[entity].erase(it);
 				//std::cout<<"Removed dead particle..."<<std::endl; // TEMP
+				
 				break;
 			}
-			/*else
+			else
 			{
 				it++;
-			}*/
+			}
 
 			auto transformComponent = m_World->GetComponent<Components::Transform>(particleID, "Transform");
 			float speed = 10 * dt;
@@ -113,6 +116,14 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCoun
 		auto model = m_World->AddComponent<Components::Model>(ent, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
 
+		/*auto physics = m_World->AddComponent<Components::Physics>(ent, "Physics");
+		physics->Mass = 1;
+
+		auto physicShape = m_World->AddComponent<Components::Box>(ent, "Box");
+		physicShape->Width = 0.5;
+		physicShape->Height = 0.5;
+		physicShape->Depth = 0.5;*/
+
 		ParticleData data;
 		data.ParticleID = ent;
 		data.SpawnTime = glfwGetTime();
@@ -123,12 +134,13 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCoun
 
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
-	std::cout<<"Added "<<spawnCount<<" particles..."<<std::endl;
+	//std::cout<<"Added "<<spawnCount<<" particles..."<<std::endl;
 }
 
-void Systems::ParticleSystem::Draw(double dt)
-{
 
-}
+// void Systems::ParticleSystem::Draw(double dt)
+// {
+// 
+// }
 
 

@@ -6,6 +6,8 @@
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
 #include "Components/Model.h"
+#include "Components/Physics.h"
+#include "Components/Box.h"
 #include "Color.h"
 #include <GLFW/glfw3.h>
 
