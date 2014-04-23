@@ -76,10 +76,13 @@ void Systems::PhysicsSystem::Update(double dt)
 			continue;
 
 		
-
-		hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
-		hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
-		m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+		if(m_RigidBodies[entity]->isActive())
+		{
+			hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+			hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
+			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+		}
+		
 	}
 
 	
@@ -109,26 +112,31 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		EntityID car = m_World->GetEntityParent(entity);
 		if(m_Vehicles.find(car) != m_Vehicles.end())
 		{
-			hkVector4 position;
-			hkQuaternion orientation;
-			m_Vehicles[car]->calcCurrentPositionAndRotation(m_RigidBodies[car], m_Vehicles[car]->m_suspension, wheelComponent->ID, position, orientation);
-			hkVector4 chassisPosition =	m_RigidBodies[car]->getPosition();
-			hkQuaternion chassisOrientation = m_RigidBodies[car]->getRotation();
-			glm::vec3 relativePos = glm::vec3(chassisPosition(0), chassisPosition(1), chassisPosition(2)) - glm::vec3(position(0), position(1), position(2));
-			glm::quat relativeOrientation = glm::quat(orientation(3), orientation(0), orientation(1), orientation(2));
+			m_Vehicles[car]->getChassis()->activate();
 
-			transformComponent->Position = relativePos;
-			//transformComponent->Orientation = relativeOrientation;
+			hkVector4 hardPoint = m_Vehicles[car]->m_suspension->m_wheelParams[wheelComponent->ID].m_hardpointChassisSpace;
+			hkVector4 suspensionDirection =  m_Vehicles[car]->m_suspension->m_wheelParams[wheelComponent->ID].m_directionChassisSpace;
+			hkReal suspensionLength = m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_currentSuspensionLength;
+			glm::vec3 position = glm::vec3(hardPoint(0) + (suspensionDirection(0) * suspensionLength), hardPoint(1) + (suspensionDirection(1) * suspensionLength), hardPoint(2) + (suspensionDirection(2) * suspensionLength));
+			transformComponent->Position = position;
+			
+			hkQuaternion steeringOrientation = m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_steeringOrientationChassisSpace;
+			hkReal spinAngle = -m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_spinAngle;
+			glm::quat orientation = glm::quat(steeringOrientation(3), steeringOrientation(0), steeringOrientation(1), steeringOrientation(2)) * glm::angleAxis<float>(spinAngle, glm::vec3(1, 0, 0));
+			transformComponent->Orientation = orientation;
 		}
 	}
 	else
 	{
 		if(m_Vehicles.find(entity) != m_Vehicles.end())
 		{
-			hkVector4 position = m_RigidBodies[entity]->getPosition();
-			transformComponent->Position = glm::vec3(position(0), position(1), position(2));
-			hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
-			transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+			if(m_RigidBodies[entity]->isActive())
+			{
+				hkVector4 position = m_RigidBodies[entity]->getPosition();
+				transformComponent->Position = glm::vec3(position(0), position(1), position(2));
+				hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
+				transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+			}
 		}
 	}
 	

@@ -37,3 +37,10 @@ private:
 
 }
 #endif // Components_Wheel_h__
+
+/*
+m_currentSuspensionLength
+m_suspension
+m_steeringOrientationChassisSpace
+m_spinAngle
+*/
