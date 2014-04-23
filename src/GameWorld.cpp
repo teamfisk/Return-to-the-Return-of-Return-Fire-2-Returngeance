@@ -43,6 +43,54 @@ void GameWorld::Initialize()
 	}
 
 	{
+		auto jeep = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(jeep, "Transform");
+		transform->Position = glm::vec3(0, 1, 0);
+
+		auto model = AddComponent<Components::Model>(jeep, "Model");
+		model->ModelFile = "Models/JeepV2/Chassi/chassi.OBJ";
+		CommitEntity(jeep);
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.4f, 0.5546f, -0.9242f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.4f, 0.5546f, -0.9242f);
+			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(0.2726f, 0.2805f, 1.9307f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-0.2726f, 0.2805f, 1.9307f);
+			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
+			CommitEntity(wheel);
+		}
+	}
+
+	{
 		auto TankTest = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(TankTest, "Transform");
 		transform->Position = glm::vec3(1.5f, 0.7f, 5.f);
