@@ -24,29 +24,88 @@ void GameWorld::Initialize()
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground, "Transform");
 		transform->Position = glm::vec3(0, -5, 0);
-		transform->Scale = glm::vec3(1000.0f, 10.0f, 1000.0f);
+		transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
 		auto box = AddComponent<Components::Box>(ground, "Box");
-		box->Width = 500;
+		box->Width = 200;
 		box->Height = 5;
-		box->Depth = 500;
+		box->Depth = 200;
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
-<<<<<<< HEAD
 		physics->Static = true;
-=======
+
 		CommitEntity(ground);
->>>>>>> 84d6911... Barebones entity component commit events
 	}
 
+<<<<<<< HEAD
+=======
+	{
+		auto jeep = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(jeep, "Transform");
+		transform->Position = glm::vec3(0, 1, 0);
 
+		auto model = AddComponent<Components::Model>(jeep, "Model");
+		model->ModelFile = "Models/JeepV2/Chassi/chassi.OBJ";
+		CommitEntity(jeep);
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.4f, 0.5546f, -0.9242f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.4f, 0.5546f, -0.9242f);
+			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(0.2726f, 0.2805f, 1.9307f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-0.2726f, 0.2805f, 1.9307f);
+			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
+			CommitEntity(wheel);
+		}
+	}
+
+	{
+		auto TankTest = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(TankTest, "Transform");
+		transform->Position = glm::vec3(1.5f, 0.7f, 5.f);
+
+		auto model = AddComponent<Components::Model>(TankTest, "Model");
+		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
+		CommitEntity(TankTest);
+	}
+>>>>>>> 3412fa4... Jeep entity setup.
+
+	for (int i = 0; i < 1; i++)
 	{
 		auto car = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(car, "Transform");
-		transform->Position = glm::vec3(0, 5, 0);
+		transform->Position = glm::vec3(0, (i+1)*5, 0);
 		transform->Scale = glm::vec3(3, 1, 5);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(car, "Model");
@@ -58,107 +117,103 @@ void GameWorld::Initialize()
 		box->Height = 0.5f;
 		box->Depth = 2.5f;
 		auto vehicle = AddComponent<Components::Vehicle>(car, "Vehicle");
+		vehicle->TopSpeed = 500.f;
+		vehicle->MaxTorque = 1000.f;
 		AddComponent<Components::Input>(car, "Input");
 	
 		{
 			// Front Right Wheel
 			auto ent = CreateEntity(car);
 			auto transform = AddComponent<Components::Transform>(ent, "Transform");
-			transform->Position = glm::vec3(1.1f, -0.5f, -1.3f);
+			transform->Scale = glm::vec3(1)/glm::vec3(3, 1, 5);
+			transform->Position = glm::vec3(1.1f, -1.5f, -1.3f);
 			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
 			Wheel->Hardpoint = glm::vec3(1.1f, 0.f, -1.3f);// HACK: make into component
 			Wheel->AxleID = 0;
 			Wheel->Mass = 10;
-			Wheel->Radius = 0.6f;
+			Wheel->Radius = 0.5f;
 			Wheel->Steering = true;
+			Wheel->SuspensionStrength = 20.f;
+			auto model = AddComponent<Components::Model>(ent, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+			CommitEntity(ent);
 		}
 		{
 			// Front Left Wheel
 			auto ent = CreateEntity(car);
 			auto transform = AddComponent<Components::Transform>(ent, "Transform");
-			transform->Position = glm::vec3(-1.1f, -0.5f, -1.3f);
+			transform->Scale = glm::vec3(1)/glm::vec3(3, 1, 5);
+			transform->Position = glm::vec3(-1.1f, -1.5f, -1.3f);
 			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
 			Wheel->Hardpoint = glm::vec3(-1.1f, 0.f, -1.3f);
 			Wheel->AxleID = 0;
 			Wheel->Mass = 10;
-			Wheel->Radius = 0.6f;
+			Wheel->Radius = 0.5f;
 			Wheel->Steering = true;
+			Wheel->SuspensionStrength = 20.f;
+			auto model = AddComponent<Components::Model>(ent, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+			CommitEntity(ent);
 		}
 		{
 			// Back Right Wheel
 			auto ent = CreateEntity(car);
 			auto transform = AddComponent<Components::Transform>(ent, "Transform");
-			transform->Position = glm::vec3(1.1f, -0.5f, 1.3f);
+			transform->Scale = glm::vec3(1)/glm::vec3(3, 1, 5);
+			transform->Position = glm::vec3(1.1f, -1.5f, 1.3f);
 			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
 			Wheel->Hardpoint = glm::vec3(1.1f, 0.f, 1.3f);
 			Wheel->AxleID = 1;
 			Wheel->Mass = 10;
-			Wheel->Radius = 0.6f;
+			Wheel->Radius = 0.5f;
 			Wheel->Steering = false;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->SuspensionStrength = 20.f;
+			auto model = AddComponent<Components::Model>(ent, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+			CommitEntity(ent);
 		}
 		{
 			// Back Left Wheel
 			auto ent = CreateEntity(car);
 			auto transform = AddComponent<Components::Transform>(ent, "Transform");
-			transform->Position = glm::vec3(-1.1f, -0.5f, 1.3f);
+			transform->Scale = glm::vec3(1)/glm::vec3(3, 1, 5);
+			transform->Position = glm::vec3(-1.1f, -1.5f, 1.3f);
 			auto Wheel = AddComponent<Components::Wheel>(ent, "Wheel");
 			Wheel->Hardpoint = glm::vec3(-1.1f, 0.f, 1.3f);
 			Wheel->AxleID = 1;
 			Wheel->Mass = 10;
-			Wheel->Radius = 0.6f;
+			Wheel->Radius = 0.5f;
 			Wheel->Steering = false;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->SuspensionStrength = 20.f;
+			auto model = AddComponent<Components::Model>(ent, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+			CommitEntity(ent);
 		}
 
-<<<<<<< HEAD
+		CommitEntity(car);
 	}
 
-=======
-		auto model = AddComponent<Components::Model>(TankTest, "Model");
-		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
-		CommitEntity(TankTest);
-	}
 
-	for(int i = 0; i < 83; i++)
+
+	for(int i = 0; i < 10; i++)
 	{
-		auto light = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(light, "Transform");
-		transform->Position = glm::vec3((float)(2*i)*glm::sin((float)i), 3, (float)(2*i)*glm::cos((float)i));
-
-		auto pointLight = AddComponent<Components::PointLight>(light, "PointLight");
-		pointLight->Specular = glm::vec3(0.1f, 0.1f, 0.1f);
-		pointLight->Diffuse = glm::vec3(0.05f, 0.36f, 1.f);
-		pointLight->constantAttenuation = 0.03f;
-		pointLight->linearAttenuation = 0.009f;
-		pointLight->quadraticAttenuation = 0.07f;
-		pointLight->spotExponent = 0.0f;
-
-		auto model = AddComponent<Components::Model>(light, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
-		CommitEntity(light);
-	}
->>>>>>> 84d6911... Barebones entity component commit events
-
-
-	for(int i = 0; i < 50; i++)
-	{
-		auto ball = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ball, "Transform");
-		transform->Position = glm::vec3(243, 10 + i*10, 0);
-		transform->Scale = glm::vec3(10);
+		auto cube = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(cube, "Transform");
+		transform->Position = glm::vec3(20, 10 + i*2, 0);
+		transform->Scale = glm::vec3(1);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(ball, "Model");
+		auto model = AddComponent<Components::Model>(cube, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
-		auto physics = AddComponent<Components::Physics>(ball, "Physics");
-<<<<<<< HEAD
+		
+		auto physics = AddComponent<Components::Physics>(cube, "Physics");
 		physics->Mass = 100;
-		auto box = AddComponent<Components::Box>(ball, "Box");
-		box->Width = 5.f;
-		box->Height = 5.f;
-		box->Depth = 5.f;
-=======
-		physics->Mass = 1;
-		CommitEntity(ball);
->>>>>>> 84d6911... Barebones entity component commit events
+		auto box = AddComponent<Components::Box>(cube, "Box");
+		box->Width = 0.5f;
+		box->Height = 0.5f;
+		box->Depth = 0.5f;
+		CommitEntity(cube);
 	}
 
 	{
@@ -168,6 +223,7 @@ void GameWorld::Initialize()
 		emitter->Path = "Sounds/korvring.wav";
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
+		CommitEntity(entity);
 	}
 }
 

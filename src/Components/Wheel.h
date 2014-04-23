@@ -33,6 +33,7 @@ struct Wheel : Component
 
 private:
 	int ID;
+	glm::quat OriginalOrientation;
 };
 
 }

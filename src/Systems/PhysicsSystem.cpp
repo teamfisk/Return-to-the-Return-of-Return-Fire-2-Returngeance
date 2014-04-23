@@ -123,7 +123,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			hkQuaternion steeringOrientation = m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_steeringOrientationChassisSpace;
 			hkReal spinAngle = -m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_spinAngle;
 			glm::quat orientation = glm::quat(steeringOrientation(3), steeringOrientation(0), steeringOrientation(1), steeringOrientation(2)) * glm::angleAxis<float>(spinAngle, glm::vec3(1, 0, 0));
-			transformComponent->Orientation = orientation;
+			transformComponent->Orientation = orientation * wheelComponent->OriginalOrientation;
 		}
 	}
 	else
@@ -164,6 +164,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	if (wheelComponent)
 	{
 		wheelComponent->ID = m_Wheels.size();
+		wheelComponent->OriginalOrientation = transformComponent->Orientation;
 		m_Wheels.push_back(entity);
 	}
 
@@ -178,7 +179,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	hkpConvexShape* shape;
 	hkpRigidBodyCinfo rigidBodyInfo;
 	hkMassProperties massProperties;
-
 
 	if (sphereComponent)
 	{
