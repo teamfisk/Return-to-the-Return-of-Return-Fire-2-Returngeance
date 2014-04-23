@@ -214,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Box.h" />
     <ClInclude Include="..\..\src\Components\Sphere.h" />
+    <ClInclude Include="..\..\src\Util\defferedUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">
@@ -247,6 +250,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\First_pass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\First_pass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\Second_pass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\Second_pass.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
