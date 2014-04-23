@@ -49,7 +49,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
 	}
 
-	for(int i = 0; i < 83; i++)
+	for(int i = 0; i < 2; i++)
 	{
 		auto light = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(light, "Transform");
@@ -67,7 +67,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 	}
 
-	for(int i = 0; i < 500; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		auto ball = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ball, "Transform");
@@ -100,7 +100,7 @@ void GameWorld::Initialize()
 		emitter->LifeTime = 4;
 		emitter->SpawnCount = 3;
 		emitter->SpreadAngle = 35;
-		emitter->SpawnFrequency = 0.3;
+		emitter->SpawnFrequency = 0.01;
 		//emitter->
 	}
 }

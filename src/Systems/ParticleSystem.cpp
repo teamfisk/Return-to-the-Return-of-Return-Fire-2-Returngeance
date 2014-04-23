@@ -25,23 +25,25 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 	{
 		if(m_TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
 		{
-			SpawnParticles(entity, emitterComponent->SpawnCount, emitterComponent->SpreadAngle);
-			m_TimeSinceLastSpawn = 0;
+			if(m_ParticleEmitter[entity].size() < 100)
+			{
+				SpawnParticles(entity, emitterComponent->SpawnCount, emitterComponent->SpreadAngle);
+				m_TimeSinceLastSpawn = 0;
+			}
+			std::cout<<"Particle count: "<<m_ParticleEmitter[entity].size()<<std::endl;
 		}
-
-		std::cout<<m_TimeSinceLastSpawn<<std::endl;
+		
 		std::list<ParticleData>::iterator it;
-		for(it = m_ParticleEmitter[entity].begin(); it == m_ParticleEmitter[entity].end();)
+		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end();)
 		{
 			auto particleComponent = m_World->GetComponent<Components::Particle>(it->ParticleID, "Particle");
-			if(!particleComponent)
-				break;
+			
 			
 			double timeLived = glfwGetTime() - it->SpawnTime; 
-			std::cout<<timeLived<<std::endl;
 			if(timeLived > particleComponent->LifeTime)
 			{
 				m_ParticleEmitter[entity].erase(it);
+				std::cout<<"Removed dead particle..."<<std::endl;
 				break;
 			}
 			else
@@ -50,7 +52,7 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			}
 
 			// Interpolates the color for each color channel by the start and end value. Decides how much the color should be interpolated based on time.
-			// How big fraction the color is multiplied with
+			/*// How big fraction the color is multiplied with
 			float timeProgress = timeLived / particleComponent->LifeTime; 
 			// The difference between the start and end value
 			float deltaColor = glm::abs(particleComponent->ColorSpectrum[0].r - particleComponent->ColorSpectrum[1].r); 
@@ -70,7 +72,7 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			deltaVelocity = glm::abs(particleComponent->VelocitySpectrum[0].y - particleComponent->VelocitySpectrum[1].y);
 			it->Velocity.y = particleComponent->VelocitySpectrum[0].y + deltaVelocity * timeProgress;	
 			deltaVelocity = glm::abs(particleComponent->VelocitySpectrum[0].z - particleComponent->VelocitySpectrum[1].z);
-			it->Velocity.z = particleComponent->VelocitySpectrum[0].z + deltaVelocity * timeProgress;
+			it->Velocity.z = particleComponent->VelocitySpectrum[0].z + deltaVelocity * timeProgress;*/
 		}
 	}
 }
@@ -83,7 +85,6 @@ void Systems::ParticleSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCount, float spreadAngle)
 {
-	std::list<EntityID> particles;
 	for(int i = 0; i < spawnCount; i++)
 	{
 		auto ent = m_World->CreateEntity();
@@ -92,7 +93,7 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCoun
 		transform->Position = glm::vec3(0);
 		
 		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
-		particle->LifeTime = 4000;
+		particle->LifeTime = 4;
 		Color startColor = {.4f, .45f, .2f};
 		particle->ColorSpectrum.push_back(startColor);
 		Color endColor = {0.f, 45.f, 23.f};
@@ -110,6 +111,7 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCoun
 
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
+	std::cout<<"Added "<<spawnCount<<" particles..."<<std::endl;
 }
 
 void Systems::ParticleSystem::Draw(double dt)

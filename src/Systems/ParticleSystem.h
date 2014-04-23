@@ -8,7 +8,6 @@
 #include "Color.h"
 #include <GLFW/glfw3.h>
 
-
 namespace Systems
 {
 
