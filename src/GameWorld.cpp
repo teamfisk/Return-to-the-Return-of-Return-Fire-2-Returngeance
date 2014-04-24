@@ -10,18 +10,7 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
-	{
-		auto camera = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(camera, "Transform");
-		transform->Position.z = 20.f;
-		transform->Position.y = 20.f;
-		transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
-		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-		cameraComp->FarClip = 2000.f;
-		AddComponent(camera, "Input");
-		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-		CommitEntity(camera);
-	}
+	
 
 
 	{
@@ -57,9 +46,22 @@ void GameWorld::Initialize()
 		box->Height = 0.727f;
 		box->Depth = 2.594f;
 		auto vehicle = AddComponent<Components::Vehicle>(jeep, "Vehicle");
-		vehicle->TopSpeed = 500.f;
-		vehicle->MaxTorque = 1000.f;
+
 		AddComponent<Components::Input>(jeep, "Input");
+
+
+		{
+			auto camera = CreateEntity();
+			auto transform = AddComponent<Components::Transform>(camera, "Transform");
+			transform->Position.z = 20.f;
+			transform->Position.y = 10.f;
+			transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
+			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+			cameraComp->FarClip = 2000.f;
+			AddComponent(camera, "Input");
+			auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+			CommitEntity(camera);
+		}
 
 		{
 			auto chassis = CreateEntity(jeep);
@@ -67,6 +69,7 @@ void GameWorld::Initialize()
 			transform->Position = glm::vec3(0, -0.6577f, 0);
 			auto model = AddComponent<Components::Model>(chassis, "Model");
 			model->ModelFile = "Models/JeepV2/Chassi/chassi.OBJ";
+
 		}
 
 		{
@@ -79,10 +82,10 @@ void GameWorld::Initialize()
 			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
 			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f, 0.f);
 			Wheel->AxleID = 0;
-			Wheel->Mass = 10;
+			Wheel->Mass = 50;
 			Wheel->Radius = 0.837f;
 			Wheel->Steering = true;
-			Wheel->SuspensionStrength = 50.f;
+			Wheel->SuspensionStrength = 40.f;
 			Wheel->Friction = 4.0f;
 			Wheel->ConnectedToHandbrake = true;
 			CommitEntity(wheel);
@@ -99,10 +102,10 @@ void GameWorld::Initialize()
 			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
 			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f, 0.f);
 			Wheel->AxleID = 0;
-			Wheel->Mass = 10;
+			Wheel->Mass = 50;
 			Wheel->Radius = 0.837f;
 			Wheel->Steering = true;
-			Wheel->SuspensionStrength = 50.f;
+			Wheel->SuspensionStrength = 40.f;
 			Wheel->Friction = 4.0f;
 			Wheel->ConnectedToHandbrake = true;
 			CommitEntity(wheel);
@@ -243,7 +246,7 @@ void GameWorld::Initialize()
 		CommitEntity(cube);
 	}
 
-	{
+	/*{
 		auto entity = CreateEntity();
 		AddComponent(entity, "Transform");
 		auto emitter = AddComponent<Components::SoundEmitter>(entity, "SoundEmitter");
@@ -251,7 +254,7 @@ void GameWorld::Initialize()
 		emitter->Loop = true;
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
 		CommitEntity(entity);
-	}
+	}*/
 }
 
 void GameWorld::Update(double dt)
