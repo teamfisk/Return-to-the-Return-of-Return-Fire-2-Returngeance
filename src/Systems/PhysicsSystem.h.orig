@@ -1,6 +1,10 @@
 #ifndef PhysicsSystem_h__
 #define PhysicsSystem_h__
 
+
+
+
+
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/Physics.h"
@@ -10,6 +14,7 @@
 #include "Components/Input.h"
 
 // Math and base include
+
 #include <Common/Base/hkBase.h>
 #include <Common/Base/Memory/System/Util/hkMemoryInitUtil.h>
 #include <Common/Base/System/Error/hkDefaultError.h>
@@ -26,6 +31,8 @@
 #include <Physics2012/Collide/Shape/Convex/Sphere/hkpSphereShape.h>
 #include <Physics2012/Collide/Dispatch/hkpAgentRegisterUtil.h>
 
+
+
 #include <Physics2012/Dynamics/World/hkpWorld.h>
 #include <Physics2012/Dynamics/Entity/hkpRigidBody.h>
 #include <Physics2012/Utilities/Dynamics/Inertia/hkpInertiaTensorComputer.h>
@@ -34,7 +41,10 @@
 #include <Common/Visualize/hkVisualDebugger.h>
 #include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
 
+
+
 #include "Physics/VehicleSetup.h"
+
 
 #include <unordered_map>
 namespace Systems
@@ -53,6 +63,10 @@ public:
 	void OnEntityCommit(EntityID entity) override;
 
 private:
+<<<<<<< HEAD
+
+=======
+>>>>>>> havok
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
 

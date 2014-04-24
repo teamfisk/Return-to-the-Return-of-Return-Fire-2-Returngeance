@@ -52,7 +52,7 @@ void main()
 	//float bias = 0.001 * tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
 	//bias = clamp(bias, 0.0, 0.01);
 	float visibility = 1.0;
-	if (Input.ShadowCoord.x >= 0.0 && Input.ShadowCoord.x <= 1.0 && Input.ShadowCoord.y >= 0.0 && Input.ShadowCoord.y <= 1.0)
+	/*if (Input.ShadowCoord.x >= 0.0 && Input.ShadowCoord.x <= 1.0 && Input.ShadowCoord.y >= 0.0 && Input.ShadowCoord.y <= 1.0)
 	{
 		float bias = 0.00005;
 		vec4 shadowMapValue = texture(shadowMap, Input.ShadowCoord.xy);
@@ -60,7 +60,7 @@ void main()
 		{
 			visibility = 0.3;
 		}
-	}
+	}*/
 
 	vec3 totalLighting = La * Ka * visibility;
 

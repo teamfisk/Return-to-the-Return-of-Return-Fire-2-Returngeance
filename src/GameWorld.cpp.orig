@@ -5,10 +5,13 @@ void GameWorld::Initialize()
 {
 	World::Initialize();
 
+<<<<<<< HEAD
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
 	RegisterComponents();
+=======
+>>>>>>> havok
 
 	{
 		auto camera = CreateEntity();
@@ -39,6 +42,102 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
+<<<<<<< HEAD
+		CommitEntity(ground);
+	}
+
+	{
+		auto jeep = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(jeep, "Transform");
+		transform->Position = glm::vec3(0, 1, 0);
+
+		auto model = AddComponent<Components::Model>(jeep, "Model");
+		model->ModelFile = "Models/JeepV2/Chassi/chassi.OBJ";
+		CommitEntity(jeep);
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.4f, 0.5546f, -0.9242f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.4f, 0.5546f, -0.9242f);
+			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(0.2726f, 0.2805f, 1.9307f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-0.2726f, 0.2805f, 1.9307f);
+			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
+			CommitEntity(wheel);
+		}
+	}
+
+	{
+		auto TankTest = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(TankTest, "Transform");
+		transform->Position = glm::vec3(1.5f, 0.7f, 5.f);
+
+		auto model = AddComponent<Components::Model>(TankTest, "Model");
+		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
+		CommitEntity(TankTest);
+	}
+
+	for(int i = 0; i < 83; i++)
+	{
+		auto light = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(light, "Transform");
+		transform->Position = glm::vec3((float)(2*i)*glm::sin((float)i), 3, (float)(2*i)*glm::cos((float)i));
+
+		auto pointLight = AddComponent<Components::PointLight>(light, "PointLight");
+		pointLight->Specular = glm::vec3(0.1f, 0.1f, 0.1f);
+		pointLight->Diffuse = glm::vec3(0.05f, 0.36f, 1.f);
+		pointLight->constantAttenuation = 0.03f;
+		pointLight->linearAttenuation = 0.009f;
+		pointLight->quadraticAttenuation = 0.07f;
+		pointLight->spotExponent = 0.0f;
+
+		auto model = AddComponent<Components::Model>(light, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+		CommitEntity(light);
+	}
+
+	for(int i = 0; i < 500; i++)
+	{
+		auto ball = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ball, "Transform");
+		transform->Position = glm::vec3(i/5.f, 5 + i*2, i/5.f);
+		transform->Scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(ball, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Sphere.obj";
+		auto sphere = AddComponent<Components::Sphere>(ball, "Sphere");
+		sphere->Radius = 0.5;
+		auto physics = AddComponent<Components::Physics>(ball, "Physics");
+		physics->Mass = 1;
+		CommitEntity(ball);
+=======
 		physics->Static = true;
 
 		CommitEntity(ground);
@@ -241,6 +340,7 @@ void GameWorld::Initialize()
 		box->Height = 0.5f;
 		box->Depth = 0.5f;
 		CommitEntity(cube);
+>>>>>>> havok
 	}
 
 	{
@@ -261,8 +361,23 @@ void GameWorld::Update(double dt)
 
 void GameWorld::RegisterComponents()
 {
+<<<<<<< HEAD
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });	
+=======
+	m_ComponentFactory.Register("Camera", []() { return new Components::Camera(); });
+	m_ComponentFactory.Register("DirectionalLight", []() { return new Components::DirectionalLight(); });
+	m_ComponentFactory.Register("Input", []() { return new Components::Input(); });
+	m_ComponentFactory.Register("Model", []() { return new Components::Model(); });
+	m_ComponentFactory.Register("ParticleEmitter", []() { return new Components::ParticleEmitter(); });
+	m_ComponentFactory.Register("PointLight", []() { return new Components::PointLight(); });
+	m_ComponentFactory.Register("SoundEmitter", []() { return new Components::SoundEmitter(); });
+	m_ComponentFactory.Register("Sprite", []() { return new Components::Sprite(); });
+	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });
+	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); });
+	m_ComponentFactory.Register("FreeSteering", []() { return new Components::FreeSteering(); });
+	m_ComponentFactory.Register("Physics", []() { return new Components::Physics(); });
+>>>>>>> havok
 	m_ComponentFactory.Register("Sphere", []() { return new Components::Sphere(); });
 	m_ComponentFactory.Register("Box", []() { return new Components::Box (); });
 	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });

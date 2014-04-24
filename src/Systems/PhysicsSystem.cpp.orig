@@ -25,6 +25,8 @@
 #include "PhysicsSystem.h"
 #include "World.h"
 
+
+
 Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
 	m_Accumulator = 0;
@@ -40,7 +42,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY; // just fix the entity if the object falls off too far
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
-		worldInfo.setBroadPhaseWorldSize(1000.0f);
+		worldInfo.setBroadPhaseWorldSize(10000.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
 	}
 	// Register all collision agents, even though only box - box will be used in this particular example.
@@ -63,14 +65,13 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 {
 	cf->Register("Physics", []() { return new Components::Physics(); });
-	cf->Register("Box", []() { return new Components::Box(); });
-	cf->Register("Sphere", []() { return new Components::Sphere(); });
-	cf->Register("Vehicle", []() { return new Components::Vehicle(); });
-	cf->Register("Wheel", []() { return new Components::Wheel(); });
 }
 
 void Systems::PhysicsSystem::Update(double dt)
 {	
+<<<<<<< HEAD
+	static const double timestep = 1 / 60.0;
+=======
 	for (auto pair : *m_World->GetEntities())
 	{
 		EntityID entity = pair.first;
@@ -96,6 +97,7 @@ void Systems::PhysicsSystem::Update(double dt)
 	
 
 	static const double timestep = 1 / 30.0;
+>>>>>>> havok
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
@@ -417,4 +419,8 @@ void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 {
 	LOG_INFO("%s", msg);
 }
+<<<<<<< HEAD
+=======
 
+
+>>>>>>> havok
