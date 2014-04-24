@@ -6,12 +6,12 @@
 
 Systems::ParticleSystem::ParticleSystem(World *m_World) : System(m_World)
 {
-	m_TimeSinceLastSpawn = 0;
+	
 }
 
 void Systems::ParticleSystem::Update(double dt)
 {
-	m_TimeSinceLastSpawn += dt;
+	
 }
 
 void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
@@ -23,14 +23,13 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 	auto emitterComponent = m_World->GetComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
 	if(emitterComponent)
 	{
-		if(m_TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
+		emitterComponent->TimeSinceLastSpawn += dt;
+
+		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
 		{
-			//if(m_ParticleEmitter[entity].size() < 100) // TEMP
-			{
-				SpawnParticles(entity, emitterComponent->SpawnCount, emitterComponent->SpreadAngle);
-				m_TimeSinceLastSpawn = 0;
-			}
-			//std::cout<<"Particle count: "<<m_ParticleEmitter[entity].size()<<std::endl; // TEMP
+			SpawnParticles(entity, transformComponent->Position, emitterComponent->SpawnCount, emitterComponent->SpreadAngle);
+			emitterComponent->TimeSinceLastSpawn = 0;
 		}
 		
 		std::list<ParticleData>::iterator it;
@@ -54,7 +53,7 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			}
 
 			auto transformComponent = m_World->GetComponent<Components::Transform>(particleID, "Transform");
-			float speed = 10 * dt;
+			float speed = 20 * dt;
 			transformComponent->Position.x += it->Direction.x * speed;
 			transformComponent->Position.y += it->Direction.y * speed;
 			transformComponent->Position.z += it->Direction.z * speed;
@@ -92,14 +91,16 @@ void Systems::ParticleSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("Particle", []() { return new Components::Particle(); });
 }
 
-void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCount, float spreadAngle)
+void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle)
 {
 	for(int i = 0; i < spawnCount; i++)
 	{
 		auto ent = m_World->CreateEntity();
 		
 		auto transform = m_World->AddComponent<Components::Transform>(ent, "Transform");
-		transform->Position = glm::vec3(0, 20, 0);
+		transform->Position.x = pos.x;
+		transform->Position.y = pos.y;
+		transform->Position.z = pos.z;
 		transform->Scale = glm::vec3(1, 1, 0);
 		
 		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
@@ -134,7 +135,6 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, float spawnCoun
 
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
-	//std::cout<<"Added "<<spawnCount<<" particles..."<<std::endl;
 }
 
 

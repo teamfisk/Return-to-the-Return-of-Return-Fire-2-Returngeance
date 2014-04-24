@@ -77,7 +77,7 @@ void GameWorld::Initialize()
 		auto model = AddComponent<Components::Model>(ball, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Sphere.obj";
 		auto sphere = AddComponent<Components::Sphere>(ball, "Sphere");
-		sphere->Radius = 0.5;
+		sphere->Radius = 0.05;
 		auto physics = AddComponent<Components::Physics>(ball, "Physics");
 		physics->Mass = 1;
 	}
@@ -92,16 +92,21 @@ void GameWorld::Initialize()
 	}*/
 
 	{
-		// Particle emitter
-		auto ent = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ent, "Transform");
-		transform->Position = glm::vec3(0);
-		auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
-		emitter->LifeTime = 4;
-		emitter->SpawnCount = 1;
-		emitter->SpreadAngle = 35;
-		emitter->SpawnFrequency = 0.05;
-		//emitter->
+		for(int i = 0; i < 4 ; i++)
+		{
+			// Particle emitter
+			auto ent = CreateEntity();
+			auto transform = AddComponent<Components::Transform>(ent, "Transform");
+			transform->Position = glm::vec3(i * 10, 20, 0);
+			auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
+			emitter->LifeTime = 2;
+			emitter->SpawnCount = 1;
+			emitter->SpreadAngle = 35;
+			emitter->SpawnFrequency = 2;
+			auto model = AddComponent<Components::Model>(ent, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+			//emitter->
+		}
 	}
 }
 

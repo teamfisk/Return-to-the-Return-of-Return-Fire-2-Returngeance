@@ -34,9 +34,9 @@ public:
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void Draw(double dt);
 private:
-	void SpawnParticles(EntityID emitterID, float spawnCount, float spreadAngle);
+	void SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle);
 	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
-	double m_TimeSinceLastSpawn;
+	std::map<EntityID, double> m_TimeSinceLastSpawn;
 	
 };
 
