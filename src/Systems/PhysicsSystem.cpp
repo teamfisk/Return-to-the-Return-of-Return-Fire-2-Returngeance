@@ -143,13 +143,10 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	}
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		if(m_RigidBodies[entity]->isActive())
-		{
-			hkVector4 position = m_RigidBodies[entity]->getPosition();
-			transformComponent->Position = glm::vec3(position(0), position(1), position(2));
-			hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
-			transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
-		}
+		hkVector4 position = m_RigidBodies[entity]->getPosition();
+		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
+		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
+		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
 	}
 	
 
@@ -271,6 +268,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	{
 		m_PhysicsWorld->addEntity(rigidBody);
 		m_RigidBodies[entity] = rigidBody;
+		
 		shape->removeReference();
 		rigidBody->removeReference();
 	}
