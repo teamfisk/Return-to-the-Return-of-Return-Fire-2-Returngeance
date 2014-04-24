@@ -63,8 +63,8 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 {
 	cf->Register("Physics", []() { return new Components::Physics(); });
-	cf->Register("Box", []() { return new Components::Box(); });
-	cf->Register("Sphere", []() { return new Components::Sphere(); });
+	cf->Register("BoxShape", []() { return new Components::BoxShape(); });
+	cf->Register("SphereShape", []() { return new Components::SphereShape(); });
 	cf->Register("Vehicle", []() { return new Components::Vehicle(); });
 	cf->Register("Wheel", []() { return new Components::Wheel(); });
 }
@@ -181,8 +181,8 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	if (!physicsComponent)
 		return;
 
-	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
-	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
+	auto sphereComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
+	auto boxComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
 
 
 	hkpConvexShape* shape;
@@ -285,8 +285,8 @@ void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
 	if (!physicsComponent)
 		return;
 
-	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
-	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
+	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "SphereShape");
+	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "BoxShape");
 	
 	
 	hkpConvexShape* shape;

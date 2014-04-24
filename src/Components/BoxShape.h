@@ -6,9 +6,9 @@
 namespace Components
 {
 
-struct Box : Component
+struct BoxShape : Component
 {
-	Box()
+	BoxShape()
 		: Width(1.f), Height(1.f), Depth(1.f){ }
 
 	float Width;

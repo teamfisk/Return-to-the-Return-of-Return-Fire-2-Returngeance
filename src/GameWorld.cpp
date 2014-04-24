@@ -21,7 +21,7 @@ void GameWorld::Initialize()
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
-		auto box = AddComponent<Components::Box>(ground, "Box");
+		auto box = AddComponent<Components::BoxShape>(ground, "BoxShape");
 		box->Width = 200;
 		box->Height = 5;
 		box->Depth = 200;
@@ -41,7 +41,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(jeep, "Physics");
 		physics->Mass = 1200;
-		auto box = AddComponent<Components::Box>(jeep, "Box");
+		auto box = AddComponent<Components::BoxShape>(jeep, "BoxShape");
 		box->Width = 1.487f;
 		box->Height = 0.727f;
 		box->Depth = 2.594f;
@@ -239,7 +239,7 @@ void GameWorld::Initialize()
 		
 		auto physics = AddComponent<Components::Physics>(cube, "Physics");
 		physics->Mass = 100;
-		auto box = AddComponent<Components::Box>(cube, "Box");
+		auto box = AddComponent<Components::BoxShape>(cube, "BoxShape");
 		box->Width = 0.5f;
 		box->Height = 0.5f;
 		box->Depth = 0.5f;
@@ -266,10 +266,6 @@ void GameWorld::RegisterComponents()
 {
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });	
-	m_ComponentFactory.Register("Sphere", []() { return new Components::Sphere(); });
-	m_ComponentFactory.Register("Box", []() { return new Components::Box (); });
-	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
-	m_ComponentFactory.Register("Wheel", []() { return new Components::Wheel(); });
 }
 
 void GameWorld::RegisterSystems()
