@@ -88,16 +88,19 @@ private:
 	GLuint m_ShadowFrameBuffer;
 	GLuint m_ShadowDepthTexture;
 
-	GLuint m_fb_PositionTexture;
-	GLuint m_fb_NormalsTexture;
+	GLuint m_fDiffuseTexture;
+	GLuint m_fPositionTexture;
+	GLuint m_fNormalsTexture;
+	GLuint m_fBlendTexture;
 	GLuint m_fb;
-	GLuint m_rb;
+	GLuint m_fDepthBuffer;
 	GLenum draw_bufs[2];
 
 	std::shared_ptr<Camera> m_Camera;
 
 	ShaderProgram m_ShaderProgram;
 	ShaderProgram m_FirstPassProgram;
+	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
 	ShaderProgram m_ShaderProgramShadowsDrawDepth;
@@ -111,6 +114,7 @@ private:
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
+	void BindFragDataLocation();
 	
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();

@@ -1,9 +1,9 @@
-#version 430
+#version 130
+in vec4 vertex; out vec2 position;
 
-void main( void )
+void main(void)
 {
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-
-    gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0);
+	gl_Position = vertex*2-1;
+	gl_Position.z = 0.0;
+	position = vertex.xy;
 }

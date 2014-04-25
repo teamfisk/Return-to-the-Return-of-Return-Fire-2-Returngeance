@@ -115,7 +115,13 @@ void Renderer::LoadContent()
 	m_FirstPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/First_pass.vert.glsl")));
 	m_FirstPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/First_pass.frag.glsl")));
 	m_FirstPassProgram.Compile();
+	BindFragDataLocation();
 	m_FirstPassProgram.Link();
+
+	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Second_pass.vert.glsl")));
+	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Second_pass.frag.glsl")));
+	m_SecondPassProgram.Compile();
+	m_SecondPassProgram.Link();
 
 	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/Sunset", "jpg");
 
@@ -538,137 +544,125 @@ void Renderer::ClearStuff()
 void Renderer::FrameBufferTextures()
 {
 	m_fb = 0;
-	
+	m_fDepthBuffer = 0;
+
 	glGenFramebuffers(1, &m_fb);
-	GLERROR("GLERROR: Failed to generate frame buffer");
-	glGenTextures(1, &m_fb_PositionTexture);
-	GLERROR("GLERROR: Failed to generate Position texture");
-	glBindTexture(GL_TEXTURE_2D, m_fb_PositionTexture);
-	GLERROR("GLERROR: Failed to bind Position texture");
-	glTexImage2D(
-		GL_TEXTURE_2D,
-		0,
-		GL_RGB16F,
-		WIDTH,
-		HEIGHT,
-		0,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		NULL
-		);
-	GLERROR("GLERROR: Failed to generate Position texture image");
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glGenRenderbuffers(1, &m_fDepthBuffer);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, m_fDepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, WIDTH, HEIGHT);
+
+	//Generate and bind diffuse texture
+	glGenTextures(1, &m_fDiffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	GLERROR("GLERROR: Failed to generate Position Parameters");
 
-	glGenTextures(1, &m_fb_NormalsTexture);
-	GLERROR("GLERROR: Failed to generate Normal texture");
-	glBindTexture(GL_TEXTURE_2D, m_fb_NormalsTexture);
-	GLERROR("GLERROR: Failed to bind Normal texture");
-	glTexImage2D(
-		GL_TEXTURE_2D,
-		0,
-		GL_RGB16F,
-		WIDTH,
-		HEIGHT,
-		0,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		NULL
-		);
-	GLERROR("GLERROR: Failed to generate Normal texture image");
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//Generate and bind position texture
+	glGenTextures(1, &m_fPositionTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	GLERROR("GLERROR: Failed to generate Normals Parameters");
 
+	//Generate and bind normal texture
+	glGenTextures(1, &m_fNormalsTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	//Generate and bind blend texture
+	glGenTextures(1, &m_fBlendTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fBlendTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	//Bind fb
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fb);
-	GLERROR("GLERROR: Failed to bind framebuffer");
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fb_PositionTexture, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_fb_NormalsTexture, 0);
-	GLERROR("GLERROR: Failed to FrameBufferTexture2D");
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_fDepthBuffer);
 
-	m_rb = 0;
-	glGenRenderbuffers(1, &m_rb);
-	GLERROR("GLERROR: Failed to generate RenderBuffer");
-	glBindRenderbuffer(GL_RENDERBUFFER, m_rb);
-	GLERROR("GLERROR: Failed to bind RenderBuffer");
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rb);
-	
-	draw_bufs[1] = GL_COLOR_ATTACHMENT0;
-	draw_bufs[2] = GL_COLOR_ATTACHMENT1;
-	
+	//Attach textures to the FB
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fDiffuseTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_fPositionTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_fNormalsTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fBlendTexture, 0);
 
+	GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
+	{
+		printf("DeferredLighting:Init: FrameBuffer incomplete: 0x%x\n", fbStatus);
+		exit(1);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Renderer::DrawFBO()
 {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fb);
+
+	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, windowBuffClear);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fb);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-#ifdef DEBUG
-	glDisable(GL_CULL_FACE);
-	glPolygonMode(GL_BACK, GL_LINE);
-#endif
 
-	// Draw models
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(-m_Camera->Position() * glm::vec3(1, 0, 0));
-	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
-	glm::mat4 biasMatrix(
-		0.5, 0.0, 0.0, 0.0,
-		0.0, 0.5, 0.0, 0.0,
-		0.0, 0.0, 0.5, 0.0,
-		0.5, 0.5, 0.5, 1.0
-		);
+	// Execute the first render stage which will fill out the internal buffers with data(??)
+	//EnableRenderProgramStage1;
+	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_NONE };
+	glDrawBuffers(4, windowBuffOpaque);
+	//DrawTheWorld();
 
-	m_ShaderProgram.Bind();
-	if (m_DrawWireframe)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
-	glm::mat4 depthCameraMatrix = biasMatrix * depthCamera;
-	glm::mat4 MVP;
-	glm::mat4 depthMVP;
-	for (auto tuple : ModelsToRender)
-	{
-		Model* model;
-		glm::mat4 modelMatrix;
-		bool visible;
-		std::tie(model, modelMatrix, visible, std::ignore) = tuple;
-		if (!visible)
-			continue;
+	GLenum windowBuffTransp[] = { GL_NONE, GL_NONE, GL_NONE, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, windowBuffTransp);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	//Depth buffer shall not be updated
+	glDepthMask(GL_FALSE);
+	//DrawTransparent items
+	glDepthMask(GL_TRUE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-		MVP = cameraMatrix * modelMatrix;
-		depthMVP = depthCameraMatrix * modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr( m_Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
-		glBindVertexArray(model->VAO);
-// 		for (auto texGroup : model->TextureGroups)
-// 		{
-// 			glActiveTexture(GL_TEXTURE0);
-// 			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
-// 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
-// 		}
-	}
+	//Probably means to use the second_pass shader
+	//EnableRenderProgramDeferredStage();
 
-#ifdef DEBUG
-	// Debug draw model normals
-	if (m_DrawNormals)
-	{
-		m_ShaderProgramNormals.Bind();
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		DrawModels(m_ShaderProgramNormals);
-	}
-#endif
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	//SetupDefferedStageUniforms(); // Probably what we do in FrameBufferTextures();
+	//glEnableVertexAttribArray(fVertexIndex); // VertexIndex?
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_fBlendTexture);
 
-	//glDrawBuffers(2, draw_bufs);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
+
+	//DrawSimpleSquare(); //I guess this draw a square and put the textures on it
+
+	//glDisableVertexAttribArray(fVertexIndex); //VertexIndex?
+
 }
 
+void Renderer::BindFragDataLocation()
+{
+	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 0, "diffuseOutput");
+	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 1, "posOutput");
+	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 2, "normOutput");
+	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 3, "blendOutput");
+}
