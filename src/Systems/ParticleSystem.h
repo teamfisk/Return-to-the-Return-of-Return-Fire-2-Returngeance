@@ -8,6 +8,7 @@
 #include "Components/Model.h"
 #include "Components/Physics.h"
 #include "Components/Box.h"
+#include "Components/PointLight.h"
 #include "Color.h"
 #include <GLFW/glfw3.h>
 
@@ -32,9 +33,8 @@ public:
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	void Draw(double dt);
 private:
-	void SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle);
+	void SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime);
 	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
 	std::map<EntityID, double> m_TimeSinceLastSpawn;
 	

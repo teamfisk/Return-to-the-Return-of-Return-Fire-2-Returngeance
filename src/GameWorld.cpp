@@ -49,7 +49,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/Placeholders/tank/Chassi.obj";
 	}
 
-	for(int i = 0; i < 2; i++)
+	/*for(int i = 0; i < 2; i++)
 	{
 		auto light = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(light, "Transform");
@@ -65,7 +65,7 @@ void GameWorld::Initialize()
 
 		auto model = AddComponent<Components::Model>(light, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
-	}
+	}*/
 
 	for(int i = 0; i < 3; i++)
 	{
@@ -92,7 +92,7 @@ void GameWorld::Initialize()
 	}*/
 
 	{
-		for(int i = 0; i < 4 ; i++)
+		for(int i = 0; i < 1 ; i++)
 		{
 			// Particle emitter
 			auto ent = CreateEntity();
@@ -100,9 +100,9 @@ void GameWorld::Initialize()
 			transform->Position = glm::vec3(i * 10, 20, 0);
 			auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
 			emitter->LifeTime = 2;
-			emitter->SpawnCount = 1;
+			emitter->SpawnCount = 3;
 			emitter->SpreadAngle = 35;
-			emitter->SpawnFrequency = 2;
+			emitter->SpawnFrequency = 0.2;
 			auto model = AddComponent<Components::Model>(ent, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 			//emitter->
