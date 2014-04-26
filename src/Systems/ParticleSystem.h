@@ -21,8 +21,6 @@ namespace Systems
 		double SpawnTime;
 		float Scale;
 		Color color;
-		glm::vec3 Velocity;
-		glm::vec3 Direction;
 	};
 
 class ParticleSystem : public System
@@ -34,9 +32,11 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 private:
-	void SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime);
+	void SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime, double dt);
 	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
 	std::map<EntityID, double> m_TimeSinceLastSpawn;
+
+	float RandomizeAngle(float spreadAngle);
 	
 };
 

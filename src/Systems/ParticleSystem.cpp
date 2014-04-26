@@ -28,21 +28,18 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 		if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
 		{
-			SpawnParticles(entity, transformComponent->Position, emitterComponent->SpawnCount, emitterComponent->SpreadAngle, emitterComponent->LifeTime);
+			SpawnParticles(entity, transformComponent->Position, emitterComponent->SpawnCount, emitterComponent->SpreadAngle, emitterComponent->LifeTime, dt);
 			emitterComponent->TimeSinceLastSpawn = 0;
 		}
-		std::cout<<"Number of particles in list for emitter "<<entity<<": "<<m_ParticleEmitter[entity].size()<<std::endl;
+
 		std::list<ParticleData>::iterator it;
 		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end();)
 		{
 			EntityID particleID = (it)->ParticleID;
 			auto transformComponent = m_World->GetComponent<Components::Transform>(particleID, "Transform");
-			float speed = 20 * dt;
-			//ERROR: Direction seems to be 0 for first particle in the list...
-			transformComponent->Position.x += it->Direction.x * speed;
-			transformComponent->Position.y += it->Direction.y * speed;
-			transformComponent->Position.z += it->Direction.z * speed;
 			
+			transformComponent->Position +=  transformComponent->Velocity;
+
 			auto particleComponent = m_World->GetComponent<Components::Particle>(particleID, "Particle");
 			double timeLived = glfwGetTime() - it->SpawnTime; 
 			if(timeLived > particleComponent->LifeTime)
@@ -56,9 +53,6 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			{
 				it++;
 			}
-
-			
-			
 
 			// Interpolates the color for each color channel by the start and end value. Decides how much the color should be interpolated based on time.
 			/*// How big fraction the color is multiplied with
@@ -92,20 +86,30 @@ void Systems::ParticleSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("Particle", []() { return new Components::Particle(); });
 }
 
-void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime)
+void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime, double dt)
 {
+	auto emitterTransform = m_World->GetComponent<Components::Transform>(emitterID, "Transform");
+	glm::quat emitterOrientation = emitterTransform->Orientation;
+	float tempSpeed =  5 * dt;
+	glm::vec3 speed = glm::vec3(tempSpeed);
 	for(int i = 0; i < spawnCount; i++)
 	{
 		auto ent = m_World->CreateEntity();
 		
-		auto transform = m_World->AddComponent<Components::Transform>(ent, "Transform");
-		transform->Position.x = pos.x;
-		transform->Position.y = pos.y;
-		transform->Position.z = pos.z;
-		transform->Scale = glm::vec3(1, 1, 0);
-		
+		auto particleTransform = m_World->AddComponent<Components::Transform>(ent, "Transform");
+		particleTransform->Position.x = pos.x;
+		particleTransform->Position.y = pos.y;
+		particleTransform->Position.z = pos.z;
+		particleTransform->Scale = glm::vec3(1, 1, 1);
+		//The emitter's orientation as "start value" times the default direction for quaternion. Times the speed, and then rotate on x and y axis with the randomized spread angle. 
+		particleTransform->Velocity = emitterOrientation * glm::vec3(0, 0, -1) * speed * 
+			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(1, 0, 0))) * 
+			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(0, 1, 0)));
+
+
 		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
 		particle->LifeTime = lifeTime;
+		
 		/*Color startColor = {.4f, .45f, .2f};
 		particle->ColorSpectrum.push_back(startColor);
 		Color endColor = {0.f, 45.f, 23.f};
@@ -116,15 +120,15 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, 
 		particle->VelocitySpectrum.push_back(glm::vec3(0, -3, 0));*/
 
 		auto model = m_World->AddComponent<Components::Model>(ent, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 
-		auto light = m_World->AddComponent<Components::PointLight>(ent, "PointLight");
+		/*auto light = m_World->AddComponent<Components::PointLight>(ent, "PointLight");
 		light->Specular = glm::vec3(0.1f, 0.1f, 0.1f);
 		light->Diffuse = glm::vec3(1.f, 1.f, 0.f);
 		light->constantAttenuation = 0.03f;
 		light->linearAttenuation = 0.00009f;
 		light->quadraticAttenuation = 0.07f;
-		light->spotExponent = 0.0f;
+		light->spotExponent = 0.0f;*/
 
 
 		/*auto physics = m_World->AddComponent<Components::Physics>(ent, "Physics");
@@ -140,10 +144,12 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, 
 		data.SpawnTime = glfwGetTime();
 // 		data.color = particle->ColorSpectrum[0];
 // 		data.Scale = particle->ScaleSpectrum[0];
-		//Random between [-1,1] on every axis
-		data.Direction = glm::vec3(((double)rand() / ((double)RAND_MAX + 1) * 2) -1, ((double)rand() / ((double)RAND_MAX + 1) * 2) -1, ((double)rand() / ((double)RAND_MAX + 1) * 2) -1);
-		data.Direction = glm::normalize(data.Direction);
 
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
+}
+
+float Systems::ParticleSystem::RandomizeAngle(float spreadAngle)
+{
+	return ((float)rand() / ((float)RAND_MAX + 1) * spreadAngle) - spreadAngle/2;
 }
