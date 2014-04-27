@@ -6,9 +6,9 @@
 namespace Components
 {
 
-struct Sphere : Component
+struct SphereShape : Component
 {
-	Sphere()
+	SphereShape()
 		: Radius(1.f){ }
 
 	float Radius;

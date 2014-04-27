@@ -172,7 +172,7 @@ void GameWorld::Initialize()
 		
 		auto physics = AddComponent<Components::Physics>(cube, "Physics");
 		physics->Mass = 100;
-		auto box = AddComponent<Components::Box>(cube, "Box");
+		auto box = AddComponent<Components::BoxShape>(cube, "BoxShape");
 		box->Width = 0.5f;
 		box->Height = 0.5f;
 		box->Depth = 0.5f;
@@ -199,10 +199,6 @@ void GameWorld::RegisterComponents()
 {
 	m_ComponentFactory.Register("Transform", []() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register("Template", []() { return new Components::Template(); });	
-	m_ComponentFactory.Register("Sphere", []() { return new Components::Sphere(); });
-	m_ComponentFactory.Register("Box", []() { return new Components::Box (); });
-	m_ComponentFactory.Register("Vehicle", []() { return new Components::Vehicle(); });
-	m_ComponentFactory.Register("Wheel", []() { return new Components::Wheel(); });
 }
 
 void GameWorld::RegisterSystems()
