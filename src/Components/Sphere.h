@@ -12,6 +12,8 @@ struct Sphere : Component
 		: Radius(1.f){ }
 
 	float Radius;
+
+	virtual Sphere* Clone() const override { return new Sphere(*this); }
 };
 
 }

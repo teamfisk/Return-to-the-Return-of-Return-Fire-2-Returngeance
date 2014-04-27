@@ -16,6 +16,8 @@ struct PointLight : Component
 	float constantAttenuation, linearAttenuation, quadraticAttenuation;
 	float spotExponent;
 	Color color;
+	
+	virtual PointLight* Clone() const override { return new PointLight(*this); }
 };
 
 }

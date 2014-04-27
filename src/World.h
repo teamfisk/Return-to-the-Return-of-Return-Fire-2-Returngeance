@@ -34,6 +34,7 @@ public:
 	std::shared_ptr<T> GetSystem(std::string systemType);
 
 	EntityID CreateEntity(EntityID parent = 0);
+	EntityID CloneEntity(EntityID entity, EntityID parent = 0);
 
 	void RemoveEntity(EntityID entity);
 
@@ -41,6 +42,7 @@ public:
 
 	EntityID GetEntityParent(EntityID entity);
 	EntityID GetEntityBaseParent(EntityID entity);
+	std::list<EntityID> GetEntityChildren(EntityID entity);
 
 	template <class T>
 	T GetProperty(EntityID entity, std::string property)
@@ -83,12 +85,15 @@ protected:
 
 	EntityID m_LastEntityID;
 	std::stack<EntityID> m_RecycledEntityIDs;
-	// A bottom to top tree. A map of child entities to parent entities.
-	std::unordered_map<EntityID, EntityID> m_EntityParents;
-	std::unordered_map<EntityID, std::unordered_map<std::string, boost::any>> m_EntityProperties;
 
+	std::unordered_map<EntityID, EntityID> m_EntityParents; // child -> parent
+	std::unordered_map<EntityID, std::list<EntityID>> m_EntityChildren; // parent -> child
+	std::unordered_map<EntityID, std::unordered_map<std::string, boost::any>> m_EntityProperties;
 	std::unordered_map<std::string, std::list<std::shared_ptr<Component>>> m_ComponentsOfType;
 	std::unordered_map<EntityID, std::map<std::string, std::shared_ptr<Component>>> m_EntityComponents;
+
+	// Internal: Add a component to an entity
+	void AddComponent(EntityID entity, std::string componentType, std::shared_ptr<Component> component);
 
 	std::list<EntityID> m_EntitiesToRemove;
 	void ProcessEntityRemovals();
@@ -121,14 +126,8 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 		return nullptr;
 	}
 
-	component->Entity = entity;
-	m_ComponentsOfType[componentType].push_back(component);
-	m_EntityComponents[entity][componentType] = component;
-	for (auto pair : m_Systems)
-	{
-		auto system = pair.second;
-		system->OnComponentCreated(componentType, component);
-	}
+	AddComponent(entity, componentType, component);
+	
 	return component;
 }
 
