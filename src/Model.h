@@ -17,7 +17,7 @@
 class Model : public Resource
 {
 public:
-	Model(OBJ &obj, ResourceManager* rm);
+	Model(ResourceManager* rm, OBJ &obj);
 
 	struct TextureGroup
 	{
