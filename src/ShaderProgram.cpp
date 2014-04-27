@@ -103,6 +103,11 @@ void ShaderProgram::AddShader(std::shared_ptr<Shader> shader)
 
 void ShaderProgram::Compile()
 {
+	if (m_ShaderProgramHandle == 0)
+	{
+		m_ShaderProgramHandle = glCreateProgram();
+	}
+
 	for (auto &shader : m_Shaders)
 	{
 		if (!shader->IsCompiled())
@@ -121,7 +126,7 @@ GLuint ShaderProgram::Link()
 	}
 
 	LOG_INFO("Linking shader program");
-	m_ShaderProgramHandle = glCreateProgram();
+
 	for (auto &shader : m_Shaders)
 	{
 		glAttachShader(m_ShaderProgramHandle, shader->GetHandle());

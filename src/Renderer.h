@@ -84,7 +84,6 @@ private:
 	glm::mat4 m_SunProjection;
 
 	GLuint m_DebugAABB;
-	GLuint m_ScreenQuad;
 	GLuint m_ShadowFrameBuffer;
 	GLuint m_ShadowDepthTexture;
 
@@ -95,6 +94,7 @@ private:
 	GLuint m_fb;
 	GLuint m_fDepthBuffer;
 	GLenum draw_bufs[2];
+	GLuint m_ScreenQuad;
 
 	std::shared_ptr<Camera> m_Camera;
 
@@ -114,6 +114,7 @@ private:
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
+	void DrawFBOScene();
 	void BindFragDataLocation();
 	
 	GLuint CreateQuad();

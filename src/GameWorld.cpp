@@ -67,7 +67,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 	}
 
-	for(int i = 0; i < 500; i++)
+	for(int i = 0; i < 0; i++)
 	{
 		auto ball = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ball, "Transform");
