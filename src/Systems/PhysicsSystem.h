@@ -1,18 +1,15 @@
 #ifndef PhysicsSystem_h__
 #define PhysicsSystem_h__
 
-
-
-
-
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/Physics.h"
 #include "Components/Sphere.h"
 #include "Components/Box.h"
+#include "Components/Vehicle.h"
+#include "Components/Input.h"
 
 // Math and base include
-
 #include <Common/Base/hkBase.h>
 #include <Common/Base/Memory/System/Util/hkMemoryInitUtil.h>
 #include <Common/Base/System/Error/hkDefaultError.h>
@@ -29,8 +26,6 @@
 #include <Physics2012/Collide/Shape/Convex/Sphere/hkpSphereShape.h>
 #include <Physics2012/Collide/Dispatch/hkpAgentRegisterUtil.h>
 
-
-
 #include <Physics2012/Dynamics/World/hkpWorld.h>
 #include <Physics2012/Dynamics/Entity/hkpRigidBody.h>
 #include <Physics2012/Utilities/Dynamics/Inertia/hkpInertiaTensorComputer.h>
@@ -38,6 +33,8 @@
 // Visual Debugger includes
 #include <Common/Visualize/hkVisualDebugger.h>
 #include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
+
+#include "Physics/VehicleSetup.h"
 
 #include <unordered_map>
 namespace Systems
@@ -53,10 +50,9 @@ public:
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(std::string type, Component* component) override;
-	
+	void OnEntityCommit(EntityID entity) override;
 
 private:
-
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
 
@@ -70,7 +66,10 @@ private:
 	void SetupPhysics(hkpWorld* physicsWorld);
 
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+	std::unordered_map<EntityID, hkpVehicleInstance*> m_Vehicles;
+	std::vector<EntityID> m_Wheels;
 
+	hkpVehicleInstance* Systems::PhysicsSystem::createVehicle(VehicleSetup& vehicleSetup, hkpRigidBody* chassis);
 };
 
 }

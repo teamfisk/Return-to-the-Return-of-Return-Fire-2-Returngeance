@@ -4,6 +4,7 @@
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\GameWorld.cpp" />
     <ClCompile Include="..\..\src\World.cpp" />
+    <ClCompile Include="..\..\src\ShaderProgram.cpp" />
     <ClCompile Include="..\..\src\PrecompiledHeader.cpp" />
     <ClCompile Include="..\..\src\Systems\RenderSystem.cpp">
       <Filter>Rendering\Systems</Filter>
@@ -49,9 +50,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
-    <ClCompile Include="..\..\src\ShaderProgram.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -131,6 +130,7 @@
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />
+    <ClInclude Include="..\..\src\ShaderProgram.h" />
     <ClInclude Include="..\..\src\Components\Model.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>
@@ -213,13 +213,18 @@
     <ClInclude Include="..\..\src\Sound.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Components\Box.h" />
-    <ClInclude Include="..\..\src\Components\Sphere.h" />
-    <ClInclude Include="..\..\src\Util\defferedUtil.h">
-      <Filter>Util</Filter>
+    <ClInclude Include="..\..\src\Physics\VehicleSetup.h" />
+    <ClInclude Include="..\..\src\Components\Box.h">
+      <Filter>Physics\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\ShaderProgram.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="..\..\src\Components\Sphere.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Vehicle.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Wheel.h">
+      <Filter>Physics\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -254,24 +259,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\First_pass.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\First_pass.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Second_pass.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Second_pass.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Vertex2.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Fragment2.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

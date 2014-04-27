@@ -17,11 +17,19 @@ Model::Model(OBJ &obj, ResourceManager* rm)
 		if (face.Material != currentMaterial)
 		{
 			currentMaterial = face.Material;
+
 			// Load texture
-			auto texture = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->TextureFile));
+			auto texture = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->DiffuseTexture.FileName));
+			// TODO: Load normal map
+			std::shared_ptr<Texture> normalMap = nullptr;
+			// Load specular map
+			std::shared_ptr<Texture> specularMap = nullptr;
+			if (!currentMaterial->SpecularMap.FileName.empty())
+				specularMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->SpecularMap.FileName));
+
 			// TODO: Load material parameters
 			// Create new texture group (start index of new group is upcoming index)
-			TextureGroup texGroup = { texture, index, index };
+			TextureGroup texGroup = { texture, normalMap, specularMap, index, index };
 			TextureGroups.push_back(texGroup);
 			currentTexGroup = &TextureGroups.back();
 		}

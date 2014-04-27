@@ -77,7 +77,7 @@ void Camera::UpdateProjectionMatrix()
 
 void Camera::UpdateViewMatrix()
 {
-	m_ViewMatrix = glm::translate(glm::toMat4(m_Orientation), -m_Position);
+	m_ViewMatrix = glm::toMat4(glm::inverse(m_Orientation)) * glm::translate(-m_Position);
 }
 
 void Camera::FOV(float val)
