@@ -16,6 +16,8 @@ namespace Components
 		double LifeTime;
 		std::vector<glm::vec3> VelocitySpectrum;
 		std::vector<glm::vec3> AngularVelocitySpectrum;
+
+		virtual Particle* Clone() const override { return new Particle(*this); }
 	};
 
 }

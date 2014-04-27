@@ -93,6 +93,7 @@ void World::ProcessEntityRemovals()
 	for (auto entity : m_EntitiesToRemove)
 	{
 		m_EntityParents.erase(entity);
+		m_EntityChildren.erase(entity);
 		// Remove components
 		for (auto pair : m_EntityComponents[entity])
 		{
@@ -116,7 +117,8 @@ void World::ProcessEntityRemovals()
 EntityID World::CreateEntity(EntityID parent /*= 0*/)
 {
 	EntityID newEntity = GenerateEntityID();
-	m_EntityParents.insert(std::pair<EntityID, EntityID>(newEntity, parent));
+	m_EntityParents[newEntity] = parent;
+	m_EntityChildren[parent].push_back(newEntity);
 	return newEntity;
 }
 
@@ -148,7 +150,58 @@ std::shared_ptr<Component> World::AddComponent(EntityID entity, std::string comp
 	return AddComponent<Component>(entity, componentType);
 }
 
+void World::AddComponent(EntityID entity, std::string componentType, std::shared_ptr<Component> component)
+{
+	component->Entity = entity;
+	m_ComponentsOfType[componentType].push_back(component);
+	m_EntityComponents[entity][componentType] = component;
+	for (auto pair : m_Systems)
+	{
+		auto system = pair.second;
+		system->OnComponentCreated(componentType, component);
+	}
+}
+
 void World::AddSystem(std::string systemType)
 {
 	m_Systems[systemType] = std::shared_ptr<System>(m_SystemFactory.Create(systemType));
+}
+
+EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)
+{
+	int clone = CreateEntity(parent);
+
+	for (auto pair : m_EntityComponents[entity])
+	{
+		auto type = pair.first;
+		auto component = std::shared_ptr<Component>(pair.second->Clone());
+		if (component != nullptr)
+		{
+			AddComponent(clone, type, component);
+		}
+	}
+
+	auto itChildren = m_EntityChildren.find(entity);
+	if (itChildren != m_EntityChildren.end())
+	{
+		for (EntityID child : itChildren->second)
+		{
+			CloneEntity(child, clone);
+		}
+	}
+
+	return clone;
+}
+
+std::list<EntityID> World::GetEntityChildren(EntityID entity)
+{
+	auto it = m_EntityChildren.find(entity);
+	if (it == m_EntityChildren.end())
+	{
+		return std::list<EntityID>();
+	}
+	else
+	{
+		return it->second;
+	}
 }

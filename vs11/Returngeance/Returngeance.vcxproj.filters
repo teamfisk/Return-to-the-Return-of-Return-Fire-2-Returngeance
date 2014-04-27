@@ -215,13 +215,17 @@
     <ClInclude Include="..\..\src\Sound.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Components\Box.h" />
-    <ClInclude Include="..\..\src\Components\Sphere.h" />
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h">
       <Filter>Particle System\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Particle.h">
       <Filter>Particle System\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Box.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Sphere.h">
+      <Filter>Physics\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
