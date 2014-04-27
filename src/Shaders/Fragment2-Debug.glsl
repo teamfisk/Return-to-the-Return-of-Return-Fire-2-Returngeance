@@ -23,10 +23,15 @@ void DrawQuadrant(vec4 texel, vec2 quadrant)
 
 void main()
 {
+		vec4 DiffuseTexel = texture2D(DiffuseTexture, Input.TextureCoord);
+		vec4 PositionTexel = texture2D(PositionTexture, Input.TextureCoord);
+		vec4 NormalTexel = texture2D(NormalTexture, Input.TextureCoord);
+
 		//FragColor = texture2D(DiffuseTexture, Input.TextureCoord * 2 + vec2(0, -1));
 		DrawQuadrant(texture2D(DiffuseTexture, Input.TextureCoord * 2), vec2(-1, 1));
 		DrawQuadrant(texture2D(PositionTexture, Input.TextureCoord * 2), vec2(1, 1));
 		DrawQuadrant(texture2D(NormalTexture, Input.TextureCoord * 2), vec2(-1, -1));
+
 		vec4 AllTexel = texture2D(DiffuseTexture, Input.TextureCoord*2)*texture2D(PositionTexture, Input.TextureCoord*2)*texture2D(NormalTexture, Input.TextureCoord*2);
 		DrawQuadrant(AllTexel, vec2(1, -1));
 }

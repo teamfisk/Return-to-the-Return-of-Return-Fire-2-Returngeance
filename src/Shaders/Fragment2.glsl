@@ -15,5 +15,5 @@ out vec4 FragColor;
 
 void main()
 {
-	FragColor = texture2D(NormalTexture, Input.TextureCoord);
+	FragColor = texture2D(DiffuseTexture, Input.TextureCoord);
 }

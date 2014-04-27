@@ -96,11 +96,14 @@ private:
 	GLenum draw_bufs[2];
 	GLuint m_ScreenQuad;
 
+	bool m_QuadView;
+
 	std::shared_ptr<Camera> m_Camera;
 
 	ShaderProgram m_ShaderProgram;
 	ShaderProgram m_FirstPassProgram;
 	ShaderProgram m_SecondPassProgram;
+	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
 	ShaderProgram m_ShaderProgramShadowsDrawDepth;

@@ -119,9 +119,14 @@ void Renderer::LoadContent()
 	m_FirstPassProgram.Link();
 
 	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex2.glsl")));
-	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment2-Debug.glsl")));
+	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment2.glsl")));
 	m_SecondPassProgram.Compile();
 	m_SecondPassProgram.Link();
+
+	m_SecondPassProgram_Debug.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex2.glsl")));
+	m_SecondPassProgram_Debug.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment2-Debug.glsl")));
+	m_SecondPassProgram_Debug.Compile();
+	m_SecondPassProgram_Debug.Link();
 
 	m_ScreenQuad = CreateQuad();
 
@@ -130,6 +135,16 @@ void Renderer::LoadContent()
 
 void Renderer::Draw(double dt)
 {
+
+	if(glfwGetKey(m_Window, GLFW_KEY_F1))
+	{
+		m_QuadView = false;
+	}
+	if(glfwGetKey(m_Window, GLFW_KEY_F2))
+	{
+		m_QuadView = true;
+	}
+
 	glDisable(GL_BLEND);
 
 	DrawFBO();
@@ -653,7 +668,14 @@ void Renderer::DrawFBO()
 
 	// Draw to screen
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	m_SecondPassProgram.Bind();
+	if(!m_QuadView)
+	{
+		m_SecondPassProgram.Bind();
+	}
+	else
+	{
+		m_SecondPassProgram_Debug.Bind();
+	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	////SetupDefferedStageUniforms(); // Probably what we do in FrameBufferTextures();
@@ -736,6 +758,7 @@ void Renderer::DrawFBOScene()
 {	
 	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
 	glm::mat4 MVP;
+
 	for (auto tuple : ModelsToRender)
 	{
 		Model* model;
