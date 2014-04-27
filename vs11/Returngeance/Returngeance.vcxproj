@@ -167,27 +167,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
-    <None Include="..\..\src\Shaders\First_pass.frag.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\src\Shaders\First_pass.vert.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
-    </None>
     <None Include="..\..\src\Shaders\Fragment.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2-Debug.glsl" />
     <None Include="..\..\src\Shaders\Fragment2.glsl" />
     <None Include="..\..\src\Shaders\Normals.frag.glsl" />
     <None Include="..\..\src\Shaders\Normals.geo.glsl" />
-    <None Include="..\..\src\Shaders\Second_pass.frag.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\src\Shaders\Second_pass.vert.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
     <None Include="..\..\src\Shaders\ShadowMap.frag.glsl" />
     <None Include="..\..\src\Shaders\ShadowMap.vert.glsl" />
     <None Include="..\..\src\Shaders\Skybox.frag.glsl" />
