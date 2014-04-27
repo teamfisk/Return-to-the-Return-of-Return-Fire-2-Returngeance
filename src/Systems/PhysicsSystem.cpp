@@ -67,6 +67,7 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("Sphere", []() { return new Components::Sphere(); });
 	cf->Register("Vehicle", []() { return new Components::Vehicle(); });
 	cf->Register("Wheel", []() { return new Components::Wheel(); });
+	cf->Register("MeshShape", []() { return new Components::MeshShape(); });
 }
 
 void Systems::PhysicsSystem::Update(double dt)
@@ -183,11 +184,12 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
 	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
+	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape >(entity, "MeshShape");
 
-
-	hkpConvexShape* shape;
+	hkpShape* shape = nullptr;
 	hkpRigidBodyCinfo rigidBodyInfo;
 	hkMassProperties massProperties;
+	
 
 	if (sphereComponent)
 	{
@@ -220,16 +222,83 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			rigidBodyInfo.m_motionType = hkpMotion::MOTION_BOX_INERTIA;
 		}
 		hkpInertiaTensorComputer::computeBoxSurfaceMassProperties(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness), physicsComponent->Mass, thickness, massProperties);
+
+	}
+	else if(meshShapeComponent)
+	{
+		std::vector<hkReal>* vertices = new std::vector<hkReal>;
+		std::vector<hkUint16>* vertexIndices = new std::vector<hkUint16>;
+		auto meshShape = m_World->GetResourceManager()->Load<OBJ>("OBJ", meshShapeComponent->ResourceName);
+		
+		for (auto &vertex : meshShape->Vertices)
+		{
+			hkReal x, y, z;
+			std::tie(x, y, z) = vertex;
+			vertices->push_back(x);
+			vertices->push_back(y);
+			vertices->push_back(z);
+		}
+		
+		int i = 0;
+		for (auto &face : meshShape->Faces)
+		{
+			for (auto &faceDef : face.Definitions)
+			{
+				/*hkReal x, y, z;
+				std::tie(x, y, z) = meshShape->Vertices.at(faceDef.VertexIndex - 1);
+				vertices.push_back(x);
+				vertices.push_back(y);
+				vertices.push_back(z);*/
+				vertexIndices->push_back(faceDef.VertexIndex - 1);
+				//vertexIndices.push_back(i++);
+			}
+		}
+
+		hkpExtendedMeshShape* mesh = new hkpExtendedMeshShape();
+		mesh->setRadius( 0.05f);
+		{
+			hkpExtendedMeshShape::TrianglesSubpart part;
+			part.m_numTriangleShapes = meshShape->Faces.size();
+			part.m_indexBase = vertexIndices->data();
+			part.m_indexStriding = sizeof(hkUint16) * 3;
+			
+			part.m_numVertices = vertices->size() / 3;
+			part.m_vertexBase = vertices->data();
+			part.m_vertexStriding = sizeof(hkReal) * 3;
+
+			part.m_stridingType = hkpExtendedMeshShape::INDICES_INT16;
+			
+			
+			
+			mesh->addTrianglesSubpart(part);
+		}
+
+		if (physicsComponent->Static)
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+		}
+		else
+		{
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_BOX_INERTIA;
+		}
+		hkpInertiaTensorComputer::computeShapeVolumeMassProperties(mesh, physicsComponent->Mass, massProperties);
+		rigidBodyInfo.m_shape = mesh;
+		m_hkpExtendedMeshShapes[entity].ExtendedMeshShape = mesh;
+		m_hkpExtendedMeshShapes[entity].VertexIndices = vertexIndices;
+		m_hkpExtendedMeshShapes[entity].Vertices = vertices;
+		shape = mesh;
 	}
 	else
 	{
 		return;
 	}
 
+	
 	rigidBodyInfo.m_position.set(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
 	rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
-	rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
+	//rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
 	rigidBodyInfo.m_mass = massProperties.m_mass;
+	
 
 	// Create RigidBody
 	hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -271,108 +340,10 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		
 		shape->removeReference();
 		rigidBody->removeReference();
+
+
 	}
 }
-/*
-
-void Systems::PhysicsSystem::SetUpPhysicsState(EntityID entity, EntityID parent)
-{
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
-	if (!transformComponent)
-		return;
-
-	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
-	if (!physicsComponent)
-		return;
-
-	auto sphereComponent = m_World->GetComponent<Components::Sphere >(entity, "Sphere");
-	auto boxComponent = m_World->GetComponent<Components::Box >(entity, "Box");
-	
-	
-	hkpConvexShape* shape;
-	hkpRigidBodyCinfo rigidBodyInfo;
-	hkMassProperties massProperties;
-	
-
-	if (sphereComponent)
-	{
-		shape = new hkpSphereShape(sphereComponent->Radius);
-		rigidBodyInfo.m_shape = shape;
-
-		if (physicsComponent->Static)
-		{
-			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
-		}
-		else
-		{
-			rigidBodyInfo.m_motionType = hkpMotion::MOTION_SPHERE_INERTIA;
-		}
-		
-		hkpInertiaTensorComputer::computeSphereVolumeMassProperties(sphereComponent->Radius, physicsComponent->Mass, massProperties);
-		
-	}
-	else if (boxComponent)
-	{
-		hkReal thickness = 0.05;
-		shape = new hkpBoxShape(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness));
-		rigidBodyInfo.m_shape = shape;
-		if (physicsComponent->Static)
-		{
-			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
-		}
-		else
-		{
-			rigidBodyInfo.m_motionType = hkpMotion::MOTION_BOX_INERTIA;
-		}
-		hkpInertiaTensorComputer::computeBoxSurfaceMassProperties(hkVector4(boxComponent->Width - thickness, boxComponent->Height - thickness, boxComponent->Depth - thickness), physicsComponent->Mass, thickness, massProperties);
-	}
-	else
-	{
-		return;
-	}
-	
-	rigidBodyInfo.m_position.set(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
-	rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
-	rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
-	rigidBodyInfo.m_mass = massProperties.m_mass;
-
-	// Create RigidBody
-	hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
-	
-
-	auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity, "Vehicle");
-	if (vehicleComponent && m_Vehicles.find(entity) == m_Vehicles.end())
-	{
-			VehicleSetup vehicleSetup;
-
-			// Create the basic vehicle.
-			m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
-			vehicleSetup.buildVehicle(m_PhysicsWorld, *m_Vehicles[entity]);
-			// Add the vehicle's entities and phantoms to the world
-			m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
-		
-			m_RigidBodies[entity] = rigidBody;
-			
-			// The vehicle is an action
-			m_PhysicsWorld->addAction(m_Vehicles[entity]);
-
-			//m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
-
-			shape->removeReference();
-			rigidBody->removeReference();
-	}
-	else
-	{
-		m_PhysicsWorld->addEntity(rigidBody);
-		m_RigidBodies[entity] = rigidBody;
-		shape->removeReference();
-		rigidBody->removeReference();
-	}
-}
-*/
-
-
-
 
 void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
 {	

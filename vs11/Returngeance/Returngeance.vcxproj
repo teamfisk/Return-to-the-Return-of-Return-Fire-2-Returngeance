@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;HK_CONFIG_SIMD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -126,6 +126,7 @@
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
+    <ClInclude Include="..\..\src\Components\MeshShape.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
     <ClInclude Include="..\..\src\Util\Logging.h" />
+    <ClInclude Include="..\..\src\Util\UnorderedMapPair.h" />
     <ClInclude Include="..\..\src\World.h" />
   </ItemGroup>
   <ItemGroup>

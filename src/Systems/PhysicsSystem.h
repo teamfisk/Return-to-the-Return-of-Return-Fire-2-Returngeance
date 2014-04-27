@@ -8,6 +8,8 @@
 #include "Components/Box.h"
 #include "Components/Vehicle.h"
 #include "Components/Input.h"
+#include "Components/MeshShape.h"
+#include "OBJ.h"
 
 // Math and base include
 #include <Common/Base/hkBase.h>
@@ -33,6 +35,8 @@
 // Visual Debugger includes
 #include <Common/Visualize/hkVisualDebugger.h>
 #include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
+
+#include <Physics2012/Collide/Shape/Compound/Collection/ExtendedMeshShape/hkpExtendedMeshShape.h>
 
 #include "Physics/VehicleSetup.h"
 
@@ -66,10 +70,22 @@ private:
 	void SetupPhysics(hkpWorld* physicsWorld);
 
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+	
+
 	std::unordered_map<EntityID, hkpVehicleInstance*> m_Vehicles;
 	std::vector<EntityID> m_Wheels;
 
 	hkpVehicleInstance* Systems::PhysicsSystem::createVehicle(VehicleSetup& vehicleSetup, hkpRigidBody* chassis);
+
+	
+
+	struct  ExtendedShapeData
+	{
+		hkpExtendedMeshShape* ExtendedMeshShape;
+		std::vector<hkReal>* Vertices;
+		std::vector<hkUint16>* VertexIndices;
+	};
+	std::unordered_map<EntityID, ExtendedShapeData > m_hkpExtendedMeshShapes;
 };
 
 }
