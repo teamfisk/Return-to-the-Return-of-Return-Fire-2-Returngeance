@@ -37,7 +37,8 @@ private:
 	std::map<EntityID, double> m_TimeSinceLastSpawn;
 
 	float RandomizeAngle(float spreadAngle);
-	
+	void ScaleInterpolation(double timeProgress, std::vector<float> scaleSpectrum, glm::vec3 &scale);
+	void VelocityInterpolation(double timeProgress, std::vector<glm::vec3> velocitySpectrum, glm::vec3 &velocity);
 };
 
 }
