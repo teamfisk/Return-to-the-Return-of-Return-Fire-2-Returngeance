@@ -16,6 +16,22 @@ void Systems::InputSystem::Update(double dt)
 	for (int i = 0; i <= GLFW_KEY_LAST; ++i)
 	{
 		m_CurrentKeyState[i] = glfwGetKey(m_Renderer->GetWindow(), i);
+		if (m_CurrentKeyState[i] != m_LastKeyState[i])
+		{
+			// Publish key events
+			if (m_CurrentKeyState[i])
+			{
+				Events::KeyDown e;
+				e.KeyCode = i;
+				EventBroker->Publish<Events::KeyDown>(e);
+			}
+			else
+			{
+				Events::KeyUp e;
+				e.KeyCode = i;
+				EventBroker->Publish<Events::KeyUp>(e);
+			}
+		}
 	}
 
 	// Mouse buttons

@@ -6,6 +6,8 @@
 #include "System.h"
 #include "Renderer.h"
 #include "Components/Input.h"
+#include "Events/KeyUp.h"
+#include "Events/KeyDown.h"
 
 namespace Systems
 {
@@ -13,8 +15,10 @@ namespace Systems
 class InputSystem : public System
 {
 public:
-	InputSystem(World* world, std::shared_ptr<Renderer> renderer)
-		: System(world), m_Renderer(renderer) {	}
+	InputSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
+		: System(world, eventBroker)
+		, m_Renderer(renderer) { }
+
 	void RegisterComponents(ComponentFactory* cf) override;
 
 	void Update(double dt) override;

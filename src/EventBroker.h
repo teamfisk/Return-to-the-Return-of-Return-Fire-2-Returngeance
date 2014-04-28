@@ -20,7 +20,7 @@ friend class EventBroker;
 
 protected:
 	BaseEventRelay(std::string typeName)
-		: m_TypeName(typeName) { }
+		: m_TypeName(typeName), m_Broker(nullptr) { }
 	~BaseEventRelay();
 
 public:

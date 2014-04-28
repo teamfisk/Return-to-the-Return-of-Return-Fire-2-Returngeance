@@ -116,6 +116,12 @@
     <Filter Include="GUI">
       <UniqueIdentifier>{6e633434-4aed-453d-b2f9-8c51ca7f78db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio\Events">
+      <UniqueIdentifier>{85692f3a-5241-4780-a3ca-f4d8a2851392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\Events">
+      <UniqueIdentifier>{ee125b77-b275-4841-abc9-374957a89916}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\World.h" />
@@ -225,6 +231,15 @@
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\Events\PlaySound.h">
+      <Filter>Audio\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\KeyDown.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\KeyUp.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

@@ -14,13 +14,16 @@
 #include "Entity.h"
 #include "Component.h"
 #include "System.h"
+#include "EventBroker.h"
 #include "ResourceManager.h"
 
 class World
 {
 public:
-	World();
-	~World();
+	World(std::shared_ptr<::EventBroker> eventBroker)
+		: m_EventBroker(eventBroker)
+		, m_LastEntityID(0) { }
+	~World() { }
 
 	virtual void Initialize();
 
@@ -75,8 +78,10 @@ public:
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
 
 	ResourceManager* GetResourceManager() { return &m_ResourceManager; }
+	std::shared_ptr<::EventBroker> EventBroker() { return m_EventBroker; }
 
 protected:
+	std::shared_ptr<::EventBroker> m_EventBroker;
 	SystemFactory m_SystemFactory;
 	ComponentFactory m_ComponentFactory;
 	ResourceManager m_ResourceManager;

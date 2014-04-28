@@ -7,6 +7,7 @@
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/SoundEmitter.h"
+#include "Events/PlaySound.h"
 #include "Sound.h"
 
 namespace Systems
@@ -15,9 +16,12 @@ namespace Systems
 class SoundSystem : public System
 {
 public:
-	SoundSystem(World* world);
+	SoundSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
+		: System(world, eventBroker) { }
+
 	void RegisterComponents(ComponentFactory* cf) override;
 	void RegisterResourceTypes(ResourceManager* rm) override;
+	void Initialize() override;
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
@@ -38,6 +42,10 @@ private:
 	//unsigned long sampleRate, avgBytesPerSec;
 	//short bytesPerSample, bitsPerSample;
 	//unsigned long dataSize;
+
+	// Events
+	EventRelay<Events::PlaySound> m_EPlaySound;
+	bool OnPlaySound(const Events::PlaySound &event);
 
 	std::map<Component*, ALuint> m_Sources;
 	std::map<std::string, ALuint> m_BufferCache; // string = fileName

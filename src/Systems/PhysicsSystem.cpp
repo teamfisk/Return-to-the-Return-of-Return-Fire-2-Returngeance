@@ -27,7 +27,7 @@
 
 
 
-Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
+void Systems::PhysicsSystem::Initialize()
 {
 	{
 		hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer

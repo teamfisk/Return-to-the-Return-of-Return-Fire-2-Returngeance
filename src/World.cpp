@@ -120,16 +120,6 @@ EntityID World::CreateEntity(EntityID parent /*= 0*/)
 	return newEntity;
 }
 
-World::~World()
-{
-
-}
-
-World::World()
-{
-	m_LastEntityID = 0;
-}
-
 void World::Initialize()
 {
 	RegisterSystems();

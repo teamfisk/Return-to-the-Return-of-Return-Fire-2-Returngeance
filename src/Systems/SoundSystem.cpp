@@ -2,8 +2,7 @@
 #include "SoundSystem.h"
 #include "World.h"
 
-Systems::SoundSystem::SoundSystem(World* world)
-	: System(world)
+void Systems::SoundSystem::Initialize()
 {
 	//initialize OpenAL
 	ALCdevice* Device = alcOpenDevice(NULL);
@@ -22,6 +21,10 @@ Systems::SoundSystem::SoundSystem(World* world)
 
 	alSpeedOfSound(340.29f); // Speed of sound
 	alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+
+	// Subscribe to events
+	m_EPlaySound = decltype(m_EPlaySound)(std::bind(&Systems::SoundSystem::OnPlaySound, this, std::placeholders::_1));
+	EventBroker->Subscribe(m_EPlaySound);
 }
 
 void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
@@ -142,4 +145,16 @@ ALuint Systems::SoundSystem::CreateSource()
 	alDopplerVelocity(350.f); // Defines the velocity of the sound
 
 	return source;
+}
+
+bool Systems::SoundSystem::OnPlaySound(const Events::PlaySound &event)
+{
+	LOG_DEBUG("Events::PlaySound.Resource = %s", event.Resource.c_str());
+
+	ALuint buffer = *m_World->GetResourceManager()->Load<Sound>("Sound", event.Resource);
+	ALuint source = m_Sources.begin()->second;
+	alSourcei(source, AL_BUFFER, buffer);
+	alSourcePlay(source);
+
+	return true;
 }

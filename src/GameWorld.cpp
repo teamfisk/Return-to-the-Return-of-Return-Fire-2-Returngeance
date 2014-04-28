@@ -87,14 +87,14 @@ void GameWorld::Initialize()
 		CommitEntity(ball);
 	}
 
-	/*{
+	{
 		auto entity = CreateEntity();
 		AddComponent(entity, "Transform");
 		auto emitter = AddComponent<Components::SoundEmitter>(entity, "SoundEmitter");
 		emitter->Path = "Sounds/korvring.wav";
 		emitter->Loop = true;
-		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
-	}*/
+		//GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
+	}
 }
 
 void GameWorld::Update(double dt)
@@ -112,16 +112,17 @@ void GameWorld::RegisterComponents()
 
 void GameWorld::RegisterSystems()
 {
-	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this); });
+	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("LevelGenerationSystem", [this]() { return new Systems::LevelGenerationSystem(this); });
-	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_Renderer); });
+	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_EventBroker, m_Renderer); });
+	m_SystemFactory.Register("DebugSystem", [this]() { return new Systems::DebugSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
 	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
-	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this); });
-	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
-	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this); });
-	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_Renderer); });
+	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_EventBroker, m_Renderer); });
 }
 
 void GameWorld::AddSystems()
@@ -129,6 +130,7 @@ void GameWorld::AddSystems()
 	AddSystem("TransformSystem");
 	//AddSystem("LevelGenerationSystem");
 	AddSystem("InputSystem");
+	AddSystem("DebugSystem");
 	//AddSystem("CollisionSystem");
 	////AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
