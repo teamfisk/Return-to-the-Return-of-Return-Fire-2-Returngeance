@@ -14,6 +14,13 @@ struct ParticleEmitter : Component
 {
 	friend class Systems::ParticleSystem;
 
+	ParticleEmitter() 
+		: SpawnFrequency(0)
+		, SpawnCount(0)
+		, SpreadAngle(0)
+		, LifeTime(0)
+		, TimeSinceLastSpawn(0) { } 
+
 	EntityID ParticleTemplate;
 	float SpawnFrequency;
 	int SpawnCount;
