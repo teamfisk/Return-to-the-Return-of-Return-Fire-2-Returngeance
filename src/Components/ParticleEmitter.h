@@ -29,7 +29,7 @@ struct ParticleEmitter : Component
 	float SpreadAngle;
 	double LifeTime;
 	std::vector<glm::vec3> VelocitySpectrum;
-	std::vector<glm::vec3> AngularVelocitySpectrum;
+	std::vector<float> AngularVelocitySpectrum;
 
 	virtual ParticleEmitter* Clone() const override { return new ParticleEmitter(*this); }
 

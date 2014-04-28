@@ -20,6 +20,7 @@ namespace Systems
 		EntityID ParticleID;
 		double SpawnTime;
 		float Scale;
+		float AngularVelocity;
 		Color color;
 	};
 
@@ -35,6 +36,8 @@ private:
 	float RandomizeAngle(float spreadAngle);
 	void ScaleInterpolation(double timeProgress, std::vector<float> scaleSpectrum, glm::vec3 &scale);
 	void VelocityInterpolation(double timeProgress, std::vector<glm::vec3> velocitySpectrum, glm::vec3 &velocity);
+	void ColorInterpolation(double timeProgress, std::vector<Color> colorSpectrum, Color &color);
+	void AngularVelocityInterpolation(double timeProgress, std::vector<float> spectrum, float &angularVelocity);
 	void Billboard();
 	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
 	std::map<EntityID, double> m_TimeSinceLastSpawn;

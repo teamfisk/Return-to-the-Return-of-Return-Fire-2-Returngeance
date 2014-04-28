@@ -15,7 +15,7 @@ namespace Components
 		std::vector<float> ScaleSpectrum;
 		double LifeTime;
 		std::vector<glm::vec3> VelocitySpectrum;
-		std::vector<glm::vec3> AngularVelocitySpectrum;
+		std::vector<float> AngularVelocitySpectrum;
 
 		virtual Particle* Clone() const override { return new Particle(*this); }
 	};

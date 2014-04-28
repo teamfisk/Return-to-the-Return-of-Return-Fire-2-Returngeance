@@ -47,19 +47,18 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			}
 			else
 			{
-				float timeProgress = timeLived / particleComponent->LifeTime; 
-				// The difference between the start and end value
-				/*float deltaColor = glm::abs(particleComponent->ColorSpectrum[0].r - particleComponent->ColorSpectrum[1].r); 
-				it->color.r = particleComponent->ColorSpectrum[0].r + deltaColor * timeProgress;
-				deltaColor = glm::abs(particleComponent->ColorSpectrum[0].g - particleComponent->ColorSpectrum[1].g);
-				it->color.g = particleComponent->ColorSpectrum[0].g + deltaColor * timeProgress;
-				deltaColor = glm::abs(particleComponent->ColorSpectrum[0].b - particleComponent->ColorSpectrum[1].b);
-				it->color.b = particleComponent->ColorSpectrum[0].b + deltaColor * timeProgress;*/
-
 			
-				ScaleInterpolation(timeProgress, particleComponent->ScaleSpectrum, transformComponent->Scale);
-				VelocityInterpolation(timeProgress, particleComponent->VelocitySpectrum, transformComponent->Velocity);
-
+				//FIX: calculate once
+				float timeProgress = timeLived / particleComponent->LifeTime; 
+				//ColorInterpolation(timeProgress, particleComponent->ColorSpectrum, color);
+				if(particleComponent->ScaleSpectrum.size() > 1)
+					ScaleInterpolation(timeProgress, particleComponent->ScaleSpectrum, transformComponent->Scale);
+				if(particleComponent->VelocitySpectrum.size() > 1)
+					VelocityInterpolation(timeProgress, particleComponent->VelocitySpectrum, transformComponent->Velocity);
+				if(particleComponent->AngularVelocitySpectrum.size() > 1)
+					AngularVelocityInterpolation(timeProgress, particleComponent->AngularVelocitySpectrum, it->AngularVelocity);
+				
+				transformComponent->Orientation *= glm::angleAxis(it->AngularVelocity, glm::vec3(0, 0, 1));
 				transformComponent->Position +=  transformComponent->Velocity * (float)dt;
 
 				it++;
@@ -103,12 +102,12 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 
 		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
 		particle->LifeTime = emitterComponent->LifeTime;
-		particle->ScaleSpectrum.push_back(4); //TEMP
-		particle->ScaleSpectrum.push_back(0); //TEMP
+		particle->ScaleSpectrum.push_back(1); //TEMP
+		particle->ScaleSpectrum.push_back(1); //TEMP
 		particle->VelocitySpectrum.push_back(particleTransform->Velocity); //TEMP
 		particle->VelocitySpectrum.push_back(testVel); //TEMP
-// 		particle->AngularVelocitySpectrum.push_back();
-// 		particle->AngularVelocitySpectrum.push_back();
+ 		//particle->AngularVelocitySpectrum.push_back(0.f);
+ 		particle->AngularVelocitySpectrum.push_back(-glm::pi<float>()/10);
 
 // 		Color startColor = {.4f, .45f, .2f};
 // 		particle->ColorSpectrum.push_back(startColor);
@@ -120,8 +119,7 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 		ParticleData data;
 		data.ParticleID = ent;
 		data.SpawnTime = glfwGetTime();
-// 		data.color = particle->ColorSpectrum[0];
-// 		data.Scale = particle->ScaleSpectrum[0];
+		data.AngularVelocity = particle->AngularVelocitySpectrum[0];
 
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
@@ -157,4 +155,23 @@ void Systems::ParticleSystem::VelocityInterpolation(double timeProgress, std::ve
 	if(velocitySpectrum[0].z > velocitySpectrum[1].z)
 		deltaVelocity *= -1;
 	velocity.z = velocitySpectrum[0].z + deltaVelocity * timeProgress;
+}
+
+void Systems::ParticleSystem::ColorInterpolation(double timeProgress, std::vector<Color> colorSpectrum, Color &color)
+{
+	float deltaColor = glm::abs(colorSpectrum[0].r - colorSpectrum[1].r); 
+	color.r = colorSpectrum[0].r + deltaColor * timeProgress;
+	deltaColor = glm::abs(colorSpectrum[0].g - colorSpectrum[1].g);
+	color.g = colorSpectrum[0].g + deltaColor * timeProgress;
+	deltaColor = glm::abs(colorSpectrum[0].b - colorSpectrum[1].b);
+	color.b = colorSpectrum[0].b + deltaColor * timeProgress;
+}
+
+void Systems::ParticleSystem::AngularVelocityInterpolation(double timeProgress, std::vector<float> spectrum, float &angularVelocity)
+{
+	float deltaAngularVelocity = glm::abs(spectrum[0] - spectrum[1]);
+	if(spectrum[0] > spectrum[1])
+		deltaAngularVelocity *= -1;
+	angularVelocity = spectrum[0] + deltaAngularVelocity * timeProgress; 
+
 }

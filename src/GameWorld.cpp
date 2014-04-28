@@ -101,9 +101,9 @@ void GameWorld::Initialize()
 			transform->Position = glm::vec3(i * 10, 20, 0);
 			auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
 			emitter->LifeTime = 4;
-			emitter->SpawnCount = 4;
-			emitter->SpreadAngle = glm::pi<float>()/4;
-			emitter->SpawnFrequency = 0.08;
+			emitter->SpawnCount = 1;
+			emitter->SpreadAngle = glm::pi<float>()/20;
+			emitter->SpawnFrequency = 0.008;
 			auto model = AddComponent<Components::Model>(ent, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 			
