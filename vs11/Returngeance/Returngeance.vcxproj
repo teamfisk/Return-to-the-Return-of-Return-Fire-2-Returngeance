@@ -140,7 +140,7 @@
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
-    <ClInclude Include="..\..\src\MessageRelay.h" />
+    <ClInclude Include="..\..\src\EventRelay.h" />
     <ClInclude Include="..\..\src\Model.h" />
     <ClInclude Include="..\..\src\OBJ.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />

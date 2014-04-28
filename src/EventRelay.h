@@ -5,17 +5,17 @@
 #include <unordered_map>
 #include <list>
 
-struct Message
+struct Event
 {
 protected:
-	Message() { }
+	Event() { }
 };
 
-class MessageRelay
+class EventRelay
 {
 private:
 	typedef std::string MessageType_t;
-	typedef std::function<bool(Message)> MessageCallback_t;
+	typedef std::function<bool(Event)> MessageCallback_t;
 
 public:
 	void Subscribe(std::string messageType, MessageCallback_t callback)
@@ -23,7 +23,7 @@ public:
 		m_Callbacks[messageType].push_back(callback);
 	}
 
-	void Raise(std::string messageType, Message message)
+	void Raise(std::string messageType, Event message)
 	{
 		auto callbackIt = m_Callbacks.find(messageType);
 		if (callbackIt == m_Callbacks.end())

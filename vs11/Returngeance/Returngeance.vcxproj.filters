@@ -220,10 +220,10 @@
     <ClInclude Include="..\..\src\GUI\Frame.h">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\MessageRelay.h" />
     <ClInclude Include="..\..\src\Util\Rectangle.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\EventRelay.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">
