@@ -165,7 +165,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultS
 
 	// [mph/h] The steering angle decreases linearly 
 	// based on your overall max speed of the vehicle. 
-	steering.m_maxSpeedFullSteeringAngle = 70.0f * (1.605f / 3.6f); //MPH???!
+	steering.m_maxSpeedFullSteeringAngle = vehicleComponent.MaxSpeedFullSteeringAngle; // * (1.605f / 3.6f); //MPH???!
 
 	for (int i = 0; i < m_Wheels.size(); i++)
 	{
@@ -198,8 +198,8 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_gearsRatio.setSize(numberOfGears);
 	transmission.m_wheelsTorqueRatio.setSize(data.m_numWheels);
 
-	transmission.m_downshiftRPM = 3500.0f;
-	transmission.m_upshiftRPM = 6500.0f;
+	transmission.m_downshiftRPM = 1500.0f;
+	transmission.m_upshiftRPM = 3500.0f;
 
 	transmission.m_clutchDelayTime = 0.0f;
 	transmission.m_reverseGearRatio = 1.0f;
@@ -267,7 +267,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultA
 	aerodynamics.m_liftCoefficient = -0.3f;
 
 	// Extra gavity applies in world space (independent of m_chassisCoordinateSystem).
-	aerodynamics.m_extraGravityws.set(0.0f, -5.0f, 0.0f);
+	aerodynamics.m_extraGravityws.set(0.0f, -0.982f, 0.0f); // fuck this shit
 }
 
 void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper, Components::Vehicle vehicleComponent)

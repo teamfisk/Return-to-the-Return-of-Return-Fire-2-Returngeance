@@ -2,6 +2,7 @@
 #define PhysicsSystem_h__
 
 #include "System.h"
+#include "Systems/TransformSystem.h"
 #include "Components/Transform.h"
 #include "Components/Physics.h"
 #include "Components/BoxShape.h"

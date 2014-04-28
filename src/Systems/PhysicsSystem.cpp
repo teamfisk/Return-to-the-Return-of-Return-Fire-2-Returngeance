@@ -129,21 +129,21 @@ void Systems::PhysicsSystem::Update(double dt)
 			continue;
 
 		
-		if(m_RigidBodies[entity]->isActive())
+		/*if(m_RigidBodies[entity]->isActive())
 		{
 			m_PhysicsWorld->markForWrite();
 			hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
 			hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
 			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
 			m_PhysicsWorld->unmarkForWrite();
-		}
+		}*/
 		
 	}
 
 	
 	
 
-	static const double timestep = 1 / 30.0;
+	static const double timestep = 1 / 60.0;
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
@@ -189,36 +189,84 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			m_PhysicsWorld->unmarkForWrite();
 		}
 	}
-	else if(m_Vehicles.find(entity) != m_Vehicles.end())
-	{
-		m_PhysicsWorld->markForWrite();
-		hkVector4 position = m_RigidBodies[entity]->getPosition();
-		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
-		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
-		transformComponent->Orientation = glm::quat(orientation(3), orientation(0), orientation(1), orientation(2));
-		m_PhysicsWorld->unmarkForWrite();
-	}
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		m_PhysicsWorld->markForWrite();
+		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent, "Transform");
+		//m_PhysicsWorld->markForWrite();
 		hkVector4 position = m_RigidBodies[entity]->getPosition();
 		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
+		if (transformComponentParent)
+		{
+			transformComponent->Position -= transformComponentParent->Position;
+			transformComponent->Position = transformComponent->Position * transformComponentParent->Orientation;
+		}
 		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
 		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
-		m_PhysicsWorld->unmarkForWrite();
+		if (transformComponentParent)
+		{
+			transformComponent->Orientation =  transformComponent->Orientation * glm::inverse(transformComponentParent->Orientation);
+		}
+		//m_PhysicsWorld->unmarkForWrite();
 	}
 	
 
 	// HACK: Vehicle test-controls
 	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(entity, "Vehicle");
 	auto inputComponent = m_World->GetComponent<Components::Input>(entity, "Input");
-	if (vehicleComponent && inputComponent)
+	if (vehicleComponent && inputComponent && m_Vehicles.find(entity) != m_Vehicles.end() && m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
 		m_PhysicsWorld->markForWrite();
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[entity]->m_deviceStatus;
-		deviceStatus->m_positionY = inputComponent->KeyState[GLFW_KEY_UP] * -1 + inputComponent->KeyState[GLFW_KEY_DOWN] * 1;
-		deviceStatus->m_positionX = inputComponent->KeyState[GLFW_KEY_LEFT] * -1 + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1;
+		
+
+		if(inputComponent->KeyState[GLFW_KEY_UP] != 0 || inputComponent->KeyState[GLFW_KEY_DOWN] != 0)
+		{
+			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 0.05f + inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 0.05f;
+		}
+		else
+		{
+			deviceStatus->m_positionY = 0;
+		}
+
+		if(deviceStatus->m_positionY > 1)
+			deviceStatus->m_positionY = 1;
+		else if(deviceStatus->m_positionY < -1)
+			deviceStatus->m_positionY = -1;
+
+
+
+		if(inputComponent->KeyState[GLFW_KEY_LEFT] != 0 || inputComponent->KeyState[GLFW_KEY_RIGHT] != 0)
+		{
+			deviceStatus->m_positionX += inputComponent->KeyState[GLFW_KEY_LEFT] * -1 * 0.01f + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1 * 0.01f;
+		}
+		else
+		{
+			if(deviceStatus->m_positionX > 0)
+			{
+				deviceStatus->m_positionX += -1 * 0.01f;
+			}
+			else if(deviceStatus->m_positionX < 0)
+			{
+				deviceStatus->m_positionX += 1 * 0.01f;
+			}
+		}
+		
+		if(deviceStatus->m_positionX > 1)
+			deviceStatus->m_positionX = 1;
+		else if(deviceStatus->m_positionX < -1)
+			deviceStatus->m_positionX = -1;
+
+		
 		deviceStatus->m_handbrakeButtonPressed = inputComponent->KeyState[GLFW_KEY_RIGHT_CONTROL];
+
+		if(inputComponent->KeyState[GLFW_KEY_R])
+		{
+			transformComponent->Position = glm::vec3(0, 10, 0);
+			transformComponent->Orientation =  glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+			m_RigidBodies[entity]->setLinearVelocity(hkVector4(0, 0, 0));
+			m_RigidBodies[entity]->setAngularVelocity(hkVector4(0, 0, 0));
+		}
+
 		m_PhysicsWorld->unmarkForWrite();
 	}
 }
@@ -322,8 +370,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 			part.m_stridingType = hkpExtendedMeshShape::INDICES_INT16;
 			
-			
-			
 			mesh->addTrianglesSubpart(part);
 		}
 
@@ -347,8 +393,9 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		return;
 	}
 
-	
-	rigidBodyInfo.m_position.set(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+	auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+	rigidBodyInfo.m_position.set(absoluteTransform.Position.x, absoluteTransform.Position.y, absoluteTransform.Position.z);
+	rigidBodyInfo.m_rotation.set(absoluteTransform.Orientation.x, absoluteTransform.Orientation.y, absoluteTransform.Orientation.z, absoluteTransform.Orientation.w);
 	rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
 	//rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
 	rigidBodyInfo.m_mass = massProperties.m_mass;
