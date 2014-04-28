@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Camera.cpp" />
     <ClCompile Include="..\..\src\CubemapTexture.cpp" />
+    <ClCompile Include="..\..\src\EventBroker.cpp" />
     <ClCompile Include="..\..\src\GameWorld.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\Model.cpp" />
@@ -140,7 +141,7 @@
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
-    <ClInclude Include="..\..\src\EventRelay.h" />
+    <ClInclude Include="..\..\src\EventBroker.h" />
     <ClInclude Include="..\..\src\Model.h" />
     <ClInclude Include="..\..\src\OBJ.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />

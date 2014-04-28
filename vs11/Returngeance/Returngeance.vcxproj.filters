@@ -50,6 +50,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\EventBroker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -223,7 +224,7 @@
     <ClInclude Include="..\..\src\Util\Rectangle.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\EventRelay.h" />
+    <ClInclude Include="..\..\src\EventBroker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">
