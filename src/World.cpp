@@ -22,16 +22,13 @@ EntityID World::GenerateEntityID()
 
 void World::RecursiveUpdate(std::shared_ptr<System> system, double dt, EntityID parentEntity)
 {
-	for (auto pair : m_EntityParents)
+	for (auto &pair : m_EntityParents)
 	{
 		EntityID child = pair.first;
 		EntityID parent = pair.second;
 
-		if (parent == parentEntity)
-		{
-			system->UpdateEntity(dt, child, parent);
-			RecursiveUpdate(system, dt, child);
-		}
+		system->UpdateEntity(dt, child, parent);
+			//RecursiveUpdate(system, dt, child);
 	}
 }
 

@@ -15,7 +15,8 @@ public:
 
 	//void Update(double dt) override;
 	//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-
+	
+	Components::Transform AbsoluteTransform(EntityID entity);
 	glm::vec3 AbsolutePosition(EntityID entity);
 	glm::quat AbsoluteOrientation(EntityID entity);
 	glm::vec3 AbsoluteScale(EntityID entity);

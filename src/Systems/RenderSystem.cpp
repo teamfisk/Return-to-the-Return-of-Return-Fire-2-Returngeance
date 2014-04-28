@@ -23,10 +23,11 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		auto model = m_World->GetResourceManager()->Load<Model>("Model", modelComponent->ModelFile);
 		if (model != nullptr)
 		{
-			glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
+			/*glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 			glm::quat orientation = m_TransformSystem->AbsoluteOrientation(entity);
-			glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);
-			m_Renderer->AddModelToDraw(model, position, orientation, scale, modelComponent->Visible, modelComponent->ShadowCaster);
+			glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);*/
+			Components::Transform absoluteTransform = m_TransformSystem->AbsoluteTransform(entity);
+			m_Renderer->AddModelToDraw(model, absoluteTransform.Position, absoluteTransform.Orientation, absoluteTransform.Scale, modelComponent->Visible, modelComponent->ShadowCaster);
 		}
 	}
 
