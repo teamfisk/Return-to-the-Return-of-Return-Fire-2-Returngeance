@@ -32,6 +32,18 @@ void GameWorld::Initialize()
 		CommitEntity(ground);
 	}
 
+	{
+		auto camera = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(camera, "Transform");
+		transform->Position.z = 20.f;
+		transform->Position.y = 10.f;
+		transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
+		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+		cameraComp->FarClip = 2000.f;
+		AddComponent(camera, "Input");
+		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+		CommitEntity(camera);
+	}
 
 	{
 		auto jeep = CreateEntity();
@@ -59,20 +71,6 @@ void GameWorld::Initialize()
 		light->quadraticAttenuation = 0.001f;
 
 		AddComponent<Components::Input>(jeep, "Input");
-
-
-		{
-			auto camera = CreateEntity();
-			auto transform = AddComponent<Components::Transform>(camera, "Transform");
-			transform->Position.z = 20.f;
-			transform->Position.y = 10.f;
-			transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
-			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-			cameraComp->FarClip = 2000.f;
-			AddComponent(camera, "Input");
-			auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-			CommitEntity(camera);
-		}
 
 		{
 			auto chassis = CreateEntity(jeep);
@@ -160,24 +158,48 @@ void GameWorld::Initialize()
 		CommitEntity(jeep);
 	}
 
-	for(int i = 0; i < 0; i++)
-	{
-		auto cube = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(cube, "Transform");
-		transform->Position = glm::vec3(20, 10 + i*2, 0);
-		transform->Scale = glm::vec3(1);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(cube, "Model");
-		model->ModelFile = "Models/cardboardBox/BoxFixed.obj";
-		
-		auto physics = AddComponent<Components::Physics>(cube, "Physics");
-		physics->Mass = 100;
-		auto box = AddComponent<Components::BoxShape>(cube, "BoxShape");
-		box->Width = 0.5f;
-		box->Height = 0.5f;
-		box->Depth = 0.5f;
-		CommitEntity(cube);
-	}
+
+	for (int x = 0; x < 5; x++)
+		for (int y = 0; y < 5; y++)
+		{
+			auto cube = CreateEntity();
+			auto transform = AddComponent<Components::Transform>(cube, "Transform");
+			transform->Position = glm::vec3(3 * x + 0.1f + 20.f, 3 * y + 0.1f + 1.f, 0);
+			transform->Scale = glm::vec3(3);
+			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+			auto model = AddComponent<Components::Model>(cube, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+
+			auto physics = AddComponent<Components::Physics>(cube, "Physics");
+			physics->Mass = 100;
+			auto box = AddComponent<Components::BoxShape>(cube, "BoxShape");
+			box->Width = 1.5f;
+			box->Height = 1.5f;
+			box->Depth = 1.5f;
+			CommitEntity(cube);
+		}
+
+	/*for (int x = 0; x < 5; x++)
+		for (int y = 0; y < 5; y++)
+		{
+			auto cube = CreateEntity();
+			auto transform = AddComponent<Components::Transform>(cube, "Transform");
+			transform->Position = glm::vec3(3 * x + 0.1f + -20.f, 3 * y + 0.1f + 1.f, 0);
+			transform->Scale = glm::vec3(3);
+			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+			auto model = AddComponent<Components::Model>(cube, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+
+			auto physics = AddComponent<Components::Physics>(cube, "Physics");
+			physics->Mass = 100;
+			auto box = AddComponent<Components::BoxShape>(cube, "BoxShape");
+			box->Width = 1.5f;
+			box->Height = 1.5f;
+			box->Depth = 1.5f;
+			CommitEntity(cube);
+		}
+*/
+
 
 	/*{
 		auto entity = CreateEntity();

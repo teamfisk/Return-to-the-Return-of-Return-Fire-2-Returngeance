@@ -38,6 +38,10 @@
 
 #include <Physics2012/Collide/Shape/Compound/Collection/ExtendedMeshShape/hkpExtendedMeshShape.h>
 
+#include <Common/Base/Thread/JobQueue/hkJobQueue.h>
+#include <Common/Base/Thread/Job/ThreadPool/Cpu/hkCpuJobThreadPool.h>
+#include <Common/Base/DebugUtil/MultiThreadCheck/hkMultiThreadCheck.h>
+
 #include "Physics/VehicleSetup.h"
 
 #include <unordered_map>
@@ -71,6 +75,10 @@ private:
 
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
 	
+	hkJobThreadPool* m_ThreadPool;
+	hkJobQueue* m_JobQueue;
+	int m_TotalNumThreadsUsed;
+	hkpPhysicsContext* m_Context;
 
 	std::unordered_map<EntityID, hkpVehicleInstance*> m_Vehicles;
 	std::vector<EntityID> m_Wheels;

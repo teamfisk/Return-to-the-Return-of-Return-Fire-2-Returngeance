@@ -28,36 +28,81 @@
 Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
 	m_Accumulator = 0;
+	
+	hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
+	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
+	hkBaseSystem::init(memoryRouter, HavokErrorReport);
+
+
+	// Get the number of physical threads available on the system
+	hkHardwareInfo hwInfo;
+	hkGetHardwareInfo(hwInfo);
+	m_TotalNumThreadsUsed = hwInfo.m_numThreads;
+
+	// We use one less than this for our thread pool, because we must also use this thread for our simulation
+	hkCpuJobThreadPoolCinfo threadPoolCinfo;
+	threadPoolCinfo.m_numThreads = m_TotalNumThreadsUsed - 1;
+
+	// This line enables timers collection, by allocating 200 Kb per thread.  If you leave this at its default (0),
+	// timer collection will not be enabled.
+	threadPoolCinfo.m_timerBufferPerThreadAllocation = 200000;
+	m_ThreadPool = new hkCpuJobThreadPool(threadPoolCinfo);
+
+	hkJobQueueCinfo info;
+	info.m_jobQueueHwSetup.m_numCpuThreads = m_TotalNumThreadsUsed;
+	m_JobQueue = new hkJobQueue(info);
+
+	//
+	// Enable monitors for this thread.
+	//
+
+	// Monitors have been enabled for thread pool threads already (see above comment).
+	hkMonitorStream::getInstance().resize(200000);
+
 	{
-		hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
-		hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
-		hkBaseSystem::init(memoryRouter, HavokErrorReport);
-
-
 		hkpWorldCinfo worldInfo;
+
+		// Set the simulation type of the world to multi-threaded.
+		worldInfo.m_simulationType = hkpWorldCinfo::SIMULATION_TYPE_MULTITHREADED;
+
 		worldInfo.setupSolverInfo(hkpWorldCinfo::SOLVER_TYPE_4ITERS_MEDIUM);
-		worldInfo.m_gravity = hkVector4(0.0f, -9.8f, 0.0f);
-		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY; // just fix the entity if the object falls off too far
+		worldInfo.m_gravity = hkVector4(0.0f, -9.82f, 0.0f);
+		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_REMOVE_ENTITY; // just fix the entity if the object falls off too far
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
 		worldInfo.setBroadPhaseWorldSize(1000.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
-	}
-	// Register all collision agents, even though only box - box will be used in this particular example.
-	// It's important to register collision agents before adding any entities to the world.
-	hkpAgentRegisterUtil::registerAllAgents(m_PhysicsWorld->getCollisionDispatcher());
-	
-	//
-	// Initialize the visual debugger so we can connect remotely to the simulation
-	// The context must exist beyond the use of the VDB instance, and you can make
-	// whatever contexts you like for your own viewer types.
-	//
-	hkpPhysicsContext* context = new hkpPhysicsContext;
-	hkpPhysicsContext::registerAllPhysicsProcesses(); // all the physics viewers
-	context->addWorld(m_PhysicsWorld); // add the physics world so the viewers can see it
-	SetupVisualDebugger(context);
 
-	//SetupPhysics(m_PhysicsWorld);
+
+		
+
+		// When the simulation type is SIMULATION_TYPE_MULTITHREADED, in the debug build, the sdk performs checks
+		// to make sure only one thread is modifying the world at once to prevent multithreaded bugs. Each thread
+		// must call markForRead / markForWrite before it modifies the world to enable these checks.
+		m_PhysicsWorld->markForWrite();
+
+		// Register all collision agents, even though only box - box will be used in this particular example.
+		// It's important to register collision agents before adding any entities to the world.
+		hkpAgentRegisterUtil::registerAllAgents(m_PhysicsWorld->getCollisionDispatcher());
+
+		// We need to register all modules we will be running multi-threaded with the job queue
+		m_PhysicsWorld->registerWithJobQueue(m_JobQueue);
+
+
+		//
+		// Initialize the visual debugger so we can connect remotely to the simulation
+		// The context must exist beyond the use of the VDB instance, and you can make
+		// whatever contexts you like for your own viewer types.
+		//
+		m_Context = new hkpPhysicsContext;
+		hkpPhysicsContext::registerAllPhysicsProcesses(); // all the physics viewers
+		m_Context->addWorld(m_PhysicsWorld); // add the physics world so the viewers can see it
+
+		SetupVisualDebugger(m_Context);
+
+		m_PhysicsWorld->unmarkForWrite();
+	}
+
 }
 
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
@@ -86,9 +131,11 @@ void Systems::PhysicsSystem::Update(double dt)
 		
 		if(m_RigidBodies[entity]->isActive())
 		{
+			m_PhysicsWorld->markForWrite();
 			hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
 			hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
 			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+			m_PhysicsWorld->unmarkForWrite();
 		}
 		
 	}
@@ -100,12 +147,18 @@ void Systems::PhysicsSystem::Update(double dt)
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
-		m_PhysicsWorld->stepDeltaTime(timestep);
+		m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
 		m_Accumulator -= timestep;
-	}
 
-	// Step the visual debugger
-	StepVisualDebugger();
+		m_Context->syncTimers(m_ThreadPool);
+		// Step the visual debugger
+		StepVisualDebugger();
+	}
+	
+
+	// Clear accumulated timer data in this thread and all slave threads
+	hkMonitorStream::getInstance().reset();
+	m_ThreadPool->clearTimerData();
 }
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
@@ -120,6 +173,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		EntityID car = m_World->GetEntityParent(entity);
 		if(m_Vehicles.find(car) != m_Vehicles.end())
 		{
+			m_PhysicsWorld->markForWrite();
 			m_Vehicles[car]->getChassis()->activate();
 
 			hkVector4 hardPoint = m_Vehicles[car]->m_suspension->m_wheelParams[wheelComponent->ID].m_hardpointChassisSpace;
@@ -132,22 +186,26 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			hkReal spinAngle = -m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_spinAngle;
 			glm::quat orientation = glm::quat(steeringOrientation(3), steeringOrientation(0), steeringOrientation(1), steeringOrientation(2)) * glm::angleAxis<float>(spinAngle, glm::vec3(1, 0, 0));
 			transformComponent->Orientation = orientation * wheelComponent->OriginalOrientation;
+			m_PhysicsWorld->unmarkForWrite();
 		}
 	}
 	else if(m_Vehicles.find(entity) != m_Vehicles.end())
 	{
+		m_PhysicsWorld->markForWrite();
 		hkVector4 position = m_RigidBodies[entity]->getPosition();
 		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
 		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
-		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
-		
+		transformComponent->Orientation = glm::quat(orientation(3), orientation(0), orientation(1), orientation(2));
+		m_PhysicsWorld->unmarkForWrite();
 	}
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
+		m_PhysicsWorld->markForWrite();
 		hkVector4 position = m_RigidBodies[entity]->getPosition();
 		transformComponent->Position = glm::vec3(position(0), position(1), position(2));
 		hkQuaternion orientation = m_RigidBodies[entity]->getRotation();
 		transformComponent->Orientation = glm::quat(orientation(3),orientation(0), orientation(1), orientation(2));
+		m_PhysicsWorld->unmarkForWrite();
 	}
 	
 
@@ -156,10 +214,12 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	auto inputComponent = m_World->GetComponent<Components::Input>(entity, "Input");
 	if (vehicleComponent && inputComponent)
 	{
+		m_PhysicsWorld->markForWrite();
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[entity]->m_deviceStatus;
 		deviceStatus->m_positionY = inputComponent->KeyState[GLFW_KEY_UP] * -1 + inputComponent->KeyState[GLFW_KEY_DOWN] * 1;
 		deviceStatus->m_positionX = inputComponent->KeyState[GLFW_KEY_LEFT] * -1 + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1;
 		deviceStatus->m_handbrakeButtonPressed = inputComponent->KeyState[GLFW_KEY_RIGHT_CONTROL];
+		m_PhysicsWorld->unmarkForWrite();
 	}
 }
 
@@ -244,13 +304,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		{
 			for (auto &faceDef : face.Definitions)
 			{
-				/*hkReal x, y, z;
-				std::tie(x, y, z) = meshShape->Vertices.at(faceDef.VertexIndex - 1);
-				vertices.push_back(x);
-				vertices.push_back(y);
-				vertices.push_back(z);*/
 				vertexIndices->push_back(faceDef.VertexIndex - 1);
-				//vertexIndices.push_back(i++);
 			}
 		}
 
@@ -315,8 +369,9 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				i--;
 			}
 		}
-		VehicleSetup vehicleSetup;
+		m_PhysicsWorld->markForWrite();
 
+		VehicleSetup vehicleSetup;
 		// Create the basic vehicle.
 		m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
 		vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
@@ -327,6 +382,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 		// The vehicle is an action
 		m_PhysicsWorld->addAction(m_Vehicles[entity]);
+		m_PhysicsWorld->unmarkForWrite();
 
 		//m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
 		m_Wheels.clear();
@@ -335,9 +391,11 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	}
 	else
 	{
+		m_PhysicsWorld->markForWrite();
 		m_PhysicsWorld->addEntity(rigidBody);
 		m_RigidBodies[entity] = rigidBody;
-		
+		m_PhysicsWorld->unmarkForWrite();
+
 		shape->removeReference();
 		rigidBody->removeReference();
 
