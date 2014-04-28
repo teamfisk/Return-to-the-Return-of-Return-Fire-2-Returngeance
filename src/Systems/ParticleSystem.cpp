@@ -28,7 +28,7 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 		if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
 		{
-			SpawnParticles(entity, transformComponent->Position, emitterComponent->SpawnCount, emitterComponent->SpreadAngle, emitterComponent->LifeTime, dt);
+			SpawnParticles(entity);
 			emitterComponent->TimeSinceLastSpawn = 0;
 		}
 
@@ -42,30 +42,28 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			double timeLived = glfwGetTime() - it->SpawnTime; 
 			if(timeLived > particleComponent->LifeTime)
 			{
-				
 				m_World->RemoveEntity(particleID);
-				m_ParticleEmitter[entity].erase(it);
-				break;
+				it = m_ParticleEmitter[entity].erase(it);
 			}
 			else
 			{
-				it++;
-			}
-
-			float timeProgress = timeLived / particleComponent->LifeTime; 
-			// The difference between the start and end value
-			/*float deltaColor = glm::abs(particleComponent->ColorSpectrum[0].r - particleComponent->ColorSpectrum[1].r); 
-			it->color.r = particleComponent->ColorSpectrum[0].r + deltaColor * timeProgress;
-			deltaColor = glm::abs(particleComponent->ColorSpectrum[0].g - particleComponent->ColorSpectrum[1].g);
-			it->color.g = particleComponent->ColorSpectrum[0].g + deltaColor * timeProgress;
-			deltaColor = glm::abs(particleComponent->ColorSpectrum[0].b - particleComponent->ColorSpectrum[1].b);
-			it->color.b = particleComponent->ColorSpectrum[0].b + deltaColor * timeProgress;*/
+				float timeProgress = timeLived / particleComponent->LifeTime; 
+				// The difference between the start and end value
+				/*float deltaColor = glm::abs(particleComponent->ColorSpectrum[0].r - particleComponent->ColorSpectrum[1].r); 
+				it->color.r = particleComponent->ColorSpectrum[0].r + deltaColor * timeProgress;
+				deltaColor = glm::abs(particleComponent->ColorSpectrum[0].g - particleComponent->ColorSpectrum[1].g);
+				it->color.g = particleComponent->ColorSpectrum[0].g + deltaColor * timeProgress;
+				deltaColor = glm::abs(particleComponent->ColorSpectrum[0].b - particleComponent->ColorSpectrum[1].b);
+				it->color.b = particleComponent->ColorSpectrum[0].b + deltaColor * timeProgress;*/
 
 			
-			ScaleInterpolation(timeProgress, particleComponent->ScaleSpectrum, transformComponent->Scale);
-			VelocityInterpolation(timeProgress, particleComponent->VelocitySpectrum, transformComponent->Velocity);
+				ScaleInterpolation(timeProgress, particleComponent->ScaleSpectrum, transformComponent->Scale);
+				VelocityInterpolation(timeProgress, particleComponent->VelocitySpectrum, transformComponent->Velocity);
 
-			transformComponent->Position +=  transformComponent->Velocity;
+				transformComponent->Position +=  transformComponent->Velocity * (float)dt;
+
+				it++;
+			}
 		}
 	}
 }
@@ -76,24 +74,26 @@ void Systems::ParticleSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("Particle", []() { return new Components::Particle(); });
 }
 
-void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime, double dt)
+
+void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 {
+	auto emitterComponent = m_World->GetComponent<Components::ParticleEmitter>(emitterID, "ParticleEmitter");
 	auto emitterTransform = m_World->GetComponent<Components::Transform>(emitterID, "Transform");
 	glm::quat emitterOrientation = emitterTransform->Orientation;
 
-	float tempSpeed =  4 * dt;
+	float tempSpeed =  4;
 	glm::vec3 speed = glm::vec3(tempSpeed);
 
-	for(int i = 0; i < spawnCount; i++)
+	for(int i = 0; i < emitterComponent->SpawnCount; i++)
 	{
-		auto ent = m_World->CreateEntity();
-		
-		auto particleTransform = m_World->AddComponent<Components::Transform>(ent, "Transform");
-		particleTransform->Position.x = pos.x;
-		particleTransform->Position.y = pos.y;
-		particleTransform->Position.z = pos.z;
+		auto ent = m_World->CloneEntity(emitterComponent->ParticleTemplate);
+
+		auto particleTransform = m_World->GetComponent<Components::Transform>(ent, "Transform");
+		particleTransform->Position = emitterTransform->Position;
 		particleTransform->Scale = glm::vec3(1, 1, 1);
+
 		//The emitter's orientation as "start value" times the default direction for quaternion. Times the speed, and then rotate on x and y axis with the randomized spread angle. 
+		float spreadAngle = emitterComponent->SpreadAngle;
 		particleTransform->Velocity = emitterOrientation * glm::vec3(0, 0, -1) * speed * 
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(1, 0, 0))) * 
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(0, 1, 0))) *
@@ -102,19 +102,20 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID, glm::vec3 pos, 
 		glm::vec3 testVel = glm::vec3(particleTransform->Velocity.x, -particleTransform->Velocity.y * 1.5, particleTransform->Velocity.z); //TEMP
 
 		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
-		particle->LifeTime = lifeTime;
+		particle->LifeTime = emitterComponent->LifeTime;
 		particle->ScaleSpectrum.push_back(4); //TEMP
-		particle->ScaleSpectrum.push_back(1); //TEMP
+		particle->ScaleSpectrum.push_back(0); //TEMP
 		particle->VelocitySpectrum.push_back(particleTransform->Velocity); //TEMP
 		particle->VelocitySpectrum.push_back(testVel); //TEMP
+// 		particle->AngularVelocitySpectrum.push_back();
+// 		particle->AngularVelocitySpectrum.push_back();
 
 // 		Color startColor = {.4f, .45f, .2f};
 // 		particle->ColorSpectrum.push_back(startColor);
 // 		Color endColor = {0.f, 45.f, 23.f};
 // 		particle->ColorSpectrum.push_back(endColor);
 
-		auto model = m_World->AddComponent<Components::Model>(ent, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+		
 
 		ParticleData data;
 		data.ParticleID = ent;

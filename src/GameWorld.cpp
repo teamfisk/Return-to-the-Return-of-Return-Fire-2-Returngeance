@@ -106,6 +106,13 @@ void GameWorld::Initialize()
 			emitter->SpawnFrequency = 0.08;
 			auto model = AddComponent<Components::Model>(ent, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+			
+			auto particleEnt = CreateEntity();
+			AddComponent<Components::Transform>(particleEnt, "Transform");
+			model = AddComponent<Components::Model>(particleEnt, "Model");
+			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+
+			emitter->ParticleTemplate = particleEnt;
 		}
 	}
 }

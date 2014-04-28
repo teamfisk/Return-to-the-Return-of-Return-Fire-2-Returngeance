@@ -28,17 +28,18 @@ class ParticleSystem : public System
 public:
 	ParticleSystem(World* world);
 	void RegisterComponents(ComponentFactory* cf) override;
-
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 private:
-	void SpawnParticles(EntityID emitterID, glm::vec3 pos, float spawnCount, float spreadAngle, double lifeTime, double dt);
-	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
-	std::map<EntityID, double> m_TimeSinceLastSpawn;
-
+	void SpawnParticles(EntityID emitterID);
 	float RandomizeAngle(float spreadAngle);
 	void ScaleInterpolation(double timeProgress, std::vector<float> scaleSpectrum, glm::vec3 &scale);
 	void VelocityInterpolation(double timeProgress, std::vector<glm::vec3> velocitySpectrum, glm::vec3 &velocity);
+	void Billboard();
+	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
+	std::map<EntityID, double> m_TimeSinceLastSpawn;
+
+	
 };
 
 }

@@ -135,7 +135,14 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 template <class T>
 T* World::GetComponent(EntityID entity, std::string componentType)
 {
+	
+	/*auto it0 = m_EntityComponents.find(entity);
+
+	if (it0 == m_EntityComponents.end())
+	return nullptr;*/
+
 	auto components = m_EntityComponents[entity]; 
+
 	auto it = components.find(componentType);
 	if (it != components.end())
 	{
