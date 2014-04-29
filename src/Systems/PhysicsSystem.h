@@ -38,6 +38,8 @@
 #include <Physics2012/Utilities/VisualDebugger/hkpPhysicsContext.h>
 
 #include <Physics2012/Collide/Shape/Compound/Collection/ExtendedMeshShape/hkpExtendedMeshShape.h>
+#include <Physics2012/Collide/Shape/Compound/Tree/Mopp/hkpMoppBvTreeShape.h>
+#include <Physics2012/Collide/Shape/Compound/Tree/Mopp/hkpMoppUtility.h>
 
 #include <Common/Base/Thread/JobQueue/hkJobQueue.h>
 #include <Common/Base/Thread/Job/ThreadPool/Cpu/hkCpuJobThreadPool.h>
@@ -93,8 +95,10 @@ private:
 		hkpExtendedMeshShape* ExtendedMeshShape;
 		std::vector<hkReal>* Vertices;
 		std::vector<hkUint16>* VertexIndices;
+		hkpMoppCode* Code;
+		hkpMoppBvTreeShape* MoppShape;
 	};
-	std::unordered_map<EntityID, ExtendedShapeData > m_hkpExtendedMeshShapes;
+	std::unordered_map<EntityID, ExtendedShapeData > m_ExtendedMeshShapes;
 };
 
 }

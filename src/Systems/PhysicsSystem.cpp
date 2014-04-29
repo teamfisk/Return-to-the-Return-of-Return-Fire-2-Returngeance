@@ -120,6 +120,7 @@ void Systems::PhysicsSystem::Update(double dt)
 	for (auto pair : *m_World->GetEntities())
 	{
 		EntityID entity = pair.first;
+		EntityID parent = pair.second;
 
 		if (m_RigidBodies.find(entity) == m_RigidBodies.end())
 			continue;
@@ -128,22 +129,35 @@ void Systems::PhysicsSystem::Update(double dt)
 		if (!transformComponent)
 			continue;
 
-		
-		/*if(m_RigidBodies[entity]->isActive())
+		if(m_RigidBodies[entity]->isActive())
 		{
+			
+			hkVector4 position;
+			hkQuaternion rotation;
+
+			if (parent)
+			{
+				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+				position =  hkVector4(absoluteTransform.Position.x, absoluteTransform.Position.y, absoluteTransform.Position.z);
+				rotation = hkQuaternion(absoluteTransform.Orientation.x, absoluteTransform.Orientation.y, absoluteTransform.Orientation.z, absoluteTransform.Orientation.w);
+			}
+			else
+			{
+				position =  hkVector4(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
+				rotation = hkQuaternion(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
+			}
 			m_PhysicsWorld->markForWrite();
-			hkVector4 position(transformComponent->Position.x, transformComponent->Position.y, transformComponent->Position.z);
-			hkQuaternion rotation(transformComponent->Orientation.x, transformComponent->Orientation.y, transformComponent->Orientation.z, transformComponent->Orientation.w);
 			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
 			m_PhysicsWorld->unmarkForWrite();
-		}*/
+			
+		}
 		
 	}
 
 	
 	
 
-	static const double timestep = 1 / 30.0;
+	static const double timestep = 1 / 60.0;
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
@@ -222,7 +236,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		
 		if(inputComponent->KeyState[GLFW_KEY_UP] != 0 || inputComponent->KeyState[GLFW_KEY_DOWN] != 0)
 		{
-			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 0.1f + inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 0.1f;
+			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 1.f * dt + inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 1.f * dt;
 		}
 		else
 		{
@@ -234,24 +248,24 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		else if(deviceStatus->m_positionY < -1)
 			deviceStatus->m_positionY = -1;
 
-		float turningSpeed = 0.02f;
+		float turningSpeed = 3.f;
 
 		if(inputComponent->KeyState[GLFW_KEY_LEFT] != 0 || inputComponent->KeyState[GLFW_KEY_RIGHT] != 0)
 		{
-			deviceStatus->m_positionX += inputComponent->KeyState[GLFW_KEY_LEFT] * -1 * turningSpeed + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1 * turningSpeed;
+			deviceStatus->m_positionX += inputComponent->KeyState[GLFW_KEY_LEFT] * -1 * turningSpeed * dt + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1 * turningSpeed * dt;
 		}
 		else
 		{
 			if(deviceStatus->m_positionX > 0)
 			{
-				deviceStatus->m_positionX += -1 * turningSpeed;
+				deviceStatus->m_positionX += -1 * (turningSpeed*2) *dt;
 			}
 			else if(deviceStatus->m_positionX < 0)
 			{
-				deviceStatus->m_positionX += 1 * turningSpeed;
+				deviceStatus->m_positionX += 1 * (turningSpeed*2) * dt;
 			}
 
-			if (deviceStatus->m_positionX > -turningSpeed && deviceStatus->m_positionX < turningSpeed) 
+			if (deviceStatus->m_positionX > -0.1 && deviceStatus->m_positionX < 0.1) 
 			{
 				deviceStatus->m_positionX = 0.f;
 			}
@@ -265,9 +279,9 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		
 		deviceStatus->m_handbrakeButtonPressed = inputComponent->KeyState[GLFW_KEY_RIGHT_CONTROL];
 
-		if(inputComponent->KeyState[GLFW_KEY_R])
+		if(inputComponent->KeyState[GLFW_KEY_R] && !inputComponent->LastKeyState[GLFW_KEY_R])
 		{
-			transformComponent->Position = glm::vec3(0, 10, 0);
+			transformComponent->Position = transformComponent->Position + glm::vec3(0, 5, 0);
 			transformComponent->Orientation =  glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 			m_RigidBodies[entity]->setLinearVelocity(hkVector4(0, 0, 0));
 			m_RigidBodies[entity]->setAngularVelocity(hkVector4(0, 0, 0));
@@ -389,9 +403,18 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		}
 		hkpInertiaTensorComputer::computeShapeVolumeMassProperties(mesh, physicsComponent->Mass, massProperties);
 		rigidBodyInfo.m_shape = mesh;
-		m_hkpExtendedMeshShapes[entity].ExtendedMeshShape = mesh;
-		m_hkpExtendedMeshShapes[entity].VertexIndices = vertexIndices;
-		m_hkpExtendedMeshShapes[entity].Vertices = vertices;
+		m_ExtendedMeshShapes[entity].ExtendedMeshShape = mesh;
+		m_ExtendedMeshShapes[entity].VertexIndices = vertexIndices;
+		m_ExtendedMeshShapes[entity].Vertices = vertices;
+
+		hkpMoppCompilerInput mci;
+		hkpMoppCode* code = hkpMoppUtility::buildCode( mesh, mci );
+		hkpMoppBvTreeShape* moppShape = new hkpMoppBvTreeShape(mesh, code);
+
+		m_ExtendedMeshShapes[entity].Code = code;
+		m_ExtendedMeshShapes[entity].MoppShape = moppShape;
+		shape = moppShape;
+
 		shape = mesh;
 	}
 	else
@@ -422,11 +445,12 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				i--;
 			}
 		}
-		m_PhysicsWorld->markForWrite();
+		
 
 		VehicleSetup vehicleSetup;
 		// Create the basic vehicle.
 		m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
+		m_PhysicsWorld->markForWrite();
 		vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
 		// Add the vehicle's entities and phantoms to the world
 		m_Vehicles[entity]->addToWorld(m_PhysicsWorld);

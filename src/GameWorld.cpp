@@ -20,11 +20,11 @@ void GameWorld::Initialize()
 		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
-		model->ModelFile = "Models/TestScene/testScene.obj";
-		//model->ModelFile = "Models/Placeholders/Terrain/Terrain.obj";
+		//model->ModelFile = "Models/TestScene/testScene.obj";
+		model->ModelFile = "Models/Placeholders/Terrain/Terrain.obj";
 		auto meshShape = AddComponent<Components::MeshShape>(ground, "MeshShape");
-		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain.obj";
-		meshShape->ResourceName = "Models/TestScene/testScene.obj";
+		meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain.obj";
+		//meshShape->ResourceName = "Models/TestScene/testScene.obj";
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
@@ -49,7 +49,7 @@ void GameWorld::Initialize()
 	{
 		auto jeep = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(jeep, "Transform");
-		transform->Position = glm::vec3(0, 10, 0);
+		transform->Position = glm::vec3(0, 15, 0);
 
 		auto physics = AddComponent<Components::Physics>(jeep, "Physics");
 		physics->Mass = 800;
@@ -61,7 +61,7 @@ void GameWorld::Initialize()
 // 		box->Depth = 2.594f;
 
 		auto meshShape = AddComponent<Components::MeshShape>(jeep, "MeshShape");
-		meshShape->ResourceName = "Models/JeepV2/Chassi/chassi.OBJ";
+		meshShape->ResourceName = "Models/JeepV2/Chassi/ChassiCollision.obj";
 
 		auto vehicle = AddComponent<Components::Vehicle>(jeep, "Vehicle");
 
@@ -72,7 +72,7 @@ void GameWorld::Initialize()
 			auto transform = AddComponent<Components::Transform>(chassis, "Transform");
 			transform->Position = glm::vec3(0, 0, 0); // 0.6577f
 			auto model = AddComponent<Components::Model>(chassis, "Model");
-			model->ModelFile = "Models/JeepV2/Chassi/chassi.OBJ";
+			model->ModelFile = "Models/JeepV2/Chassi/ChassiCollision.obj";
 		}
 
 		{
@@ -91,7 +91,7 @@ void GameWorld::Initialize()
 		//Create wheels
 		float wheelOffset = 0.4f;
 		float springLength = 0.3f;
-		float suspensionStrength = 20.f;
+		float suspensionStrength = 35.f;
 		{
 			auto wheel = CreateEntity(jeep);
 			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
@@ -194,7 +194,7 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
-	for(int i = 0; i < 0; i++)
+	for(int i = 0; i < 5; i++)
 	{
 		auto wall = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(wall, "Transform");
