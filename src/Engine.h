@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "EventBroker.h"
+#include "GUI/Frame.h"
 #include "Renderer.h"
 #include "GameWorld.h"
 
@@ -14,6 +15,8 @@ public:
 
 		m_Renderer = std::make_shared<Renderer>();
 		m_Renderer->Initialize();
+
+		m_UIParent = std::make_shared<GUI::Frame>(0, 0, m_Renderer->Width(), m_Renderer->Height());
 
 		m_World = std::make_shared<GameWorld>(m_EventBroker, m_Renderer);
 		m_World->Initialize();
@@ -38,6 +41,7 @@ public:
 private:
 	std::shared_ptr<EventBroker> m_EventBroker;
 	std::shared_ptr<Renderer> m_Renderer;
+	std::shared_ptr<GUI::Frame> m_UIParent;
 	// TODO: This should ultimately live in GameFrame
 	std::shared_ptr<GameWorld> m_World;
 

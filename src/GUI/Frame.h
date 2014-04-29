@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Util/Rectangle.h"
+#include "EventBroker.h"
 
 namespace GUI
 {
@@ -19,13 +20,28 @@ public:
 		Bottom
 	};
 
-	Frame() { }
-	
-	Frame(const Frame &parent)
-		: Rectangle(static_cast<Rectangle>(parent))
-		, Parent(std::shared_ptr<Frame>(&parent)) { }
+	// Set up a base frame with an event broker
+	Frame(std::shared_ptr<::EventBroker> eventBroker) 
+		: EventBroker(eventBroker)
+		, Rectangle() 
+	{ Initialize(); }
+	// Create a frame as a child
+	Frame(std::shared_ptr<Frame> parent)
+		: Rectangle(static_cast<Rectangle>(*parent)) // Clone parent rectangle using copy constructor
+	{ SetParent(parent); Initialize(); }
 
-	std::shared_ptr<Frame> Parent;
+	virtual void Initialize() { }
+	std::shared_ptr<Frame> Parent() const { return m_Parent; }
+	void SetParent(std::shared_ptr<Frame> parent) 
+	{ 
+		m_Parent = parent;
+		EventBroker = parent->EventBroker;
+	}
+	virtual void Update(double dt) { }
+
+protected:
+	std::shared_ptr<::EventBroker> EventBroker;
+	std::shared_ptr<Frame> m_Parent;
 };
 
 }
