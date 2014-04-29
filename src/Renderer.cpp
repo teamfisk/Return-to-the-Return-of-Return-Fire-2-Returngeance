@@ -31,11 +31,11 @@ void Renderer::Initialize()
 	}
 
 	// Create a window
-	WIDTH = 1280;
-	HEIGHT = 720;
+	m_Width = 1280;
+	m_Height = 720;
 	// Antialiasing
 	//glfwWindowHint(GLFW_SAMPLES, 16);
-	m_Window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr);
+	m_Window = glfwCreateWindow(m_Width, m_Height, "OpenGL", nullptr, nullptr);
 	if (!m_Window)
 	{
 		LOG_ERROR("GLFW: Failed to create window");
@@ -63,7 +63,7 @@ void Renderer::Initialize()
 	}
 
 	// Create Camera
-	m_Camera = std::make_shared<Camera>(45.f, (float)WIDTH / HEIGHT, 0.01f, 1000.f);
+	m_Camera = std::make_shared<Camera>(45.f, (float)m_Width / m_Height, 0.01f, 1000.f);
 	m_Camera->Position(glm::vec3(0.0f, 0.0f, 2.f));
 
 	glfwSwapInterval(m_VSync);
@@ -187,7 +187,7 @@ void Renderer::Draw(double dt)
 void Renderer::DrawSkybox()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, m_Width, m_Height);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_ShaderProgramSkybox.Bind();
@@ -200,7 +200,7 @@ void Renderer::DrawSkybox()
 void Renderer::DrawScene()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, m_Width, m_Height);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 	//glClearColor(1.0f, 1.0f, 0.0f, 1.0f);

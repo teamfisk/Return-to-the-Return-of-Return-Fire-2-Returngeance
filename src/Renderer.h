@@ -20,7 +20,9 @@ public:
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
-	int HEIGHT, WIDTH;
+	
+	int Width() const { return m_Width; }
+	int Height() const { return m_Height; }
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
 	int Lights;
@@ -65,9 +67,8 @@ public:
 	void DrawBounds(bool val) { m_DrawBounds = val; }
 	void DrawSkybox();
 
-
-
 private:
+	int m_Width, m_Height;
 	GLFWwindow* m_Window;
 	GLint m_glVersion[2];
 	GLchar* m_glVendor;

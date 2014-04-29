@@ -51,8 +51,8 @@ void Systems::InputSystem::Update(double dt)
 	// Lock mouse while holding LMB
 	if (m_CurrentMouseState[GLFW_MOUSE_BUTTON_LEFT])
 	{
-		m_LastMouseX = m_Renderer->WIDTH / 2.f; // xpos;
-		m_LastMouseY = m_Renderer->HEIGHT / 2.f; // ypos;
+		m_LastMouseX = m_Renderer->Width() / 2.f; // xpos;
+		m_LastMouseY = m_Renderer->Height() / 2.f; // ypos;
 		glfwSetCursorPos(m_Renderer->GetWindow(), m_LastMouseX, m_LastMouseY);
 	}
 	// Hide/show cursor with LMB
