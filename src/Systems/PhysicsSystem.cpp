@@ -29,7 +29,7 @@ Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
 	m_Accumulator = 0;
 	
-	hkMemorySystem::FrameInfo finfo(500 * 1024);	// Allocate 500KB of Physics solver buffer
+	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
 	hkBaseSystem::init(memoryRouter, HavokErrorReport);
 
@@ -143,7 +143,7 @@ void Systems::PhysicsSystem::Update(double dt)
 	
 	
 
-	static const double timestep = 1 / 60.0;
+	static const double timestep = 1 / 30.0;
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
@@ -153,12 +153,14 @@ void Systems::PhysicsSystem::Update(double dt)
 		m_Context->syncTimers(m_ThreadPool);
 		// Step the visual debugger
 		StepVisualDebugger();
+
+		// Clear accumulated timer data in this thread and all slave threads
+		hkMonitorStream::getInstance().reset();
+		m_ThreadPool->clearTimerData();
 	}
 	
 
-	// Clear accumulated timer data in this thread and all slave threads
-	hkMonitorStream::getInstance().reset();
-	m_ThreadPool->clearTimerData();
+	
 }
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
@@ -218,10 +220,9 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		m_PhysicsWorld->markForWrite();
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[entity]->m_deviceStatus;
 		
-
 		if(inputComponent->KeyState[GLFW_KEY_UP] != 0 || inputComponent->KeyState[GLFW_KEY_DOWN] != 0)
 		{
-			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 0.05f + inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 0.05f;
+			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 0.1f + inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 0.1f;
 		}
 		else
 		{
@@ -233,21 +234,26 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		else if(deviceStatus->m_positionY < -1)
 			deviceStatus->m_positionY = -1;
 
-
+		float turningSpeed = 0.02f;
 
 		if(inputComponent->KeyState[GLFW_KEY_LEFT] != 0 || inputComponent->KeyState[GLFW_KEY_RIGHT] != 0)
 		{
-			deviceStatus->m_positionX += inputComponent->KeyState[GLFW_KEY_LEFT] * -1 * 0.01f + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1 * 0.01f;
+			deviceStatus->m_positionX += inputComponent->KeyState[GLFW_KEY_LEFT] * -1 * turningSpeed + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1 * turningSpeed;
 		}
 		else
 		{
 			if(deviceStatus->m_positionX > 0)
 			{
-				deviceStatus->m_positionX += -1 * 0.01f;
+				deviceStatus->m_positionX += -1 * turningSpeed;
 			}
 			else if(deviceStatus->m_positionX < 0)
 			{
-				deviceStatus->m_positionX += 1 * 0.01f;
+				deviceStatus->m_positionX += 1 * turningSpeed;
+			}
+
+			if (deviceStatus->m_positionX > -turningSpeed && deviceStatus->m_positionX < turningSpeed) 
+			{
+				deviceStatus->m_positionX = 0.f;
 			}
 		}
 		

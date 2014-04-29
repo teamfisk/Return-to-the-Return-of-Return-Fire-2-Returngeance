@@ -20,10 +20,11 @@ void GameWorld::Initialize()
 		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
-		model->ModelFile = "Models/Placeholders/Terrain/Terrain.obj";
+		model->ModelFile = "Models/TestScene/testScene.obj";
+		//model->ModelFile = "Models/Placeholders/Terrain/Terrain.obj";
 		auto meshShape = AddComponent<Components::MeshShape>(ground, "MeshShape");
-		meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain.obj";
-
+		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain.obj";
+		meshShape->ResourceName = "Models/TestScene/testScene.obj";
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
@@ -86,24 +87,26 @@ void GameWorld::Initialize()
 			light->quadraticAttenuation = 0.002f;
 		}
 
-		float wheelOffset = -0.2f;
-		float hardPointOffset = 0.0f;
 
+		//Create wheels
+		float wheelOffset = 0.4f;
+		float springLength = 0.3f;
+		float suspensionStrength = 20.f;
 		{
 			auto wheel = CreateEntity(jeep);
 			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
-			transform->Position = glm::vec3(1.9f, 0.5546f - 0.2 + wheelOffset, -0.9242f);
+			transform->Position = glm::vec3(1.9f, 0.5546f - wheelOffset, -0.9242f);
 			transform->Scale = glm::vec3(1.0f);
 			auto model = AddComponent<Components::Model>(wheel, "Model");
 			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
 			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
-			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f - hardPointOffset, 0.f);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
 			Wheel->AxleID = 0;
 			Wheel->Mass = 50;
 			Wheel->Radius = 0.837f;
 			Wheel->Steering = true;
-			Wheel->SuspensionStrength = 50.f;
-			Wheel->Friction = 3.5f;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			CommitEntity(wheel);
 		}
@@ -111,19 +114,19 @@ void GameWorld::Initialize()
 		{
 			auto wheel = CreateEntity(jeep);
 			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
-			transform->Position = glm::vec3(-1.9f, 0.5546f - 0.2 + wheelOffset, -0.9242f);
+			transform->Position = glm::vec3(-1.9f, 0.5546f - wheelOffset, -0.9242f);
 			transform->Scale = glm::vec3(1.0f);
 			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
 			auto model = AddComponent<Components::Model>(wheel, "Model");
 			model->ModelFile = "Models/JeepV2/WheelFront/wheelFront.obj";
 			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
-			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f - hardPointOffset, 0.f);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
 			Wheel->AxleID = 0;
 			Wheel->Mass = 50;
 			Wheel->Radius = 0.837f;
 			Wheel->Steering = true;
-			Wheel->SuspensionStrength = 50.f;
-			Wheel->Friction = 3.5f;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			CommitEntity(wheel);
 		}
@@ -131,17 +134,17 @@ void GameWorld::Initialize()
 		{
 			auto wheel = CreateEntity(jeep);
 			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
-			transform->Position = glm::vec3(0.2726f, 0.2805f + wheelOffset, 1.9307f);
+			transform->Position = glm::vec3(0.2726f, 0.2805f - wheelOffset, 1.9307f);
 			auto model = AddComponent<Components::Model>(wheel, "Model");
 			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
 			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
-			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f - hardPointOffset, 0.f);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
 			Wheel->AxleID = 1;
 			Wheel->Mass = 50;
 			Wheel->Radius = 0.737f;
 			Wheel->Steering = false;
-			Wheel->SuspensionStrength = 40.f;
-			Wheel->Friction = 3.5f;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			CommitEntity(wheel);
 		}
@@ -149,18 +152,18 @@ void GameWorld::Initialize()
 		{
 			auto wheel = CreateEntity(jeep);
 			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
-			transform->Position = glm::vec3(-0.2726f, 0.2805f + wheelOffset, 1.9307f);
+			transform->Position = glm::vec3(-0.2726f, 0.2805f - wheelOffset, 1.9307f);
 			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
 			auto model = AddComponent<Components::Model>(wheel, "Model");
 			model->ModelFile = "Models/JeepV2/WheelBack/wheelBack.obj";
 			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
-			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f - hardPointOffset, 0.f);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
 			Wheel->AxleID = 1;
 			Wheel->Mass = 50;
 			Wheel->Radius = 0.737f;
 			Wheel->Steering = false;
-			Wheel->SuspensionStrength = 40.f;
-			Wheel->Friction = 3.5f;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			CommitEntity(wheel);
 		}
@@ -191,27 +194,28 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
+	for(int i = 0; i < 0; i++)
 	{
 		auto wall = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(wall, "Transform");
-		transform->Position = glm::vec3(10, 0, -20);
-		transform->Orientation = glm::angleAxis(glm::pi<float>()/2.f, glm::vec3(0, 1, 0));
+		transform->Position = glm::vec3(10, 0, -20 + (-10 * i));
+		//transform->Orientation = glm::angleAxis(glm::pi<float>()/2.f, glm::vec3(0, 1, 0));
 
-		for (int y = 0; y < 10; y++)
+		for (int y = 0; y < 15; y++)
 		{
 			for (int x = -5; x < 5; x++)
 			{
 				auto brick = CreateEntity(wall);
 				auto transform = AddComponent<Components::Transform>(brick, "Transform");
-				transform->Position = glm::vec3(x + 0.01f, y*0.3f + 0.01f, 0);
+				transform->Position = glm::vec3(x + 0.01f, y * 0.3f + 0.01f, 0);
 				transform->Position.x += (y % 2)*0.5f;
-				transform->Scale = glm::vec3(1, 0.3f, 0.6f);
+				transform->Scale = glm::vec3(1, 0.3f, 0.4f);
 				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 				auto model = AddComponent<Components::Model>(brick, "Model");
 				model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
 
 				auto physics = AddComponent<Components::Physics>(brick, "Physics");
-				physics->Mass = 1;
+				physics->Mass = 3;
 				auto box = AddComponent<Components::BoxShape>(brick, "BoxShape");
 				box->Width = 0.5f;
 				box->Height = 0.15f;

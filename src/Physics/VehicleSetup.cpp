@@ -267,7 +267,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultA
 	aerodynamics.m_liftCoefficient = -0.3f;
 
 	// Extra gavity applies in world space (independent of m_chassisCoordinateSystem).
-	aerodynamics.m_extraGravityws.set(0.0f, -0.982f, 0.0f); // fuck this shit
+	aerodynamics.m_extraGravityws.set(0.0f, -8.0f, 0.0f); // fuck this shit
 }
 
 void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper, Components::Vehicle vehicleComponent)
