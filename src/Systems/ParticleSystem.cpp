@@ -59,18 +59,16 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 				if(particleComponent->AngularVelocitySpectrum.size() > 1)
 					ScalarInterpolation(timeProgress, particleComponent->AngularVelocitySpectrum, it->AngularVelocity);
 				//Angular velocity interpolation
+				
 				if(particleComponent->OrientationSpectrum.size() > 1)
 					VectorInterpolation(timeProgress, particleComponent->OrientationSpectrum, it->Orientation);
 				
-// 				glm::vec3 v1 = particleComponent->OrientationSpectrum[0];
-// 				glm::vec3 v2 = it->Orientation;
-// 				glm::vec3 v3 = glm::normalize(glm::cross(v1,v2));
-// 				float angle = glm::acos(glm::dot(v1, v2) / glm::length(v1) * glm::length(v2));
-// 				float s = sin(angle / 2);
-// 				transformComponent->Orientation.x = v3.x * s;
-// 				transformComponent->Orientation.y = v3.y * s;
-// 				transformComponent->Orientation.z = v3.z * s;
-// 				transformComponent->Orientation.w = glm::cos(angle/2);
+				glm::vec3 v1 = glm::normalize(particleComponent->OrientationSpectrum[0]);
+				glm::vec3 v2 = glm::normalize(it->Orientation);
+				glm::vec3 v3 = glm::cross(v1,v2);
+				float angle = glm::abs(glm::acos(glm::dot(v1, v2) / (v1.length() * v2.length())));
+				transformComponent->Orientation = glm::angleAxis(angle, v3);
+
 
 				//float alpha = it->AngularVelocity * dt;
 				//transformComponent->Orientation = transformComponent->Orientation * it->Orientation;
