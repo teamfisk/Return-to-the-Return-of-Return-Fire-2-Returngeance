@@ -103,7 +103,7 @@ void GameWorld::Initialize()
 			emitter->LifeTime = 4;
 			emitter->SpawnCount = 1;
 			emitter->SpreadAngle = glm::pi<float>()/20;
-			emitter->SpawnFrequency = 0.008;
+			emitter->SpawnFrequency = 1.008;
 			auto model = AddComponent<Components::Model>(ent, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 			

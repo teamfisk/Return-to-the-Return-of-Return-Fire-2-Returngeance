@@ -12,10 +12,11 @@ namespace Components
 	struct Particle : Component
 	{
 		std::vector<Color> ColorSpectrum;
-		std::vector<float> ScaleSpectrum;
+		std::vector<glm::vec3> ScaleSpectrum;
 		double LifeTime;
 		std::vector<glm::vec3> VelocitySpectrum;
 		std::vector<float> AngularVelocitySpectrum;
+		std::vector<glm::vec3> OrientationSpectrum; //Keep?
 
 		virtual Particle* Clone() const override { return new Particle(*this); }
 	};

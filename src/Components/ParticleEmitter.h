@@ -25,11 +25,12 @@ struct ParticleEmitter : Component
 	float SpawnFrequency;
 	int SpawnCount;
 	std::vector<Color> ColorSpectrum;
-	std::vector<float> ScaleSpectrum;
+	std::vector<glm::vec3> ScaleSpectrum;
 	float SpreadAngle;
 	double LifeTime;
 	std::vector<glm::vec3> VelocitySpectrum;
 	std::vector<float> AngularVelocitySpectrum;
+	std::vector<glm::vec3> OrientationSpectrum; //Keep?
 
 	virtual ParticleEmitter* Clone() const override { return new ParticleEmitter(*this); }
 
