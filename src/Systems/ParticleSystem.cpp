@@ -59,19 +59,15 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 				if(particleComponent->AngularVelocitySpectrum.size() > 1)
 					ScalarInterpolation(timeProgress, particleComponent->AngularVelocitySpectrum, it->AngularVelocity);
 				//Angular velocity interpolation
-				
 				if(particleComponent->OrientationSpectrum.size() > 1)
 					VectorInterpolation(timeProgress, particleComponent->OrientationSpectrum, it->Orientation);
 				
-				glm::vec3 v1 = glm::normalize(particleComponent->OrientationSpectrum[0]);
-				glm::vec3 v2 = glm::normalize(it->Orientation);
-				glm::vec3 v3 = glm::cross(v1,v2);
-				float angle = glm::abs(glm::acos(glm::dot(v1, v2) / (v1.length() * v2.length())));
+				glm::vec3 v1 = (particleComponent->OrientationSpectrum[0]);
+				glm::vec3 v2 = (it->Orientation);
+				glm::vec3 v3 = glm::normalize(glm::cross(v1,v2));
+				float angle = glm::acos(glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2)));
+				
 				transformComponent->Orientation = glm::angleAxis(angle, v3);
-
-
-				//float alpha = it->AngularVelocity * dt;
-				//transformComponent->Orientation = transformComponent->Orientation * it->Orientation;
 				transformComponent->Position +=  transformComponent->Velocity * (float)dt;
 
 				it++;
@@ -122,6 +118,8 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 // 		particle->AngularVelocitySpectrum.push_back(0.f);
 // 		particle->AngularVelocitySpectrum.push_back(-glm::pi<float>());
 		particle->OrientationSpectrum = particle->VelocitySpectrum;
+// 		particle->OrientationSpectrum.push_back(glm::vec3(0,1,0));
+// 		particle->OrientationSpectrum.push_back(glm::vec3(0,-1,0));
 
 // 		Color startColor = {.4f, .45f, .2f};
 // 		particle->ColorSpectrum.push_back(startColor);
