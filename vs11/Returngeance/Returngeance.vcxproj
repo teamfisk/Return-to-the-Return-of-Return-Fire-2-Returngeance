@@ -139,6 +139,10 @@
     <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Events\BindKey.h" />
+    <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
+    <ClInclude Include="..\..\src\Events\InputCommand.h" />
+    <ClInclude Include="..\..\src\Events\InputCommandValue.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
     <ClInclude Include="..\..\src\Events\MouseMove.h" />

@@ -13,7 +13,16 @@
 class InputManager
 {
 public:
-	InputManager(GLFWwindow* window, std::shared_ptr<EventBroker> eventBroker);
+	InputManager(GLFWwindow* window, std::shared_ptr<EventBroker> eventBroker)
+	: m_GLFWWindow(window)
+	, m_EventBroker(eventBroker)
+	, m_CurrentKeyState()
+	, m_LastKeyState()
+	, m_CurrentMouseState()
+	, m_LastMouseState()
+	, m_CurrentMouseX(0), m_CurrentMouseY(0)
+	, m_LastMouseX(0), m_LastMouseY(0)
+	, m_CurrentMouseDeltaX(0), m_CurrentMouseDeltaY(0) { }
 
 	void Update(double dt);
 

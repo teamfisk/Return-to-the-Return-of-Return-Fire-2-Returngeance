@@ -51,7 +51,9 @@
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\EventBroker.cpp" />
-    <ClCompile Include="..\..\src\InputManager.cpp" />
+    <ClCompile Include="..\..\src\InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -251,6 +253,18 @@
       <Filter>Input\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\MouseMove.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\BindKey.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\BindMouseButton.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\InputCommandValue.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\InputCommand.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
   </ItemGroup>

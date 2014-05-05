@@ -1,12 +1,6 @@
 #include "PrecompiledHeader.h"
 #include "InputManager.h"
 
-InputManager::InputManager(GLFWwindow* window, std::shared_ptr<EventBroker> eventBroker) : m_GLFWWindow(window)
-	, m_EventBroker(eventBroker)
-{
-
-}
-
 void InputManager::Update(double dt)
 {
 	m_LastKeyState = m_CurrentKeyState;
@@ -43,7 +37,7 @@ void InputManager::Update(double dt)
 		if (m_CurrentMouseState[i] != m_LastMouseState[i])
 		{
 			// Publish mouse button events
-			if (m_CurrentKeyState[i])
+			if (m_CurrentMouseState[i])
 			{
 				Events::MousePress e;
 				e.Button = i;
