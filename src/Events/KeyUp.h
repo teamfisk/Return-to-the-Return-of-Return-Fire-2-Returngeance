@@ -1,5 +1,5 @@
-#ifndef Event_KeyUp_h__
-#define Event_KeyUp_h__
+#ifndef Events_KeyUp_h__
+#define Events_KeyUp_h__
 
 #include "EventBroker.h"
 
@@ -13,4 +13,4 @@ struct KeyUp : Event
 
 }
 
-#endif // Event_KeyUp_h__
+#endif // Events_KeyUp_h__

@@ -20,19 +20,16 @@ public:
 		, m_Renderer(renderer) { }
 
 	void RegisterComponents(ComponentFactory* cf) override;
+	void Initialize() override;
 
 	void Update(double dt) override;
-	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 private:
 	std::shared_ptr<Renderer> m_Renderer;
-	static std::array<int, GLFW_KEY_LAST+1> m_CurrentKeyState;
-	static std::array<int, GLFW_KEY_LAST+1> m_LastKeyState;
-	std::array<int, GLFW_MOUSE_BUTTON_LAST+1> m_CurrentMouseState;
-	std::array<int, GLFW_MOUSE_BUTTON_LAST+1> m_LastMouseState;
-	float m_CurrentMouseDeltaX, m_CurrentMouseDeltaY;
-	float m_LastMouseX, m_LastMouseY;
 
+	// Events
+	EventRelay<Events::KeyDown> m_EKeyDown;
+	bool OnKeyDown(const Events::KeyDown &event);
 };
 
 }

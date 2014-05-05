@@ -98,6 +98,7 @@
     <ClCompile Include="..\..\src\CubemapTexture.cpp" />
     <ClCompile Include="..\..\src\EventBroker.cpp" />
     <ClCompile Include="..\..\src\GameWorld.cpp" />
+    <ClCompile Include="..\..\src\InputManager.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\Model.cpp" />
     <ClCompile Include="..\..\src\OBJ.cpp" />
@@ -140,11 +141,15 @@
     <ClInclude Include="..\..\src\Entity.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\MouseMove.h" />
+    <ClInclude Include="..\..\src\Events\MousePress.h" />
+    <ClInclude Include="..\..\src\Events\MouseRelease.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\InputManager.h" />
     <ClInclude Include="..\..\src\Model.h" />
     <ClInclude Include="..\..\src\OBJ.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />
