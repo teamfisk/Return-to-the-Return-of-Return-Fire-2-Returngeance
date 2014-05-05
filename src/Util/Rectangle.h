@@ -66,9 +66,9 @@ inline bool operator!=(const Rectangle &lhs, const Rectangle &rhs)
 	return !(lhs == rhs);
 }
 
-inline bool operator<(const Rectangle &lhs, const Rectangle &lhs)
+inline bool operator<(const Rectangle &lhs, const Rectangle &rhs)
 {
-	return (lhs.Width < lhs.Width) && (lhs.Height < lhs.Height);
+	return (lhs.Width < rhs.Width) && (lhs.Height < rhs.Height);
 }
 
 inline bool operator>(const Rectangle &lhs, const Rectangle &rhs)
