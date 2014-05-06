@@ -191,7 +191,7 @@ void Renderer::DrawSkybox()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_ShaderProgramSkybox.Bind();
-	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * glm::toMat4(m_Camera->Orientation());
+	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * glm::toMat4(glm::inverse(m_Camera->Orientation()));
 	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramSkybox.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	m_Skybox->Draw();
