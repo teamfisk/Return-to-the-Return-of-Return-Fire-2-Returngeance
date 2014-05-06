@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "System.h"
-#include "Renderer.h"
 #include "Components/Input.h"
 #include "Events/KeyUp.h"
 #include "Events/KeyDown.h"
@@ -21,9 +20,8 @@ namespace Systems
 class InputSystem : public System
 {
 public:
-	InputSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
-		: System(world, eventBroker)
-		, m_Renderer(renderer) { }
+	InputSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
+		: System(world, eventBroker) { }
 
 	void RegisterComponents(ComponentFactory* cf) override;
 	void Initialize() override;
@@ -31,8 +29,6 @@ public:
 	void Update(double dt) override;
 
 private:
-	std::shared_ptr<Renderer> m_Renderer;
-
 	// Input binding tables
 	std::unordered_map<int, std::string> m_KeyBindings; // GLFW_KEY... -> command string
 	std::unordered_map<int, std::string> m_MouseButtonBindings; // GLFW_MOUSE_BUTTON... -> command string

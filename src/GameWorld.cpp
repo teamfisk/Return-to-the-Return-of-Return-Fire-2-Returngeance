@@ -12,6 +12,10 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_S, "+backward");
 	BindKey(GLFW_KEY_A, "+left");
 	BindKey(GLFW_KEY_D, "+right");
+	BindKey(GLFW_KEY_SPACE, "+up");
+	BindKey(GLFW_KEY_LEFT_CONTROL, "+down");
+	BindKey(GLFW_KEY_LEFT_ALT, "+slow");
+	BindKey(GLFW_KEY_LEFT_SHIFT, "+fast");
 	BindMouseButton(GLFW_MOUSE_BUTTON_1, "+attack");
 	BindMouseButton(GLFW_MOUSE_BUTTON_2, "+attack2");
 	BindMouseButton(GLFW_MOUSE_BUTTON_3, "+attack3");
@@ -50,7 +54,7 @@ void GameWorld::Initialize()
 		CommitEntity(ground);
 	}
 
-	/*{
+	{
 		auto TankTest = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(TankTest, "Transform");
 		transform->Position = glm::vec3(1.5f, 0.7f, 5.f);
@@ -60,7 +64,7 @@ void GameWorld::Initialize()
 		CommitEntity(TankTest);
 	}
 
-	for(int i = 0; i < 83; i++)
+	/*for(int i = 0; i < 83; i++)
 	{
 		auto light = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(light, "Transform");
@@ -122,7 +126,7 @@ void GameWorld::RegisterSystems()
 {
 	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("LevelGenerationSystem", [this]() { return new Systems::LevelGenerationSystem(this); });
-	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_EventBroker, m_Renderer); });
+	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_EventBroker); });
 	m_SystemFactory.Register("DebugSystem", [this]() { return new Systems::DebugSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
 	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
