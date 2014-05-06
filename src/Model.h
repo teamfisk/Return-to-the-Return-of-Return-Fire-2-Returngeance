@@ -21,7 +21,9 @@ public:
 
 	struct TextureGroup
 	{
-		std::shared_ptr<Texture> Texture;
+		std::shared_ptr<::Texture> Texture;
+		std::shared_ptr<::Texture> NormalMap;
+		std::shared_ptr<::Texture> SpecularMap;
 		unsigned int StartIndex;
 		unsigned int EndIndex;
 	};

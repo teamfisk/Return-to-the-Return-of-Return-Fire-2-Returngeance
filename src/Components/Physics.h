@@ -9,9 +9,10 @@ namespace Components
 struct Physics : Component
 {
 	Physics()
-		: Mass(0.f) { }
+		: Mass(0.f), Static(false){}
 
 	float Mass;
+	bool Static;
 };
 
 }
