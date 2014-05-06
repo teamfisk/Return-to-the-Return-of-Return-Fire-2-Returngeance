@@ -14,7 +14,6 @@
 #include "Events/BindKey.h"
 #include "Events/BindMouseButton.h"
 #include "Events/InputCommand.h"
-#include "Events/InputCommandValue.h"
 
 namespace Systems
 {

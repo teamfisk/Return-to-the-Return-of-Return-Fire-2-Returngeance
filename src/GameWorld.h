@@ -47,6 +47,9 @@ public:
 
 private:
 	std::shared_ptr<Renderer> m_Renderer;
+
+	void BindKey(int keyCode, std::string command);
+	void BindMouseButton(int button, std::string command);
 };
 
 #endif // GameWorld_h__

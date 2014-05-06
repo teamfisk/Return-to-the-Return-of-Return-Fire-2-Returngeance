@@ -261,11 +261,11 @@
     <ClInclude Include="..\..\src\Events\BindMouseButton.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Events\InputCommandValue.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Events\InputCommand.h">
       <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\InputController.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

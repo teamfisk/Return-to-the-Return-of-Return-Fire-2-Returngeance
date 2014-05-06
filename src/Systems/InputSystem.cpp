@@ -10,32 +10,12 @@ void Systems::InputSystem::RegisterComponents(ComponentFactory* cf)
 void Systems::InputSystem::Initialize()
 {
 	// Subscribe to events
-	m_EKeyDown = decltype(m_EKeyDown)(std::bind(&Systems::InputSystem::OnKeyDown, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EKeyDown);
-	m_EKeyUp = decltype(m_EKeyUp)(std::bind(&Systems::InputSystem::OnKeyUp, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EKeyUp);
-	m_EMousePress = decltype(m_EMousePress)(std::bind(&Systems::InputSystem::OnMousePress, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EMousePress);
-	m_EMouseRelease = decltype(m_EMouseRelease)(std::bind(&Systems::InputSystem::OnMouseRelease, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EMouseRelease);
-	m_EBindKey = decltype(m_EBindKey)(std::bind(&Systems::InputSystem::OnBindKey, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EBindKey);
-	m_EBindMouseButton = decltype(m_EBindMouseButton)(std::bind(&Systems::InputSystem::OnBindMouseButton, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EBindMouseButton);
-
-	{
-		Events::BindKey e;
-		e.KeyCode = GLFW_KEY_W;
-		e.Command = "+forward";
-		EventBroker->Publish(e);
-	}
-
-	{
-		Events::BindMouseButton e;
-		e.Button = GLFW_MOUSE_BUTTON_1;
-		e.Command = "+attack";
-		EventBroker->Publish(e);
-	}
+	EVENT_SUBSCRIBE_MEMBER(m_EKeyDown, &Systems::InputSystem::OnKeyDown)
+	EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &Systems::InputSystem::OnKeyUp)
+	EVENT_SUBSCRIBE_MEMBER(m_EMousePress, &Systems::InputSystem::OnMousePress)
+	EVENT_SUBSCRIBE_MEMBER(m_EMouseRelease, &Systems::InputSystem::OnMouseRelease)
+	EVENT_SUBSCRIBE_MEMBER(m_EBindKey, &Systems::InputSystem::OnBindKey)
+	EVENT_SUBSCRIBE_MEMBER(m_EBindMouseButton, &Systems::InputSystem::OnBindMouseButton)
 }
 
 void Systems::InputSystem::Update(double dt)

@@ -8,6 +8,14 @@ void GameWorld::Initialize()
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
+	BindKey(GLFW_KEY_W, "+forward");
+	BindKey(GLFW_KEY_S, "+backward");
+	BindKey(GLFW_KEY_A, "+left");
+	BindKey(GLFW_KEY_D, "+right");
+	BindMouseButton(GLFW_MOUSE_BUTTON_1, "+attack");
+	BindMouseButton(GLFW_MOUSE_BUTTON_2, "+attack2");
+	BindMouseButton(GLFW_MOUSE_BUTTON_3, "+attack3");
+
 	RegisterComponents();
 
 	{
@@ -42,7 +50,7 @@ void GameWorld::Initialize()
 		CommitEntity(ground);
 	}
 
-	{
+	/*{
 		auto TankTest = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(TankTest, "Transform");
 		transform->Position = glm::vec3(1.5f, 0.7f, 5.f);
@@ -85,7 +93,7 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(ball, "Physics");
 		physics->Mass = 1;
 		CommitEntity(ball);
-	}
+	}*/
 
 	{
 		auto entity = CreateEntity();
@@ -138,4 +146,20 @@ void GameWorld::AddSystems()
 	AddSystem("SoundSystem");
 	AddSystem("PhysicsSystem");
 	AddSystem("RenderSystem");
+}
+
+void GameWorld::BindKey(int keyCode, std::string command)
+{
+	Events::BindKey e;
+	e.KeyCode = keyCode;
+	e.Command = command;
+	m_EventBroker->Publish(e);
+}
+
+void GameWorld::BindMouseButton(int button, std::string command)
+{
+	Events::BindMouseButton e;
+	e.Button = button;
+	e.Command = command;
+	m_EventBroker->Publish(e);
 }

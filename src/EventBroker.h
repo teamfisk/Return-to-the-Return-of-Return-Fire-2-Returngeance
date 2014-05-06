@@ -6,6 +6,10 @@
 #include <unordered_map>
 #include <list>
 
+#define EVENT_SUBSCRIBE_MEMBER(relay, handler) \
+	relay = decltype(relay)(std::bind(handler, this, std::placeholders::_1)); \
+	EventBroker->Subscribe(relay);
+
 struct Event
 {
 protected:
