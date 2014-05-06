@@ -104,14 +104,17 @@ void GameWorld::Initialize()
 			emitter->SpawnCount = 1;
 			emitter->SpreadAngle = glm::pi<float>()/20;
 			emitter->SpawnFrequency = 1.008;
+			emitter->ScaleSpectrum.push_back(glm::vec3(1));
+			emitter->ScaleSpectrum.push_back(glm::vec3(0));
 			auto model = AddComponent<Components::Model>(ent, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 			
 			auto particleEnt = CreateEntity();
 			AddComponent<Components::Transform>(particleEnt, "Transform");
-			model = AddComponent<Components::Model>(particleEnt, "Model");
-			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
-
+// 			model = AddComponent<Components::Model>(particleEnt, "Model");
+// 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEnt, "Sprite");
+			spriteComponent->SpriteFile = "Textures/Sprites/SeriousParticle.png";
 			emitter->ParticleTemplate = particleEnt;
 		}
 	}

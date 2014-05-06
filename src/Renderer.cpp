@@ -267,6 +267,29 @@ void Renderer::DrawScene()
 		}
 	}
 
+	for (auto tuple : TexturesToRender)
+	{
+		Texture* texture;
+		glm::mat4 modelMatrix;
+		std::tie(texture, modelMatrix) = tuple;
+
+		//MVP = m_Camera->ProjectionMatrix() * glm::translate(glm::mat4(), m_Camera->Position()) * modelMatrix;
+		MVP = cameraMatrix * glm::inverse(glm::toMat4(m_Camera->Orientation())) * modelMatrix ;
+		depthMVP = depthCameraMatrix * modelMatrix;
+		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "view"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, *texture);
+		glBindVertexArray(m_ScreenQuad);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	
+
+
 #ifdef DEBUG
 	// Debug draw model normals
 	if (m_DrawNormals)
@@ -318,6 +341,8 @@ void Renderer::DrawShadowMap()
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
+
+
 }
 
 void Renderer::DrawDebugShadowMap()
@@ -374,6 +399,12 @@ void Renderer::AddModelToDraw(Model* model, glm::vec3 position, glm::quat orient
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
 	// You can now use ModelMatrix to build the MVP matrix
 	ModelsToRender.push_back(std::make_tuple(model, modelMatrix, visible, shadowCaster));
+}
+
+void Renderer::AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale)
+{
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
+	TexturesToRender.push_back(std::make_tuple(texture, modelMatrix));
 }
 
 void Renderer::AddPointLightToDraw(
@@ -536,6 +567,7 @@ void Renderer::ClearStuff()
 {
 	AABBsToRender.clear();
 	ModelsToRender.clear();
+	TexturesToRender.clear();
 	Light_position.clear();
 	Light_specular.clear();
 	Light_diffuse.clear();

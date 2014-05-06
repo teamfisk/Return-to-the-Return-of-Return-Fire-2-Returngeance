@@ -111,7 +111,7 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 
 		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
 		particle->LifeTime = emitterComponent->LifeTime;
-		particle->ScaleSpectrum.push_back(glm::vec3(1)); //TEMP
+		particle->ScaleSpectrum = emitterComponent->ScaleSpectrum; //TEMP
 		//particle->ScaleSpectrum.push_back(glm::vec3(1,4,1)); //TEMP
 		particle->VelocitySpectrum.push_back(particleTransform->Velocity); //TEMP
 		particle->VelocitySpectrum.push_back(testVel); //TEMP
