@@ -128,6 +128,11 @@ void Renderer::LoadContent()
 	m_SecondPassProgram_Debug.Compile();
 	m_SecondPassProgram_Debug.Link();
 
+	m_FinalPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/FinalPass.vert.glsl")));
+	m_FinalPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/FinalPass.frag.glsl")));
+	m_FinalPassProgram.Compile();
+	m_FinalPassProgram.Link();
+
 	m_ScreenQuad = CreateQuad();
 
 	FrameBufferTextures();
@@ -532,10 +537,10 @@ void Renderer::ClearStuff()
 
 void Renderer::FrameBufferTextures()
 {
-	m_fb = 0;
+	m_fbBasePass = 0;
 	m_fDepthBuffer = 0;
 
-	glGenFramebuffers(1, &m_fb);
+	glGenFramebuffers(1, &m_fbBasePass);
 	glGenRenderbuffers(1, &m_fDepthBuffer);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, m_fDepthBuffer);
@@ -562,14 +567,14 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind normal texture
 	glGenTextures(1, &m_fNormalsTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	//Bind fb
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fb);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_fDepthBuffer);
 
 	//Attach textures to the FB
@@ -583,6 +588,29 @@ void Renderer::FrameBufferTextures()
 		LOG_ERROR("DeferredLighting:Init: FrameBuffer incomplete: 0x%x\n", fbStatus);
 		//exit(1);
 	}
+
+	m_fbLightingPass = 0;
+	glGenFramebuffers(1, &m_fbLightingPass);
+
+	glGenTextures(1, &m_fLightingTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbLightingPass);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fLightingTexture, 0);
+
+	fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
+	{
+		LOG_ERROR("DeferredLighting:Init: FrameBuffer incomplete: 0x%x\n", fbStatus);
+		//exit(1);
+	}
+
+
 }
 
 //void Renderer::FrameBufferTextures()
@@ -654,12 +682,15 @@ void Renderer::FrameBufferTextures()
 
 void Renderer::DrawFBO()
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fb);
+	/*
+		Base pass
+	*/
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
 
 	// Clear G-buffer
 	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffClear);
-	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+	glClearColor(0.f, 0.f, 0.f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
@@ -667,35 +698,54 @@ void Renderer::DrawFBO()
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque);
 	
+	glCullFace(GL_BACK);
 	DrawFBOScene();
 
-	// Draw to screen
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	if(!m_QuadView)
-	{
-		m_SecondPassProgram.Bind();
-	}
-	else
-	{
-		m_SecondPassProgram_Debug.Bind();
-	}
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	/*
+		Lighting pass
+	*/
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbLightingPass);
+	GLenum lightingPassAttachments[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, lightingPassAttachments);
 
-	
+	glClearColor(0.f, 0.f, 0.f, 0.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	m_SecondPassProgram.Bind();
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-
-	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
-
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
 
+	glCullFace(GL_FRONT);
 	DrawLightScene();
 
+	/*
+		Final pass
+	*/
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	//if(!m_QuadView)
+	//{
+		m_FinalPassProgram.Bind();
+	//}
+	//else
+	//{
+	//	m_SecondPassProgram_Debug.Bind();
+	//}
+
+	// Ambient light
+	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
+
+	glCullFace(GL_BACK);
 	glBindVertexArray(m_ScreenQuad);
 	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(2);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -774,7 +824,9 @@ void Renderer::DrawFBOScene()
 
 		MVP = cameraMatrix * modelMatrix;
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -792,7 +844,7 @@ void Renderer::DrawLightScene()
 	glEnable(GL_BLEND);
 	glBlendEquation (GL_FUNC_ADD);
 	glBlendFunc(GL_ONE,GL_ONE);
-	
+
 	glDisable (GL_DEPTH_TEST);
 	glDepthMask (GL_FALSE);
 	glBindVertexArray(m_sphereModel->VAO);
@@ -802,15 +854,18 @@ void Renderer::DrawLightScene()
 
 	for(int i = 0; i < Lights; i++)
 	{
-		glm::mat4 MVP = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix() * lM[i];
+		MVP = cameraMatrix * lM[i];
 		
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
+		glUniform2fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ViewportSize"), 1,glm::value_ptr(glm::vec2(WIDTH, HEIGHT)));
+		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(lM[i]));
-		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), Light_specular[i].x, Light_specular[i].y, Light_specular[i].z);
-		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), Light_diffuse[i].x, Light_diffuse[i].y, Light_diffuse[i].z);
-		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), Light_position[i].x, Light_position[i].y, Light_position[i].z);
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "la"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), 1, glm::value_ptr(Light_specular[i]));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), 1, glm::value_ptr(Light_diffuse[i]));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), 1, glm::value_ptr(Light_position[i]));
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LightRadius"), 5.0f);
 		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
 		//glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "speculatExponent"), Light_specularExponent[i]);
  		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
@@ -829,10 +884,11 @@ void Renderer::CreateLightMatrix()
 {
 	for(int i = 0; i < Lights; i++)
 	{
-		const float radius = 5.0f;
-		lM[i] = glm::scale(glm::mat4(1.0), glm::vec3(radius, radius, radius));
-		lM[i] = glm::translate(lM[i], Light_position[i]);
-		lM[i] = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix() * lM[i];
+		const float scale = 10.0f;
+		glm::mat4 model;
+		model *= glm::translate(Light_position[i]);
+		model *= glm::scale(glm::vec3(scale));
+		lM[i] = model;
 	}
 	
 }

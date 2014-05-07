@@ -1,94 +1,80 @@
 #version 430
 
-layout (binding=0) uniform sampler2D DiffuseTexture;
-layout (binding=1) uniform sampler2D PositionTexture;
-layout (binding=2) uniform sampler2D NormalTexture;
+layout (binding=0) uniform sampler2D PositionTexture;
+layout (binding=1) uniform sampler2D NormalsTexture;
 
+uniform vec2 ViewportSize;
 uniform mat4 MVP;
 uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
+uniform vec3 la;
 uniform vec3 ls;
 uniform vec3 ld;
-uniform vec3 lp; 
-const float specularExponent = 20.0;
+uniform vec3 lp;
+uniform float LightRadius;
+const float specularExponent = 50.0;
 uniform vec3 CameraPosition;
 
-const vec3 kd = vec3(1.0, 1.0, 1.0);
-const vec3 ks = vec3(1.0, 1.0, 1.0);
+const vec3 ks = vec3(1.0, 0.0, 0.0);
+const vec3 kd = vec3(0.8, 0.8, 0.8);
+const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
 
 in VertexData
 {
 	vec3 Position;
-	vec3 Normal;
 	vec2 TextureCoord;
 } Input;
 
 out vec4 FragColor;
 
-vec3 phong (vec3 PositionTexel, vec3 NormalTexel)
+vec4 phong4(vec3 position, vec3 normal)
 {
-	vec3 lightPosition = vec3( M * vec4( lp, 1.0 ) );
-	vec3 distToLight = lightPosition - PositionTexel;
-	vec3 directionToLight = normalize(distToLight);
+	// Diffuse
+	vec3 lightPos = vec3(V * vec4(lp, 1.0));
+	vec3 distanceToLight = lightPos - position;
+	vec3 directionToLight = normalize(distanceToLight);
+	float dotProd = dot(directionToLight, normal);
+	dotProd = max(dotProd, 0.0);
+	vec3 Id = kd * ld * dotProd;
 
-	//Diffuse light
-	float dotProdDiffuse = max(dot(directionToLight, NormalTexel), 0.0);
-	vec3 Id = ld * kd * dotProdDiffuse; //Final diffuse intensity
-
-	//Specular light
-	vec3 reflection = reflect(-directionToLight, NormalTexel);
-	vec3 surfaceToCamera = normalize(PositionTexel);
-	vec3 HalfWay = normalize(surfaceToCamera + directionToLight);
-	float dotProdSpecular = dot(HalfWay, NormalTexel);
-	dotProdSpecular = max(dotProdSpecular, 0.0);
-	float specularFactor = pow(dotProdSpecular, specularExponent);
-	vec3 Is = ls * ks * specularFactor; //Final specular intensity
+	// Specular
+	//vec3 reflection = reflect(-directionToLight, normal);
+	vec3 surfaceToViewer = normalize(-position);
+	vec3 halfWay = normalize(surfaceToViewer + directionToLight);
+	float dotSpecular = max(dot(halfWay, normal), 0.0);
+	float specularFactor = pow(dotSpecular, specularExponent * 2);
+	vec3 Is = ks * ls * specularFactor;
 
 	//Attenuation
-	float dist2D = distance(lightPosition, PositionTexel);
-	float attenuationFactor = -log(min(1.0, dist2D / 5.0));
+	float dist = distance(lightPos, position);
+	float attenuation = -log(min(1.0, dist / LightRadius));
+	//float attenuation = 1.0 / (1.0 - 0.0001 * pow(dist, 2));
 
-	//vec3 FinalOut = (Id + Is) * attenuationFactor;
-	vec3 FinalOut = Id + Is;
-	return FinalOut;
-}
+	//float attenuation = clamp(0.0, 1.0, 1.0 / (0.001 + (0.001 * dist) + (0.001 * dist * dist)));
+
+	//float attenuation = 1.0 / dot(directionToLight, directionToLight);
+
+	//float att_s = 5;
+	//float attenuation = pow(dist, 2) / pow(5.0, 2);
+	//attenuation = 1.0 / (1.0 + attenuation * att_s);
+	//att_s = 1.0 / (1.0 + att_s);
+	//attenuation = attenuation / (1.0 - att_s);
+
+	float radius = 5.0;
+	float alpha = dist / radius;
+	float dampingFactor = 1.0 - pow(alpha, 3);
 
 
-vec3 phong2 (vec3 PositionTexel, vec3 NormalTexel)
-{
-	vec3 LightVector = lp - PositionTexel;
-	vec3 ViewVector = normalize(PositionTexel);
-
-	//diffuse
-	vec3 Id = max(0.0, dot(LightVector, NormalTexel)) * ld;
-
-	vec3 FinalOut = Id;
-	return FinalOut;
-}
-
-vec3 phong3 (vec3 PositionTexel, vec3 NormalTexel)
-{
-	vec3 lightDir = lp - PositionTexel;
-	lightDir = normalize(lightDir);
-
-	vec3 eyeDir = normalize(CameraPosition-PositionTexel);
-	vec3 vHalfVector = normalize(lightDir.xyz+eyeDir);
-	vec3 Id = max(0.0, dot(NormalTexel, lightDir)) * ld;
-	vec3 Is = pow(max(0.0, dot(NormalTexel, vHalfVector)), 100.0) * ls;
-	vec3 FinalFrag = Id + Is;
-	return FinalFrag;
+	return vec4((Id + Is) * attenuation, 1.0);
 }
 
 void main()
 {
-	vec4 DiffuseTexel = texture2D(DiffuseTexture, Input.TextureCoord);
-	vec4 PositionTexel = texture2D(PositionTexture, Input.TextureCoord);
-	vec4 NormalTexel = texture2D(NormalTexture, Input.TextureCoord);
+	vec2 TextureCoord = gl_FragCoord.xy / ViewportSize;
+	vec4 PositionTexel = texture(PositionTexture, TextureCoord);
+	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 
-	vec4 Frag_color;
-	Frag_color.rgb = phong((MVP * PositionTexel).rgb, normalize(NormalTexel).rgb);
-	Frag_color.a = 1.0;
-	FragColor = Frag_color * DiffuseTexel;
+	FragColor = phong4(vec3(PositionTexel), vec3(NormalTexel));
 }

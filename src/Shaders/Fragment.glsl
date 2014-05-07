@@ -19,7 +19,7 @@ void main()
 	frag_Diffuse = texture2D(DiffuseTexture, Input.TextureCoord);
 
 	// G-buffer Position
-	frag_Position = vec4(Input.Position.xy, 0.0, 0.0);
+	frag_Position = vec4(Input.Position.xyz, 0.0);
 
 	// G-buffer Normal
 	frag_Normal = vec4(Input.Normal, 0.0);

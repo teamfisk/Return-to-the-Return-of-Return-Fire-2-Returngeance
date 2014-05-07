@@ -271,5 +271,11 @@
     <None Include="..\..\src\Shaders\Fragment2-Debug.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\src\Shaders\FinalPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

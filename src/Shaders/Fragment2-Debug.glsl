@@ -30,7 +30,7 @@ void main()
 		//FragColor = texture2D(DiffuseTexture, Input.TextureCoord * 2 + vec2(0, -1));
 		DrawQuadrant(texture2D(DiffuseTexture, Input.TextureCoord * 2), vec2(-1, 1));
 		DrawQuadrant(texture2D(PositionTexture, Input.TextureCoord * 2), vec2(1, 1));
-		DrawQuadrant((texture2D(NormalTexture, Input.TextureCoord * 2)+1)/2, vec2(-1, -1));
+		DrawQuadrant(texture2D(NormalTexture, Input.TextureCoord * 2), vec2(-1, -1));
 
 		vec4 AllTexel = texture2D(DiffuseTexture, Input.TextureCoord*2)*texture2D(PositionTexture, Input.TextureCoord*2)*texture2D(NormalTexture, Input.TextureCoord*2);
 		DrawQuadrant(AllTexel, vec2(1, -1));

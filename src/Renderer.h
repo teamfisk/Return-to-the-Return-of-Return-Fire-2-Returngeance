@@ -91,11 +91,14 @@ private:
 	GLuint m_ShadowFrameBuffer;
 	GLuint m_ShadowDepthTexture;
 
+	GLuint m_fbBasePass;
 	GLuint m_fDiffuseTexture;
 	GLuint m_fPositionTexture;
 	GLuint m_fNormalsTexture;
 	GLuint m_fBlendTexture;
-	GLuint m_fb;
+	GLuint m_fbLightingPass;
+	GLuint m_fLightingTexture;
+
 	GLuint m_fDepthBuffer;
 	GLenum draw_bufs[2];
 	glm::mat4 lM[5];
@@ -110,11 +113,15 @@ private:
 	ShaderProgram m_FirstPassProgram;
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
+	ShaderProgram m_FinalPassProgram;
+
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
 	ShaderProgram m_ShaderProgramShadowsDrawDepth;
 	ShaderProgram m_ShaderProgramDebugAABB;
 	ShaderProgram m_ShaderProgramSkybox;
+
+
 
 	void ClearStuff();
 	void DrawScene();
