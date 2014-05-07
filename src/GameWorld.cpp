@@ -99,20 +99,23 @@ void GameWorld::Initialize()
 			auto transform = AddComponent<Components::Transform>(ent, "Transform");
 			transform->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			transform->Position = glm::vec3(i * 10, 20, 0);
+
 			auto emitter = AddComponent<Components::ParticleEmitter>(ent, "ParticleEmitter");
-			emitter->LifeTime = 4;
+			emitter->LifeTime = 0.3;
 			emitter->SpawnCount = 1;
-			emitter->SpreadAngle = glm::pi<float>()/20;
-			emitter->SpawnFrequency = 1.008;
-			emitter->ScaleSpectrum.push_back(glm::vec3(1));
-			emitter->ScaleSpectrum.push_back(glm::vec3(0));
+			emitter->SpreadAngle = glm::pi<float>()/4;
+			emitter->SpawnFrequency = 0.0008;
+			emitter->ScaleSpectrum.push_back(glm::vec3(0.05f));
+			emitter->UseGoalVelocity = false;
+			emitter->GoalVelocity = glm::vec3(4, -4, 0); 
+// 			emitter->OrientationSpectrum.push_back(glm::vec3(0, 1, 0));
+// 			emitter->OrientationSpectrum.push_back(glm::vec3(0, -1, 0));
+			emitter->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			auto model = AddComponent<Components::Model>(ent, "Model");
 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 			
 			auto particleEnt = CreateEntity();
 			AddComponent<Components::Transform>(particleEnt, "Transform");
-// 			model = AddComponent<Components::Model>(particleEnt, "Model");
-// 			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 			auto spriteComponent = AddComponent<Components::Sprite>(particleEnt, "Sprite");
 			spriteComponent->SpriteFile = "Textures/Sprites/SeriousParticle.png";
 			emitter->ParticleTemplate = particleEnt;

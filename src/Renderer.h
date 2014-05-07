@@ -23,7 +23,7 @@ public:
 	int HEIGHT, WIDTH;
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
-	std::list<std::tuple<Texture*, glm::mat4>> TexturesToRender;
+	std::list<std::tuple<Texture*, glm::mat4, glm::mat4>> TexturesToRender;
 	int Lights;
 	std::vector<float> Light_position;
 	std::vector<float> Light_specular;

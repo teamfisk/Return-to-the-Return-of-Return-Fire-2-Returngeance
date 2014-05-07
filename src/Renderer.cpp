@@ -271,10 +271,13 @@ void Renderer::DrawScene()
 	{
 		Texture* texture;
 		glm::mat4 modelMatrix;
-		std::tie(texture, modelMatrix) = tuple;
-
-		//MVP = m_Camera->ProjectionMatrix() * glm::translate(glm::mat4(), m_Camera->Position()) * modelMatrix;
-		MVP = cameraMatrix * glm::inverse(glm::toMat4(m_Camera->Orientation())) * modelMatrix ;
+		glm::mat4 billboardMatrix;
+		std::tie(texture, modelMatrix, billboardMatrix) = tuple;
+		
+		
+		//MVP = cameraMatrix * glm::inverse(glm::toMat4(m_Camera->Orientation()) * modelMatrix );
+		MVP = cameraMatrix * billboardMatrix * modelMatrix;
+		
 		depthMVP = depthCameraMatrix * modelMatrix;
 		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
@@ -404,7 +407,18 @@ void Renderer::AddModelToDraw(Model* model, glm::vec3 position, glm::quat orient
 void Renderer::AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale)
 {
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
-	TexturesToRender.push_back(std::make_tuple(texture, modelMatrix));
+
+	glm::vec3 camToParticle = glm::normalize(m_Camera->Position() - position);
+	glm::vec3 up = glm::vec3(0,1,0);
+	glm::vec3 rightVec = glm::cross(up, camToParticle);
+	
+	glm::mat4 billboardMatrix;
+	billboardMatrix[0] = glm::vec4(rightVec, 0);
+	billboardMatrix[1] = glm::vec4(up, 0);
+	billboardMatrix[2] = glm::vec4(camToParticle, 0);
+	//billboardMatrix[3] = glm::vec4(position, 0);
+
+	TexturesToRender.push_back(std::make_tuple(texture, modelMatrix, billboardMatrix));
 }
 
 void Renderer::AddPointLightToDraw(

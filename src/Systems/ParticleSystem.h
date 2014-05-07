@@ -19,7 +19,6 @@ namespace Systems
 	{
 		EntityID ParticleID;
 		double SpawnTime;
-		float Scale;
 		float AngularVelocity;
 		glm::vec3 Orientation;
 		Color color;

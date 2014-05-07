@@ -28,7 +28,8 @@ struct ParticleEmitter : Component
 	std::vector<glm::vec3> ScaleSpectrum;
 	float SpreadAngle;
 	double LifeTime;
-	std::vector<glm::vec3> VelocitySpectrum;
+	bool UseGoalVelocity;
+	glm::vec3 GoalVelocity;
 	std::vector<float> AngularVelocitySpectrum;
 	std::vector<glm::vec3> OrientationSpectrum; //Keep?
 
