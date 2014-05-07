@@ -38,10 +38,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 			position,
 			pointLightComponent->Specular,
 			pointLightComponent->Diffuse,
-			pointLightComponent->constantAttenuation,
-			pointLightComponent->linearAttenuation,
-			pointLightComponent->quadraticAttenuation,
-			pointLightComponent->spotExponent);
+			pointLightComponent->specularExponent
+			);
 	}
 
 	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity, "Camera");
@@ -59,6 +57,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 void Systems::RenderSystem::Initialize()
 {
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>("TransformSystem");
+
+	m_Renderer->SetSphereModel(m_World->GetResourceManager()->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj"));
 }
 
 void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)

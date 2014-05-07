@@ -12,6 +12,7 @@
 #include "Model.h"
 #include "Components/PointLight.h"
 #include "Skybox.h"
+#include "ResourceManager.h"
 
 class Renderer
 {
@@ -24,13 +25,17 @@ public:
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
 	int Lights;
-	std::vector<float> Light_position;
-	std::vector<float> Light_specular;
-	std::vector<float> Light_diffuse;
-	std::vector<float> Light_constantAttenuation;
-	std::vector<float> Light_linearAttenuation;
-	std::vector<float> Light_quadraticAttenuation;
+	std::vector<glm::vec3> Light_position;
+	std::vector<glm::vec3> Light_specular;
+	std::vector<glm::vec3> Light_diffuse;
+	std::vector<float> Light_specularExponent;
+
+
+ 	std::vector<float> Light_constantAttenuation;
+ 	std::vector<float> Light_linearAttenuation;
+ 	std::vector<float> Light_quadraticAttenuation;
 	std::vector<float> Light_spotExponent;
+
 	std::list<std::tuple<glm::mat4, bool>> AABBsToRender;
 
 	Renderer();
@@ -45,10 +50,7 @@ public:
 	    glm::vec3 _position,
 	    glm::vec3 _specular,
 	    glm::vec3 _diffuse,
-	    float _constantAttenuation,
-	    float _linearAttenuation,
-	    float _quadraticAttenuation,
-	    float _spotExponent
+	    float _specularExponent
 	);
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
@@ -64,6 +66,8 @@ public:
 	bool DrawBounds() const { return m_DrawBounds; }
 	void DrawBounds(bool val) { m_DrawBounds = val; }
 	void DrawSkybox();
+
+	void SetSphereModel(Model* _model);
 
 
 
@@ -94,7 +98,9 @@ private:
 	GLuint m_fb;
 	GLuint m_fDepthBuffer;
 	GLenum draw_bufs[2];
+	glm::mat4 lM[5];
 	GLuint m_ScreenQuad;
+	Model* m_sphereModel;
 
 	bool m_QuadView;
 
@@ -118,7 +124,9 @@ private:
 	void FrameBufferTextures();
 	void DrawFBO();
 	void DrawFBOScene();
+	void DrawLightScene();
 	void BindFragDataLocation();
+	void CreateLightMatrix();
 	
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();

@@ -58,6 +58,7 @@ void GameWorld::Initialize()
 			transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
 			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
 			cameraComp->FarClip = 2000.f;
+			cameraComp->FOV = glm::radians(90.f);
 			AddComponent(camera, "Input");
 			auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
 			CommitEntity(camera);
@@ -149,7 +150,6 @@ void GameWorld::Initialize()
 	}
 
 /*
-
  	{
  		// Front Right Wheel
  		auto ent = CreateEntity(car);
@@ -224,7 +224,18 @@ void GameWorld::Initialize()
  	CommitEntity(car);
  }
 */
-
+	for(int i = 0; i < 5; i++)
+	{
+		auto Light = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(Light, "Transform");
+		transform->Position = glm::vec3(20+ 10*cos(i), 3, 0 + 10*sin(i));
+		auto light = AddComponent<Components::PointLight>(Light, "PointLight");
+		light->Diffuse = glm::vec3(94.f/255.f, 227.f/255.f, 230.f/255.f);
+		light->Specular = glm::vec3(94.f/255.f, 227.f/255.f, 230.f/255.f);
+		light->specularExponent = 1.0f;
+		auto model = AddComponent<Components::Model>(Light, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	}
 
 
 	for(int i = 0; i < 10; i++)

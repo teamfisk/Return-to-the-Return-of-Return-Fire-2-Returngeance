@@ -155,9 +155,6 @@ void Renderer::Draw(double dt)
 
 #pragma region TempRegion
 
-
-
-
 void Renderer::DrawSkybox()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -199,9 +196,9 @@ void Renderer::DrawScene()
 
 	m_ShaderProgram.Bind();
 	glUniform1i(glGetUniformLocation(m_ShaderProgram.GetHandle(), "numberOfLights"), Lights);
-	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "position"), Lights, Light_position.data());
-	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "specular"), Lights, Light_specular.data());
-	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "diffuse"), Lights, Light_diffuse.data());
+// 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "position"), Lights, Light_position.data());
+// 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "specular"), Lights, Light_specular.data());
+// 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "diffuse"), Lights, Light_diffuse.data());
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "constantAttenuation"), Lights, Light_constantAttenuation.data());
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "linearAttenuation"), Lights, Light_linearAttenuation.data());
 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "quadraticAttenuation"), Lights, Light_quadraticAttenuation.data());
@@ -359,26 +356,30 @@ void Renderer::AddPointLightToDraw(
     glm::vec3 _position,
     glm::vec3 _specular,
     glm::vec3 _diffuse,
-    float _constantAttenuation,
-    float _linearAttenuation,
-    float _quadraticAttenuation,
-    float _spotExponent
+    float _specularExponent
 )
 {
-	Light_position.push_back(_position.x);
-	Light_position.push_back(_position.y);
-	Light_position.push_back(_position.z);
-	Light_specular.push_back(_specular.x);
-	Light_specular.push_back(_specular.y);
-	Light_specular.push_back(_specular.z);
-	Light_diffuse.push_back(_diffuse.x);
-	Light_diffuse.push_back(_diffuse.y);
-	Light_diffuse.push_back(_diffuse.z);
-	Light_constantAttenuation.push_back(_constantAttenuation);
-	Light_linearAttenuation.push_back(_linearAttenuation);
-	Light_quadraticAttenuation.push_back(_quadraticAttenuation);
-	Light_spotExponent.push_back(_spotExponent);
-	Lights = Light_constantAttenuation.size();
+	Light_position.push_back(_position);
+	Light_specular.push_back(_specular);
+	Light_diffuse.push_back(_diffuse);
+	Light_specularExponent.push_back(_specularExponent);
+	Lights = Light_position.size();
+	CreateLightMatrix();
+
+// 	Light_position.push_back(_position.x);
+// 	Light_position.push_back(_position.y);
+// 	Light_position.push_back(_position.z);
+// 	Light_specular.push_back(_specular.x);
+// 	Light_specular.push_back(_specular.y);
+// 	Light_specular.push_back(_specular.z);
+// 	Light_diffuse.push_back(_diffuse.x);
+// 	Light_diffuse.push_back(_diffuse.y);
+// 	Light_diffuse.push_back(_diffuse.z);
+// 	Light_constantAttenuation.push_back(_constantAttenuation);
+// 	Light_linearAttenuation.push_back(_linearAttenuation);
+// 	Light_quadraticAttenuation.push_back(_quadraticAttenuation);
+// 	Light_spotExponent.push_back(_spotExponent);
+// 	Lights = Light_constantAttenuation.size();
 }
 
 void Renderer::AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding)
@@ -523,6 +524,7 @@ void Renderer::ClearStuff()
 	Light_linearAttenuation.clear();
 	Light_quadraticAttenuation.clear();
 	Light_spotExponent.clear();
+	Light_specularExponent.clear();
 	Lights = 0;
 }
 
@@ -657,13 +659,14 @@ void Renderer::DrawFBO()
 	// Clear G-buffer
 	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffClear);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
 	m_FirstPassProgram.Bind();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque);
+	
 	DrawFBOScene();
 
 	// Draw to screen
@@ -678,7 +681,7 @@ void Renderer::DrawFBO()
 	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	////SetupDefferedStageUniforms(); // Probably what we do in FrameBufferTextures();
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
 
@@ -688,9 +691,11 @@ void Renderer::DrawFBO()
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
 
+	DrawLightScene();
+
 	glBindVertexArray(m_ScreenQuad);
 	glEnableVertexAttribArray(0);
-/*	glEnableVertexAttribArray(2);*/
+	glEnableVertexAttribArray(2);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -720,7 +725,6 @@ void Renderer::DrawFBO()
 //	glDepthMask(GL_TRUE);
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glDisable(GL_BLEND);
-//
 //
 //	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 //	//Probably means to use the second_pass shader
@@ -779,5 +783,57 @@ void Renderer::DrawFBOScene()
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
+}
+
+
+
+void Renderer::DrawLightScene()
+{
+	glEnable(GL_BLEND);
+	glBlendEquation (GL_FUNC_ADD);
+	glBlendFunc(GL_ONE,GL_ONE);
+	
+	glDisable (GL_DEPTH_TEST);
+	glDepthMask (GL_FALSE);
+	glBindVertexArray(m_sphereModel->VAO);
+
+	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
+	glm::mat4 MVP;
+
+	for(int i = 0; i < Lights; i++)
+	{
+		glm::mat4 MVP = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix() * lM[i];
+		
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(lM[i]));
+		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), Light_specular[i].x, Light_specular[i].y, Light_specular[i].z);
+		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), Light_diffuse[i].x, Light_diffuse[i].y, Light_diffuse[i].z);
+		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), Light_position[i].x, Light_position[i].y, Light_position[i].z);
+		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
+		//glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "speculatExponent"), Light_specularExponent[i]);
+ 		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
+	};
+	glEnable (GL_DEPTH_TEST);
+	glDepthMask (GL_TRUE);
+	glDisable (GL_BLEND);
+}
+
+void Renderer::SetSphereModel( Model* _model )
+{
+	m_sphereModel = _model;
+}
+
+void Renderer::CreateLightMatrix()
+{
+	for(int i = 0; i < Lights; i++)
+	{
+		const float radius = 5.0f;
+		lM[i] = glm::scale(glm::mat4(1.0), glm::vec3(radius, radius, radius));
+		lM[i] = glm::translate(lM[i], Light_position[i]);
+		lM[i] = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix() * lM[i];
+	}
+	
 }
 
