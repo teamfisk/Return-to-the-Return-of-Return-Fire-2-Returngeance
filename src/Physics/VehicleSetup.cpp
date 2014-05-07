@@ -48,7 +48,6 @@ void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpV
 
 	setupWheelCollide(physicsWorld, vehicle, *static_cast<hkpVehicleRayCastWheelCollide*>(vehicle.m_wheelCollide));
 
-
 	//
 	// Check that all components are present.
 	//
@@ -212,6 +211,9 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_wheelsTorqueRatio[2] = 0.3f;
 	transmission.m_wheelsTorqueRatio[3] = 0.3f;
 
+	//transmission.m_wheelsTorqueRatio[4] = 0.1f;
+	//transmission.m_wheelsTorqueRatio[5] = 0.1f;  
+	// HACK: fix support for more than 4 wheels, m_wheelsTorqueRatio must equal 1 for all wheels
 
 	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(
 		vehicleComponent.TopSpeed,

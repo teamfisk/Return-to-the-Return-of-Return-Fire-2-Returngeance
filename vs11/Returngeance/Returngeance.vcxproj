@@ -124,7 +124,9 @@
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
+    <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
+    <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\MeshShape.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />

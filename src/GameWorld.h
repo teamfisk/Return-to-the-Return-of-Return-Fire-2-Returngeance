@@ -31,6 +31,7 @@
 #include "Components/BoxShape.h"
 #include "Components/Vehicle.h"
 #include "Components/Wheel.h"
+#include "Components/HingeConstraint.h"
 
 class GameWorld : public World
 {

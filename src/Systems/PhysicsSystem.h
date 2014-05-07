@@ -10,6 +10,7 @@
 #include "Components/Vehicle.h"
 #include "Components/Input.h"
 #include "Components/MeshShape.h"
+#include "Components/HingeConstraint.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -44,6 +45,13 @@
 #include <Common/Base/Thread/JobQueue/hkJobQueue.h>
 #include <Common/Base/Thread/Job/ThreadPool/Cpu/hkCpuJobThreadPool.h>
 #include <Common/Base/DebugUtil/MultiThreadCheck/hkMultiThreadCheck.h>
+#include <Physics/Constraint/Data/Hinge/hkpHingeConstraintData.h>
+#include <Physics/Constraint/Data/LimitedHinge/hkpLimitedHingeConstraintData.h>
+
+#include <Physics2012/Collide/Shape/Compound/Collection/List/hkpListShape.h>
+#include <Physics2012/Internal/Collide/StaticCompound/hkpStaticCompoundShape.h>
+#include <Physics2012/Collide/Util/ShapeShrinker/hkpShapeShrinker.h>
+#include <Physics2012/Collide/Shape/Misc/Bv/hkpBvShape.h>
 
 #include "Physics/VehicleSetup.h"
 
@@ -75,6 +83,16 @@ private:
 	void StepVisualDebugger();
 	static void HK_CALL HavokErrorReport(const char* msg, void*);
 	void SetupPhysics(hkpWorld* physicsWorld);
+	
+	// Converterfunctions
+	glm::vec3 ConvertPosition(const hkVector4 &hkPosition);
+	const hkVector4& ConvertPosition(glm::vec3 glmPosition);
+
+	glm::quat ConvertRotation(const hkQuaternion &hkRotation);
+	const hkQuaternion& ConvertRotation(glm::quat glmRotation);
+
+	glm::vec3 ConvertScale(const hkVector4 &hkScale);
+	const hkVector4&ConvertScale(glm::vec3 glmScale);
 
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
 	
@@ -88,7 +106,21 @@ private:
 
 	hkpVehicleInstance* Systems::PhysicsSystem::createVehicle(VehicleSetup& vehicleSetup, hkpRigidBody* chassis);
 
-	
+
+	struct ShapeArrayData
+	{
+		ShapeArrayData(EntityID entity, hkpShape* shape)
+		{
+			Entity = entity;
+			Shape = shape;
+		}
+		EntityID Entity;
+		hkpShape* Shape;
+	};
+	std::unordered_map<EntityID, std::list<ShapeArrayData>> m_Shapes;
+	std::unordered_map<EntityID, hkpListShape*> m_ListShapes;
+
+
 
 	struct  ExtendedShapeData
 	{
