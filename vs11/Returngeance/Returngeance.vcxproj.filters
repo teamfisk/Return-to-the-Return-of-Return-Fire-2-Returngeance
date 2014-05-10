@@ -279,6 +279,12 @@
     <ClInclude Include="..\..\src\InputController.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\RenderQueue.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\Viewport.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

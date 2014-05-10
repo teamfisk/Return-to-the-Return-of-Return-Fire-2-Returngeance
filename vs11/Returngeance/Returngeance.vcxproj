@@ -155,6 +155,7 @@
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\GUI\Viewport.h" />
     <ClInclude Include="..\..\src\InputController.h" />
     <ClInclude Include="..\..\src\InputManager.h" />
     <ClInclude Include="..\..\src\Model.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\..\src\Physics\VehicleSetup.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />
     <ClInclude Include="..\..\src\Renderer.h" />
+    <ClInclude Include="..\..\src\RenderQueue.h" />
     <ClInclude Include="..\..\src\ResourceManager.h" />
     <ClInclude Include="..\..\src\ShaderProgram.h" />
     <ClInclude Include="..\..\src\Skybox.h" />
