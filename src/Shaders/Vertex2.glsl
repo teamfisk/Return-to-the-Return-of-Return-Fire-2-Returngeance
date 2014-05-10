@@ -15,5 +15,5 @@ void main()
 {
 	gl_Position = MVP * vec4(Position, 1.0);
 	Output.Position = Position;
-	Output.TextureCoord = (vec2(Position) + 1) / 2;
+	Output.TextureCoord = (vec2(Position) + 1.0) / 2.0;
 }

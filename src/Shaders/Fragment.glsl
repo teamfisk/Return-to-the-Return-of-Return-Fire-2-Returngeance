@@ -16,10 +16,10 @@ out vec4 frag_Normal;
 void main()
 {
 	// Diffuse Texture
-	frag_Diffuse = texture2D(DiffuseTexture, Input.TextureCoord);
+	frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord);
 
 	// G-buffer Position
-	frag_Position = vec4(Input.Position.xyz, 0.0);
+	frag_Position = vec4(Input.Position.xyz, 1.0);
 
 	// G-buffer Normal
 	frag_Normal = vec4(Input.Normal, 0.0);

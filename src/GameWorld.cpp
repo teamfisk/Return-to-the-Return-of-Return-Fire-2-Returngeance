@@ -224,11 +224,11 @@ void GameWorld::Initialize()
  	CommitEntity(car);
  }
 */
-	for(int i = 0; i < 20; i++)
+	for(int i = 0; i < 50; i++)
 	{
 		auto Light = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(Light, "Transform");
-		transform->Position = glm::vec3(i*cos(i), 3, 0 + i*sin(i));
+		transform->Position = glm::vec3(i*cos(i), (float)(0.1*i), 0 + i*sin(i));
 		auto light = AddComponent<Components::PointLight>(Light, "PointLight");
 		//light->Specular = glm::vec3(1.0f, 1.0f, 1.0f);
 		auto model = AddComponent<Components::Model>(Light, "Model");

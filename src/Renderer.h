@@ -24,12 +24,6 @@ public:
 	int HEIGHT, WIDTH;
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
-	
- 	std::vector<float> Light_constantAttenuation;
- 	std::vector<float> Light_linearAttenuation;
- 	std::vector<float> Light_quadraticAttenuation;
-	std::vector<float> Light_spotExponent;
-
 	std::list<std::tuple<glm::mat4, bool>> AABBsToRender;
 
 	Renderer();
@@ -45,7 +39,9 @@ public:
 	    glm::vec3 _specular,
 	    glm::vec3 _diffuse,
 	    float _specularExponent,
-		float _scale
+		float _ConstantAttenuation, 
+		float _LinearAttenuation, 
+		float _QuadraticAttenuation
 	);
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
@@ -74,8 +70,8 @@ private:
 		glm::vec3 Specular;
 		glm::vec3 Diffuse;
 		float SpecularExponent;
-		float Scale;
 		glm::mat4 SphereModelMatrix;
+		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
 	};
 
 	float Gamma;

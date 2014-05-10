@@ -12,14 +12,18 @@ uniform vec3 la;
 uniform vec3 ls;
 uniform vec3 ld;
 uniform vec3 lp;
-uniform float LightRadius;
 uniform float specularExponent;
 uniform vec3 CameraPosition;
+uniform float ConstantAttenuation;
+uniform float LinearAttenuation;
+uniform float QuadraticAttenuation;
 
 const vec3 ks = vec3(1.0, 1.0, 1.0);
 const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
+
+
 
 in VertexData
 {
@@ -44,12 +48,15 @@ vec4 phong(vec3 position, vec3 normal)
 	vec3 surfaceToViewer = normalize(-position);
 	vec3 halfWay = normalize(surfaceToViewer + directionToLight);
 	float dotSpecular = max(dot(halfWay, normal), 0.0);
-	float specularFactor = pow(dotSpecular, specularExponent * 2);
+	float specularFactor = pow(dotSpecular, specularExponent * 2.0);
 	vec3 Is = ks * ls * specularFactor;
 
 	//Attenuation
 	float dist = distance(lightPos, position);
-	float attenuation = -log(min(1.0, dist / LightRadius));
+	//float attenuation = -log(min(1.0, dist / LightRadius));
+
+	float attenuation = 1.0 / (ConstantAttenuation + (LinearAttenuation * dist) + (QuadraticAttenuation * dist * dist));
+
 	//float attenuation = 1.0 / (1.0 - 0.0001 * pow(dist, 2));
 
 	//float attenuation = clamp(0.0, 1.0, 1.0 / (0.001 + (0.001 * dist) + (0.001 * dist * dist)));
@@ -62,9 +69,9 @@ vec4 phong(vec3 position, vec3 normal)
 	//att_s = 1.0 / (1.0 + att_s);
 	//attenuation = attenuation / (1.0 - att_s);
 
-	float radius = 5.0;
-	float alpha = dist / radius;
-	float dampingFactor = 1.0 - pow(alpha, 3);
+	//float radius = 5.0;
+	//float alpha = dist / radius;
+	//float dampingFactor = 1.0 - pow(alpha, 3);
 
 
 	return vec4((Id + Is) * attenuation, 1.0);
