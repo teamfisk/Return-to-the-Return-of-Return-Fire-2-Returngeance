@@ -169,6 +169,7 @@
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
+    <None Include="..\..\src\Shaders\Fragment-Normal.glsl" />
     <None Include="..\..\src\Shaders\Fragment.glsl" />
     <None Include="..\..\src\Shaders\Fragment2-Debug.glsl" />
     <None Include="..\..\src\Shaders\Fragment2.glsl" />

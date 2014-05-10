@@ -277,5 +277,8 @@
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\src\Shaders\Fragment-Normal.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

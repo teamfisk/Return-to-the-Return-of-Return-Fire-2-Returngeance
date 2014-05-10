@@ -20,8 +20,10 @@ Model::Model(OBJ &obj, ResourceManager* rm)
 
 			// Load texture
 			auto texture = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->DiffuseTexture.FileName));
-			// TODO: Load normal map
+			// Load normal map
 			std::shared_ptr<Texture> normalMap = nullptr;
+			if (!currentMaterial->NormalMap.FileName.empty())
+				normalMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->NormalMap.FileName));
 			// Load specular map
 			std::shared_ptr<Texture> specularMap = nullptr;
 			if (!currentMaterial->SpecularMap.FileName.empty())

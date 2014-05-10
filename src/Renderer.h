@@ -111,6 +111,7 @@ private:
 
 	ShaderProgram m_ShaderProgram;
 	ShaderProgram m_FirstPassProgram;
+	ShaderProgram m_FirstPassNormalProgram;
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_FinalPassProgram;

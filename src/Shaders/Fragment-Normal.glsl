@@ -6,6 +6,7 @@ uniform mat4 V;
 uniform mat4 P;
 
 layout (binding=0) uniform sampler2D DiffuseTexture;
+layout (binding=1) uniform sampler2D NormalMap;
 
 in VertexData
 {
@@ -27,5 +28,5 @@ void main()
 	frag_Position = vec4(Input.Position.xyz, 0.0);
 
 	// G-buffer Normal
-	frag_Normal = vec4(Input.Normal, 0.0);
+	frag_Normal = vec4(normalize(vec3(Input.Normal * (texture2D(NormalMap, Input.TextureCoord)).xyz)), 0.0);
 }

@@ -118,6 +118,14 @@ void Renderer::LoadContent()
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 2, "frag_Normal");
 	m_FirstPassProgram.Link();
 
+	m_FirstPassNormalProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex.glsl")));
+	m_FirstPassNormalProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment-Normal.glsl")));
+	m_FirstPassNormalProgram.Compile();
+	glBindFragDataLocation(m_FirstPassNormalProgram.GetHandle(), 0, "frag_Diffuse");
+	glBindFragDataLocation(m_FirstPassNormalProgram.GetHandle(), 1, "frag_Position");
+	glBindFragDataLocation(m_FirstPassNormalProgram.GetHandle(), 2, "frag_Normal");
+	m_FirstPassNormalProgram.Link();
+
 	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex2.glsl")));
 	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment2.glsl")));
 	m_SecondPassProgram.Compile();
@@ -694,7 +702,6 @@ void Renderer::DrawFBO()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
-	m_FirstPassProgram.Bind();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque);
 	
@@ -823,15 +830,36 @@ void Renderer::DrawFBOScene()
 			continue;
 
 		MVP = cameraMatrix * modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
 		{
+			if (texGroup.NormalMap)
+			{
+				m_FirstPassNormalProgram.Bind();
+
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassNormalProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassNormalProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassNormalProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassNormalProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
+			}
+			else
+			{
+				m_FirstPassProgram.Bind();
+
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+				glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
+			}
+
+
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
+			if (texGroup.NormalMap)
+			{
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, *texGroup.NormalMap);
+			}
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
