@@ -143,7 +143,6 @@ void Renderer::LoadContent()
 
 void Renderer::Draw(double dt)
 {
-
 	if(glfwGetKey(m_Window, GLFW_KEY_F1))
 	{
 		m_QuadView = false;
@@ -204,9 +203,6 @@ void Renderer::Draw(double dt)
 		}
 	}
 	
-
-
-
 	glDisable(GL_BLEND);
 
 	DrawFBO();
@@ -228,87 +224,6 @@ void Renderer::DrawSkybox()
 	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramSkybox.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	m_Skybox->Draw();
-}
-
-void Renderer::DrawScene()
-{
-// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-// 	glViewport(0, 0, WIDTH, HEIGHT);
-
-	glClear(GL_DEPTH_BUFFER_BIT);
-	//glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-#ifdef DEBUG
-	glDisable(GL_CULL_FACE);
-	glPolygonMode(GL_BACK, GL_LINE);
-#endif
-
-	// Draw models
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(-m_Camera->Position() * glm::vec3(1, 0, 0));
-	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
-	glm::mat4 biasMatrix(
-	    0.5, 0.0, 0.0, 0.0,
-	    0.0, 0.5, 0.0, 0.0,
-	    0.0, 0.0, 0.5, 0.0,
-	    0.5, 0.5, 0.5, 1.0
-	);
-
-	m_ShaderProgram.Bind();
-	glUniform1i(glGetUniformLocation(m_ShaderProgram.GetHandle(), "numberOfLights"), Lights.size());
-// 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "position"), Lights, Light_position.data());
-// 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "specular"), Lights, Light_specular.data());
-// 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "diffuse"), Lights, Light_diffuse.data());
-// 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "constantAttenuation"), Lights.size(), Light_constantAttenuation.data());
-// 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "linearAttenuation"), Lights.size(), Light_linearAttenuation.data());
-// 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "quadraticAttenuation"), Lights.size(), Light_quadraticAttenuation.data());
-// 	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "spotExponent"), Lights.size(), Light_spotExponent.data());
-	if (m_DrawWireframe)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
-	//DrawModels(m_ShaderProgram);
-	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
-	glm::mat4 depthCameraMatrix = biasMatrix * depthCamera;
-	glm::mat4 MVP;
-	glm::mat4 depthMVP;
-	for (auto tuple : ModelsToRender)
-	{
-		Model* model;
-		glm::mat4 modelMatrix;
-		bool visible;
-		std::tie(model, modelMatrix, visible, std::ignore) = tuple;
-		if (!visible)
-			continue;
-
-		MVP = cameraMatrix * modelMatrix;
-		depthMVP = depthCameraMatrix * modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "view"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-		glBindVertexArray(model->VAO);
-		for (auto texGroup : model->TextureGroups)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
-			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
-		}
-	}
-
-#ifdef DEBUG
-	// Debug draw model normals
-	if (m_DrawNormals)
-	{
-		m_ShaderProgramNormals.Bind();
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		DrawModels(m_ShaderProgramNormals);
-	}
-#endif
 }
 
 void Renderer::DrawShadowMap()
