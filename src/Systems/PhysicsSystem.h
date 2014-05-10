@@ -11,6 +11,7 @@
 #include "Components/Input.h"
 #include "Components/MeshShape.h"
 #include "Components/HingeConstraint.h"
+#include "Components/WheelPair.h"
 #include "OBJ.h"
 
 // Math and base include

@@ -197,23 +197,21 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_gearsRatio.setSize(numberOfGears);
 	transmission.m_wheelsTorqueRatio.setSize(data.m_numWheels);
 
-	transmission.m_downshiftRPM = 1500.0f;
-	transmission.m_upshiftRPM = 3500.0f;
+	transmission.m_downshiftRPM = 3500.0f; //HACK: Should be in VehicleComponent
+	transmission.m_upshiftRPM = 7000.0f;
 
 	transmission.m_clutchDelayTime = 0.0f;
-	transmission.m_reverseGearRatio = 1.0f;
-	transmission.m_gearsRatio[0] = 2.0f;
-	transmission.m_gearsRatio[1] = 1.5f;
-	transmission.m_gearsRatio[2] = 1.0f;
-	transmission.m_gearsRatio[3] = 0.75f;
-	transmission.m_wheelsTorqueRatio[0] = 0.2f;
-	transmission.m_wheelsTorqueRatio[1] = 0.2f;
-	transmission.m_wheelsTorqueRatio[2] = 0.3f;
-	transmission.m_wheelsTorqueRatio[3] = 0.3f;
-
-	//transmission.m_wheelsTorqueRatio[4] = 0.1f;
-	//transmission.m_wheelsTorqueRatio[5] = 0.1f;  
-	// HACK: fix support for more than 4 wheels, m_wheelsTorqueRatio must equal 1 for all wheels
+	transmission.m_reverseGearRatio = 1.2f;
+	transmission.m_gearsRatio[0] = 3.0f;
+	transmission.m_gearsRatio[1] = 2.25f;
+	transmission.m_gearsRatio[2] = 1.5f;
+	transmission.m_gearsRatio[3] = 1.0f;
+	
+	for(int i = 0; i < m_Wheels.size(); i++)
+	{
+		// The wheels total TorqueRatio must be equal to 1
+		transmission.m_wheelsTorqueRatio[i] = m_Wheels[i].WheelComponent->TorqueRatio;
+	}
 
 	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(
 		vehicleComponent.TopSpeed,
@@ -287,7 +285,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultV
 
 	// The threshold in m/s at which the algorithm switches from 
 	// using the normalSpinDamping to the collisionSpinDamping. 	
-	velocityDamper.m_collisionThreshold = 1.0f;
+	velocityDamper.m_collisionThreshold = 100.0f;
 }
 
 void VehicleSetup::setupWheelCollide(const hkpWorld* world, const hkpVehicleInstance& vehicle, hkpVehicleRayCastWheelCollide& wheelCollide)

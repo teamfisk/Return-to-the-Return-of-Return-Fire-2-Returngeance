@@ -111,6 +111,8 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("Wheel", []() { return new Components::Wheel(); });
 	cf->Register("MeshShape", []() { return new Components::MeshShape(); });
 	cf->Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
+	cf->Register("WheelPair", []() { return new Components::WheelPair(); });
+	
 }
 
 void Systems::PhysicsSystem::Update(double dt)
@@ -225,9 +227,14 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		m_PhysicsWorld->markForWrite();
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[entity]->m_deviceStatus;
 		
-		if(inputComponent->KeyState[GLFW_KEY_UP] != 0 || inputComponent->KeyState[GLFW_KEY_DOWN] != 0)
+		if(inputComponent->KeyState[GLFW_KEY_UP] != 0)
 		{
-			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 1.f * dt + inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 1.f * dt;
+			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 1.f * dt;
+		}
+		else if (inputComponent->KeyState[GLFW_KEY_DOWN] != 0)
+		{
+			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 1.f * dt;
+			deviceStatus->m_reverseButtonPressed = true;
 		}
 		else
 		{
@@ -310,7 +317,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
 	if (physicsComponent)
 	{
-		
+		hkpShape* shape;	
 		if(entityParent != entity)
 		{
 			LOG_ERROR("Entity: %i , Only the baseparent can have a PhysicsComponent", entity);
@@ -330,7 +337,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpListShape* listShape = new hkpListShape(shapeArray.begin(), shapeArray.getSize(), hkpShapeContainer::REFERENCE_POLICY_INCREMENT);
 			// Save the listShape for further use
 			m_ListShapes[entity] = listShape;
-			
+			shape = listShape;
 
 			//////////////////////////////////
 			//******************************//
@@ -342,11 +349,11 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			m_Shapes.erase(entity);
 
 			hkMassProperties massProperties;
-			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(listShape, physicsComponent->Mass, massProperties);
+			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
 			
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
-				rigidBodyInfo.m_shape = listShape;
+				rigidBodyInfo.m_shape = shape;
 				rigidBodyInfo.m_motionType = hkpMotion::MOTION_DYNAMIC;
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
 				hkVector4 position = ConvertPosition(absoluteTransform.Position);
@@ -361,13 +368,48 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
 
-			m_PhysicsWorld->markForWrite();
-			m_PhysicsWorld->addEntity(rigidBody);
-			m_RigidBodies[entity] = rigidBody;
-			m_PhysicsWorld->unmarkForWrite();
+			auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity, "Vehicle");
+			if (vehicleComponent && m_Vehicles.find(entity) == m_Vehicles.end())
+			{
+				for (int i = 0; i < m_Wheels.size(); i++)
+				{
+					if(m_World->GetEntityParent(m_Wheels[i]) != entity)
+					{
+						m_Wheels.erase(m_Wheels.begin() + i);
+						i--;
+					}
+				}
 
-			listShape->removeReference();
-			rigidBody->removeReference();
+
+				VehicleSetup vehicleSetup;
+				// Create the basic vehicle.
+				m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
+				m_PhysicsWorld->markForWrite();
+				vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
+				// Add the vehicle's entities and phantoms to the world
+				m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
+
+				m_RigidBodies[entity] = rigidBody;
+
+				// The vehicle is an action
+				m_PhysicsWorld->addAction(m_Vehicles[entity]);
+				m_PhysicsWorld->unmarkForWrite();
+
+				//m_Vehicles[entity]->m_rpm = 0.0f; // Not sure why this one should be here
+				m_Wheels.clear();
+				shape->removeReference();
+				rigidBody->removeReference();
+			}
+			else
+			{
+				m_PhysicsWorld->markForWrite();
+				m_PhysicsWorld->addEntity(rigidBody);
+				m_RigidBodies[entity] = rigidBody;
+				m_PhysicsWorld->unmarkForWrite();
+
+				shape->removeReference();
+				rigidBody->removeReference();
+			}
 		}
 		else // Static
 		{
@@ -390,14 +432,14 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			
 			// This must be called after adding the instances and before using the shape.
 			staticCompoundShape->bake();
-
+			shape = staticCompoundShape;
 			m_Shapes.erase(entity);
 			hkMassProperties massProperties;
-			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(staticCompoundShape, physicsComponent->Mass, massProperties);
+			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
 
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
-				rigidBodyInfo.m_shape = staticCompoundShape;
+				rigidBodyInfo.m_shape = shape;
 				rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
 				hkVector4 position = ConvertPosition(absoluteTransform.Position);
@@ -417,8 +459,10 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			m_RigidBodies[entity] = rigidBody;
 			m_PhysicsWorld->unmarkForWrite();
 
-			staticCompoundShape->removeReference();
+			shape->removeReference();
 			rigidBody->removeReference();
+
+			
 		}
 
 	}
@@ -441,11 +485,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		else if(boxComponent)
 		{
 			hkReal thickness = 0.05;
-			hkpBoxShape* boxShape = new hkpBoxShape(hkVector4(boxComponent->Width, boxComponent->Height, boxComponent->Depth), thickness);
-			
-			hkpShapeShrinker* shapeShrinker = new hkpShapeShrinker();
-			boxShape = shapeShrinker->shrinkBoxShape(boxShape, thickness, 0); // HACK: Unsure about the 3rd argument
-			delete shapeShrinker;
+			hkpBoxShape* boxShape = new hkpBoxShape(hkVector4(boxComponent->Width- thickness, boxComponent->Height -thickness, boxComponent->Depth - thickness), thickness);
 			
 			hkQsTransform transform( ConvertPosition(transformComponent->Position), ConvertRotation(transformComponent->Orientation), ConvertScale(transformComponent->Scale));
 			hkpConvexTransformShape* transformedBoxShape = new hkpConvexTransformShape( boxShape, transform );
@@ -477,7 +517,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			}
 
 			hkpExtendedMeshShape* mesh = new hkpExtendedMeshShape();
-			hkReal thickness = 0.00f; // HACK: Convex radius should be 0 for static shapes and 0.05 for dynamic shapes.
+			hkReal thickness = 0.05f; // HACK: Convex radius should be 0 for static shapes and 0.05 for dynamic shapes.
 			mesh->setRadius(thickness);
 			{
 				hkpExtendedMeshShape::TrianglesSubpart part;
@@ -527,8 +567,9 @@ void Systems::PhysicsSystem::SetupVisualDebugger(hkpPhysicsContext* worlds)
 {
 	// Setup the visual debugger
 	hkArray<hkProcessContext*> contexts;
+	
 	contexts.pushBack(worlds);
-
+	
 	m_VisualDebugger = new hkVisualDebugger(contexts);
 	m_VisualDebugger->serve();
 
@@ -562,7 +603,7 @@ glm::vec3 Systems::PhysicsSystem::ConvertPosition(const hkVector4 &hkPosition)
 
 const hkVector4& Systems::PhysicsSystem::ConvertPosition(glm::vec3 glmPosition)
 {
-	return hkVector4( glmPosition.x, glmPosition.y, glmPosition.z );
+	return hkVector4( glmPosition.x, glmPosition.y, glmPosition.z);
 }
 
 glm::quat Systems::PhysicsSystem::ConvertRotation(const hkQuaternion &hkRotation)
@@ -572,7 +613,7 @@ glm::quat Systems::PhysicsSystem::ConvertRotation(const hkQuaternion &hkRotation
 
 const hkQuaternion& Systems::PhysicsSystem::ConvertRotation(glm::quat glmRotation)
 {
-	return hkQuaternion(glmRotation.x, glmRotation.y, glmRotation.z, glmRotation.w );
+	return hkQuaternion(glmRotation.x, glmRotation.y, glmRotation.z, glmRotation.w);
 }
 
 glm::vec3 Systems::PhysicsSystem::ConvertScale(const hkVector4 &hkScale)

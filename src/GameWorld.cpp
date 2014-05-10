@@ -21,7 +21,7 @@ void GameWorld::Initialize()
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
 		//model->ModelFile = "Models/TestScene/testScene.obj";
-		model->ModelFile = "Models/Placeholders/Terrain/Terrain.obj";
+		model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
 		
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;
@@ -31,7 +31,7 @@ void GameWorld::Initialize()
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape, "Transform");
 		auto meshShape = AddComponent<Components::MeshShape>(groundshape, "MeshShape");
-		meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain.obj";
+		meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
 		//meshShape->ResourceName = "Models/TestScene/testScene.obj";
 
 		
@@ -52,25 +52,30 @@ void GameWorld::Initialize()
 		CommitEntity(camera);
 	}
 
-	{
+	/*{
 		auto jeep = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(jeep, "Transform");
 		transform->Position = glm::vec3(0, 5, 0);
 		transform->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(0, 1, 0));
 		auto physics = AddComponent<Components::Physics>(jeep, "Physics");
 		physics->Mass = 1800;
-
-// 		auto box = AddComponent<Components::Box>(jeep, "Box");
-// 		box->Width = 1.487f;
-// 		box->Height = 0.727f;
-// 		box->Depth = 2.594f;
-
-		auto meshShape = AddComponent<Components::MeshShape>(jeep, "MeshShape");
-		meshShape->ResourceName = "Models/Jeep/Chassi/ChassiCollision.obj";
-
+		physics->Static = false;
 		auto vehicle = AddComponent<Components::Vehicle>(jeep, "Vehicle");
-
 		AddComponent<Components::Input>(jeep, "Input");
+
+		{
+			auto shape = CreateEntity(jeep);
+			auto transform = AddComponent<Components::Transform>(shape, "Transform");
+			auto meshShape = AddComponent<Components::MeshShape>(shape, "MeshShape");
+			meshShape->ResourceName = "Models/Jeep/Chassi/ChassiCollision.obj";
+			CommitEntity(shape);
+
+			// 		auto box = AddComponent<Components::Box>(jeep, "Box");
+			// 		box->Width = 1.487f;
+			// 		box->Height = 0.727f;
+			// 		box->Depth = 2.594f;
+
+		}
 
 		{
 			auto chassis = CreateEntity(jeep);
@@ -174,6 +179,236 @@ void GameWorld::Initialize()
 		}
 
 		CommitEntity(jeep);
+	}*/
+
+
+	{
+		auto tank = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(tank, "Transform");
+		transform->Position = glm::vec3(0, 5, 0);
+		transform->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(0, 1, 0));
+		auto physics = AddComponent<Components::Physics>(tank, "Physics");
+		physics->Mass = 45000;
+		physics->Static = false;
+		auto vehicle = AddComponent<Components::Vehicle>(tank, "Vehicle");
+		vehicle->MaxTorque = 5200.f;
+
+		AddComponent<Components::Input>(tank, "Input");
+
+		{
+			auto shape = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(shape, "Transform");
+			auto meshShape = AddComponent<Components::MeshShape>(shape, "MeshShape");
+			meshShape->ResourceName = "Models/Tank/Fix/ChassiCollision.obj";
+			CommitEntity(shape);
+
+			// 		auto box = AddComponent<Components::Box>(jeep, "Box");
+			// 		box->Width = 1.487f;
+			// 		box->Height = 0.727f;
+			// 		box->Depth = 2.594f;
+
+		}
+
+		{
+			auto chassis = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(chassis, "Transform");
+			transform->Position = glm::vec3(0, 0, 0); // 0.6577f
+			auto model = AddComponent<Components::Model>(chassis, "Model");
+			model->ModelFile = "Models/Tank/Fix/Chassi.obj";
+		}
+		{
+			auto top = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(top, "Transform");
+			transform->Position = glm::vec3(0, 1.2, 1.95); // 0.6577f
+			auto model = AddComponent<Components::Model>(top, "Model");
+			model->ModelFile = "Models/Tank/Fix/Top.obj";
+
+			{
+				auto top = CreateEntity(tank);
+				auto transform = AddComponent<Components::Transform>(top, "Transform");
+				transform->Position = glm::vec3(0, 1, 0.5); // 0.6577f
+				auto model = AddComponent<Components::Model>(top, "Model");
+				model->ModelFile = "Models/Tank/Fix/Barrel.obj";
+			}
+		}
+
+		{
+			auto lightentity = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(lightentity, "Transform");
+			transform->Position = glm::vec3(0, 15, 0);
+			auto light = AddComponent<Components::PointLight>(lightentity, "PointLight");
+			light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+			light->Specular = glm::vec3(1.f);
+			light->constantAttenuation = 0.3f;
+			light->linearAttenuation = 0.003f;
+			light->quadraticAttenuation = 0.002f;
+		}
+
+// 		auto wheelpair = CreateEntity(tank);
+// 		SetProperty(wheelpair, "Name", "WheelPair");
+// 		AddComponent(wheelpair, "WheelPairThingy");
+
+		//Create wheels
+		float wheelOffset = 0.4f;
+		float springLength = 0.3f;
+		float suspensionStrength = 25.f;
+
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.88f, -0.83f - wheelOffset, -2.6f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.88f, -0.83f - wheelOffset, -0.83f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.88f, -0.83f - wheelOffset, -2.6f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.88f, -0.83f - wheelOffset, -0.83f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+
+
+		//Back
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.88f, -0.83f - wheelOffset, 1.f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(1.88f, -0.83f - wheelOffset, 2.95f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.88f, -0.83f - wheelOffset, 1.f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
+			transform->Position = glm::vec3(-1.88f, -0.83f - wheelOffset, 2.95f);
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			CommitEntity(wheel);
+		}
+
+		CommitEntity(tank);
 	}
 
 	/*
@@ -202,18 +437,13 @@ void GameWorld::Initialize()
 
 	for(int i = 0; i < 1; i++)
 	{
-		auto wall = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall, "Transform");
-		transform->Position = glm::vec3(10, 0, -20 + (-10 * i));
-		//transform->Orientation = glm::angleAxis(glm::pi<float>()/2.f, glm::vec3(0, 1, 0));
-
 		for (int y = 0; y < 15; y++)
 		{
 			for (int x = -5; x < 5; x++)
 			{
 				auto brick = CreateEntity();
 				auto transform = AddComponent<Components::Transform>(brick, "Transform");
-				transform->Position = glm::vec3(x + 0.01f, y * 0.3f + 0.01f, 0);
+				transform->Position = glm::vec3(x + 0.01f, y * 0.3f + 0.01f, -20);
 				transform->Position.x += (y % 2)*0.5f;
 				transform->Scale = glm::vec3(1, 0.3f, 0.4f);
 				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -235,7 +465,6 @@ void GameWorld::Initialize()
 				CommitEntity(brick);
 			}
 		}
-		CommitEntity(wall);
 	}
 
 	/*for (int x = 0; x < 5; x++)
