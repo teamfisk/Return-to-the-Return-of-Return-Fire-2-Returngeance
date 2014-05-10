@@ -11,11 +11,11 @@ struct PointLight : Component
 {
 	PointLight() 
 		: Specular(1.0f, 1.0f, 1.0f)
-		, Diffuse(0.4f, 0.4f, 0.4f)
+		, Diffuse(1.0f, 1.0f, 1.0f)
 		, specularExponent(50.0f)
-		, ConstantAttenuation(1.05f)
+		, ConstantAttenuation(1.0f)
 		, LinearAttenuation(0.f)
-		, QuadraticAttenuation(2.55f)
+		, QuadraticAttenuation(3.f)
 	{ }
 
 	float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;

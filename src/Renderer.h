@@ -85,6 +85,7 @@ private:
 	bool m_DrawNormals;
 	bool m_DrawWireframe;
 	bool m_DrawBounds;
+	float CAtt, LAtt, QAtt;
 
 	std::shared_ptr<Skybox> m_Skybox;
 

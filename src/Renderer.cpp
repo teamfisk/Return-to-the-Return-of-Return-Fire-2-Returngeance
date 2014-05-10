@@ -133,6 +133,9 @@ void Renderer::LoadContent()
 	m_FinalPassProgram.Compile();
 	m_FinalPassProgram.Link();
 	Gamma = 2.2f;
+	CAtt = 1.0f;
+	LAtt = 0.0f;
+	QAtt = 3.0f;
 	m_ScreenQuad = CreateQuad();
 
 	FrameBufferTextures();
@@ -160,6 +163,49 @@ void Renderer::Draw(double dt)
 		Gamma += 0.3f * dt;
 		LOG_INFO("Gamma_DOWN: %f", Gamma);
 	}
+
+	if(glfwGetKey(m_Window, GLFW_KEY_1))
+	{
+		if(glfwGetKey(m_Window, GLFW_KEY_KP_ADD))
+		{
+			CAtt += 0.5f * dt;
+			LOG_INFO("Const: %f", CAtt);
+		}
+		if(glfwGetKey(m_Window, GLFW_KEY_KP_SUBTRACT))
+		{
+			CAtt -= 0.5f * dt;
+			LOG_INFO("Const: %f", CAtt);
+		}
+	}
+	if(glfwGetKey(m_Window, GLFW_KEY_2))
+	{
+		if(glfwGetKey(m_Window, GLFW_KEY_KP_ADD))
+		{
+			LAtt += 0.5f * dt;
+			LOG_INFO("Linear: %f", LAtt);
+		}
+		if(glfwGetKey(m_Window, GLFW_KEY_KP_SUBTRACT))
+		{
+			LAtt -= 0.5f * dt;
+			LOG_INFO("Linear: %f", LAtt);
+		}
+	}
+	if(glfwGetKey(m_Window, GLFW_KEY_3))
+	{
+		if(glfwGetKey(m_Window, GLFW_KEY_KP_ADD))
+		{
+			QAtt += 0.5f * dt;
+			LOG_INFO("Quadratic: %f", QAtt);
+		}
+		if(glfwGetKey(m_Window, GLFW_KEY_KP_SUBTRACT))
+		{
+			QAtt -= 0.5f * dt;
+			LOG_INFO("Quadratic: %f", QAtt);
+		}
+	}
+	
+
+
 
 	glDisable(GL_BLEND);
 
@@ -657,7 +703,7 @@ void Renderer::DrawFBO()
 	m_FinalPassProgram.Bind();
 
 	// Ambient light
-	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.1f, 0.1f, 0.1f)));
 	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -733,6 +779,10 @@ void Renderer::DrawLightScene()
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), light.LinearAttenuation);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), light.QuadraticAttenuation);
 
+// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), CAtt);
+// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
+// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
+
  		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
 	glEnable (GL_DEPTH_TEST);
@@ -750,6 +800,9 @@ glm::mat4 Renderer::CreateLightMatrix(Light &_light)
 	float c = _light.ConstantAttenuation;
 	float l = _light.LinearAttenuation;
 	float q = _light.QuadraticAttenuation;
+// 	float c = CAtt;
+// 	float l = LAtt;
+// 	float q = QAtt;
 	float cutOffRadius = abs(sqrt((-4*c*q) + pow(l, 2) + (1024*q) - l) / (2*q));
 
 	glm::mat4 model;
