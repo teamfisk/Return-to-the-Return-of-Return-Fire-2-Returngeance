@@ -9,15 +9,20 @@ namespace Components
 
 struct PointLight : Component
 {
-	float Intensity;
-	float MaxRange;
+	PointLight() 
+		: Specular(1.0f, 1.0f, 1.0f)
+		, Diffuse(0.4f, 0.4f, 0.4f)
+		, specularExponent(50.0f)
+		, Scale(10.0f)
+	{ }
+
 	float constantAttenuation, linearAttenuation, quadraticAttenuation;
-	float spotExponent;
 	Color color;
 
 	glm::vec3 Specular;
 	glm::vec3 Diffuse;
 	float specularExponent;
+	float Scale;
 };
 
 }

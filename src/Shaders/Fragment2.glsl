@@ -13,11 +13,11 @@ uniform vec3 ls;
 uniform vec3 ld;
 uniform vec3 lp;
 uniform float LightRadius;
-const float specularExponent = 50.0;
+uniform float specularExponent;
 uniform vec3 CameraPosition;
 
-const vec3 ks = vec3(1.0, 0.0, 0.0);
-const vec3 kd = vec3(0.8, 0.8, 0.8);
+const vec3 ks = vec3(1.0, 1.0, 1.0);
+const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
 

@@ -18,7 +18,7 @@ Renderer::Renderer()
 	m_SunPosition = glm::vec3(0, 3.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
 	m_SunProjection = glm::ortho<float>(-100, 100, -100, 100, -100, 100);
-	Lights = 0;
+/*	Lights = 0;*/
 }
 
 void Renderer::Initialize()
@@ -132,7 +132,7 @@ void Renderer::LoadContent()
 	m_FinalPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/FinalPass.frag.glsl")));
 	m_FinalPassProgram.Compile();
 	m_FinalPassProgram.Link();
-
+	Gamma = 1;
 	m_ScreenQuad = CreateQuad();
 
 	FrameBufferTextures();
@@ -148,6 +148,17 @@ void Renderer::Draw(double dt)
 	if(glfwGetKey(m_Window, GLFW_KEY_F2))
 	{
 		m_QuadView = true;
+	}
+
+	if(glfwGetKey(m_Window, GLFW_KEY_KP_1))
+	{
+		Gamma -= 0.3f * dt; 
+		LOG_INFO("Gamma_UP: %f", Gamma);
+	}
+	if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
+	{
+		Gamma += 0.3f * dt;
+		LOG_INFO("Gamma_DOWN: %f", Gamma);
 	}
 
 	glDisable(GL_BLEND);
@@ -200,14 +211,14 @@ void Renderer::DrawScene()
 	);
 
 	m_ShaderProgram.Bind();
-	glUniform1i(glGetUniformLocation(m_ShaderProgram.GetHandle(), "numberOfLights"), Lights);
+	glUniform1i(glGetUniformLocation(m_ShaderProgram.GetHandle(), "numberOfLights"), Lights.size());
 // 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "position"), Lights, Light_position.data());
 // 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "specular"), Lights, Light_specular.data());
 // 	glUniform3fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "diffuse"), Lights, Light_diffuse.data());
-	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "constantAttenuation"), Lights, Light_constantAttenuation.data());
-	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "linearAttenuation"), Lights, Light_linearAttenuation.data());
-	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "quadraticAttenuation"), Lights, Light_quadraticAttenuation.data());
-	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "spotExponent"), Lights, Light_spotExponent.data());
+	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "constantAttenuation"), Lights.size(), Light_constantAttenuation.data());
+	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "linearAttenuation"), Lights.size(), Light_linearAttenuation.data());
+	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "quadraticAttenuation"), Lights.size(), Light_quadraticAttenuation.data());
+	glUniform1fv(glGetUniformLocation(m_ShaderProgram.GetHandle(), "spotExponent"), Lights.size(), Light_spotExponent.data());
 	if (m_DrawWireframe)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -361,30 +372,18 @@ void Renderer::AddPointLightToDraw(
     glm::vec3 _position,
     glm::vec3 _specular,
     glm::vec3 _diffuse,
-    float _specularExponent
+    float _specularExponent,
+	float _scale
 )
 {
-	Light_position.push_back(_position);
-	Light_specular.push_back(_specular);
-	Light_diffuse.push_back(_diffuse);
-	Light_specularExponent.push_back(_specularExponent);
-	Lights = Light_position.size();
-	CreateLightMatrix();
-
-// 	Light_position.push_back(_position.x);
-// 	Light_position.push_back(_position.y);
-// 	Light_position.push_back(_position.z);
-// 	Light_specular.push_back(_specular.x);
-// 	Light_specular.push_back(_specular.y);
-// 	Light_specular.push_back(_specular.z);
-// 	Light_diffuse.push_back(_diffuse.x);
-// 	Light_diffuse.push_back(_diffuse.y);
-// 	Light_diffuse.push_back(_diffuse.z);
-// 	Light_constantAttenuation.push_back(_constantAttenuation);
-// 	Light_linearAttenuation.push_back(_linearAttenuation);
-// 	Light_quadraticAttenuation.push_back(_quadraticAttenuation);
-// 	Light_spotExponent.push_back(_spotExponent);
-// 	Lights = Light_constantAttenuation.size();
+	Light light;
+	light.Position = _position;
+	light.Diffuse = _diffuse;
+	light.Specular = _specular;
+	light.Scale = _scale;
+	light.SpecularExponent = _specularExponent;
+	light.SphereModelMatrix = CreateLightMatrix(light);
+	Lights.push_back(light);
 }
 
 void Renderer::AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding)
@@ -522,15 +521,7 @@ void Renderer::ClearStuff()
 {
 	AABBsToRender.clear();
 	ModelsToRender.clear();
-	Light_position.clear();
-	Light_specular.clear();
-	Light_diffuse.clear();
-	Light_constantAttenuation.clear();
-	Light_linearAttenuation.clear();
-	Light_quadraticAttenuation.clear();
-	Light_spotExponent.clear();
-	Light_specularExponent.clear();
-	Lights = 0;
+	Lights.clear();
 }
 
 #pragma endregion
@@ -663,6 +654,7 @@ void Renderer::DrawFBO()
 
 	// Ambient light
 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
@@ -719,22 +711,21 @@ void Renderer::DrawLightScene()
 	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
 	glm::mat4 MVP;
 
-	for(int i = 0; i < Lights; i++)
+	for (auto &light : Lights)
 	{
-		MVP = cameraMatrix * lM[i];
+		MVP = cameraMatrix * light.SphereModelMatrix;
 		
 		glUniform2fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ViewportSize"), 1,glm::value_ptr(glm::vec2(WIDTH, HEIGHT)));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(lM[i]));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "la"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), 1, glm::value_ptr(Light_specular[i]));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), 1, glm::value_ptr(Light_diffuse[i]));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), 1, glm::value_ptr(Light_position[i]));
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LightRadius"), 5.0f);
+		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(light.SphereModelMatrix));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), 1, glm::value_ptr(light.Specular));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), 1, glm::value_ptr(light.Diffuse));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), 1, glm::value_ptr(light.Position));
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LightRadius"), light.Scale/2.f);
 		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
-		//glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "speculatExponent"), Light_specularExponent[i]);
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "specularExponent"), light.SpecularExponent);
  		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
 	glEnable (GL_DEPTH_TEST);
@@ -747,16 +738,11 @@ void Renderer::SetSphereModel( Model* _model )
 	m_sphereModel = _model;
 }
 
-void Renderer::CreateLightMatrix()
+glm::mat4 Renderer::CreateLightMatrix(Light &_light)
 {
-	for(int i = 0; i < Lights; i++)
-	{
-		const float scale = 10.0f;
-		glm::mat4 model;
-		model *= glm::translate(Light_position[i]);
-		model *= glm::scale(glm::vec3(scale));
-		lM[i] = model;
-	}
-	
+	glm::mat4 model;
+	model *= glm::translate(_light.Position);
+	model *= glm::scale(glm::vec3(_light.Scale));
+	return model;
 }
 

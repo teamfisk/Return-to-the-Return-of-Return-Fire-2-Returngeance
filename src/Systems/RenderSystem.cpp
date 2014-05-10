@@ -38,7 +38,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 			position,
 			pointLightComponent->Specular,
 			pointLightComponent->Diffuse,
-			pointLightComponent->specularExponent
+			pointLightComponent->specularExponent,
+			pointLightComponent->Scale
 			);
 	}
 
