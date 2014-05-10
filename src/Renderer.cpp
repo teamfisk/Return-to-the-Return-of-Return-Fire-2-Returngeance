@@ -613,73 +613,6 @@ void Renderer::FrameBufferTextures()
 
 }
 
-//void Renderer::FrameBufferTextures()
-//{
-//	m_fb = 0;
-//	m_fDepthBuffer = 0;
-//
-//	glGenFramebuffers(1, &m_fb);
-//	glGenRenderbuffers(1, &m_fDepthBuffer);
-//
-//	glBindRenderbuffer(GL_RENDERBUFFER, m_fDepthBuffer);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, WIDTH, HEIGHT);
-//
-//	//Generate and bind diffuse texture
-//	glGenTextures(1, &m_fDiffuseTexture);
-//	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//
-//	//Generate and bind position texture
-//	glGenTextures(1, &m_fPositionTexture);
-//	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//
-//	//Generate and bind normal texture
-//	glGenTextures(1, &m_fNormalsTexture);
-//	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//
-//	//Generate and bind blend texture
-//	glGenTextures(1, &m_fBlendTexture);
-//	glBindTexture(GL_TEXTURE_2D, m_fBlendTexture);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//
-//	//Bind fb
-//	glBindFramebuffer(GL_FRAMEBUFFER, m_fb);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_fDepthBuffer);
-//
-//	//Attach textures to the FB
-//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fDiffuseTexture, 0);
-//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_fPositionTexture, 0);
-//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_fNormalsTexture, 0);
-//	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fBlendTexture, 0);
-//
-//	GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-//	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
-//	{
-//		printf("DeferredLighting:Init: FrameBuffer incomplete: 0x%x\n", fbStatus);
-//		exit(1);
-//	}
-//
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//}
-
 void Renderer::DrawFBO()
 {
 	/*
@@ -725,15 +658,8 @@ void Renderer::DrawFBO()
 	*/
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	//if(!m_QuadView)
-	//{
-		m_FinalPassProgram.Bind();
-	//}
-	//else
-	//{
-	//	m_SecondPassProgram_Debug.Bind();
-	//}
+
+	m_FinalPassProgram.Bind();
 
 	// Ambient light
 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
@@ -748,65 +674,6 @@ void Renderer::DrawFBO()
 	glEnableVertexAttribArray(0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
-
-//void Renderer::DrawFBO()
-//{
-//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fb);
-//
-//	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-//	glDrawBuffers(4, windowBuffClear);
-//	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//	// Execute the first render stage which will fill out the internal buffers with data(??)
-//	//EnableRenderProgramStage1;
-//	m_FirstPassProgram.Bind();
-//	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_NONE };
-//	glDrawBuffers(4, windowBuffOpaque);
-//	DrawFBOScene();
-//
-//	GLenum windowBuffTransp[] = { GL_NONE, GL_NONE, GL_NONE, GL_COLOR_ATTACHMENT3 };
-//	glDrawBuffers(4, windowBuffTransp);
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-//	//Depth buffer shall not be updated
-//	glDepthMask(GL_FALSE);
-//	//DrawTransparent items
-//	glDepthMask(GL_TRUE);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	glDisable(GL_BLEND);
-//
-//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-//	//Probably means to use the second_pass shader
-//	//EnableRenderProgramDeferredStage();
-//	m_SecondPassProgram.Bind();
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-//	//SetupDefferedStageUniforms(); // Probably what we do in FrameBufferTextures();
-//	glEnableVertexAttribArray(0);
-//	glActiveTexture(GL_TEXTURE0);
-//	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-//
-//	glActiveTexture(GL_TEXTURE1);
-//	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
-//
-//	glActiveTexture(GL_TEXTURE2);
-//	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-//
-//	glActiveTexture(GL_TEXTURE3);
-//	glBindTexture(GL_TEXTURE_2D, m_fBlendTexture);
-//
-//
-//
-//
-//
-//
-//
-//	//DrawSimpleSquare(); //I guess this draw a square and put the textures on it
-//	glBindVertexArray(m_ScreenQuad);
-//	glDrawArrays(GL_TRIANGLES, 0, 6);
-//	glDisableVertexAttribArray(0);
-//
-//}
 
 void Renderer::DrawFBOScene()
 {	

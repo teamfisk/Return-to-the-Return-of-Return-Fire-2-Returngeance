@@ -29,7 +29,7 @@ in VertexData
 
 out vec4 FragColor;
 
-vec4 phong4(vec3 position, vec3 normal)
+vec4 phong(vec3 position, vec3 normal)
 {
 	// Diffuse
 	vec3 lightPos = vec3(V * vec4(lp, 1.0));
@@ -76,5 +76,5 @@ void main()
 	vec4 PositionTexel = texture(PositionTexture, TextureCoord);
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 
-	FragColor = phong4(vec3(PositionTexel), vec3(NormalTexel));
+	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel));
 }
