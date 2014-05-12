@@ -104,7 +104,7 @@ void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data 
 	data.m_torquePitchFactor = 0.5f;
 	data.m_torqueYawFactor = 0.35f;
 
-	data.m_chassisUnitInertiaYaw = 1.0f;
+	data.m_chassisUnitInertiaYaw = 0.8f;
 	data.m_chassisUnitInertiaRoll = 1.0f;
 	data.m_chassisUnitInertiaPitch = 1.0f;
 
@@ -246,9 +246,8 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultS
 		suspension.m_wheelParams[i].m_length = suspensionLength;
 		suspension.m_wheelSpringParams[i].m_strength  = m_Wheels[i].WheelComponent->SuspensionStrength;
 
-		const float wd = 3.0f;
-		suspension.m_wheelSpringParams[i].m_dampingCompression = wd;
-		suspension.m_wheelSpringParams[i].m_dampingRelaxation = wd;
+		suspension.m_wheelSpringParams[i].m_dampingCompression = vehicleComponent.SpringDamping;
+		suspension.m_wheelSpringParams[i].m_dampingRelaxation = vehicleComponent.SpringDamping;
 
 
 		suspension.m_wheelParams[i].m_hardpointChassisSpace.set(m_Wheels[i].WheelComponent->Hardpoint.x, m_Wheels[i].WheelComponent->Hardpoint.y, m_Wheels[i].WheelComponent->Hardpoint.z);
@@ -285,7 +284,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultV
 
 	// The threshold in m/s at which the algorithm switches from 
 	// using the normalSpinDamping to the collisionSpinDamping. 	
-	velocityDamper.m_collisionThreshold = 100.0f;
+	velocityDamper.m_collisionThreshold = 1.0f;
 }
 
 void VehicleSetup::setupWheelCollide(const hkpWorld* world, const hkpVehicleInstance& vehicle, hkpVehicleRayCastWheelCollide& wheelCollide)

@@ -61,6 +61,11 @@ public:
 		m_EntityProperties[entity][property] = value;
 	}
 
+	void SetProperty(EntityID entity, std::string property, char* value)
+	{
+		m_EntityProperties[entity][property] = std::string(value);
+	}
+
 	template <class T>
 	std::shared_ptr<T> AddComponent(EntityID entity, std::string componentType);
 	std::shared_ptr<Component> AddComponent(EntityID entity, std::string componentType);

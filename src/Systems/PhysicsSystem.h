@@ -12,6 +12,7 @@
 #include "Components/MeshShape.h"
 #include "Components/HingeConstraint.h"
 #include "Components/WheelPair.h"
+#include "Components/TowerSteering.h"
 #include "Events/TankSteer.h"
 #include "OBJ.h"
 

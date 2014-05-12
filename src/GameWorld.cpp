@@ -8,11 +8,25 @@ void GameWorld::Initialize()
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
-	BindKey(GLFW_KEY_W, "+forward");
-	BindKey(GLFW_KEY_S, "+backward");
-	BindKey(GLFW_KEY_A, "+left");
-	BindKey(GLFW_KEY_D, "+right");
-	BindKey(GLFW_KEY_SPACE, "+handbrake");
+	BindKey(GLFW_KEY_W, "vertical", -1.f);
+	BindKey(GLFW_KEY_S, "vertical", 1.f);
+	BindKey(GLFW_KEY_A, "horizontal", -1.f);
+	BindKey(GLFW_KEY_D, "horizontal", 1.f);
+	
+	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
+	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
+	BindKey(GLFW_KEY_LEFT, "tower_rotation", 1.f);
+	BindKey(GLFW_KEY_RIGHT, "tower_rotation", -1.f);
+	
+	BindKey(GLFW_KEY_SPACE, "handbrake", 1.f);
+// 
+// BindKey(GLFW_KEY_UP, "vertical", -1.f);
+// BindKey(GLFW_KEY_DOWN, "vertical", 1.f);
+// BindKey(GLFW_KEY_LEFT, "horizontal", -1.f);
+// BindKey(GLFW_KEY_RIGHT, "horizontal", 1.f);
+	/*
+	BindKey(GLFW_KEY_Q, "+tower_right");
+	BindKey(GLFW_KEY_E, "+tower_left");
 
 	BindKey(GLFW_KEY_Q, "+up");
 	BindKey(GLFW_KEY_LEFT_CONTROL, "+down");
@@ -25,8 +39,8 @@ void GameWorld::Initialize()
 
 	BindKey(GLFW_KEY_UP, "+cam_forward");
 	BindKey(GLFW_KEY_DOWN, "+cam_backward");
-	BindKey(GLFW_KEY_LEFT, "+cam_right");
-	BindKey(GLFW_KEY_RIGHT, "+cam_left");
+	BindKey(GLFW_KEY_LEFT, "+cam_left");
+	BindKey(GLFW_KEY_RIGHT, "+cam_right");*/
 
 	RegisterComponents();
 
@@ -242,23 +256,29 @@ void GameWorld::Initialize()
 		{
 			auto chassis = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(chassis, "Transform");
-			transform->Position = glm::vec3(0, 0, 0); // 0.6577f
+			transform->Position = glm::vec3(0, 0, 0);
 			auto model = AddComponent<Components::Model>(chassis, "Model");
 			model->ModelFile = "Models/Tank/Fix/Chassi.obj";
 		}
 		{
-			auto top = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(top, "Transform");
-			transform->Position = glm::vec3(0, 1.2, 1.95); // 0.6577f
-			auto model = AddComponent<Components::Model>(top, "Model");
+			auto tower = CreateEntity(tank);
+			SetProperty(tower, "Name", "tower");
+			auto transform = AddComponent<Components::Transform>(tower, "Transform");
+			transform->Position = glm::vec3(0, 1.2, 1.95);
+			auto model = AddComponent<Components::Model>(tower, "Model");
 			model->ModelFile = "Models/Tank/Fix/Top.obj";
-
+			auto towerSteering = AddComponent<Components::TowerSteering>(tower, "TowerSteering");
+			towerSteering->Axis = glm::vec3(0.f, 1.f, 0.f);
+			towerSteering->Velocity = glm::pi<float>()/4.f;
 			{
-				auto top = CreateEntity(tank);
-				auto transform = AddComponent<Components::Transform>(top, "Transform");
-				transform->Position = glm::vec3(0, 1, 0.5); // 0.6577f
-				auto model = AddComponent<Components::Model>(top, "Model");
+				auto barrel = CreateEntity(tower);
+				auto transform = AddComponent<Components::Transform>(barrel, "Transform");
+				transform->Position = glm::vec3(0, 0, -2.f);
+				auto model = AddComponent<Components::Model>(barrel, "Model");
 				model->ModelFile = "Models/Tank/Fix/Barrel.obj";
+				auto barrelSteering = AddComponent<Components::BarrelSteering>(barrel, "BarrelSteering");
+				barrelSteering->Axis = glm::vec3(1.f, 0.f, 0.f);
+				barrelSteering->Velocity = glm::pi<float>()/4.f;
 			}
 		}
 
@@ -297,7 +317,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -316,7 +336,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -336,7 +356,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -355,7 +375,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -376,7 +396,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -394,7 +414,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -414,7 +434,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -432,7 +452,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 3.f;
+			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
@@ -573,11 +593,12 @@ void GameWorld::AddSystems()
 	AddSystem("RenderSystem");
 }
 
-void GameWorld::BindKey(int keyCode, std::string command)
+void GameWorld::BindKey(int keyCode, std::string command, float value)
 {
 	Events::BindKey e;
 	e.KeyCode = keyCode;
 	e.Command = command;
+	e.Value = value;
 	m_EventBroker->Publish(e);
 }
 

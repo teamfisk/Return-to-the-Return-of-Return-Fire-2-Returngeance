@@ -322,6 +322,12 @@
     <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h">
       <Filter>Physics\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\TowerSteering.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\BarrelSteering.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

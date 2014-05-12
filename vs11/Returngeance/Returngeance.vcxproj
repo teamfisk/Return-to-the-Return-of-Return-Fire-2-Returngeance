@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\src\Camera.h" />
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
+    <ClInclude Include="..\..\src\Components\BarrelSteering.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
@@ -141,6 +142,7 @@
     <ClInclude Include="..\..\src\Components\Sprite.h" />
     <ClInclude Include="..\..\src\Components\TankSteering.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
+    <ClInclude Include="..\..\src\Components\TowerSteering.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />

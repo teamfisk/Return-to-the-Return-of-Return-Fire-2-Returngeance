@@ -3,6 +3,7 @@
 
 #include <array>
 #include <unordered_map>
+#include <boost/any.hpp>
 
 #include "System.h"
 #include "Components/Input.h"
@@ -30,7 +31,8 @@ public:
 
 private:
 	// Input binding tables
-	std::unordered_map<int, std::string> m_KeyBindings; // GLFW_KEY... -> command string
+	std::unordered_map<int, std::tuple<std::string, float>> m_KeyBindings; // GLFW_KEY... -> command string & value
+	std::unordered_map<std::string, float> m_KeyBindingValues; // command string -> command value
 	std::unordered_map<int, std::string> m_MouseButtonBindings; // GLFW_MOUSE_BUTTON... -> command string
 
 	// Input events
@@ -48,7 +50,7 @@ private:
 	EventRelay<Events::BindMouseButton> m_EBindMouseButton;
 	bool OnBindMouseButton(const Events::BindMouseButton &event);
 
-	void PublishCommand(int playerID, std::string command, float value, bool release = false);
+	void PublishCommand(int playerID, std::string command, float value);
 };
 
 }

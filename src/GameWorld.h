@@ -34,6 +34,10 @@
 #include "Components/Vehicle.h"
 #include "Components/Wheel.h"
 #include "Components/HingeConstraint.h"
+#include "Components/TankSteering.h"
+#include "Components/TowerSteering.h"
+#include "Components/BarrelSteering.h"
+
 
 class GameWorld : public World
 {
@@ -52,7 +56,7 @@ public:
 private:
 	std::shared_ptr<Renderer> m_Renderer;
 
-	void BindKey(int keyCode, std::string command);
+	void BindKey(int keyCode, std::string command, float value);
 	void BindMouseButton(int button, std::string command);
 };
 

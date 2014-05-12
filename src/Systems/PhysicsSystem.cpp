@@ -31,7 +31,7 @@ void Systems::PhysicsSystem::Initialize()
 
 	// Events
 	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnTankSteer);
-	
+
 	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
 	hkBaseSystem::init(memoryRouter, HavokErrorReport);
@@ -115,7 +115,6 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("MeshShape", []() { return new Components::MeshShape(); });
 	cf->Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
 	cf->Register("WheelPair", []() { return new Components::WheelPair(); });
-	
 }
 
 void Systems::PhysicsSystem::Update(double dt)
@@ -550,7 +549,9 @@ glm::quat Systems::PhysicsSystem::ConvertRotation(const hkQuaternion &hkRotation
 
 const hkQuaternion& Systems::PhysicsSystem::ConvertRotation(glm::quat glmRotation)
 {
-	return hkQuaternion(glmRotation.x, glmRotation.y, glmRotation.z, glmRotation.w);
+	hkQuaternion quat = hkQuaternion(glmRotation.x, glmRotation.y, glmRotation.z, glmRotation.w);
+	quat.normalize();
+	return quat;
 }
 
 glm::vec3 Systems::PhysicsSystem::ConvertScale(const hkVector4 &hkScale)
@@ -566,8 +567,7 @@ const hkVector4& Systems::PhysicsSystem::ConvertScale(glm::vec3 glmScale)
 bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 {
 	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity, "Vehicle");
-	auto inputComponent = m_World->GetComponent<Components::Input>(event.Entity, "Input");
-	if (vehicleComponent && inputComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
 		m_PhysicsWorld->markForWrite();
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
@@ -579,4 +579,3 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 
 	return true;
 }
-

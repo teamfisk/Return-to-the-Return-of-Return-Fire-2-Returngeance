@@ -44,7 +44,11 @@ bool Systems::InputSystem::OnKeyDown(const Events::KeyDown &event)
 	auto bindingIt = m_KeyBindings.find(event.KeyCode);
 	if (bindingIt != m_KeyBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, 1.f, false);
+		std::string command;
+		float value;
+		std::tie(command, value) = bindingIt->second;
+		m_KeyBindingValues[command] += value;
+		PublishCommand(0, command, std::max(-1.f, std::min(m_KeyBindingValues[command], 1.f)));
 	}
 
 	return true;
@@ -55,7 +59,11 @@ bool Systems::InputSystem::OnKeyUp(const Events::KeyUp &event)
 	auto bindingIt = m_KeyBindings.find(event.KeyCode);
 	if (bindingIt != m_KeyBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, 1.f, true);
+		std::string command;
+		float value;
+		std::tie(command, value) = bindingIt->second;
+		m_KeyBindingValues[command] -= value;
+		PublishCommand(0, command, std::max(-1.f, std::min(m_KeyBindingValues[command], 1.f)));
 	}
 
 	return true;
@@ -66,7 +74,7 @@ bool Systems::InputSystem::OnMousePress(const Events::MousePress &event)
 	auto bindingIt = m_MouseButtonBindings.find(event.Button);
 	if (bindingIt != m_MouseButtonBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, 1.f, false);
+		PublishCommand(0, bindingIt->second, 1.f);
 	}
 
 	return true;
@@ -77,7 +85,7 @@ bool Systems::InputSystem::OnMouseRelease(const Events::MouseRelease &event)
 	auto bindingIt = m_MouseButtonBindings.find(event.Button);
 	if (bindingIt != m_MouseButtonBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, 1.f, true);
+		PublishCommand(0, bindingIt->second, 1.f);
 	}
 
 	return true;
@@ -91,7 +99,7 @@ bool Systems::InputSystem::OnBindKey(const Events::BindKey &event)
 	}
 	else
 	{
-		m_KeyBindings[event.KeyCode] = event.Command;
+		m_KeyBindings[event.KeyCode] = std::make_tuple(event.Command, event.Value);
 		LOG_DEBUG("Input: Bound key %c to %s", (char)event.KeyCode, event.Command.c_str());
 	}
 
@@ -113,18 +121,13 @@ bool Systems::InputSystem::OnBindMouseButton(const Events::BindMouseButton &even
 	return true;
 }
 
-void Systems::InputSystem::PublishCommand(int playerID, std::string command, float value, bool release /*= false*/)
+void Systems::InputSystem::PublishCommand(int playerID, std::string command, float value)
 {
-	if (release && command.at(0) == '+')
-	{
-		command[0] = '-';
-	}
-
 	Events::InputCommand e;
 	e.PlayerID = playerID;
 	e.Command = command;
 	e.Value = value;
 	EventBroker->Publish(e);
 
-	LOG_DEBUG("Input: Published command %s for player %i", e.Command.c_str(), playerID);
+	LOG_DEBUG("Input: Published command %s=%f for player %i", e.Command.c_str(), e.Value, playerID);
 }

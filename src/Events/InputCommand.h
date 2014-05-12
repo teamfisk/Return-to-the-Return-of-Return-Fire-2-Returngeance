@@ -12,7 +12,7 @@ struct InputCommand : Event
 {
 	unsigned int PlayerID;
 	std::string Command;
-	boost::any Value;
+	float Value;
 };
 
 }
