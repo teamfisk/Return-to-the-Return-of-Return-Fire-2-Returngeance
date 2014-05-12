@@ -105,6 +105,7 @@ private:
 	GLuint m_fBlendTexture;
 	GLuint m_fbLightingPass;
 	GLuint m_fLightingTexture;
+	GLuint m_fShadowTexture;
 
 	GLuint m_fDepthBuffer;
 	GLenum draw_bufs[2];

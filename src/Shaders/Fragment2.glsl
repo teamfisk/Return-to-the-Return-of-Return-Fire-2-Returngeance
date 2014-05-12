@@ -23,8 +23,6 @@ const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
 
-
-
 in VertexData
 {
 	vec3 Position;
@@ -72,7 +70,6 @@ vec4 phong(vec3 position, vec3 normal)
 	//float radius = 5.0;
 	//float alpha = dist / radius;
 	//float dampingFactor = 1.0 - pow(alpha, 3);
-
 
 	return vec4((Id + Is) * attenuation, 1.0);
 }

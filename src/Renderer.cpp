@@ -13,7 +13,10 @@ Renderer::Renderer()
 	m_DrawWireframe = false;
 	m_DrawBounds = false;
 #endif
-
+	Gamma = 2.2f;
+	CAtt = 1.0f;
+	LAtt = 0.0f;
+	QAtt = 3.0f;
 	m_ShadowMapRes = 2048;
 	m_SunPosition = glm::vec3(0, 3.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
@@ -89,12 +92,7 @@ void Renderer::LoadContent()
 	m_ShaderProgramNormals.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Normals.frag.glsl")));
 	m_ShaderProgramNormals.Compile();
 	m_ShaderProgramNormals.Link();
-
-	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ShadowMap.vert.glsl")));
-	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ShadowMap.frag.glsl")));
-	m_ShaderProgramShadows.Compile();
-	m_ShaderProgramShadows.Link();
-
+	
 	m_ShaderProgramShadowsDrawDepth.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/VisualizeDepth.vert.glsl")));
 	m_ShaderProgramShadowsDrawDepth.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/VisualizeDepth.frag.glsl")));
 	m_ShaderProgramShadowsDrawDepth.Compile();
@@ -110,9 +108,15 @@ void Renderer::LoadContent()
 	m_ShaderProgramSkybox.Compile();
 	m_ShaderProgramSkybox.Link();*/
 
+	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ShadowMap.vert.glsl")));
+	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ShadowMap.frag.glsl")));
+	m_ShaderProgramShadows.Compile();
+	m_ShaderProgramShadows.Link();
+
 	m_FirstPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex.glsl")));
 	m_FirstPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment.glsl")));
 	m_FirstPassProgram.Compile();
+
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 0, "frag_Diffuse");
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 1, "frag_Position");
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 2, "frag_Normal");
@@ -132,12 +136,8 @@ void Renderer::LoadContent()
 	m_FinalPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/FinalPass.frag.glsl")));
 	m_FinalPassProgram.Compile();
 	m_FinalPassProgram.Link();
-	Gamma = 2.2f;
-	CAtt = 1.0f;
-	LAtt = 0.0f;
-	QAtt = 3.0f;
 	m_ScreenQuad = CreateQuad();
-
+	CreateShadowMap(m_ShadowMapRes);
 	FrameBufferTextures();
 }
 
@@ -226,6 +226,32 @@ void Renderer::DrawSkybox()
 	m_Skybox->Draw();
 }
 
+void Renderer::CreateShadowMap(int resolution)
+{
+	glGenFramebuffers(1, &m_ShadowFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
+
+	// Depth texture
+	glGenTextures(1, &m_ShadowDepthTexture);
+	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, resolution, resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+	//glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY );
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_ShadowDepthTexture, 0);
+	glDrawBuffer(GL_NONE);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		LOG_ERROR("Framebuffer incomplete!");
+		return;
+	}
+}
+
 void Renderer::DrawShadowMap()
 {
 	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
@@ -239,14 +265,9 @@ void Renderer::DrawShadowMap()
 	glClear(GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-
 	//Creates the "camera" for the shadowmap from the direction of the sun.
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(-m_Camera->Position() * glm::vec3(1, 0, 0));
-//	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
-
-	//glm::mat4 cameraMatrix = depthProjectionMatrix * m_Camera->ViewMatrix();
-
 	glm::mat4 MVP;
 
 	m_ShaderProgramShadows.Bind();
@@ -271,6 +292,7 @@ void Renderer::DrawShadowMap()
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
+
 }
 
 void Renderer::DrawDebugShadowMap()
@@ -529,6 +551,14 @@ void Renderer::FrameBufferTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	/*glGenTextures(1, &m_fShadowTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fShadowTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
+
 	//Bind fb
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_fDepthBuffer);
@@ -537,11 +567,12 @@ void Renderer::FrameBufferTextures()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fDiffuseTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_fPositionTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_fNormalsTexture, 0);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fShadowTexture, 0);
 
 	GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
 	{
-		LOG_ERROR("DeferredLighting:Init: FrameBuffer incomplete: 0x%x\n", fbStatus);
+		LOG_ERROR("DeferredLighting:Init: m_fbBasePass incomplete: 0x%x\n", fbStatus);
 		//exit(1);
 	}
 
@@ -562,15 +593,18 @@ void Renderer::FrameBufferTextures()
 	fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
 	{
-		LOG_ERROR("DeferredLighting:Init: FrameBuffer incomplete: 0x%x\n", fbStatus);
+		LOG_ERROR("DeferredLighting:Init: m_fbLightingPass incomplete: 0x%x\n", fbStatus);
 		//exit(1);
 	}
+
 
 
 }
 
 void Renderer::DrawFBO()
 {
+	DrawShadowMap();
+
 	/*
 		Base pass
 	*/
@@ -586,8 +620,10 @@ void Renderer::DrawFBO()
 	m_FirstPassProgram.Bind();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque);
-	
+
 	glCullFace(GL_BACK);
+
+	glViewport(0, 0, WIDTH, HEIGHT);
 	DrawFBOScene();
 
 	/*
@@ -617,7 +653,7 @@ void Renderer::DrawFBO()
 
 	m_FinalPassProgram.Bind();
 
-	// Ambient light
+	// Ambient light & Shadow Matrix
 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.1f, 0.1f, 0.1f)));
 	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
@@ -634,8 +670,27 @@ void Renderer::DrawFBO()
 
 void Renderer::DrawFBOScene()
 {	
+	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
+	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
+	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draws filled polygons
+
 	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
 	glm::mat4 MVP;
+	glm::mat4 biasMatrix(
+		0.5, 0.0, 0.0, 0.0,
+		0.0, 0.5, 0.0, 0.0,
+		0.0, 0.0, 0.5, 0.0,
+		0.5, 0.5, 0.5, 1.0
+		);
+
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
+	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
+	glm::mat4 depthCameraMatrix = biasMatrix * depthCamera;
+	glm::mat4 depthMVP;
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
 
 	for (auto tuple : ModelsToRender)
 	{
@@ -645,9 +700,11 @@ void Renderer::DrawFBOScene()
 		std::tie(model, modelMatrix, visible, std::ignore) = tuple;
 		if (!visible)
 			continue;
-
+		
 		MVP = cameraMatrix * modelMatrix;
+		depthMVP = depthCameraMatrix * modelMatrix;
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
@@ -690,13 +747,12 @@ void Renderer::DrawLightScene()
 		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), 1, glm::value_ptr(light.Position));
 		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "specularExponent"), light.SpecularExponent);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), light.ConstantAttenuation);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), light.LinearAttenuation);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), light.QuadraticAttenuation);
-
-// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), CAtt);
-// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
-// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
+// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), light.ConstantAttenuation);
+// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), light.LinearAttenuation);
+// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), light.QuadraticAttenuation);
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), CAtt);
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
 
  		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
@@ -712,12 +768,12 @@ void Renderer::SetSphereModel( Model* _model )
 
 glm::mat4 Renderer::CreateLightMatrix(Light &_light)
 {
-	float c = _light.ConstantAttenuation;
-	float l = _light.LinearAttenuation;
-	float q = _light.QuadraticAttenuation;
-// 	float c = CAtt;
-// 	float l = LAtt;
-// 	float q = QAtt;
+// 	float c = _light.ConstantAttenuation;
+// 	float l = _light.LinearAttenuation;
+// 	float q = _light.QuadraticAttenuation;
+	float c = CAtt;
+	float l = LAtt;
+	float q = QAtt;
 	float cutOffRadius = abs(sqrt((-4*c*q) + pow(l, 2) + (1024*q) - l) / (2*q));
 
 	glm::mat4 model;
