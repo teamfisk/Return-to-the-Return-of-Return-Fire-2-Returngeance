@@ -2,11 +2,14 @@
 
 #include "System.h"
 #include "Events/TankSteer.h"
+#include "Events/SetVelocity.h"
 #include "Components/Transform.h"
 #include "Components/TankSteering.h"
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
 #include "Components/Vehicle.h"
+#include "Components/Shot.h"
+#include "Systems/TransformSystem.h"
 #include "InputController.h"
 
 namespace Systems
@@ -67,10 +70,13 @@ namespace Systems
 			m_BarrelDirection = 0.f;
 			TowerDirection = 0.f;
 			BarrelDirection = 0.f;
+
+			m_Shoot = false;
 		}
 
 		float TowerDirection;
 		float BarrelDirection;
+		bool shoot;
 		void Update(double dt);
 	protected:
 		virtual bool OnCommand(const Events::InputCommand &event);
@@ -78,7 +84,8 @@ namespace Systems
 
 	private:
 	 float m_TowerDirection;
-	float m_BarrelDirection;
+	 float m_BarrelDirection;
+	 bool m_Shoot;
 	};
 
 }

@@ -10,9 +10,9 @@ namespace Components
 	{
 		BarrelSteering()
 			: Velocity(1.f), Axis(glm::vec3(0,1,0)){ }
-
 		float Velocity;
 		glm::vec3 Axis;
+		EntityID ShotTemplate;
 	};
 
 }

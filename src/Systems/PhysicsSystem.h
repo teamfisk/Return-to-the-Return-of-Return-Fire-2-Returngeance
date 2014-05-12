@@ -14,6 +14,7 @@
 #include "Components/WheelPair.h"
 #include "Components/TowerSteering.h"
 #include "Events/TankSteer.h"
+#include "Events/SetVelocity.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -84,6 +85,9 @@ private:
 	// Events
 	EventRelay<Events::TankSteer> m_ETankSteer;
 	bool OnTankSteer(const Events::TankSteer &event);
+
+	EventRelay<Events::SetVelocity> m_ESetVelocity;
+	bool OnSetVelocity(const Events::SetVelocity &event);
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);

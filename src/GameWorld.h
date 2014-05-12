@@ -37,7 +37,7 @@
 #include "Components/TankSteering.h"
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
-
+#include "Components/Shot.h"
 
 class GameWorld : public World
 {

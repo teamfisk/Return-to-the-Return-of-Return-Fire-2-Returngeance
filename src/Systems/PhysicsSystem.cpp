@@ -31,6 +31,7 @@ void Systems::PhysicsSystem::Initialize()
 
 	// Events
 	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnTankSteer);
+	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnSetVelocity);
 
 	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
@@ -578,4 +579,9 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 	}
 
 	return true;
+}
+
+bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
+{
+	
 }

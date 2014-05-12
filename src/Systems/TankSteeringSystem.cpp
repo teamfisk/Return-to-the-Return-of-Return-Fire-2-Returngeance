@@ -49,6 +49,19 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->Velocity * m_TowerInputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 	}
+
+	auto shotComponent = m_World->GetComponent<Components::Shot>(entity, "Shot");
+	if(shotComponent)
+	{
+		if(m_TowerInputController->shoot)
+		{
+			auto absoluteOrientation = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteOrientation(entity);
+			Events::SetVelocity e;
+			e.Entity = entity;
+			e.Velocity = absoluteOrientation * (glm::vec3(0.f, 0.f, 1.f) * shotComponent->Speed * (float)dt);
+			EventBroker->Publish(e);
+		}
+	}
 }
 
 void Systems::TankSteeringSystem::TankSteeringInputController::Update( double dt )
@@ -61,6 +74,7 @@ void Systems::TankSteeringSystem::TowerSteeringInputController::Update( double d
 {
 	TowerDirection = m_TowerDirection;
 	BarrelDirection = m_BarrelDirection;
+	shoot = m_Shoot;
 }
 
 bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const Events::InputCommand &event)
@@ -93,6 +107,11 @@ bool Systems::TankSteeringSystem::TowerSteeringInputController::OnCommand( const
 	else if(event.Command == "barrel_rotation")
 	{
 		m_BarrelDirection = val;
+	}
+
+	else if (event.Command == "shoot")
+	{
+		shoot = (bool)val;
 	}
 	return true;
 }
