@@ -8,17 +8,38 @@ void GameWorld::Initialize()
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
-	BindKey(GLFW_KEY_W, "vertical", -1.f);
-	BindKey(GLFW_KEY_S, "vertical", 1.f);
+	BindKey(GLFW_KEY_W, "vertical", 1.f);
+	BindKey(GLFW_KEY_S, "vertical", -1.f);
 	BindKey(GLFW_KEY_A, "horizontal", -1.f);
 	BindKey(GLFW_KEY_D, "horizontal", 1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftX, "horizontal", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightTrigger, "vertical", 1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "vertical", -1.f);
 	
 	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
 	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
-	BindKey(GLFW_KEY_LEFT, "tower_rotation", 1.f);
-	BindKey(GLFW_KEY_RIGHT, "tower_rotation", -1.f);
+	BindKey(GLFW_KEY_LEFT, "tower_rotation", -1.f);
+	BindKey(GLFW_KEY_RIGHT, "tower_rotation", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightX, "tower_rotation", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightY, "barrel_rotation", 1.f);
 	
 	BindKey(GLFW_KEY_SPACE, "handbrake", 1.f);
+	BindGamepadButton(Gamepad::Button::A, "handbrake", 1.f);
+
+	//BindGamepadButton(Gamepad::Button::Up, "Gamepad::Button::Up", 1.f);
+	//BindGamepadButton(Gamepad::Button::Down, "Gamepad::Button::Down", 1.f);
+	//BindGamepadButton(Gamepad::Button::Left, "Gamepad::Button::Left", 1.f);
+	//BindGamepadButton(Gamepad::Button::Right, "Gamepad::Button::Right", 1.f);
+	//BindGamepadButton(Gamepad::Button::Start, "Gamepad::Button::Start", 1.f);
+	//BindGamepadButton(Gamepad::Button::Back, "Gamepad::Button::Back", 1.f);
+	//BindGamepadButton(Gamepad::Button::LeftThumb, "Gamepad::Button::LeftThumb", 1.f);
+	//BindGamepadButton(Gamepad::Button::RightThumb, "Gamepad::Button::RightThumb", 1.f);
+	//BindGamepadButton(Gamepad::Button::LeftShoulder, "Gamepad::Button::LeftShoulder", 1.f);
+	//BindGamepadButton(Gamepad::Button::RightShoulder, "Gamepad::Button::RightShoulder", 1.f);
+	//BindGamepadButton(Gamepad::Button::A, "Gamepad::Button::A", 1.f);
+	//BindGamepadButton(Gamepad::Button::B, "Gamepad::Button::B", 1.f);
+	//BindGamepadButton(Gamepad::Button::X, "Gamepad::Button::X", 1.f);
+	//BindGamepadButton(Gamepad::Button::Y, "Gamepad::Button::Y", 1.f);
 // 
 // BindKey(GLFW_KEY_UP, "vertical", -1.f);
 // BindKey(GLFW_KEY_DOWN, "vertical", 1.f);
@@ -607,5 +628,23 @@ void GameWorld::BindMouseButton(int button, std::string command)
 	Events::BindMouseButton e;
 	e.Button = button;
 	e.Command = command;
+	m_EventBroker->Publish(e);
+}
+
+void GameWorld::BindGamepadAxis(Gamepad::Axis axis, std::string command, float value)
+{
+	Events::BindGamepadAxis e;
+	e.Axis = axis;
+	e.Command = command;
+	e.Value = value;
+	m_EventBroker->Publish(e);
+}
+
+void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, float value)
+{
+	Events::BindGamepadButton e;
+	e.Button = button;
+	e.Command = command;
+	e.Value = value;
 	m_EventBroker->Publish(e);
 }

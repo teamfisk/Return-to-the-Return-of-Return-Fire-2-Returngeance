@@ -72,12 +72,12 @@ bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const E
 	}
 	else if (event.Command == "vertical")
 	{
-		m_Vertical = val;
+		m_Vertical = -val;
 	}
 	
 	else if (event.Command == "handbrake")
 	{
-		Handbrake = val;
+		Handbrake = val > 0;
 	}
 
 	return true;
@@ -88,7 +88,7 @@ bool Systems::TankSteeringSystem::TowerSteeringInputController::OnCommand( const
 	float val = event.Value;
 	if(event.Command == "tower_rotation")
 	{
-		m_TowerDirection = val;
+		m_TowerDirection = -val;
 	}
 	else if(event.Command == "barrel_rotation")
 	{
