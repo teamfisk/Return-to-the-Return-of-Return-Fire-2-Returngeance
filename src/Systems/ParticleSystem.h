@@ -2,6 +2,7 @@
 #define ParticleSystem_h__
 
 #include "System.h"
+#include "Systems/TransformSystem.h"
 #include "Components/Transform.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
@@ -25,10 +26,13 @@ namespace Systems
 class ParticleSystem : public System
 {
 public:
-	ParticleSystem(World* world);
+	ParticleSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
+		: System(world, eventBroker) { }
+
 	void RegisterComponents(ComponentFactory* cf) override;
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
+	void Initialize() override;
 private:
 	void SpawnParticles(EntityID emitterID);
 	float RandomizeAngle(float spreadAngle);
@@ -39,6 +43,7 @@ private:
 	void Billboard();
 	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
 	std::map<EntityID, double> m_TimeSinceLastSpawn;
+	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 
 	
 };

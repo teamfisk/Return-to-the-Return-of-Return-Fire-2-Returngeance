@@ -436,6 +436,31 @@ void GameWorld::Initialize()
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
+
+			auto entity = CreateEntity(wheel);
+			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
+			/*transformComponent->Position = glm::vec3(0,3,0);*/
+			transformComponent->Scale = glm::vec3(3,3,3);
+			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
+			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
+			emitterComponent->SpawnCount = 2;
+			emitterComponent->SpawnFrequency = 0.01;
+			emitterComponent->SpreadAngle = glm::pi<float>()/4;
+			emitterComponent->UseGoalVelocity = false;
+			emitterComponent->LifeTime = 2.0;
+			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.1));
+			auto modelComponent = AddComponent<Components::Model>(entity, "Model");
+			modelComponent->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+			CommitEntity(entity);
+
+			auto particleEntity = CreateEntity(entity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			emitterComponent->ParticleTemplate = particleEntity;
+
+			CommitEntity(particleEntity);
 		}
 
 		CommitEntity(tank);
@@ -528,6 +553,10 @@ void GameWorld::Initialize()
 		GetSystem<Systems::SoundSystem>("SoundSystem")->PlaySound(emitter);
 		CommitEntity(entity);
 	}*/
+
+	{
+		
+	}
 }
 
 void GameWorld::Update(double dt)
@@ -548,7 +577,7 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_EventBroker); });
 	m_SystemFactory.Register("DebugSystem", [this]() { return new Systems::DebugSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
-	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
+	m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
 	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this, m_EventBroker); });
 	m_SystemFactory.Register("TankSteeringSystem", [this]() { return new Systems::TankSteeringSystem(this, m_EventBroker); });
@@ -564,7 +593,7 @@ void GameWorld::AddSystems()
 	AddSystem("InputSystem");
 	AddSystem("DebugSystem");
 	//AddSystem("CollisionSystem");
-	////AddSystem("ParticleSystem");
+	AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
 	AddSystem("FreeSteeringSystem");
 	AddSystem("TankSteeringSystem");

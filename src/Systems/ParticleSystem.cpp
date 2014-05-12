@@ -4,6 +4,11 @@
 
 #include "World.h"
 
+void Systems::ParticleSystem::Initialize()
+{
+	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>("TransformSystem");
+}
+
 void Systems::ParticleSystem::Update(double dt)
 {
 	
@@ -19,15 +24,12 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 	if(emitterComponent)
 	{
 		emitterComponent->TimeSinceLastSpawn += dt;
-		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto emitterTransformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
 		if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
 		{
 			SpawnParticles(entity);
 			emitterComponent->TimeSinceLastSpawn = 0;
 		}
-
-
-
 
 		std::list<ParticleData>::iterator it;
 		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end();)
@@ -82,7 +84,7 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 				}
 				
 				
-				transformComponent->Position +=  transformComponent->Velocity * (float)dt;
+				transformComponent->Position += transformComponent->Velocity * (float)dt;
 
 				it++;
 			}
@@ -101,6 +103,7 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 {
 	auto emitterComponent = m_World->GetComponent<Components::ParticleEmitter>(emitterID, "ParticleEmitter");
 	auto emitterTransform = m_World->GetComponent<Components::Transform>(emitterID, "Transform");
+	glm::vec3 emitterPos = m_TransformSystem->AbsolutePosition(emitterID);
 	glm::quat emitterOrientation = emitterTransform->Orientation;
 
 	float tempSpeed =  4;
@@ -111,7 +114,7 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 		auto ent = m_World->CloneEntity(emitterComponent->ParticleTemplate);
 
 		auto particleTransform = m_World->GetComponent<Components::Transform>(ent, "Transform");
-		particleTransform->Position = emitterTransform->Position;
+		particleTransform->Position = emitterPos;
 
 		particleTransform->Orientation = emitterOrientation;
 		//The emitter's orientation as "start value" times the default direction for emitter. Times the speed, and then rotate on x and y axis with the randomized spread angle. 
