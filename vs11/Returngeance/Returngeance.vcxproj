@@ -115,6 +115,7 @@
     <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\RenderSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\SoundSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\World.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
     <ClInclude Include="..\..\src\Components\SphereShape.h" />
     <ClInclude Include="..\..\src\Components\Sprite.h" />
+    <ClInclude Include="..\..\src\Components\TankSteering.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
@@ -155,6 +157,7 @@
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
+    <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
@@ -179,6 +182,7 @@
     <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\src\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\src\Systems\SoundSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />

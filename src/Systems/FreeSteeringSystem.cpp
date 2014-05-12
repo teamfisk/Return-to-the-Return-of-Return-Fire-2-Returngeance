@@ -38,35 +38,35 @@ void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const Events::InputCommand &event)
 {
 	// Movement
-	if (event.Command == "+forward")
+	if (event.Command == "+cam_forward")
 	{
 		Movement.z += -1.f;
 	}
-	else if (event.Command == "-forward")
+	else if (event.Command == "-cam_forward")
 	{
 		Movement.z -= -1.f;
 	}
-	else if (event.Command == "+backward")
+	else if (event.Command == "+cam_backward")
 	{
 		Movement.z += 1.f;
 	}
-	else if (event.Command == "-backward")
+	else if (event.Command == "-cam_backward")
 	{
 		Movement.z -= 1.f;
 	}
-	else if (event.Command == "+right")
+	else if (event.Command == "+cam_right")
 	{
 		Movement.x += 1.f;
 	}
-	else if (event.Command == "-right")
+	else if (event.Command == "-cam_right")
 	{
 		Movement.x -= 1.f;
 	}
-	else if (event.Command == "+left")
+	else if (event.Command == "+cam_left")
 	{
 		Movement.x += -1.f;
 	}
-	else if (event.Command == "-left")
+	else if (event.Command == "-cam_left")
 	{
 		Movement.x -= -1.f;
 	}

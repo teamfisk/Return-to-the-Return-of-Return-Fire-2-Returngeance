@@ -12,13 +12,21 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_S, "+backward");
 	BindKey(GLFW_KEY_A, "+left");
 	BindKey(GLFW_KEY_D, "+right");
-	BindKey(GLFW_KEY_SPACE, "+up");
+	BindKey(GLFW_KEY_SPACE, "+handbrake");
+
+	BindKey(GLFW_KEY_Q, "+up");
 	BindKey(GLFW_KEY_LEFT_CONTROL, "+down");
 	BindKey(GLFW_KEY_LEFT_ALT, "+slow");
 	BindKey(GLFW_KEY_LEFT_SHIFT, "+fast");
 	BindMouseButton(GLFW_MOUSE_BUTTON_1, "+attack");
 	BindMouseButton(GLFW_MOUSE_BUTTON_2, "+attack2");
 	BindMouseButton(GLFW_MOUSE_BUTTON_3, "+attack3");
+
+
+	BindKey(GLFW_KEY_UP, "+cam_forward");
+	BindKey(GLFW_KEY_DOWN, "+cam_backward");
+	BindKey(GLFW_KEY_LEFT, "+cam_right");
+	BindKey(GLFW_KEY_RIGHT, "+cam_left");
 
 	RegisterComponents();
 
@@ -214,7 +222,7 @@ void GameWorld::Initialize()
 		physics->Static = false;
 		auto vehicle = AddComponent<Components::Vehicle>(tank, "Vehicle");
 		vehicle->MaxTorque = 5200.f;
-
+		AddComponent<Components::TankSteering>(tank, "TankSteering");
 		AddComponent<Components::Input>(tank, "Input");
 
 		{
@@ -542,11 +550,11 @@ void GameWorld::RegisterSystems()
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
 	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
-	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this); });
-	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
-	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this); });
-	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_Renderer); });
 	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("TankSteeringSystem", [this]() { return new Systems::TankSteeringSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_EventBroker, m_Renderer); });
 }
 
 void GameWorld::AddSystems()
@@ -559,6 +567,7 @@ void GameWorld::AddSystems()
 	////AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
 	AddSystem("FreeSteeringSystem");
+	AddSystem("TankSteeringSystem");
 	AddSystem("SoundSystem");
 	AddSystem("PhysicsSystem");
 	AddSystem("RenderSystem");

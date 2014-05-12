@@ -28,6 +28,9 @@
 void Systems::PhysicsSystem::Initialize()
 {
 	m_Accumulator = 0;
+
+	// Events
+	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnTankSteer);
 	
 	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
@@ -219,73 +222,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		}
 	}
 
-	// HACK: Vehicle test-controls
-	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(entity, "Vehicle");
-	auto inputComponent = m_World->GetComponent<Components::Input>(entity, "Input");
-	if (vehicleComponent && inputComponent && m_Vehicles.find(entity) != m_Vehicles.end() && m_RigidBodies.find(entity) != m_RigidBodies.end())
-	{
-		m_PhysicsWorld->markForWrite();
-		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[entity]->m_deviceStatus;
-		
-		if(inputComponent->KeyState[GLFW_KEY_UP] != 0)
-		{
-			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_UP] * -1 * 1.f * dt;
-		}
-		else if (inputComponent->KeyState[GLFW_KEY_DOWN] != 0)
-		{
-			deviceStatus->m_positionY += inputComponent->KeyState[GLFW_KEY_DOWN] * 1 * 1.f * dt;
-			deviceStatus->m_reverseButtonPressed = true;
-		}
-		else
-		{
-			deviceStatus->m_positionY = 0;
-		}
-
-		if(deviceStatus->m_positionY > 1)
-			deviceStatus->m_positionY = 1;
-		else if(deviceStatus->m_positionY < -1)
-			deviceStatus->m_positionY = -1;
-
-		float turningSpeed = 3.f;
-
-		if(inputComponent->KeyState[GLFW_KEY_LEFT] != 0 || inputComponent->KeyState[GLFW_KEY_RIGHT] != 0)
-		{
-			deviceStatus->m_positionX += inputComponent->KeyState[GLFW_KEY_LEFT] * -1 * turningSpeed * dt + inputComponent->KeyState[GLFW_KEY_RIGHT] * 1 * turningSpeed * dt;
-		}
-		else
-		{
-			if(deviceStatus->m_positionX > 0)
-			{
-				deviceStatus->m_positionX += -1 * (turningSpeed*2) *dt;
-			}
-			else if(deviceStatus->m_positionX < 0)
-			{
-				deviceStatus->m_positionX += 1 * (turningSpeed*2) * dt;
-			}
-
-			if (deviceStatus->m_positionX > -0.1 && deviceStatus->m_positionX < 0.1) 
-			{
-				deviceStatus->m_positionX = 0.f;
-			}
-		}
-		
-		if(deviceStatus->m_positionX > 1)
-			deviceStatus->m_positionX = 1;
-		else if(deviceStatus->m_positionX < -1)
-			deviceStatus->m_positionX = -1;
-
-		deviceStatus->m_handbrakeButtonPressed = inputComponent->KeyState[GLFW_KEY_RIGHT_CONTROL];
-
-		if(inputComponent->KeyState[GLFW_KEY_R] && !inputComponent->LastKeyState[GLFW_KEY_R])
-		{
-			transformComponent->Position = transformComponent->Position + glm::vec3(0, 5, 0);
-			transformComponent->Orientation =  glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-			m_RigidBodies[entity]->setLinearVelocity(hkVector4(0, 0, 0));
-			m_RigidBodies[entity]->setAngularVelocity(hkVector4(0, 0, 0));
-		}
-
-		m_PhysicsWorld->unmarkForWrite();
-	}
+	
 }
 
 void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
@@ -624,5 +561,22 @@ glm::vec3 Systems::PhysicsSystem::ConvertScale(const hkVector4 &hkScale)
 const hkVector4& Systems::PhysicsSystem::ConvertScale(glm::vec3 glmScale)
 {
 	return hkVector4(glmScale.x, glmScale.y, glmScale.z);
+}
+
+bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
+{
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity, "Vehicle");
+	auto inputComponent = m_World->GetComponent<Components::Input>(event.Entity, "Input");
+	if (vehicleComponent && inputComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	{
+		m_PhysicsWorld->markForWrite();
+		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
+		deviceStatus->m_positionX = event.PositionX;
+		deviceStatus->m_positionY = event.PositionY;
+		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
+		m_PhysicsWorld->unmarkForWrite();
+	}
+
+	return true;
 }
 

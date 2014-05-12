@@ -12,6 +12,7 @@
 #include "Components/MeshShape.h"
 #include "Components/HingeConstraint.h"
 #include "Components/WheelPair.h"
+#include "Events/TankSteer.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -78,6 +79,10 @@ public:
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
+
+	// Events
+	EventRelay<Events::TankSteer> m_ETankSteer;
+	bool OnTankSteer(const Events::TankSteer &event);
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);
