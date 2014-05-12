@@ -126,9 +126,11 @@ void OBJ::ParseMaterial()
 	std::string currentMaterialName;
 	MaterialInfo* currentMaterial = nullptr;
 
+	unsigned int currentLine = 0;
 	std::string line;
 	while (std::getline(file, line))
 	{
+		currentLine++;
 		if (line.length() == 0)
 			continue;
 
@@ -140,19 +142,7 @@ void OBJ::ParseMaterial()
 		// Create a new material definition
 		if (prefix == "newmtl")
 		{
-			MaterialInfo mat =
-			{
-				"",
-				std::make_tuple(0.2f, 0.2f, 0.2f),
-				std::make_tuple(0.8f, 0.8f, 0.8f),
-				std::make_tuple(1.0f, 1.0f, 1.0f),
-				std::make_tuple(1.0f, 1.0f, 1.0f),
-				1.0f,
-				1.0f,
-				0.0f,
-				0,
-			};
-
+			MaterialInfo mat;
 			ss >> currentMaterialName;
 			LOG_INFO("Parsing material %s", currentMaterialName.c_str());
 			Materials[currentMaterialName] = mat;
@@ -243,14 +233,177 @@ void OBJ::ParseMaterial()
 			currentMaterial->IlluminationModel = illum;
 			continue;
 		}
-		// Texture file
-		// TODO:
-		if (prefix == "map_Ka" || prefix == "map_Kd")
+		// Diffuse texture
+		if (prefix == "map_Kd")
 		{
-			std::string textureFile;
-			ss >> textureFile;
-			currentMaterial->TextureFile = (m_MaterialPath.branch_path() / textureFile).string();
+			MaterialInfo::ColorMap colorMap;
+
+			std::string fileName;
+			std::string arg;
+			while (ss >> arg)
+			{
+				ParseColorMap(currentLine, ss, prefix, arg, colorMap);
+			}
+
+			// HACK: Should we really have to specify the full path here?
+			colorMap.FileName = (m_MaterialPath.branch_path() / colorMap.FileName).string();
+			currentMaterial->DiffuseTexture = colorMap;
 			continue;
 		}
+		// Specular map
+		if (prefix == "map_Ks")
+		{
+			MaterialInfo::ColorMap colorMap;
+
+			std::string fileName;
+			std::string arg;
+			while (ss >> arg)
+			{
+				ParseColorMap(currentLine, ss, prefix, arg, colorMap);
+			}
+
+			// HACK: Should we really have to specify the full path here?
+			colorMap.FileName = (m_MaterialPath.branch_path() / colorMap.FileName).string();
+			currentMaterial->SpecularMap = colorMap;
+			continue;
+		}
+		// Normal map (bump map)
+		if (prefix == "bump")
+		{
+			MaterialInfo::BumpMap bumpMap;
+
+			std::string fileName;
+			std::string arg;
+			while (ss >> arg)
+			{
+				ParseBumpMap(currentLine, ss, prefix, arg, bumpMap);
+			}
+
+			// HACK: Should we really have to specify the full path here?
+			bumpMap.FileName = (m_MaterialPath.branch_path() / bumpMap.FileName).string();
+			currentMaterial->NormalMap = bumpMap;
+			continue;
+		}
+	}
+}
+
+void OBJ::ParseTextureMap(unsigned int line, std::stringstream &ss, std::string prefix, std::string arg, MaterialInfo::TextureMap &textureMap)
+{
+	if (arg == "-blendu")
+	{
+		std::string val;
+		ss >> val;
+		if (val == "off")
+			textureMap.blendu = false;
+		else if (val == "on")
+			textureMap.blendu = true;
+		else
+			LOG_ERROR("Unrecognized MTL value \"%s\" to argument \"%s %s\" on line %i", val.c_str(), prefix.c_str(), arg.c_str(), line);
+	}
+	else if (arg == "-blendv")
+	{
+		std::string val;
+		ss >> val;
+		if (val == "off")
+			textureMap.blendv = false;
+		else if (val == "on")
+			textureMap.blendv = true;
+		else
+			LOG_ERROR("Unrecognized MTL value \"%s\" to argument \"%s %s\" on line %i", val.c_str(), prefix.c_str(), arg.c_str(), line);
+	}
+	else if (arg == "-clamp")
+	{
+		std::string val;
+		ss >> val;
+		if (val == "off")
+			textureMap.clamp = false;
+		else if (val == "on")
+			textureMap.clamp = true;
+		else
+			LOG_ERROR("Unrecognized MTL value \"%s\" to argument \"%s %s\" on line %i", val.c_str(), prefix.c_str(), arg.c_str(), line);
+	}
+	else if (arg == "-o")
+	{
+		float u, v, w;
+		if (ss >> u >> v >> w)
+		{
+			textureMap.o = std::make_tuple(u, v, w);
+		}
+		else
+		{
+			LOG_ERROR("Unrecognized MTL value to argument \"%s %s\" on line %i", prefix.c_str(), arg.c_str(), line);
+		}
+	}
+	else if (arg == "-s")
+	{
+		float u, v, w;
+		if (ss >> u >> v >> w)
+		{
+			textureMap.s = std::make_tuple(u, v, w);
+		}
+		else
+		{
+			LOG_ERROR("Unrecognized MTL value to argument \"%s %s\" on line %i", prefix.c_str(), arg.c_str(), line);
+		}
+	}
+	// Assume unrecognized options is part of the file name
+	else
+	{
+		if (!textureMap.FileName.empty())
+			textureMap.FileName += " ";
+		textureMap.FileName += arg;
+	}
+}
+
+void OBJ::ParseColorMap(unsigned int line, std::stringstream &ss, std::string prefix, std::string arg, MaterialInfo::ColorMap &colorMap)
+{
+	if (arg == "-cc")
+	{
+		if (prefix != "map_Kd" || prefix != "map_Ks")
+		{
+			LOG_ERROR("Invalid MTL argument \"%s\" to option \"%s\" on line %i", arg.c_str(), prefix.c_str(), line);
+			return;
+		}
+
+		std::string val;
+		if (ss >> val)
+		{
+			if (val == "off")
+				colorMap.cc = false;
+			else if (val == "on")
+				colorMap.cc = true;
+			else
+				LOG_ERROR("Unrecognized MTL value \"%s\" to argument \"%s %s\" on line %i", val.c_str(), prefix.c_str(), arg.c_str(), line);
+		}
+		else
+		{
+			LOG_ERROR("Unrecognized MTL value to argument \"%s %s\" on line %i", prefix.c_str(), arg.c_str(), line);
+		}
+	}
+	else
+	{
+		ParseTextureMap(line, ss, prefix, arg, colorMap);
+	}
+}
+
+void OBJ::ParseBumpMap(unsigned int line, std::stringstream &ss, std::string prefix, std::string arg, MaterialInfo::BumpMap &bumpMap)
+{
+	if (arg == "-bm")
+	{
+		if (prefix != "bump")
+		{
+			LOG_ERROR("Invalid MTL argument \"%s\" to option \"%s\" on line %i", arg.c_str(), prefix.c_str(), line);
+			return;
+		}
+
+		float val;
+		if (ss >> val)
+			bumpMap.bm = val;
+		else
+			LOG_ERROR("Unrecognized MTL value to argument \"%s %s\" on line %i", prefix.c_str(), arg.c_str(), line);
+	}
+	else
+	{
+		ParseTextureMap(line, ss, prefix, arg, bumpMap);
 	}
 }

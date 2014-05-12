@@ -4,6 +4,7 @@
 #include "Factory.h"
 #include "Entity.h"
 #include "Component.h"
+#include "EventBroker.h"
 #include "ResourceManager.h"
 
 class World;
@@ -11,7 +12,9 @@ class World;
 class System
 {
 public:
-	System(World* world) : m_World(world) { }
+	System(World* world, std::shared_ptr<EventBroker> eventBroker) 
+		: m_World(world)
+		, EventBroker(eventBroker) { }
 	virtual ~System() { }
 
 	virtual void RegisterComponents(ComponentFactory* cf) { }
@@ -28,9 +31,12 @@ public:
 	virtual void OnComponentCreated(std::string type, std::shared_ptr<Component> component) { }
 	// Called when a component is removed
 	virtual void OnComponentRemoved(std::string type, Component* component) { }
+	// Called when components are committed to an entity
+	virtual void OnEntityCommit(EntityID entity) { }
 
 protected:
 	World* m_World;
+	std::shared_ptr<EventBroker> EventBroker;
 };
 
 class SystemFactory : public Factory<System*> { };

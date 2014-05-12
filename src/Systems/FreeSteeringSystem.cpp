@@ -7,65 +7,127 @@ void Systems::FreeSteeringSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register("FreeSteering", []() { return new Components::FreeSteering(); });
 }
 
+void Systems::FreeSteeringSystem::Initialize()
+{
+	m_InputController = std::unique_ptr<FreeSteeringInputController>(new FreeSteeringInputController(EventBroker));
+}
+
 void Systems::FreeSteeringSystem::Update(double dt)
 {
-
+	
 }
 
 void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
 	auto steering = m_World->GetComponent<Components::FreeSteering>(entity, "FreeSteering");
-	auto input = m_World->GetComponent<Components::Input>(entity, "Input");
-	if (steering && input)
+	if (steering)
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
 
-		glm::vec3 Camera_Right = glm::vec3(glm::vec4(1, 0, 0, 0) * transform->Orientation);
-		glm::vec3 Camera_Forward = glm::vec3(glm::vec4(0, 0, 1, 0) * transform->Orientation);
-
-		float speed = steering->Speed;
-		if (input->KeyState[GLFW_KEY_LEFT_SHIFT])
-		{
-			speed *= 4.0f;
-		}
-		if (input->KeyState[GLFW_KEY_LEFT_ALT])
-		{
-			speed /= 4.0f;
-		}
-		if (input->KeyState[GLFW_KEY_A])
-		{
-			transform->Position -= Camera_Right * (float)dt * speed;
-		}
-		else if (input->KeyState[GLFW_KEY_D])
-		{
-			transform->Position += Camera_Right * (float)dt * speed;
-		}
-		if (input->KeyState[GLFW_KEY_W])
-		{
-			transform->Position -= Camera_Forward * (float)dt * speed;
-		}
-		if (input->KeyState[GLFW_KEY_S])
-		{
-			transform->Position += Camera_Forward * (float)dt * speed;
-		}
-		if (input->KeyState[GLFW_KEY_SPACE])
-		{
-			transform->Position += glm::vec3(0, 1, 0) * (float)dt * speed;
-		}
-		if (input->KeyState[GLFW_KEY_LEFT_CONTROL])
-		{
-			transform->Position -= glm::vec3(0, 1, 0) * (float)dt * speed;
-		}
-
-		if (input->MouseState[GLFW_MOUSE_BUTTON_LEFT])
-		{
-			// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS // spelling tobias :3
-			//---------------------------------------------------------------------
-			transform->Orientation = glm::angleAxis<float>(input->dY / 300.f, glm::vec3(1, 0, 0)) * transform->Orientation;
-
-			transform->Orientation = transform->Orientation * glm::angleAxis<float>(input->dX / 300.f, glm::vec3(0, 1, 0));
-			//---------------------------------------------------------------------
-			// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
-		}
+		glm::vec3 cameraRight = glm::vec3(m_InputController->Orientation * glm::vec4(1, 0, 0, 0));
+		glm::vec3 cameraForward = glm::vec3(m_InputController->Orientation * glm::vec4(0, 0, -1, 0));
+		glm::vec3 movement;
+		movement += cameraRight * m_InputController->Movement.x;
+		movement.y += m_InputController->Movement.y;
+		movement += cameraForward * -m_InputController->Movement.z;
+		transform->Position += movement * steering->Speed * m_InputController->SpeedMultiplier * (float)dt;
+		transform->Orientation = m_InputController->Orientation;
 	}
+}
+
+bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const Events::InputCommand &event)
+{
+	// Movement
+	if (event.Command == "+forward")
+	{
+		Movement.z += -1.f;
+	}
+	else if (event.Command == "-forward")
+	{
+		Movement.z -= -1.f;
+	}
+	else if (event.Command == "+backward")
+	{
+		Movement.z += 1.f;
+	}
+	else if (event.Command == "-backward")
+	{
+		Movement.z -= 1.f;
+	}
+	else if (event.Command == "+right")
+	{
+		Movement.x += 1.f;
+	}
+	else if (event.Command == "-right")
+	{
+		Movement.x -= 1.f;
+	}
+	else if (event.Command == "+left")
+	{
+		Movement.x += -1.f;
+	}
+	else if (event.Command == "-left")
+	{
+		Movement.x -= -1.f;
+	}
+	else if (event.Command == "+up")
+	{
+		Movement.y += 1.f;
+	}
+	else if (event.Command == "-up")
+	{
+		Movement.y -= 1.f;
+	}
+	else if (event.Command == "+down")
+	{
+		Movement.y += -1.f;
+	}
+	else if (event.Command == "-down")
+	{
+		Movement.y -= -1.f;
+	}
+
+	// Speed
+	else if (event.Command == "+fast")
+	{
+		SpeedMultiplier *= 4.f;
+	}
+	else if (event.Command == "-fast")
+	{
+		SpeedMultiplier /= 4.f;
+	}
+	else if (event.Command == "+slow")
+	{
+		SpeedMultiplier /= 4.f;
+	}
+	else if (event.Command == "-slow")
+	{
+		SpeedMultiplier *= 4.f;
+	}
+
+	// Mouse click
+	else if (event.Command == "+attack")
+	{
+		OrientationActive = true;
+	}
+	else if (event.Command == "-attack")
+	{
+		OrientationActive = false;
+	}
+
+	return true;
+}
+
+bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnMouseMove(const Events::MouseMove &event)
+{
+	if (OrientationActive)
+	{
+		// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
+		//---------------------------------------------------------------------
+		Orientation = glm::angleAxis<float>(event.DeltaX / 300.f, glm::vec3(0, -1, 0)) * Orientation * glm::angleAxis<float>(event.DeltaY / 300.f, glm::vec3(-1, 0, 0));
+		//---------------------------------------------------------------------
+		// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
+	}
+
+	return true;
 }

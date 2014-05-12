@@ -29,6 +29,6 @@ ipch/
 [Dd]ebug*/
 [Rr]elease*/
 Ankh.NoLoad
+*.orig
 
-assets/
 !libs/*.lib

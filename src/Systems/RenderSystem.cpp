@@ -48,8 +48,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity, "Camera");
 	if (cameraComponent != nullptr)
 	{
-		m_Renderer->GetCamera()->Position(transformComponent->Position);
-		m_Renderer->GetCamera()->Orientation(transformComponent->Orientation);
+		m_Renderer->GetCamera()->Position(m_TransformSystem->AbsolutePosition(entity));
+		m_Renderer->GetCamera()->Orientation(m_TransformSystem->AbsoluteOrientation(entity));
 
 		m_Renderer->GetCamera()->FOV(cameraComponent->FOV);
 		m_Renderer->GetCamera()->NearClip(cameraComponent->NearClip);

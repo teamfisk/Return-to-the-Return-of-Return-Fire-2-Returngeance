@@ -40,7 +40,7 @@ glm::quat Systems::TransformSystem::AbsoluteOrientation(EntityID entity)
 	do
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
-		absOrientation *= transform->Orientation;
+		absOrientation = transform->Orientation * absOrientation;
 		entity = m_World->GetEntityParent(entity);
 	} while (entity != 0);
 

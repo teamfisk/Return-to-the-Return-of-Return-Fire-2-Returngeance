@@ -65,7 +65,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;hkpVehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /ignore:4221</AdditionalOptions>
     </Link>
     <CustomBuildStep />
@@ -89,17 +89,20 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;hkaAnimation.lib;hkaInternal.lib;hkaPhysics2012Bridge.lib;hkBase.lib;hkcdCollide.lib;hkcdInternal.lib;hkCompat.lib;hkgBridge.lib;hkgCommon.lib;hkgDx11.lib;hkgDx9s.lib;hkGeometryUtilities.lib;hkgOglES.lib;hkgOglES2.lib;hkgOgls.lib;hkgSoundCommon.lib;hkgSoundXAudio2.lib;hkInternal.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hkSceneData.lib;hkSerialize.lib;hkVisualize.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;hkpVehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Camera.cpp" />
     <ClCompile Include="..\..\src\CubemapTexture.cpp" />
+    <ClCompile Include="..\..\src\EventBroker.cpp" />
     <ClCompile Include="..\..\src\GameWorld.cpp" />
+    <ClCompile Include="..\..\src\InputManager.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\Model.cpp" />
     <ClCompile Include="..\..\src\OBJ.cpp" />
+    <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp" />
     <ClCompile Include="..\..\src\PrecompiledHeader.cpp" />
     <ClCompile Include="..\..\src\Renderer.cpp" />
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
@@ -136,15 +139,33 @@
     <ClInclude Include="..\..\src\Components\Sprite.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
+    <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Events\BindKey.h" />
+    <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
+    <ClInclude Include="..\..\src\Events\InputCommand.h" />
+    <ClInclude Include="..\..\src\Events\KeyDown.h" />
+    <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\MouseMove.h" />
+    <ClInclude Include="..\..\src\Events\MousePress.h" />
+    <ClInclude Include="..\..\src\Events\MouseRelease.h" />
+    <ClInclude Include="..\..\src\Events\PlaySound.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
+    <ClInclude Include="..\..\src\GUI\Frame.h" />
+    <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\GUI\Viewport.h" />
+    <ClInclude Include="..\..\src\InputController.h" />
+    <ClInclude Include="..\..\src\InputManager.h" />
     <ClInclude Include="..\..\src\Model.h" />
     <ClInclude Include="..\..\src\OBJ.h" />
+    <ClInclude Include="..\..\src\Physics\VehicleSetup.h" />
     <ClInclude Include="..\..\src\PrecompiledHeader.h" />
     <ClInclude Include="..\..\src\Renderer.h" />
+    <ClInclude Include="..\..\src\RenderQueue.h" />
     <ClInclude Include="..\..\src\ResourceManager.h" />
     <ClInclude Include="..\..\src\ShaderProgram.h" />
     <ClInclude Include="..\..\src\Skybox.h" />
@@ -160,6 +181,7 @@
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
+    <ClInclude Include="..\..\src\Util\Rectangle.h" />
     <ClInclude Include="..\..\src\Util\Logging.h" />
     <ClInclude Include="..\..\src\World.h" />
   </ItemGroup>

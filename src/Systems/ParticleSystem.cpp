@@ -4,11 +4,6 @@
 
 #include "World.h"
 
-Systems::ParticleSystem::ParticleSystem(World *m_World) : System(m_World)
-{
-	
-}
-
 void Systems::ParticleSystem::Update(double dt)
 {
 	

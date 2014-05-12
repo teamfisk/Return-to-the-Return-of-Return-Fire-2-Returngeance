@@ -119,16 +119,6 @@ EntityID World::CreateEntity(EntityID parent /*= 0*/)
 	return newEntity;
 }
 
-World::~World()
-{
-
-}
-
-World::World()
-{
-	m_LastEntityID = 0;
-}
-
 void World::Initialize()
 {
 	RegisterSystems();
@@ -145,6 +135,15 @@ void World::Initialize()
 std::shared_ptr<Component> World::AddComponent(EntityID entity, std::string componentType)
 {
 	return AddComponent<Component>(entity, componentType);
+}
+
+void World::CommitEntity(EntityID entity)
+{
+	for (auto pair : m_Systems)
+	{
+		auto system = pair.second;
+		system->OnEntityCommit(entity);
+	}
 }
 
 void World::AddComponent(EntityID entity, std::string componentType, std::shared_ptr<Component> component)
