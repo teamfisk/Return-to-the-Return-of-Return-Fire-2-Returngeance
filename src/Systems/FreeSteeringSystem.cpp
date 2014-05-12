@@ -56,19 +56,19 @@ bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const E
 	}
 	else if (event.Command == "+cam_right")
 	{
-		Movement.x += 1.f;
+		Movement.x -= 1.f;
 	}
 	else if (event.Command == "-cam_right")
 	{
-		Movement.x -= 1.f;
+		Movement.x += 1.f;
 	}
 	else if (event.Command == "+cam_left")
 	{
-		Movement.x += -1.f;
+		Movement.x -= -1.f;
 	}
 	else if (event.Command == "-cam_left")
 	{
-		Movement.x -= -1.f;
+		Movement.x += -1.f;
 	}
 	else if (event.Command == "+up")
 	{
