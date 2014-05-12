@@ -36,17 +36,23 @@ void InputManager::Update(double dt)
 		m_CurrentMouseState[i] = glfwGetMouseButton(m_GLFWWindow, i);
 		if (m_CurrentMouseState[i] != m_LastMouseState[i])
 		{
+			double x, y;
+			glfwGetCursorPos(m_GLFWWindow, &x, &y);
 			// Publish mouse button events
 			if (m_CurrentMouseState[i])
 			{
 				Events::MousePress e;
 				e.Button = i;
+				e.X = x;
+				e.Y = y;
 				m_EventBroker->Publish<Events::MousePress>(e);
 			}
 			else
 			{
 				Events::MouseRelease e;
 				e.Button = i;
+				e.X = x;
+				e.Y = y;
 				m_EventBroker->Publish<Events::MouseRelease>(e);
 			}
 		}
