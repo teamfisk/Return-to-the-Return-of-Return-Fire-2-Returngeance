@@ -8,9 +8,31 @@ void GameWorld::Initialize()
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
+	BindKey(GLFW_KEY_W, "+forward");
+	BindKey(GLFW_KEY_S, "+backward");
+	BindKey(GLFW_KEY_A, "+left");
+	BindKey(GLFW_KEY_D, "+right");
+	BindKey(GLFW_KEY_SPACE, "+up");
+	BindKey(GLFW_KEY_LEFT_CONTROL, "+down");
+	BindKey(GLFW_KEY_LEFT_ALT, "+slow");
+	BindKey(GLFW_KEY_LEFT_SHIFT, "+fast");
+	BindMouseButton(GLFW_MOUSE_BUTTON_1, "+attack");
+	BindMouseButton(GLFW_MOUSE_BUTTON_2, "+attack2");
+	BindMouseButton(GLFW_MOUSE_BUTTON_3, "+attack3");
+
 	RegisterComponents();
 
-	
+	{
+		auto camera = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(camera, "Transform");
+		transform->Position.z = 20.f;
+		transform->Position.y = 20.f;
+		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+		cameraComp->FarClip = 2000.f;
+		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+		CommitEntity(camera);
+	}
 
 
 	{
@@ -513,9 +535,10 @@ void GameWorld::RegisterComponents()
 
 void GameWorld::RegisterSystems()
 {
-	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this); });
+	m_SystemFactory.Register("TransformSystem", [this]() { return new Systems::TransformSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("LevelGenerationSystem", [this]() { return new Systems::LevelGenerationSystem(this); });
-	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_Renderer); });
+	m_SystemFactory.Register("InputSystem", [this]() { return new Systems::InputSystem(this, m_EventBroker); });
+	m_SystemFactory.Register("DebugSystem", [this]() { return new Systems::DebugSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register("CollisionSystem", [this]() { return new Systems::CollisionSystem(this); });
 	////m_SystemFactory.Register("ParticleSystem", [this]() { return new Systems::ParticleSystem(this); });
 	//m_SystemFactory.Register("PlayerSystem", [this]() { return new Systems::PlayerSystem(this); });
@@ -523,6 +546,7 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register("SoundSystem", [this]() { return new Systems::SoundSystem(this); });
 	m_SystemFactory.Register("PhysicsSystem", [this]() { return new Systems::PhysicsSystem(this); });
 	m_SystemFactory.Register("RenderSystem", [this]() { return new Systems::RenderSystem(this, m_Renderer); });
+	m_SystemFactory.Register("FreeSteeringSystem", [this]() { return new Systems::FreeSteeringSystem(this, m_EventBroker); });
 }
 
 void GameWorld::AddSystems()
@@ -530,6 +554,7 @@ void GameWorld::AddSystems()
 	AddSystem("TransformSystem");
 	//AddSystem("LevelGenerationSystem");
 	AddSystem("InputSystem");
+	AddSystem("DebugSystem");
 	//AddSystem("CollisionSystem");
 	////AddSystem("ParticleSystem");
 	//AddSystem("PlayerSystem");
@@ -537,4 +562,20 @@ void GameWorld::AddSystems()
 	AddSystem("SoundSystem");
 	AddSystem("PhysicsSystem");
 	AddSystem("RenderSystem");
+}
+
+void GameWorld::BindKey(int keyCode, std::string command)
+{
+	Events::BindKey e;
+	e.KeyCode = keyCode;
+	e.Command = command;
+	m_EventBroker->Publish(e);
+}
+
+void GameWorld::BindMouseButton(int button, std::string command)
+{
+	Events::BindMouseButton e;
+	e.Button = button;
+	e.Command = command;
+	m_EventBroker->Publish(e);
 }

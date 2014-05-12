@@ -4,6 +4,7 @@
 #include "Factory.h"
 #include "Entity.h"
 #include "Component.h"
+#include "EventBroker.h"
 #include "ResourceManager.h"
 
 class World;
@@ -11,7 +12,9 @@ class World;
 class System
 {
 public:
-	System(World* world) : m_World(world) { }
+	System(World* world, std::shared_ptr<EventBroker> eventBroker) 
+		: m_World(world)
+		, EventBroker(eventBroker) { }
 	virtual ~System() { }
 
 	virtual void RegisterComponents(ComponentFactory* cf) { }
@@ -33,6 +36,7 @@ public:
 
 protected:
 	World* m_World;
+	std::shared_ptr<EventBroker> EventBroker;
 };
 
 class SystemFactory : public Factory<System*> { };

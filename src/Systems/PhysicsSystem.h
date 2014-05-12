@@ -63,8 +63,11 @@ namespace Systems
 class PhysicsSystem : public System
 {
 public:
-	PhysicsSystem(World* world);
+	PhysicsSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
+		: System(world, eventBroker) { }
+
 	void RegisterComponents(ComponentFactory* cf) override;
+	void Initialize() override;
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;

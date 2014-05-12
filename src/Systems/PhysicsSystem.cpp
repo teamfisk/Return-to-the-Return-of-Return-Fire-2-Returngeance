@@ -25,7 +25,7 @@
 #include "PhysicsSystem.h"
 #include "World.h"
 
-Systems::PhysicsSystem::PhysicsSystem(World* world) : System(world)
+void Systems::PhysicsSystem::Initialize()
 {
 	m_Accumulator = 0;
 	

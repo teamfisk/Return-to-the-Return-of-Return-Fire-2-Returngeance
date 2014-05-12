@@ -24,8 +24,9 @@ namespace Systems
 class  RenderSystem : public System
 {
 public:
-	RenderSystem(World* world, std::shared_ptr<Renderer> renderer)
-		: System(world), m_Renderer(renderer) { }
+	RenderSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
+		: System(world, eventBroker)
+		, m_Renderer(renderer) { }
 
 	void RegisterComponents(ComponentFactory* cf) override;
 	void RegisterResourceTypes(ResourceManager* rm) override;

@@ -50,8 +50,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\EventBroker.cpp" />
     <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp">
       <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\InputManager.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +118,15 @@
     </Filter>
     <Filter Include="Particle System\Systems">
       <UniqueIdentifier>{9f45f029-46c8-4c0d-b44c-dc9bffd3c6a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{6e633434-4aed-453d-b2f9-8c51ca7f78db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio\Events">
+      <UniqueIdentifier>{85692f3a-5241-4780-a3ca-f4d8a2851392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\Events">
+      <UniqueIdentifier>{ee125b77-b275-4841-abc9-374957a89916}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +228,7 @@
     <ClInclude Include="..\..\src\Sound.h">
       <Filter>Audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Physics\VehicleSetup.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h">
       <Filter>Physics\Components</Filter>
     </ClInclude>
@@ -244,6 +258,52 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\WheelPair.h">
       <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\Frame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Util\Rectangle.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\Events\PlaySound.h">
+      <Filter>Audio\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\KeyDown.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\KeyUp.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\MousePress.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\MouseRelease.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\MouseMove.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\BindKey.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\BindMouseButton.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\InputCommand.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\InputController.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\RenderQueue.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\Viewport.h">
+      <Filter>GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

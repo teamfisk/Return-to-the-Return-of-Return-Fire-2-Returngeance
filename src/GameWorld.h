@@ -7,6 +7,7 @@
 #include "Systems/TransformSystem.h"
 //#include "Systems/CollisionSystem.h"
 #include "Systems/InputSystem.h"
+#include "Systems/DebugSystem.h"
 //#include "Systems/LevelGenerationSystem.h"
 //#include "Systems/ParticleSystem.h"
 //#include "Systems/PlayerSystem.h"
@@ -36,8 +37,8 @@
 class GameWorld : public World
 {
 public:
-	GameWorld(std::shared_ptr<Renderer> renderer)
-		: m_Renderer(renderer), World() { }
+	GameWorld(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
+		: World(eventBroker), m_Renderer(renderer) { }
 
 	void Initialize();
 
@@ -49,6 +50,9 @@ public:
 
 private:
 	std::shared_ptr<Renderer> m_Renderer;
+
+	void BindKey(int keyCode, std::string command);
+	void BindMouseButton(int button, std::string command);
 };
 
 #endif // GameWorld_h__

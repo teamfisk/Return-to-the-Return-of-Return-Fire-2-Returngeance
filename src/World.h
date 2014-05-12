@@ -14,13 +14,16 @@
 #include "Entity.h"
 #include "Component.h"
 #include "System.h"
+#include "EventBroker.h"
 #include "ResourceManager.h"
 
 class World
 {
 public:
-	World();
-	~World();
+	World(std::shared_ptr<::EventBroker> eventBroker)
+		: m_EventBroker(eventBroker)
+		, m_LastEntityID(0) { }
+	~World() { }
 
 	virtual void Initialize();
 
@@ -75,8 +78,10 @@ public:
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
 
 	ResourceManager* GetResourceManager() { return &m_ResourceManager; }
+	std::shared_ptr<::EventBroker> EventBroker() { return m_EventBroker; }
 
 protected:
+	std::shared_ptr<::EventBroker> m_EventBroker;
 	SystemFactory m_SystemFactory;
 	ComponentFactory m_ComponentFactory;
 	ResourceManager m_ResourceManager;
@@ -138,7 +143,16 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 template <class T>
 T* World::GetComponent(EntityID entity, std::string componentType)
 {
-	return (T*)m_EntityComponents[entity][componentType].get();
+	auto components = m_EntityComponents[entity]; 
+	auto it = components.find(componentType);
+	if (it != components.end())
+	{
+		return static_cast<T*>(it->second.get());
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 #endif // World_h__
