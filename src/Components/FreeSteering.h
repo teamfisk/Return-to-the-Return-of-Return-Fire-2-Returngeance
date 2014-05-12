@@ -9,6 +9,8 @@ struct FreeSteering : Component
 {
 	FreeSteering() : Speed(35) { }
 	float Speed;
+
+	virtual FreeSteering* Clone() const override { return new FreeSteering(*this); }
 };
 }
 

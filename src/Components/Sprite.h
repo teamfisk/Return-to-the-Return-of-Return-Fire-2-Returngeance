@@ -13,6 +13,8 @@ struct Sprite : Component
 {
 	std::string SpriteFile;
 	Color Color;
+	
+	virtual Sprite* Clone() const override { return new Sprite(*this); }
 };
 
 }

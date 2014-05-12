@@ -55,6 +55,17 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		m_Renderer->GetCamera()->NearClip(cameraComponent->NearClip);
 		m_Renderer->GetCamera()->FarClip(cameraComponent->FarClip);
 	}
+
+	auto spriteComponent = m_World->GetComponent<Components::Sprite>(entity, "Sprite");
+	if(spriteComponent != nullptr)
+	{
+		//TEMP
+		Texture* texture = m_World->GetResourceManager()->Load<Texture>("Texture", spriteComponent->SpriteFile);
+		//glBindTexture(GL_TEXTURE_2D, texture);
+		auto transform = m_World->GetComponent<Components::Transform>(spriteComponent->Entity, "Transform");
+		glm::quat orientation2D = glm::angleAxis(glm::eulerAngles(transform->Orientation).z, glm::vec3(0, 0, -1));
+		m_Renderer->AddTextureToDraw(texture, transform->Position, orientation2D, transform->Scale);
+	}
 }
 
 void Systems::RenderSystem::Initialize()

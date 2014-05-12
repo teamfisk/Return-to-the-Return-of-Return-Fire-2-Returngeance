@@ -43,6 +43,7 @@ public:
 	{
 		Components::Wheel* WheelComponent;
 		Components::Transform* TransformComponent;
+
 	};
 	
 	std::vector<WheelData> m_Wheels;

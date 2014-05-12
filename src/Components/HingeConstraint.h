@@ -11,6 +11,8 @@ namespace Components
 		EntityID LinkedEntity;
 		glm::vec3 Pivot;
 		glm::vec3 Axis;
+
+		virtual HingeConstraint* Clone() const override { return new HingeConstraint(*this); }
 	};
 
 }

@@ -16,6 +16,8 @@ struct Model : Component
 	Color Color;
 	bool Visible;
 	bool ShadowCaster;
+
+	virtual Model* Clone() const override { return new Model(*this); }
 };
 
 }

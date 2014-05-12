@@ -50,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp">
+      <Filter>Particle System\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\EventBroker.cpp" />
     <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp">
       <Filter>Physics</Filter>
@@ -263,6 +266,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\WheelPair.h">
       <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\ParticleSystem.h">
+      <Filter>Particle System\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Particle.h">
+      <Filter>Particle System\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\Frame.h">
       <Filter>GUI</Filter>

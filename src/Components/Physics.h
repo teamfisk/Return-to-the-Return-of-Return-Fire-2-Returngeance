@@ -13,6 +13,8 @@ struct Physics : Component
 
 	float Mass;
 	bool Static;
+
+	virtual Physics* Clone() const override { return new Physics(*this); }
 };
 
 }

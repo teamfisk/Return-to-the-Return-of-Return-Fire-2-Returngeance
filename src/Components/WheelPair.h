@@ -9,6 +9,8 @@ namespace Components
 	struct WheelPair : Component
 	{
 		// Flag for pair wheels
+
+		virtual WheelPair* Clone() const override { return new WheelPair(*this); }
 	};
 
 }

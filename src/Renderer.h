@@ -25,6 +25,7 @@ public:
 	int Height() const { return m_Height; }
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
+	std::list<std::tuple<Texture*, glm::mat4, glm::mat4>> TexturesToRender;
 	int Lights;
 	std::vector<float> Light_position;
 	std::vector<float> Light_specular;
@@ -42,6 +43,7 @@ public:
 	void DrawText();
 
 	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
+	void AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
 	void AddTextToDraw();
 	void AddPointLightToDraw(
 	    glm::vec3 _position,

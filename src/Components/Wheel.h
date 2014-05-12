@@ -36,6 +36,8 @@ struct Wheel : Component
 private:
 	int ID;
 	glm::quat OriginalOrientation;
+
+	Wheel* Clone() const override { return new Wheel(*this); }
 };
 
 }

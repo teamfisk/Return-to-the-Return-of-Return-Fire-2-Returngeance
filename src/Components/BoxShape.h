@@ -14,6 +14,8 @@ struct BoxShape : Component
 	float Width;
 	float Height;
 	float Depth;
+
+	virtual BoxShape* Clone() const override { return new BoxShape(*this); }
 };
 
 }

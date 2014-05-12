@@ -7,7 +7,7 @@ namespace Components
 {
 	struct TankSteering : Component
 	{
-		
+		TankSteering* Clone() const override { return new TankSteering(*this); }
 	};
 }
 

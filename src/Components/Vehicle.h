@@ -23,6 +23,8 @@ struct Vehicle : Component
 	float TopSpeed;
 	float MaxSpeedFullSteeringAngle;
 	float SpringDamping;
+	
+	Vehicle* Clone() const override { return new Vehicle(*this); }
 };
 
 }

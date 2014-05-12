@@ -112,6 +112,7 @@
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\RenderSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\SoundSystem.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\MeshShape.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />
+    <ClInclude Include="..\..\src\Components\Particle.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
     <ClInclude Include="..\..\src\Components\PointLight.h" />
@@ -183,6 +185,7 @@
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
+    <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />
     <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\src\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\src\Systems\SoundSystem.h" />

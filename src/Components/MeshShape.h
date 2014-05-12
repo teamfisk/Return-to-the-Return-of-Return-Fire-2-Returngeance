@@ -11,6 +11,8 @@ namespace Components
 struct MeshShape : Component
 {
 	std::string ResourceName;
+
+	virtual MeshShape* Clone() const override { return new MeshShape(*this); }
 };
 
 }
