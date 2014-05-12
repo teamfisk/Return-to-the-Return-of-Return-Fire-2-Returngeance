@@ -17,7 +17,10 @@ out vec4 frag_Normal;
 
 float Shadow(vec4 ShadowCoord)
 {
-	if( texture(ShadowTexture, Input.ShadowCoord.xy).z < ShadowCoord.z )
+	//float cosTheta = clamp(dot(Input.Normal, 1.0), 0.0, 1.0);
+	float bias = 0.0005; // cosTheta is dot( n,l ), clamped between 0 and 1
+	bias = clamp(bias, 0.0, 0.01);
+	if( texture(ShadowTexture, Input.ShadowCoord.xy).z < ShadowCoord.z - bias)
 	{
 		return 0.3;
 	}

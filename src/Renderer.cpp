@@ -17,10 +17,10 @@ Renderer::Renderer()
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
-	m_ShadowMapRes = 2048;
+	m_ShadowMapRes = 2048*8;
 	m_SunPosition = glm::vec3(0, 3.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
-	m_SunProjection = glm::ortho<float>(-100, 100, -100, 100, -100, 100);
+	m_SunProjection = glm::ortho<float>(-200.f, 200.f, -200.f, 200.f, -100, 200);
 /*	Lights = 0;*/
 }
 
@@ -256,7 +256,7 @@ void Renderer::DrawShadowMap()
 {
 	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
 	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
-	glCullFace(GL_FRONT);	//Make it so that only the back faces are rendered
+	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
 
 	//Binds the FBO and sets the veiwport, witch in effect is how large the shadowmap is and what resolution it has.
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
@@ -653,7 +653,7 @@ void Renderer::DrawFBO()
 
 	m_FinalPassProgram.Bind();
 
-	// Ambient light & Shadow Matrix
+	// Ambient light
 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.1f, 0.1f, 0.1f)));
 	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
@@ -670,9 +670,9 @@ void Renderer::DrawFBO()
 
 void Renderer::DrawFBOScene()
 {	
-	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
-	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
-	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
+// 	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
+// 	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
+// 	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draws filled polygons
 
 	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
