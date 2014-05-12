@@ -24,10 +24,10 @@ glm::vec3 Systems::TransformSystem::AbsolutePosition(EntityID entity)
 		//absPosition += transform->Position;
 		entity = m_World->GetEntityParent(entity);
 		auto transform2 = m_World->GetComponent<Components::Transform>(entity, "Transform");
-		if (entity != 0)
-			absPosition += transform2->Orientation * transform->Position;
-		else
+		if (entity == 0)
 			absPosition += transform->Position;
+		else
+			absPosition = transform2->Orientation * (absPosition + transform->Position);
 	} while (entity != 0);
 
 	return absPosition * accumulativeOrientation;
