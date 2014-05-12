@@ -23,6 +23,7 @@ struct ParticleEmitter : Component
 
 	EntityID ParticleTemplate;
 	float SpawnFrequency;
+	float Speed;
 	int SpawnCount;
 	std::vector<Color> ColorSpectrum;
 	std::vector<glm::vec3> ScaleSpectrum;

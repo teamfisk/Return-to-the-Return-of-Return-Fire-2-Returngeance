@@ -69,18 +69,7 @@ void GameWorld::Initialize()
 		CommitEntity(ground);
 	}
 
-	{
-		auto camera = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(camera, "Transform");
-		transform->Position.z = 20.f;
-		transform->Position.y = 10.f;
-		transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
-		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-		cameraComp->FarClip = 2000.f;
-		AddComponent(camera, "Input");
-		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-		CommitEntity(camera);
-	}
+	
 
 	/*{
 		auto jeep = CreateEntity();
@@ -398,6 +387,30 @@ void GameWorld::Initialize()
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
+
+			auto entity = CreateEntity(tank);
+			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
+			transformComponent->Position = glm::vec3(2,-1.7,2.0);
+			transformComponent->Scale = glm::vec3(3,3,3);
+			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
+			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
+			emitterComponent->SpawnCount = 2;
+			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpreadAngle = glm::pi<float>();
+			emitterComponent->UseGoalVelocity = false;
+			emitterComponent->LifeTime = 0.5;
+			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+			CommitEntity(entity);
+
+			auto particleEntity = CreateEntity(entity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			emitterComponent->ParticleTemplate = particleEntity;
+
+			CommitEntity(particleEntity);
 		}
 
 		{
@@ -437,20 +450,19 @@ void GameWorld::Initialize()
 			Wheel->TorqueRatio = 0.125f;
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(wheel);
+			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
-			/*transformComponent->Position = glm::vec3(0,3,0);*/
+			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
 			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
 			emitterComponent->SpawnCount = 2;
-			emitterComponent->SpawnFrequency = 0.01;
-			emitterComponent->SpreadAngle = glm::pi<float>()/4;
+			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpreadAngle = glm::pi<float>();
 			emitterComponent->UseGoalVelocity = false;
-			emitterComponent->LifeTime = 2.0;
-			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.1));
-			auto modelComponent = AddComponent<Components::Model>(entity, "Model");
-			modelComponent->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+			emitterComponent->LifeTime = 0.5;
+			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
 
 			auto particleEntity = CreateEntity(entity);
@@ -464,7 +476,22 @@ void GameWorld::Initialize()
 		}
 
 		CommitEntity(tank);
+		{
+			auto camera = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(camera, "Transform");
+			transform->Position.z = 20.f;
+			transform->Position.y = 7.f;
+			//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
+			transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1,0,0));
+			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+			cameraComp->FarClip = 2000.f;
+			AddComponent(camera, "Input");
+			auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+			CommitEntity(camera);
+		}
 	}
+
+	
 
 	/*
 		for(int i = 0; i < 10; i++)
@@ -554,9 +581,6 @@ void GameWorld::Initialize()
 		CommitEntity(entity);
 	}*/
 
-	{
-		
-	}
 }
 
 void GameWorld::Update(double dt)
