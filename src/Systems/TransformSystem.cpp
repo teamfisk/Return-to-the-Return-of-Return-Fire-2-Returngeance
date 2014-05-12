@@ -74,10 +74,10 @@ Components::Transform Systems::TransformSystem::AbsoluteTransform(EntityID entit
 		auto transform2 = m_World->GetComponent<Components::Transform>(entity, "Transform");
 
 		// Position
-		if (entity != 0)
-			absPosition += transform2->Orientation * transform->Position;
-		else
+		if (entity == 0)
 			absPosition += transform->Position;
+		else
+			absPosition = transform2->Orientation * (absPosition + transform->Position);
 		// Orientation
 		absOrientation = transform->Orientation * absOrientation;
 		// Scale
