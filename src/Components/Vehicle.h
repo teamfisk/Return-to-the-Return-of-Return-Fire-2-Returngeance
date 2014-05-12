@@ -10,7 +10,8 @@ namespace Components
 struct Vehicle : Component
 {
 	Vehicle()
-		: MaxTorque(500.0f), MinRPM(1000.0f), OptimalRPM(5500.0f), MaxRPM(7500.0f), MaxSteeringAngle(35), TopSpeed(50.0f) { }
+		: MaxTorque(1000.0f), MinRPM(1000.0f), OptimalRPM(3000.0f), MaxRPM(4000.0f), MaxSteeringAngle(35), TopSpeed(130.0f),
+	MaxSpeedFullSteeringAngle(40.0f){ }
 
 	float MaxTorque;
 	float MinRPM;
@@ -18,8 +19,10 @@ struct Vehicle : Component
 	float MaxRPM;
 	// Degrees
 	float MaxSteeringAngle;
+	//TopSpeed not working fully yet 
 	float TopSpeed;
-
+	float MaxSpeedFullSteeringAngle;
+	
 	Vehicle* Clone() const override { return new Vehicle(*this); }
 };
 

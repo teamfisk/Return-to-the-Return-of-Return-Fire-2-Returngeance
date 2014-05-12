@@ -6,14 +6,14 @@
 namespace Components
 {
 
-struct Sphere : Component
+struct SphereShape : Component
 {
-	Sphere()
+	SphereShape()
 		: Radius(1.f){ }
 
 	float Radius;
 
-	virtual Sphere* Clone() const override { return new Sphere(*this); }
+	virtual SphereShape* Clone() const override { return new SphereShape(*this); }
 };
 
 }

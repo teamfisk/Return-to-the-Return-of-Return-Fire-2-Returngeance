@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "Util/UnorderedMapPair.h"
 #include "Factory.h"
 
 class Resource
@@ -28,7 +29,7 @@ public:
 	void Preload(std::string resourceType, std::string resourceName);
 
 	// Checks if a resource is in cache
-	bool IsResourceLoaded(std::string resourceName);
+	bool IsResourceLoaded(std::string resourceType, std::string resourceName);
 
 	template <typename T>
 	// Hot-loads a resource and caches it for future use
@@ -40,7 +41,7 @@ public:
 
 private:
 	std::unordered_map<std::string, std::function<Resource*(std::string)>> m_FactoryFunctions; // type -> factory function
-	std::unordered_map<std::string, Resource*> m_ResourceCache; // name -> resource
+	std::unordered_map<std::pair<std::string, std::string>, Resource*> m_ResourceCache; // (type, name) -> resource
 
 	// TODO: Getters for IDs
 	unsigned int m_CurrentResourceTypeID;
@@ -60,7 +61,7 @@ private:
 template <typename T>
 T* ResourceManager::Load(std::string resourceType, std::string resourceName)
 {
-	auto it = m_ResourceCache.find(resourceName);
+	auto it = m_ResourceCache.find(std::make_pair(resourceType, resourceName));
 	if (it != m_ResourceCache.end())
 		return static_cast<T*>(it->second);
 
@@ -79,7 +80,7 @@ T* ResourceManager::Load(std::string resourceType, std::string resourceName)
 template <typename T>
 T* ResourceManager::Fetch(std::string resourceName) const
 {
-	auto it = m_ResourceCache.find(resourceName);
+	auto it = m_ResourceCache.find(std::make_pair(resourceType, resourceName));
 	if (it == m_ResourceCache.end())
 	{
 		LOG_ERROR("Failed to fetch resource \"%s\": Resource not loaded!", resourceName.c_str());

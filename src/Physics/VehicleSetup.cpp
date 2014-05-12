@@ -48,7 +48,6 @@ void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpV
 
 	setupWheelCollide(physicsWorld, vehicle, *static_cast<hkpVehicleRayCastWheelCollide*>(vehicle.m_wheelCollide));
 
-
 	//
 	// Check that all components are present.
 	//
@@ -165,7 +164,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultS
 
 	// [mph/h] The steering angle decreases linearly 
 	// based on your overall max speed of the vehicle. 
-	steering.m_maxSpeedFullSteeringAngle = 70.0f * (1.605f / 3.6f); //MPH???!
+	steering.m_maxSpeedFullSteeringAngle = vehicleComponent.MaxSpeedFullSteeringAngle; // * (1.605f / 3.6f); //MPH???!
 
 	for (int i = 0; i < m_Wheels.size(); i++)
 	{
@@ -198,20 +197,21 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_gearsRatio.setSize(numberOfGears);
 	transmission.m_wheelsTorqueRatio.setSize(data.m_numWheels);
 
-	transmission.m_downshiftRPM = 3500.0f;
-	transmission.m_upshiftRPM = 6500.0f;
+	transmission.m_downshiftRPM = 3500.0f; //HACK: Should be in VehicleComponent
+	transmission.m_upshiftRPM = 7000.0f;
 
 	transmission.m_clutchDelayTime = 0.0f;
-	transmission.m_reverseGearRatio = 1.0f;
-	transmission.m_gearsRatio[0] = 2.0f;
-	transmission.m_gearsRatio[1] = 1.5f;
-	transmission.m_gearsRatio[2] = 1.0f;
-	transmission.m_gearsRatio[3] = 0.75f;
-	transmission.m_wheelsTorqueRatio[0] = 0.2f;
-	transmission.m_wheelsTorqueRatio[1] = 0.2f;
-	transmission.m_wheelsTorqueRatio[2] = 0.3f;
-	transmission.m_wheelsTorqueRatio[3] = 0.3f;
-
+	transmission.m_reverseGearRatio = 1.2f;
+	transmission.m_gearsRatio[0] = 3.0f;
+	transmission.m_gearsRatio[1] = 2.25f;
+	transmission.m_gearsRatio[2] = 1.5f;
+	transmission.m_gearsRatio[3] = 1.0f;
+	
+	for(int i = 0; i < m_Wheels.size(); i++)
+	{
+		// The wheels total TorqueRatio must be equal to 1
+		transmission.m_wheelsTorqueRatio[i] = m_Wheels[i].WheelComponent->TorqueRatio;
+	}
 
 	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(
 		vehicleComponent.TopSpeed,
@@ -267,7 +267,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultA
 	aerodynamics.m_liftCoefficient = -0.3f;
 
 	// Extra gavity applies in world space (independent of m_chassisCoordinateSystem).
-	aerodynamics.m_extraGravityws.set(0.0f, -5.0f, 0.0f);
+	aerodynamics.m_extraGravityws.set(0.0f, -8.0f, 0.0f); // fuck this shit
 }
 
 void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper, Components::Vehicle vehicleComponent)
@@ -285,7 +285,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultV
 
 	// The threshold in m/s at which the algorithm switches from 
 	// using the normalSpinDamping to the collisionSpinDamping. 	
-	velocityDamper.m_collisionThreshold = 1.0f;
+	velocityDamper.m_collisionThreshold = 100.0f;
 }
 
 void VehicleSetup::setupWheelCollide(const hkpWorld* world, const hkpVehicleInstance& vehicle, hkpVehicleRayCastWheelCollide& wheelCollide)

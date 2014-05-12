@@ -6,16 +6,16 @@
 namespace Components
 {
 
-struct Box : Component
+struct BoxShape : Component
 {
-	Box()
+	BoxShape()
 		: Width(1.f), Height(1.f), Depth(1.f){ }
 
 	float Width;
 	float Height;
 	float Depth;
 
-	virtual Box* Clone() const override { return new Box(*this); }
+	virtual BoxShape* Clone() const override { return new BoxShape(*this); }
 };
 
 }

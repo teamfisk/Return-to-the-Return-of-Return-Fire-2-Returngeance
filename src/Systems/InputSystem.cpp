@@ -44,7 +44,7 @@ bool Systems::InputSystem::OnKeyDown(const Events::KeyDown &event)
 	auto bindingIt = m_KeyBindings.find(event.KeyCode);
 	if (bindingIt != m_KeyBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, false);
+		PublishCommand(0, bindingIt->second, 1.f, false);
 	}
 
 	return true;
@@ -55,7 +55,7 @@ bool Systems::InputSystem::OnKeyUp(const Events::KeyUp &event)
 	auto bindingIt = m_KeyBindings.find(event.KeyCode);
 	if (bindingIt != m_KeyBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, true);
+		PublishCommand(0, bindingIt->second, 1.f, true);
 	}
 
 	return true;
@@ -66,7 +66,7 @@ bool Systems::InputSystem::OnMousePress(const Events::MousePress &event)
 	auto bindingIt = m_MouseButtonBindings.find(event.Button);
 	if (bindingIt != m_MouseButtonBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, false);
+		PublishCommand(0, bindingIt->second, 1.f, false);
 	}
 
 	return true;
@@ -77,7 +77,7 @@ bool Systems::InputSystem::OnMouseRelease(const Events::MouseRelease &event)
 	auto bindingIt = m_MouseButtonBindings.find(event.Button);
 	if (bindingIt != m_MouseButtonBindings.end())
 	{
-		PublishCommand(0, bindingIt->second, true);
+		PublishCommand(0, bindingIt->second, 1.f, true);
 	}
 
 	return true;
@@ -113,7 +113,7 @@ bool Systems::InputSystem::OnBindMouseButton(const Events::BindMouseButton &even
 	return true;
 }
 
-void Systems::InputSystem::PublishCommand(int playerID, std::string command, bool release /*= false*/)
+void Systems::InputSystem::PublishCommand(int playerID, std::string command, float value, bool release /*= false*/)
 {
 	if (release && command.at(0) == '+')
 	{
@@ -123,6 +123,7 @@ void Systems::InputSystem::PublishCommand(int playerID, std::string command, boo
 	Events::InputCommand e;
 	e.PlayerID = playerID;
 	e.Command = command;
+	e.Value = value;
 	EventBroker->Publish(e);
 
 	LOG_DEBUG("Input: Published command %s for player %i", e.Command.c_str(), playerID);

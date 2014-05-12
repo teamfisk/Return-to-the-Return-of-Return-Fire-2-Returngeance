@@ -54,9 +54,14 @@
       <Filter>Particle System\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\EventBroker.cpp" />
-    <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp" />
+    <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\InputManager.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp">
+      <Filter>Physics\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +133,9 @@
     </Filter>
     <Filter Include="Input\Events">
       <UniqueIdentifier>{ee125b77-b275-4841-abc9-374957a89916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Events">
+      <UniqueIdentifier>{42ae084f-ade8-402c-87ba-f03f6b846bc8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -229,17 +237,34 @@
     <ClInclude Include="..\..\src\Sound.h">
       <Filter>Audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Physics\VehicleSetup.h" />
-    <ClInclude Include="..\..\src\Components\Box.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Sphere.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Components\Vehicle.h">
       <Filter>Physics\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Wheel.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Physics\VehicleSetup.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\BoxShape.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\SphereShape.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\MeshShape.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Util\UnorderedMapPair.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\HingeConstraint.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\WheelPair.h">
       <Filter>Physics\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h">
@@ -296,6 +321,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\Viewport.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Physics\VehicleSetup.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TankSteering.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\TankSteer.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h">
+      <Filter>Physics\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

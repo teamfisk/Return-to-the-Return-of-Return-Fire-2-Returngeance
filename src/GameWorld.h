@@ -12,6 +12,7 @@
 #include "Systems/ParticleSystem.h"
 //#include "Systems/PlayerSystem.h"
 #include "Systems/FreeSteeringSystem.h"
+#include "Systems/TankSteeringSystem.h"
 #include "Systems/RenderSystem.h"
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
@@ -29,10 +30,11 @@
 #include "Components/Transform.h"
 
 #include "Components/Physics.h"
-#include "Components/Sphere.h"
-#include "Components/Box.h"
+#include "Components/SphereShape.h"
+#include "Components/BoxShape.h"
 #include "Components/Vehicle.h"
 #include "Components/Wheel.h"
+#include "Components/HingeConstraint.h"
 
 class GameWorld : public World
 {

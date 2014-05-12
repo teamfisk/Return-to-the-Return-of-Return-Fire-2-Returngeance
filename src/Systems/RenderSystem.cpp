@@ -84,7 +84,8 @@ void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)
 {
-	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(OBJ(resourceName), rm); });
+	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
+	rm->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
 	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 }
 

@@ -48,7 +48,7 @@ private:
 	EventRelay<Events::BindMouseButton> m_EBindMouseButton;
 	bool OnBindMouseButton(const Events::BindMouseButton &event);
 
-	void PublishCommand(int playerID, std::string command, bool release = false);
+	void PublishCommand(int playerID, std::string command, float value, bool release = false);
 };
 
 }
