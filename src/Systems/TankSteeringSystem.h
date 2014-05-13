@@ -8,6 +8,7 @@
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
 #include "Components/Vehicle.h"
+#include "Components/ParticleEmitter.h"
 #include "Systems/TransformSystem.h"
 #include "InputController.h"
 

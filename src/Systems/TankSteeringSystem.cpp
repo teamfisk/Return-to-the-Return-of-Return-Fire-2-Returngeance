@@ -32,6 +32,12 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		e.PositionY = m_TankInputController->PositionY;
 		e.Handbrake = m_TankInputController->Handbrake;
 		EventBroker->Publish(e);
+
+		auto emitter1 = m_World->GetProperty<std::shared_ptr<Components::ParticleEmitter>>(entity, "Emitter1");
+		auto emitter2 = m_World->GetProperty<std::shared_ptr<Components::ParticleEmitter>>(entity, "Emitter2");
+
+		emitter1->SpawnCount = (int)(m_TankInputController->PositionY < -0.1) * 2;
+		emitter2->SpawnCount = (int)(m_TankInputController->PositionY < -0.1) * 2;
 	}
 
 	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(entity, "TowerSteering");
@@ -50,7 +56,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * m_TowerInputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 
-		if(m_TowerInputController->Shoot && m_TimeSinceLastShot[entity] > 1.0)
+		if (m_TowerInputController->Shoot && m_TimeSinceLastShot[entity] > barrelSteeringComponent->ReloadTime)
 		{
 			EntityID clone = m_World->CloneEntity(barrelSteeringComponent->ShotTemplate);
 			auto templateAbsoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(barrelSteeringComponent->ShotTemplate);

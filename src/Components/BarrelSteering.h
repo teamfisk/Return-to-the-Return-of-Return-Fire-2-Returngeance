@@ -9,11 +9,12 @@ namespace Components
 	struct BarrelSteering : Component
 	{
 		BarrelSteering()
-			: TurnSpeed(1.f), Axis(glm::vec3(0,1,0)){ }
+			: TurnSpeed(1.f), ReloadTime(1.f), Axis(glm::vec3(0,1,0)){ }
 		float TurnSpeed;
 		glm::vec3 Axis;
 		EntityID ShotTemplate;
 		float ShotSpeed;
+		float ReloadTime;
 
 		virtual BarrelSteering* Clone() const override { return new BarrelSteering(*this); }
 	};

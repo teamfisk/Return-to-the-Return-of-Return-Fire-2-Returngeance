@@ -13,8 +13,7 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_A, "horizontal", -1.f);
 	BindKey(GLFW_KEY_D, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftX, "horizontal", 1.f);
-	BindGamepadAxis(Gamepad::Axis::RightTrigger, "vertical", 1.f);
-	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "vertical", -1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftY, "vertical", 1.f);
 	
 	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
 	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
@@ -27,7 +26,7 @@ void GameWorld::Initialize()
 	BindGamepadButton(Gamepad::Button::A, "handbrake", 1.f);
 
 	BindKey(GLFW_KEY_Z, "shoot", 1.f);
-	
+	BindGamepadAxis(Gamepad::Axis::RightTrigger, "shoot", 1.f);
 	//BindGamepadButton(Gamepad::Button::Up, "Gamepad::Button::Up", 1.f);
 	//BindGamepadButton(Gamepad::Button::Down, "Gamepad::Button::Down", 1.f);
 	//BindGamepadButton(Gamepad::Button::Left, "Gamepad::Button::Left", 1.f);
@@ -106,7 +105,29 @@ void GameWorld::Initialize()
 		CommitEntity(ground);
 	}
 
-	
+	{
+		auto container = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(container, "Transform");
+		transform->Position = glm::vec3(40.f, 20.f, 10.f);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(container, "Model");
+		model->ModelFile = "Models/Container/Container.OBJ";
+
+		auto physics = AddComponent<Components::Physics>(container, "Physics");
+		physics->Mass = 4000;
+		physics->Static = false;
+
+		{
+			auto groundshape = CreateEntity(container);
+			auto transformshape = AddComponent<Components::Transform>(groundshape, "Transform");
+			auto meshShape = AddComponent<Components::MeshShape>(groundshape, "MeshShape");
+			meshShape->ResourceName = "Models/Container/Container.OBJ";
+			CommitEntity(groundshape);
+		}
+
+		
+		CommitEntity(container);
+	}
 
 	/*{
 		auto jeep = CreateEntity();
@@ -292,6 +313,7 @@ void GameWorld::Initialize()
 				barrelSteering->Axis = glm::vec3(1.f, 0.f, 0.f);
 				barrelSteering->TurnSpeed = glm::pi<float>()/4.f;
 				barrelSteering->ShotSpeed = 70.f;
+				barrelSteering->ReloadTime = 0.33f;
 				{
 					auto shot = CreateEntity(barrel);
 					auto transform = AddComponent<Components::Transform>(shot, "Transform");
@@ -304,6 +326,10 @@ void GameWorld::Initialize()
 					physics->Static = false;
 					auto modelComponent = AddComponent<Components::Model>(shot, "Model");
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
+
+					auto light = AddComponent<Components::PointLight>(shot, "PointLight");
+					light->Diffuse = glm::vec3(230.f / 255.f, 115.f / 255.f, 0.f / 255.f);
+					light->Specular = glm::vec3(1.f);
 
 					{
 						auto shape = CreateEntity(shot);
@@ -319,18 +345,33 @@ void GameWorld::Initialize()
 				}
 				CommitEntity(barrel);
 			}
+			CommitEntity(tower);
+
+			{
+				auto camera = CreateEntity(tower);
+				auto transform = AddComponent<Components::Transform>(camera, "Transform");
+				transform->Position.z = 30.f;
+				transform->Position.y = 5.f;
+				//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
+				transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1, 0, 0));
+				auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+				cameraComp->FarClip = 2000.f;
+				AddComponent(camera, "Input");
+				auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+				CommitEntity(camera);
+			}
 		}
 
 		{
 			auto lightentity = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(lightentity, "Transform");
-			transform->Position = glm::vec3(0, 0, 0);
+			transform->Position = glm::vec3(0, 14, 0);
 			auto light = AddComponent<Components::PointLight>(lightentity, "PointLight");
-			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
-			//light->Specular = glm::vec3(1.f);
-			/*light->ConstantAttenuation = 0.3f;
-			light->LinearAttenuation = 0.003f;
-			light->QuadraticAttenuation = 0.002f;*/
+			light->Diffuse = glm::vec3(60.f/255.f, 50.f/255.f, 242.f/255.f);
+			light->Specular = glm::vec3(0.7f);
+			light->ConstantAttenuation = 0.3f;
+			light->LinearAttenuation = 0.002f;
+			light->QuadraticAttenuation = 0.06f;
 		}
 
 // 		auto wheelpair = CreateEntity(tank);
@@ -340,7 +381,7 @@ void GameWorld::Initialize()
 		//Create wheels
 		float wheelOffset = 0.4f;
 		float springLength = 0.3f;
-		float suspensionStrength = 25.f;
+		float suspensionStrength = 15.f;
 
 		{
 			auto wheel = CreateEntity(tank);
@@ -538,6 +579,7 @@ void GameWorld::Initialize()
 			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
+			SetProperty(tank, "Emitter1", emitterComponent);
 
 			auto particleEntity = CreateEntity(entity);
 			auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
@@ -622,6 +664,7 @@ void GameWorld::Initialize()
 			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
+			SetProperty(tank, "Emitter2", emitterComponent);
 
 			auto particleEntity = CreateEntity(entity);
 			auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
@@ -634,19 +677,6 @@ void GameWorld::Initialize()
 		}
 
 		CommitEntity(tank);
-		{
-			auto camera = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(camera, "Transform");
-			transform->Position.z = 30.f;
-			transform->Position.y = 5.f;
-			//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
-			transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1,0,0));
-			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-			cameraComp->FarClip = 2000.f;
-			AddComponent(camera, "Input");
-			auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-			CommitEntity(camera);
-		}
 	}
 
 	
