@@ -324,13 +324,13 @@ void GameWorld::Initialize()
 		{
 			auto lightentity = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(lightentity, "Transform");
-			transform->Position = glm::vec3(0, 15, 0);
+			transform->Position = glm::vec3(0, 0, 0);
 			auto light = AddComponent<Components::PointLight>(lightentity, "PointLight");
-			light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
-			light->Specular = glm::vec3(1.f);
-			light->constantAttenuation = 0.3f;
-			light->linearAttenuation = 0.003f;
-			light->quadraticAttenuation = 0.002f;
+			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+			//light->Specular = glm::vec3(1.f);
+			/*light->ConstantAttenuation = 0.3f;
+			light->LinearAttenuation = 0.003f;
+			light->QuadraticAttenuation = 0.002f;*/
 		}
 
 // 		auto wheelpair = CreateEntity(tank);
@@ -524,7 +524,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			/*auto entity = CreateEntity(tank);
+			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
 			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -546,7 +546,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);*/
+			CommitEntity(particleEntity);
 		}
 
 		{
@@ -608,37 +608,37 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			//auto entity = CreateEntity(tank);
-			//auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
-			//transformComponent->Position = glm::vec3(-2,-1.7,2.0);
-			//transformComponent->Scale = glm::vec3(3,3,3);
-			//transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
-			//auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
-			//emitterComponent->SpawnCount = 2;
-			//emitterComponent->SpawnFrequency = 0.005;
-			//emitterComponent->SpreadAngle = glm::pi<float>();
-			//emitterComponent->UseGoalVelocity = false;
-			//emitterComponent->LifeTime = 0.5;
-			////emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
-			//emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
-			//CommitEntity(entity);
+			auto entity = CreateEntity(tank);
+			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
+			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
+			transformComponent->Scale = glm::vec3(3,3,3);
+			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
+			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
+			emitterComponent->SpawnCount = 2;
+			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpreadAngle = glm::pi<float>();
+			emitterComponent->UseGoalVelocity = false;
+			emitterComponent->LifeTime = 0.5;
+			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+			CommitEntity(entity);
 
-			//auto particleEntity = CreateEntity(entity);
-			//auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
-			//TEMP->Scale = glm::vec3(0);
-			//auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
-			//spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-			//emitterComponent->ParticleTemplate = particleEntity;
+			auto particleEntity = CreateEntity(entity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			emitterComponent->ParticleTemplate = particleEntity;
 
-			//CommitEntity(particleEntity);
+			CommitEntity(particleEntity);
 		}
 
 		CommitEntity(tank);
 		{
 			auto camera = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(camera, "Transform");
-			transform->Position.z = 20.f;
-			transform->Position.y = 7.f;
+			transform->Position.z = 30.f;
+			transform->Position.y = 5.f;
 			//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
 			transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1,0,0));
 			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");

@@ -352,12 +352,10 @@
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Util\defferedUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\Shaders\AABB.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Fragment.glsl">
+    <None Include="..\..\src\Shaders\Fragment2.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\Normals.frag.glsl">
@@ -381,10 +379,28 @@
     <None Include="..\..\src\Shaders\Vertex.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\src\Shaders\Vertex2.glsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\AABB.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\Fragment.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\Fragment2-Debug.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
