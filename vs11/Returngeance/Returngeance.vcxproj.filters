@@ -340,6 +340,18 @@
     <ClInclude Include="..\..\src\Events\SetVelocity.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\GamepadAxis.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\GamepadButton.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\BindGamepadAxis.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\BindGamepadButton.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

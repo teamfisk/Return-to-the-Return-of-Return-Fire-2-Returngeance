@@ -58,6 +58,8 @@ private:
 
 	void BindKey(int keyCode, std::string command, float value);
 	void BindMouseButton(int button, std::string command);
+	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
+	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
 };
 
 #endif // GameWorld_h__

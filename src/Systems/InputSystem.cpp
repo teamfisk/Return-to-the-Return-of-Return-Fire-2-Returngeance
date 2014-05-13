@@ -10,12 +10,17 @@ void Systems::InputSystem::RegisterComponents(ComponentFactory* cf)
 void Systems::InputSystem::Initialize()
 {
 	// Subscribe to events
-	EVENT_SUBSCRIBE_MEMBER(m_EKeyDown, &Systems::InputSystem::OnKeyDown)
-	EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &Systems::InputSystem::OnKeyUp)
-	EVENT_SUBSCRIBE_MEMBER(m_EMousePress, &Systems::InputSystem::OnMousePress)
-	EVENT_SUBSCRIBE_MEMBER(m_EMouseRelease, &Systems::InputSystem::OnMouseRelease)
-	EVENT_SUBSCRIBE_MEMBER(m_EBindKey, &Systems::InputSystem::OnBindKey)
-	EVENT_SUBSCRIBE_MEMBER(m_EBindMouseButton, &Systems::InputSystem::OnBindMouseButton)
+	EVENT_SUBSCRIBE_MEMBER(m_EKeyDown, &Systems::InputSystem::OnKeyDown);
+	EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &Systems::InputSystem::OnKeyUp);
+	EVENT_SUBSCRIBE_MEMBER(m_EMousePress, &Systems::InputSystem::OnMousePress);
+	EVENT_SUBSCRIBE_MEMBER(m_EMouseRelease, &Systems::InputSystem::OnMouseRelease);
+	EVENT_SUBSCRIBE_MEMBER(m_EGamepadAxis, &Systems::InputSystem::OnGamepadAxis);
+	EVENT_SUBSCRIBE_MEMBER(m_EGamepadButtonDown, &Systems::InputSystem::OnGamepadButtonDown);
+	EVENT_SUBSCRIBE_MEMBER(m_EGamepadButtonUp, &Systems::InputSystem::OnGamepadButtonUp);
+	EVENT_SUBSCRIBE_MEMBER(m_EBindKey, &Systems::InputSystem::OnBindKey);
+	EVENT_SUBSCRIBE_MEMBER(m_EBindMouseButton, &Systems::InputSystem::OnBindMouseButton);
+	EVENT_SUBSCRIBE_MEMBER(m_EBindGamepadAxis, &Systems::InputSystem::OnBindGamepadAxis);
+	EVENT_SUBSCRIBE_MEMBER(m_EBindGamepadButton, &Systems::InputSystem::OnBindGamepadButton);
 }
 
 void Systems::InputSystem::Update(double dt)
@@ -47,8 +52,8 @@ bool Systems::InputSystem::OnKeyDown(const Events::KeyDown &event)
 		std::string command;
 		float value;
 		std::tie(command, value) = bindingIt->second;
-		m_KeyBindingValues[command] += value;
-		PublishCommand(0, command, std::max(-1.f, std::min(m_KeyBindingValues[command], 1.f)));
+		m_CommandValues[command] += value;
+		PublishCommand(0, command, std::max(-1.f, std::min(m_CommandValues[command], 1.f)));
 	}
 
 	return true;
@@ -62,8 +67,8 @@ bool Systems::InputSystem::OnKeyUp(const Events::KeyUp &event)
 		std::string command;
 		float value;
 		std::tie(command, value) = bindingIt->second;
-		m_KeyBindingValues[command] -= value;
-		PublishCommand(0, command, std::max(-1.f, std::min(m_KeyBindingValues[command], 1.f)));
+		m_CommandValues[command] -= value;
+		PublishCommand(0, command, std::max(-1.f, std::min(m_CommandValues[command], 1.f)));
 	}
 
 	return true;
@@ -90,6 +95,51 @@ bool Systems::InputSystem::OnMouseRelease(const Events::MouseRelease &event)
 
 	return true;
 }
+
+bool Systems::InputSystem::OnGamepadAxis(const Events::GamepadAxis &event)
+{
+	auto bindingIt = m_GamepadAxisBindings.find(event.Axis);
+	if (bindingIt != m_GamepadAxisBindings.end())
+	{
+		std::string command;
+		float value;
+		std::tie(command, value) = bindingIt->second;
+		PublishCommand(event.GamepadID + 1, command, event.Value * value);
+	}
+
+	return true;
+}
+
+bool Systems::InputSystem::OnGamepadButtonDown(const Events::GamepadButtonDown &event)
+{
+	auto bindingIt = m_GamepadButtonBindings.find(event.Button);
+	if (bindingIt != m_GamepadButtonBindings.end())
+	{
+		std::string command;
+		float value;
+		std::tie(command, value) = bindingIt->second;
+		m_CommandValues[command] += value;
+		PublishCommand(event.GamepadID + 1, command, std::max(-1.f, std::min(m_CommandValues[command], 1.f)));
+	}
+
+	return true;
+}
+
+bool Systems::InputSystem::OnGamepadButtonUp(const Events::GamepadButtonUp &event)
+{
+	auto bindingIt = m_GamepadButtonBindings.find(event.Button);
+	if (bindingIt != m_GamepadButtonBindings.end())
+	{
+		std::string command;
+		float value;
+		std::tie(command, value) = bindingIt->second;
+		m_CommandValues[command] -= value;
+		PublishCommand(event.GamepadID + 1, command, std::max(-1.f, std::min(m_CommandValues[command], 1.f)));
+	}
+
+	return true;
+}
+
 
 bool Systems::InputSystem::OnBindKey(const Events::BindKey &event)
 {
@@ -121,6 +171,36 @@ bool Systems::InputSystem::OnBindMouseButton(const Events::BindMouseButton &even
 	return true;
 }
 
+bool Systems::InputSystem::OnBindGamepadAxis(const Events::BindGamepadAxis &event)
+{
+	if (event.Command.empty())
+	{
+		m_GamepadAxisBindings.erase(event.Axis);
+	}
+	else
+	{
+		m_GamepadAxisBindings[event.Axis] = std::make_tuple(event.Command, event.Value);
+		LOG_DEBUG("Input: Bound gamepad axis %i to %s", event.Axis, event.Command.c_str());
+	}
+
+	return true;
+}
+
+bool Systems::InputSystem::OnBindGamepadButton(const Events::BindGamepadButton &event)
+{
+	if (event.Command.empty())
+	{
+		m_GamepadButtonBindings.erase(event.Button);
+	}
+	else
+	{
+		m_GamepadButtonBindings[event.Button] = std::make_tuple(event.Command, event.Value);
+		LOG_DEBUG("Input: Bound gamepad axis %i to %s", event.Button, event.Command.c_str());
+	}
+
+	return true;
+}
+
 void Systems::InputSystem::PublishCommand(int playerID, std::string command, float value)
 {
 	Events::InputCommand e;
@@ -131,3 +211,5 @@ void Systems::InputSystem::PublishCommand(int playerID, std::string command, flo
 
 	LOG_DEBUG("Input: Published command %s=%f for player %i", e.Command.c_str(), e.Value, playerID);
 }
+
+
