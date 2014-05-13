@@ -120,8 +120,10 @@ void GameWorld::Initialize()
 		{
 			auto groundshape = CreateEntity(container);
 			auto transformshape = AddComponent<Components::Transform>(groundshape, "Transform");
-			auto meshShape = AddComponent<Components::MeshShape>(groundshape, "MeshShape");
-			meshShape->ResourceName = "Models/Container/Container.OBJ";
+			auto boxShape = AddComponent<Components::BoxShape>(groundshape, "BoxShape");
+			boxShape->Width = 3.0f;
+			boxShape->Height = 3.0f;
+			boxShape->Depth = 6.6f;
 			CommitEntity(groundshape);
 		}
 
