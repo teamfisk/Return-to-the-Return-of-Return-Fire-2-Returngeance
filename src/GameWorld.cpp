@@ -221,7 +221,7 @@ void GameWorld::Initialize()
 		auto tank = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(tank, "Transform");
 		transform->Position = glm::vec3(0, 5, 0);
-		transform->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(0, 1, 0));
+		//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
 		auto physics = AddComponent<Components::Physics>(tank, "Physics");
 		physics->Mass = 45000;
 		physics->Static = false;
@@ -260,7 +260,7 @@ void GameWorld::Initialize()
 			model->ModelFile = "Models/Tank/Fix/Top.obj";
 			auto towerSteering = AddComponent<Components::TowerSteering>(tower, "TowerSteering");
 			towerSteering->Axis = glm::vec3(0.f, 1.f, 0.f);
-			towerSteering->Velocity = glm::pi<float>()/4.f;
+			towerSteering->TurnSpeed = glm::pi<float>()/4.f;
 			{
 				auto barrel = CreateEntity(tower);
 				auto transform = AddComponent<Components::Transform>(barrel, "Transform");
@@ -269,21 +269,23 @@ void GameWorld::Initialize()
 				model->ModelFile = "Models/Tank/Fix/Barrel.obj";
 				auto barrelSteering = AddComponent<Components::BarrelSteering>(barrel, "BarrelSteering");
 				barrelSteering->Axis = glm::vec3(1.f, 0.f, 0.f);
-				barrelSteering->Velocity = glm::pi<float>()/4.f;
+				barrelSteering->TurnSpeed = glm::pi<float>()/4.f;
+				barrelSteering->ShotSpeed = 70.f;
 				{
 					auto shot = CreateEntity(barrel);
 					auto transform = AddComponent<Components::Transform>(shot, "Transform");
-					transform->Position = glm::vec3(0.35f, 1.f, -2.f);
-					auto shotComponent = AddComponent<Components::Shot>(shot, "Shot");
-					shotComponent->Speed = 5;
+					transform->Position = glm::vec3(0.35f, 0.f, -2.f);
+					transform->Orientation = glm::angleAxis(-glm::pi<float>()/2.f, glm::vec3(1, 0, 0));
+					transform->Scale = glm::vec3(3.f);
+					AddComponent(shot, "Template");
 					auto physics = AddComponent<Components::Physics>(shot, "Physics");
 					physics->Mass = 10.f;
 					physics->Static = false;
 					auto modelComponent = AddComponent<Components::Model>(shot, "Model");
-					modelComponent->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 
 					{
-						auto shape = CreateEntity(tank);
+						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape, "Transform");
 						auto boxShape = AddComponent<Components::BoxShape>(shape, "BoxShape");
 						boxShape->Width = 0.5f;
@@ -501,7 +503,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(tank);
+			/*auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
 			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -523,7 +525,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);
+			CommitEntity(particleEntity);*/
 		}
 
 		{
@@ -585,29 +587,29 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(tank);
-			auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
-			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
-			transformComponent->Scale = glm::vec3(3,3,3);
-			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
-			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
-			emitterComponent->SpawnCount = 2;
-			emitterComponent->SpawnFrequency = 0.005;
-			emitterComponent->SpreadAngle = glm::pi<float>();
-			emitterComponent->UseGoalVelocity = false;
-			emitterComponent->LifeTime = 0.5;
-			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
-			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
-			CommitEntity(entity);
+			//auto entity = CreateEntity(tank);
+			//auto transformComponent = AddComponent<Components::Transform>(entity, "Transform");
+			//transformComponent->Position = glm::vec3(-2,-1.7,2.0);
+			//transformComponent->Scale = glm::vec3(3,3,3);
+			//transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
+			//auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
+			//emitterComponent->SpawnCount = 2;
+			//emitterComponent->SpawnFrequency = 0.005;
+			//emitterComponent->SpreadAngle = glm::pi<float>();
+			//emitterComponent->UseGoalVelocity = false;
+			//emitterComponent->LifeTime = 0.5;
+			////emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+			//emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+			//CommitEntity(entity);
 
-			auto particleEntity = CreateEntity(entity);
-			auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
-			TEMP->Scale = glm::vec3(0);
-			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
-			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-			emitterComponent->ParticleTemplate = particleEntity;
+			//auto particleEntity = CreateEntity(entity);
+			//auto TEMP = AddComponent<Components::Transform>(particleEntity, "Transform");
+			//TEMP->Scale = glm::vec3(0);
+			//auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
+			//spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			//emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);
+			//CommitEntity(particleEntity);
 		}
 
 		CommitEntity(tank);

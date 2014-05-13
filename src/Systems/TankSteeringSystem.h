@@ -8,7 +8,6 @@
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
 #include "Components/Vehicle.h"
-#include "Components/Shot.h"
 #include "Systems/TransformSystem.h"
 #include "InputController.h"
 
@@ -32,6 +31,8 @@ namespace Systems
 		std::unique_ptr<TankSteeringInputController> m_TankInputController;
 		class TowerSteeringInputController;
 		std::unique_ptr<TowerSteeringInputController> m_TowerInputController;
+
+		std::map<EntityID, double> m_TimeSinceLastShot;
 	};
 
 	class TankSteeringSystem::TankSteeringInputController : InputController
@@ -76,7 +77,7 @@ namespace Systems
 
 		float TowerDirection;
 		float BarrelDirection;
-		bool shoot;
+		bool Shoot;
 		void Update(double dt);
 	protected:
 		virtual bool OnCommand(const Events::InputCommand &event);

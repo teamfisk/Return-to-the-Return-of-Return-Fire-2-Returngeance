@@ -38,7 +38,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	if(towerSteeringComponent)
 	{
 		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
-		glm::quat orientation =  glm::angleAxis(towerSteeringComponent->Velocity * m_TowerInputController->TowerDirection * (float)dt, towerSteeringComponent->Axis);
+		glm::quat orientation =  glm::angleAxis(towerSteeringComponent->TurnSpeed * m_TowerInputController->TowerDirection * (float)dt, towerSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 	}
 
@@ -46,21 +46,25 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	if(barrelSteeringComponent)
 	{
 		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
-		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->Velocity * m_TowerInputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
+		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * m_TowerInputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
-	}
 
-	auto shotComponent = m_World->GetComponent<Components::Shot>(entity, "Shot");
-	if(shotComponent)
-	{
-		if(m_TowerInputController->shoot)
+		if(m_TowerInputController->Shoot && m_TimeSinceLastShot[entity] > 1.0)
 		{
-			auto absoluteOrientation = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteOrientation(entity);
+			EntityID clone = m_World->CloneEntity(barrelSteeringComponent->ShotTemplate);
+			auto templateAbsoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(barrelSteeringComponent->ShotTemplate);
+			auto cloneTransform = m_World->GetComponent<Components::Transform>(clone, "Transform");
+			cloneTransform->Position = templateAbsoluteTransform.Position;
+			cloneTransform->Orientation = absoluteTransform.Orientation * cloneTransform->Orientation;
 			Events::SetVelocity e;
-			e.Entity = entity;
-			e.Velocity = absoluteOrientation * (glm::vec3(0.f, 0.f, 1.f) * shotComponent->Speed * (float)dt);
+			e.Entity = clone;
+			e.Velocity = absoluteTransform.Orientation * (glm::vec3(0.f, 0.f, -1.f) * barrelSteeringComponent->ShotSpeed);
 			EventBroker->Publish(e);
+			m_TimeSinceLastShot[entity] = 0;
 		}
+
+		m_TimeSinceLastShot[entity] += dt;
 	}
 }
 
@@ -74,7 +78,7 @@ void Systems::TankSteeringSystem::TowerSteeringInputController::Update( double d
 {
 	TowerDirection = m_TowerDirection;
 	BarrelDirection = m_BarrelDirection;
-	shoot = m_Shoot;
+	Shoot = m_Shoot;
 }
 
 bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const Events::InputCommand &event)
@@ -111,7 +115,7 @@ bool Systems::TankSteeringSystem::TowerSteeringInputController::OnCommand( const
 
 	else if (event.Command == "shoot")
 	{
-		shoot = (bool)val;
+		m_Shoot = val > 0;
 	}
 	return true;
 }

@@ -9,10 +9,11 @@
 struct TowerSteering : Component
 {
 	TowerSteering()
-		: Velocity(1.f), Axis(glm::vec3(0,1,0)){ }
+		: TurnSpeed(1.f), Axis(glm::vec3(0,1,0)){ }
 
-	float Velocity;
+	float TurnSpeed;
 	glm::vec3 Axis;
+	virtual TowerSteering* Clone() const override { return new TowerSteering(*this); }
 };
 
 }

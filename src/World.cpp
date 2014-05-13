@@ -170,6 +170,8 @@ EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)
 	for (auto pair : m_EntityComponents[entity])
 	{
 		auto type = pair.first;
+		if (type == "Template")
+			continue;
 		auto component = std::shared_ptr<Component>(pair.second->Clone());
 		if (component != nullptr)
 		{
@@ -185,6 +187,8 @@ EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)
 			CloneEntity(child, clone);
 		}
 	}
+
+	CommitEntity(clone);
 
 	return clone;
 }
