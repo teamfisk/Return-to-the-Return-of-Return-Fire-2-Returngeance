@@ -3,13 +3,6 @@
 
 #include <array>
 
-namespace Windows
-{
-#include <Xinput.h>
-#undef min
-#undef max
-}
-
 #include "EventBroker.h"
 #include "Events/KeyDown.h"
 #include "Events/KeyUp.h"
@@ -36,6 +29,8 @@ public:
 
 	void Initialize();
 
+	static const short MAX_GAMEPADS = 4;
+
 	void Update(double dt);
 
 private:
@@ -47,11 +42,11 @@ private:
 	std::array<int, GLFW_MOUSE_BUTTON_LAST+1> m_CurrentMouseState;
 	std::array<int, GLFW_MOUSE_BUTTON_LAST+1> m_LastMouseState;
 	typedef std::array<float, static_cast<int>(Gamepad::Axis::LAST) + 1> GamepadAxisState;
-	std::array<GamepadAxisState, XUSER_MAX_COUNT> m_CurrentGamepadAxisState;
-	std::array<GamepadAxisState, XUSER_MAX_COUNT> m_LastGamepadAxisState;
+	std::array<GamepadAxisState, MAX_GAMEPADS> m_CurrentGamepadAxisState;
+	std::array<GamepadAxisState, MAX_GAMEPADS> m_LastGamepadAxisState;
 	typedef std::array<bool, static_cast<int>(Gamepad::Button::LAST) + 1> GamepadButtonState;
-	std::array<GamepadButtonState, XUSER_MAX_COUNT> m_CurrentGamepadButtonState;
-	std::array<GamepadButtonState, XUSER_MAX_COUNT> m_LastGamepadButtonState;
+	std::array<GamepadButtonState, MAX_GAMEPADS> m_CurrentGamepadButtonState;
+	std::array<GamepadButtonState, MAX_GAMEPADS> m_LastGamepadButtonState;
 
 	double m_CurrentMouseX, m_CurrentMouseY;
 	double m_LastMouseX, m_LastMouseY;

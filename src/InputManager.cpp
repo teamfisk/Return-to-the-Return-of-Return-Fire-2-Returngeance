@@ -1,5 +1,6 @@
 #include "PrecompiledHeader.h"
 #include "InputManager.h"
+#include <XInput.h>
 
 void InputManager::Initialize()
 {
@@ -97,9 +98,9 @@ void InputManager::Update(double dt)
 	// }
 
 	// Xbox360 controller
-	using namespace Windows;
+	//using namespace ;
 	DWORD dwResult;
-	for (int i = 0; i < XUSER_MAX_COUNT; i++)
+	for (int i = 0; i < MAX_GAMEPADS; i++)
 	{
 		XINPUT_STATE state = { 0 };
 		// Simply get the state of the controller from XInput.
