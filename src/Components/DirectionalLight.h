@@ -13,6 +13,8 @@ struct DirectionalLight : Component
 	float MaxRange;
 	float SpecularIntensity;
 	Color Color;
+
+	virtual DirectionalLight* Clone() const override { return new DirectionalLight(*this); }
 };
 
 }

@@ -9,7 +9,7 @@ bool OBJ::LoadFromFile(std::string filename)
 	std::ifstream file(m_Path.string());
 	if (!file.is_open())
 	{
-		LOG_ERROR("Failed to open .obj \"%s\"", m_Path.string().c_str());
+		LOG_ERROR("Failed to open .obj \"%s\": %s", m_Path.string().c_str(), strerror(errno));
 		return false;
 	}
 

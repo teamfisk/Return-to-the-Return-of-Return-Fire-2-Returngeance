@@ -6,7 +6,7 @@
 namespace Components
 {
 
-struct Transform : Component
+struct Transform : public Component
 {
 	Transform()
 		: Scale(glm::vec3(1.f)) { }
@@ -15,6 +15,8 @@ struct Transform : Component
 	glm::quat Orientation;
 	glm::vec3 Velocity;
 	glm::vec3 Scale;
+
+	virtual Transform* Clone() const override { return new Transform(*this); }
 };
 
 }

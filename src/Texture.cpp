@@ -15,6 +15,9 @@ void Texture::Load(std::string path)
 	}
 
 	m_Texture = m_TextureCache[path];
+	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
 void Texture::Bind()

@@ -1,7 +1,7 @@
 #include "PrecompiledHeader.h"
 #include "Model.h"
 
-Model::Model(OBJ &obj, ResourceManager* rm)
+Model::Model(ResourceManager* rm, OBJ &obj)
 {
 	OBJ::MaterialInfo* currentMaterial = nullptr;
 	TextureGroup* currentTexGroup = nullptr;

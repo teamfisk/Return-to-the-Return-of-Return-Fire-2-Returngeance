@@ -12,7 +12,9 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/program_options.hpp>
 
-class OBJ
+#include "ResourceManager.h"
+
+class OBJ : public Resource
 {
 public:
 	struct MaterialInfo

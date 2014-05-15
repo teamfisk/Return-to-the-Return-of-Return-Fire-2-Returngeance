@@ -23,10 +23,11 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		auto model = m_World->GetResourceManager()->Load<Model>("Model", modelComponent->ModelFile);
 		if (model != nullptr)
 		{
-			glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
+			/*glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 			glm::quat orientation = m_TransformSystem->AbsoluteOrientation(entity);
-			glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);
-			m_Renderer->AddModelToDraw(model, position, orientation, scale, modelComponent->Visible, modelComponent->ShadowCaster);
+			glm::vec3 scale = m_TransformSystem->AbsoluteScale(entity);*/
+			Components::Transform absoluteTransform = m_TransformSystem->AbsoluteTransform(entity);
+			m_Renderer->AddModelToDraw(model, absoluteTransform.Position, absoluteTransform.Orientation, absoluteTransform.Scale, modelComponent->Visible, modelComponent->ShadowCaster);
 		}
 	}
 
@@ -38,10 +39,11 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 			position,
 			pointLightComponent->Specular,
 			pointLightComponent->Diffuse,
-			pointLightComponent->constantAttenuation,
-			pointLightComponent->linearAttenuation,
-			pointLightComponent->quadraticAttenuation,
-			pointLightComponent->spotExponent);
+			pointLightComponent->specularExponent,
+			pointLightComponent->ConstantAttenuation,
+			pointLightComponent->LinearAttenuation,
+			pointLightComponent->QuadraticAttenuation
+			);
 	}
 
 	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity, "Camera");
@@ -54,11 +56,24 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		m_Renderer->GetCamera()->NearClip(cameraComponent->NearClip);
 		m_Renderer->GetCamera()->FarClip(cameraComponent->FarClip);
 	}
+
+	auto spriteComponent = m_World->GetComponent<Components::Sprite>(entity, "Sprite");
+	if(spriteComponent != nullptr)
+	{
+		//TEMP
+		Texture* texture = m_World->GetResourceManager()->Load<Texture>("Texture", spriteComponent->SpriteFile);
+		//glBindTexture(GL_TEXTURE_2D, texture);
+		auto transform = m_World->GetComponent<Components::Transform>(spriteComponent->Entity, "Transform");
+		glm::quat orientation2D = glm::angleAxis(glm::eulerAngles(transform->Orientation).z, glm::vec3(0, 0, -1));
+		m_Renderer->AddTextureToDraw(texture, transform->Position, orientation2D, transform->Scale);
+	}
 }
 
 void Systems::RenderSystem::Initialize()
 {
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>("TransformSystem");
+
+	m_Renderer->SetSphereModel(m_World->GetResourceManager()->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj"));
 }
 
 void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
@@ -72,7 +87,8 @@ void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)
 {
-	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(OBJ(resourceName), rm); });
+	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
+	rm->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
 	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 }
 

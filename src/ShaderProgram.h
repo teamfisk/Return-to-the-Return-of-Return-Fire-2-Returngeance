@@ -61,7 +61,7 @@ class ShaderProgram
 {
 public:
 	ShaderProgram()
-		: m_ShaderProgramHandle(0) { }
+		: m_ShaderProgramHandle(0) {  }
 	~ShaderProgram();
 
 	void AddShader(std::shared_ptr<Shader> shader);

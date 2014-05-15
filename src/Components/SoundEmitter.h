@@ -17,6 +17,8 @@ struct SoundEmitter : Component
 	float Pitch;
 	bool Loop;
 	std::string Path;
+
+	virtual SoundEmitter* Clone() const override { return new SoundEmitter(*this); }
 };
 
 }

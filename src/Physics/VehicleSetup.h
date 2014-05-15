@@ -21,6 +21,7 @@
 #include <Physics2012/Vehicle/Engine/Default/hkpVehicleDefaultEngine.h>
 #include <Physics2012/Vehicle/VelocityDamper/Default/hkpVehicleDefaultVelocityDamper.h>
 #include <Physics2012/Vehicle/Steering/Default/hkpVehicleDefaultSteering.h>
+#include <Physics2012/Vehicle/Steering/hkpVehicleSteering.h>
 #include <Physics2012/Vehicle/Suspension/Default/hkpVehicleDefaultSuspension.h>
 #include <Physics2012/Vehicle/Transmission/Default/hkpVehicleDefaultTransmission.h>
 #include <Physics2012/Vehicle/WheelCollide/RayCast/hkpVehicleRayCastWheelCollide.h>
@@ -42,8 +43,9 @@ public:
 	{
 		Components::Wheel* WheelComponent;
 		Components::Transform* TransformComponent;
-	};
 
+	};
+	
 	std::vector<WheelData> m_Wheels;
 
 	virtual void setupVehicleData(const hkpWorld* world, hkpVehicleData& data);
@@ -58,6 +60,7 @@ public:
 	virtual void setupComponent(const hkpVehicleData& data, hkpVehicleDefaultVelocityDamper& velocityDamper, Components::Vehicle vehicleComponent);
 
 	virtual void setupWheelCollide(const hkpWorld* world, const hkpVehicleInstance& vehicle, hkpVehicleRayCastWheelCollide& wheelCollide);
+
 };
 
 #endif // Physics_Vehicle_h__

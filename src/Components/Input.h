@@ -18,6 +18,8 @@ struct Input : Component
 	std::array<int, GLFW_MOUSE_BUTTON_LAST+1> LastMouseState;
 	float dX, dY;
 	float WheelDelta;
+
+	virtual Input* Clone() const override { return new Input(*this); }
 };
 
 }

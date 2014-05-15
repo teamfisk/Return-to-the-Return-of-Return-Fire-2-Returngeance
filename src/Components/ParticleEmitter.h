@@ -5,20 +5,39 @@
 #include "Color.h"
 #include <vector>
 
+namespace Systems { class ParticleSystem; }
+
 namespace Components
 {
 
 struct ParticleEmitter : Component
 {
-	int ParticleTemplate;
+	friend class Systems::ParticleSystem;
+
+	ParticleEmitter() 
+		: SpawnFrequency(0)
+		, SpawnCount(0)
+		, SpreadAngle(0)
+		, LifeTime(0)
+		, TimeSinceLastSpawn(0) { } 
+
+	EntityID ParticleTemplate;
 	float SpawnFrequency;
+	float Speed;
 	int SpawnCount;
 	std::vector<Color> ColorSpectrum;
-	std::vector<float> ScaleSpectrum;
+	std::vector<glm::vec3> ScaleSpectrum;
 	float SpreadAngle;
-	float LifeTime;
-	std::vector<float[3]> VelocitySpectrum;
-	std::vector<float[3]> AngularVelocitySpectrum;
+	double LifeTime;
+	bool UseGoalVelocity;
+	glm::vec3 GoalVelocity;
+	std::vector<float> AngularVelocitySpectrum;
+	std::vector<glm::vec3> OrientationSpectrum; //Keep?
+
+	virtual ParticleEmitter* Clone() const override { return new ParticleEmitter(*this); }
+
+private:
+	double TimeSinceLastSpawn;
 };
 
 }

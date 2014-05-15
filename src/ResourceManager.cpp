@@ -16,7 +16,7 @@ Resource* ResourceManager::CreateResource(std::string resourceType, std::string 
 	resource->TypeID = GetTypeID(resourceType);
 	resource->ResourceID = GetNewResourceID(resource->TypeID);
 	// Cache
-	m_ResourceCache[resourceName] = resource;
+	m_ResourceCache[std::make_pair(resourceType, resourceName)] = resource;
 
 	return resource;
 }
@@ -28,7 +28,7 @@ void ResourceManager::RegisterType(std::string resourceType, std::function<Resou
 
 void ResourceManager::Preload(std::string resourceType, std::string resourceName)
 {
-	if (IsResourceLoaded(resourceName))
+	if (IsResourceLoaded(resourceType, resourceName))
 	{
 		LOG_WARNING("Attempted to preload resource \"%s\" multiple times!", resourceName);
 		return;
@@ -54,7 +54,7 @@ unsigned int ResourceManager::GetNewResourceID(unsigned int typeID)
 	return m_ResourceCount[typeID]++;
 }
 
-bool ResourceManager::IsResourceLoaded(std::string resourceName)
+bool ResourceManager::IsResourceLoaded(std::string resourceType, std::string resourceName)
 {
-	return m_ResourceCache.find(resourceName) != m_ResourceCache.end();
+	return m_ResourceCache.find(std::make_pair(resourceType, resourceName)) != m_ResourceCache.end();
 }
