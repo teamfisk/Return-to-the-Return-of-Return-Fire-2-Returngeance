@@ -14,19 +14,8 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_D, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftX, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftY, "vertical", 1.f);
-	BindGamepadAxis(Gamepad::Axis::RightX, "horizontal", 1.f);
-	BindGamepadAxis(Gamepad::Axis::RightY, "vertical", 1.f);
-	BindGamepadAxis(Gamepad::Axis::RightTrigger, "normal", 1.f);
-	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "normal", -1.f);
-	BindKey(GLFW_KEY_SPACE, "normal", 1.f);
-	BindKey(GLFW_KEY_LEFT_CONTROL, "normal", -1.f);
 
-	BindKey(GLFW_KEY_LEFT_SHIFT, "speed", 1.f);
-	BindKey(GLFW_KEY_LEFT_ALT, "speed", -1.f);
-
-	BindMouseButton(GLFW_MOUSE_BUTTON_1, "attack", 1.f);
-	
-	/*BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
+	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
 	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
 	BindKey(GLFW_KEY_LEFT, "tower_rotation", -1.f);
 	BindKey(GLFW_KEY_RIGHT, "tower_rotation", 1.f);
@@ -36,7 +25,8 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_SPACE, "handbrake", 1.f);
 	BindGamepadButton(Gamepad::Button::A, "handbrake", 1.f);
 
-	BindKey(GLFW_KEY_Z, "shoot", 1.f);*/
+	BindKey(GLFW_KEY_Z, "shoot", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightTrigger, "shoot", 1.f);
 	
 	//BindGamepadButton(Gamepad::Button::Up, "Gamepad::Button::Up", 1.f);
 	//BindGamepadButton(Gamepad::Button::Down, "Gamepad::Button::Down", 1.f);
@@ -55,17 +45,17 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
-	{
-		auto camera = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(camera, "Transform");
-		transform->Position.z = 20.f;
-		transform->Position.y = 20.f;
-		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
-		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-		cameraComp->FarClip = 2000.f;
-		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-		CommitEntity(camera);
-	}
+	//{
+	//	auto camera = CreateEntity();
+	//	auto transform = AddComponent<Components::Transform>(camera, "Transform");
+	//	transform->Position.z = 20.f;
+	//	transform->Position.y = 20.f;
+	//	//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+	//	auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+	//	cameraComp->FarClip = 2000.f;
+	//	auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+	//	CommitEntity(camera);
+	//}
 
 
 	{
@@ -306,6 +296,20 @@ void GameWorld::Initialize()
 					barrelSteering->ShotTemplate = shot;
 				}
 				CommitEntity(barrel);
+			}
+
+			{
+				auto camera = CreateEntity(tower);
+				auto transform = AddComponent<Components::Transform>(camera, "Transform");
+				transform->Position.z = 30.f;
+				transform->Position.y = 5.f;
+				//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
+				transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1, 0, 0));
+				auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+				cameraComp->FarClip = 2000.f;
+				AddComponent(camera, "Input");
+				//auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
+				CommitEntity(camera);
 			}
 		}
 
@@ -622,19 +626,6 @@ void GameWorld::Initialize()
 		}
 
 		CommitEntity(tank);
-		{
-			auto camera = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(camera, "Transform");
-			transform->Position.z = 30.f;
-			transform->Position.y = 5.f;
-			//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
-			transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1,0,0));
-			auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-			cameraComp->FarClip = 2000.f;
-			AddComponent(camera, "Input");
-			auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-			CommitEntity(camera);
-		}
 	}
 
 	
