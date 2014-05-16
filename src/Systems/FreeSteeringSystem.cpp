@@ -60,27 +60,27 @@ void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const Events::InputCommand &event)
 {
 	// Movement
-	if (event.Command == "vertical")
+	if (event.Command == "cam_vertical")
 	{
 		Movement.z = -event.Value;
 	}
-	else if (event.Command == "horizontal")
+	else if (event.Command == "cam_horizontal")
 	{
 		Movement.x = event.Value;
 	}
-	else if (event.Command == "normal")
+	else if (event.Command == "cam_normal")
 	{
 		Movement.y = event.Value;
 	}
 
 	// Speed
-	else if (event.Command == "speed")
+	else if (event.Command == "cam_speed")
 	{
 		SpeedMultiplier = event.Value;
 	}
 
 	// Mouse click
-	else if (event.Command == "attack")
+	else if (event.Command == "cam_attack")
 	{
 		OrientationActive = event.Value > 0;
 
@@ -96,11 +96,11 @@ bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const E
 		}
 	}
 
-	else if (event.Command == "vertical2")
+	else if (event.Command == "cam_vertical2")
 	{
 		ControllerOrientation.x = event.Value;
 	}
-	else if (event.Command == "horizontal2")
+	else if (event.Command == "cam_horizontal2")
 	{
 		ControllerOrientation.y = -event.Value;
 	}
