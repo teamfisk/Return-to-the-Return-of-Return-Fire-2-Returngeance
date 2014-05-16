@@ -161,6 +161,7 @@
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\LockMouse.h" />
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />

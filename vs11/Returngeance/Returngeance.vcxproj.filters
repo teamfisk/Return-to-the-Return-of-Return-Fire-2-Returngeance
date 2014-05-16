@@ -353,6 +353,9 @@
       <Filter>Input\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Util\defferedUtil.h" />
+    <ClInclude Include="..\..\src\Events\LockMouse.h">
+      <Filter>Input\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

@@ -5,6 +5,9 @@ void InputManager::Initialize()
 {
 	m_LastGamepadAxisState = std::array<GamepadAxisState, XUSER_MAX_COUNT>();
 	m_LastGamepadButtonState = std::array<GamepadButtonState, XUSER_MAX_COUNT>();
+
+	EVENT_SUBSCRIBE_MEMBER(m_ELockMouse, &InputManager::OnLockMouse);
+	EVENT_SUBSCRIBE_MEMBER(m_EUnlockMouse, &InputManager::OnUnlockMouse);
 }
 
 void InputManager::Update(double dt)
@@ -20,13 +23,13 @@ void InputManager::Update(double dt)
 			{
 				Events::KeyDown e;
 				e.KeyCode = i;
-				m_EventBroker->Publish(e);
+				EventBroker->Publish(e);
 			}
 			else
 			{
 				Events::KeyUp e;
 				e.KeyCode = i;
-				m_EventBroker->Publish(e);
+				EventBroker->Publish(e);
 			}
 		}
 	}
@@ -42,13 +45,13 @@ void InputManager::Update(double dt)
 			{
 				Events::MousePress e;
 				e.Button = i;
-				m_EventBroker->Publish(e);
+				EventBroker->Publish(e);
 			}
 			else
 			{
 				Events::MouseRelease e;
 				e.Button = i;
-				m_EventBroker->Publish(e);
+				EventBroker->Publish(e);
 			}
 		}
 	}
@@ -65,7 +68,7 @@ void InputManager::Update(double dt)
 		e.Y = m_CurrentMouseY;
 		e.DeltaX = m_CurrentMouseDeltaX;
 		e.DeltaY = m_CurrentMouseDeltaY;
-		m_EventBroker->Publish(e);
+		EventBroker->Publish(e);
 	}
 
 	// // Lock mouse while holding LMB
@@ -156,7 +159,7 @@ void InputManager::PublishGamepadAxisIfChanged(int gamepadID, Gamepad::Axis axis
 		e.GamepadID = gamepadID;
 		e.Axis = axis;
 		e.Value = currentValue;
-		m_EventBroker->Publish(e);
+		EventBroker->Publish(e);
 	}
 }
 
@@ -171,14 +174,30 @@ void InputManager::PublishGamepadButtonIfChanged(int gamepadID, Gamepad::Button 
 			Events::GamepadButtonDown e;
 			e.GamepadID = gamepadID;
 			e.Button = button;
-			m_EventBroker->Publish(e);
+			EventBroker->Publish(e);
 		}
 		else
 		{
 			Events::GamepadButtonUp e;
 			e.GamepadID = gamepadID;
 			e.Button = button;
-			m_EventBroker->Publish(e);
+			EventBroker->Publish(e);
 		}
 	}
+}
+
+bool InputManager::OnLockMouse(const Events::LockMouse &event)
+{
+	m_MouseLocked = true;
+	glfwSetInputMode(m_GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	return true;
+}
+
+bool InputManager::OnUnlockMouse(const Events::UnlockMouse &event)
+{
+	m_MouseLocked = false;
+	glfwSetInputMode(m_GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	return true;
 }
