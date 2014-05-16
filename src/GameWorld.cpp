@@ -13,20 +13,30 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_A, "horizontal", -1.f);
 	BindKey(GLFW_KEY_D, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftX, "horizontal", 1.f);
-	BindGamepadAxis(Gamepad::Axis::RightTrigger, "vertical", 1.f);
-	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "vertical", -1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftY, "vertical", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightX, "horizontal", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightY, "vertical", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightTrigger, "normal", 1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "normal", -1.f);
+	BindKey(GLFW_KEY_SPACE, "normal", 1.f);
+	BindKey(GLFW_KEY_LEFT_CONTROL, "normal", -1.f);
+
+	BindKey(GLFW_KEY_LEFT_SHIFT, "speed", 1.f);
+	BindKey(GLFW_KEY_LEFT_ALT, "speed", -1.f);
+
+	BindMouseButton(GLFW_MOUSE_BUTTON_1, "attack", 1.f);
 	
-	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
+	/*BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
 	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
 	BindKey(GLFW_KEY_LEFT, "tower_rotation", -1.f);
 	BindKey(GLFW_KEY_RIGHT, "tower_rotation", 1.f);
 	BindGamepadAxis(Gamepad::Axis::RightX, "tower_rotation", 1.f);
 	BindGamepadAxis(Gamepad::Axis::RightY, "barrel_rotation", 1.f);
-	
+
 	BindKey(GLFW_KEY_SPACE, "handbrake", 1.f);
 	BindGamepadButton(Gamepad::Button::A, "handbrake", 1.f);
 
-	BindKey(GLFW_KEY_Z, "shoot", 1.f);
+	BindKey(GLFW_KEY_Z, "shoot", 1.f);*/
 	
 	//BindGamepadButton(Gamepad::Button::Up, "Gamepad::Button::Up", 1.f);
 	//BindGamepadButton(Gamepad::Button::Down, "Gamepad::Button::Down", 1.f);
@@ -42,28 +52,6 @@ void GameWorld::Initialize()
 	//BindGamepadButton(Gamepad::Button::B, "Gamepad::Button::B", 1.f);
 	//BindGamepadButton(Gamepad::Button::X, "Gamepad::Button::X", 1.f);
 	//BindGamepadButton(Gamepad::Button::Y, "Gamepad::Button::Y", 1.f);
-// 
-// BindKey(GLFW_KEY_UP, "vertical", -1.f);
-// BindKey(GLFW_KEY_DOWN, "vertical", 1.f);
-// BindKey(GLFW_KEY_LEFT, "horizontal", -1.f);
-// BindKey(GLFW_KEY_RIGHT, "horizontal", 1.f);
-	/*
-	BindKey(GLFW_KEY_Q, "+tower_right");
-	BindKey(GLFW_KEY_E, "+tower_left");
-
-	BindKey(GLFW_KEY_Q, "+up");
-	BindKey(GLFW_KEY_LEFT_CONTROL, "+down");
-	BindKey(GLFW_KEY_LEFT_ALT, "+slow");
-	BindKey(GLFW_KEY_LEFT_SHIFT, "+fast");
-	BindMouseButton(GLFW_MOUSE_BUTTON_1, "+attack");
-	BindMouseButton(GLFW_MOUSE_BUTTON_2, "+attack2");
-	BindMouseButton(GLFW_MOUSE_BUTTON_3, "+attack3");
-
-
-	BindKey(GLFW_KEY_UP, "+cam_forward");
-	BindKey(GLFW_KEY_DOWN, "+cam_backward");
-	BindKey(GLFW_KEY_LEFT, "+cam_left");
-	BindKey(GLFW_KEY_RIGHT, "+cam_right");*/
 
 	RegisterComponents();
 
@@ -793,11 +781,12 @@ void GameWorld::BindKey(int keyCode, std::string command, float value)
 	m_EventBroker->Publish(e);
 }
 
-void GameWorld::BindMouseButton(int button, std::string command)
+void GameWorld::BindMouseButton(int button, std::string command, float value)
 {
 	Events::BindMouseButton e;
 	e.Button = button;
 	e.Command = command;
+	e.Value = value;
 	m_EventBroker->Publish(e);
 }
 
