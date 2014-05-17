@@ -17,14 +17,14 @@ void GameWorld::Initialize()
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground, "Transform");
 		transform->Position = glm::vec3(0, -5, 0);
-		transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
+		transform->Scale = glm::vec3(800.0f, 10.0f, 800.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground, "Model");
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
 		auto box = AddComponent<Components::Box>(ground, "Box");
-		box->Width = 200;
+		box->Width = 400;
 		box->Height = 5;
-		box->Depth = 200;
+		box->Depth = 400;
 
 		auto physics = AddComponent<Components::Physics>(ground, "Physics");
 		physics->Mass = 10;

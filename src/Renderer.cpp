@@ -17,10 +17,10 @@ Renderer::Renderer()
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
-	m_ShadowMapRes = 2048*8;
+	m_ShadowMapRes = 2048*16;
 	m_SunPosition = glm::vec3(0, 3.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
-	m_SunProjection = glm::ortho<float>(-200.f, 200.f, -200.f, 200.f, -100, 200);
+	m_SunProjection = glm::ortho<float>(10.f, -10.f, 10.f, -10.f, 10.f, -10.f);
 /*	Lights = 0;*/
 }
 
@@ -781,4 +781,33 @@ glm::mat4 Renderer::CreateLightMatrix(Light &_light)
 	model *= glm::scale(glm::vec3(cutOffRadius));
 	return model;
 }
+
+void Renderer::UpdateSunProjection()
+{
+	glm::vec3 NDCCube[] =
+	{
+		glm::vec3(-1.f, -1.f, -1.f), 
+		glm::vec3(1.f, -1.f, -1.f), 
+		glm::vec3(-1.f, 1.f, -1.f), 
+		glm::vec3(1.f, 1.f, -1.f), 
+		glm::vec3(-1.f, -1.f, 1.f),
+		glm::vec3(1.f, -1.f, 1.f), 
+		glm::vec3(-1.f, 1.f, 1.f), 
+		glm::vec3(1.f, 1.f, 1.f)
+	};
+
+	glm::mat4 inverseProjectionViewMatrix =  glm::inverse(m_Camera->ViewMatrix()) * glm::inverse(m_Camera->ProjectionMatrix());
+	//Also * with world matrix for light
+
+	for(auto corner : NDCCube)
+	{
+		//corner *= inverseProjectionViewMatrix;
+	}
+
+	//Calculate the bounding box of the transformed frustum corners. This will be the view frustum for the shadow map.
+
+	//Pass the bounding box's extents to glOrtho or similar to set up the orthographic projection matrix for the shadow map.
+}
+
+
 

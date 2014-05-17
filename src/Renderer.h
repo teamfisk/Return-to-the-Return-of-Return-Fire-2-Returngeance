@@ -141,6 +141,8 @@ private:
 	void DrawLightScene();
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
+	void UpdateSunProjection();
+
 	
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();
