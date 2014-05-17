@@ -4,7 +4,7 @@
 
 void Systems::FreeSteeringSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("FreeSteering", []() { return new Components::FreeSteering(); });
+	cf->Register<Components::FreeSteering>([]() { return new Components::FreeSteering(); });
 }
 
 void Systems::FreeSteeringSystem::Initialize()
@@ -19,10 +19,10 @@ void Systems::FreeSteeringSystem::Update(double dt)
 
 void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto steering = m_World->GetComponent<Components::FreeSteering>(entity, "FreeSteering");
+	auto steering = m_World->GetComponent<Components::FreeSteering>(entity);
 	if (steering)
 	{
-		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
 
 		glm::vec3 cameraRight = glm::vec3(transform->Orientation * glm::vec4(1, 0, 0, 0));
 		glm::vec3 cameraForward = glm::vec3(transform->Orientation * glm::vec4(0, 0, -1, 0));

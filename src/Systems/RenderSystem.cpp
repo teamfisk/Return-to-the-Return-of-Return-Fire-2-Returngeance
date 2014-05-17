@@ -12,12 +12,12 @@ void Systems::RenderSystem::OnComponentCreated(std::string type, std::shared_ptr
 
 void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (transformComponent == nullptr)
 		return;
 
 	// Draw models
-	auto modelComponent = m_World->GetComponent<Components::Model>(entity, "Model");
+	auto modelComponent = m_World->GetComponent<Components::Model>(entity);
 	if (modelComponent != nullptr)
 	{
 		auto model = m_World->GetResourceManager()->Load<Model>("Model", modelComponent->ModelFile);
@@ -31,7 +31,7 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		}
 	}
 
-	auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity, "PointLight");
+	auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity);
 	if (pointLightComponent != nullptr)
 	{
 		glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
@@ -46,7 +46,7 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 			);
 	}
 
-	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity, "Camera");
+	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity);
 	if (cameraComponent != nullptr)
 	{
 		m_Renderer->GetCamera()->Position(m_TransformSystem->AbsolutePosition(entity));
@@ -57,13 +57,13 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 		m_Renderer->GetCamera()->FarClip(cameraComponent->FarClip);
 	}
 
-	auto spriteComponent = m_World->GetComponent<Components::Sprite>(entity, "Sprite");
+	auto spriteComponent = m_World->GetComponent<Components::Sprite>(entity);
 	if(spriteComponent != nullptr)
 	{
 		//TEMP
 		Texture* texture = m_World->GetResourceManager()->Load<Texture>("Texture", spriteComponent->SpriteFile);
 		//glBindTexture(GL_TEXTURE_2D, texture);
-		auto transform = m_World->GetComponent<Components::Transform>(spriteComponent->Entity, "Transform");
+		auto transform = m_World->GetComponent<Components::Transform>(spriteComponent->Entity);
 		glm::quat orientation2D = glm::angleAxis(glm::eulerAngles(transform->Orientation).z, glm::vec3(0, 0, -1));
 		m_Renderer->AddTextureToDraw(texture, transform->Position, orientation2D, transform->Scale);
 	}
@@ -71,18 +71,18 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 
 void Systems::RenderSystem::Initialize()
 {
-	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>("TransformSystem");
+	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 
 	m_Renderer->SetSphereModel(m_World->GetResourceManager()->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj"));
 }
 
 void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("Camera", []() { return new Components::Camera(); });
-	cf->Register("Model", []() { return new Components::Model(); });
-	cf->Register("Sprite", []() { return new Components::Sprite(); });
-	cf->Register("PointLight", []() { return new Components::PointLight(); });
-	cf->Register("DirectionalLight", []() { return new Components::DirectionalLight(); });
+	cf->Register<Components::Camera>([]() { return new Components::Camera(); });
+	cf->Register<Components::Model>([]() { return new Components::Model(); });
+	cf->Register<Components::Sprite>([]() { return new Components::Sprite(); });
+	cf->Register<Components::PointLight>([]() { return new Components::PointLight(); });
+	cf->Register<Components::DirectionalLight>([]() { return new Components::DirectionalLight(); });
 }
 
 void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)

@@ -13,6 +13,7 @@
 #include "Factory.h"
 #include "Entity.h"
 #include "Component.h"
+#include "Components/Template.h"
 #include "System.h"
 #include "EventBroker.h"
 #include "ResourceManager.h"
@@ -31,10 +32,14 @@ public:
 	virtual void AddSystems() = 0;
 	virtual void RegisterComponents() = 0;
 
+	template <typename T>
+	void AddSystem()
+	{
+		m_Systems[typeid(T).name()] = std::shared_ptr<System>(m_SystemFactory.Create<T>());
+	}
 
-	void AddSystem(std::string systemType);
-	template <class T>
-	std::shared_ptr<T> GetSystem(std::string systemType);
+	template <typename T>
+	std::shared_ptr<T> GetSystem();
 
 	EntityID CreateEntity(EntityID parent = 0);
 	EntityID CloneEntity(EntityID entity, EntityID parent = 0);
@@ -69,10 +74,9 @@ public:
 	}
 
 	template <class T>
-	std::shared_ptr<T> AddComponent(EntityID entity, std::string componentType);
-	std::shared_ptr<Component> AddComponent(EntityID entity, std::string componentType);
+	std::shared_ptr<T> AddComponent(EntityID entity);
 	template <class T>
-	T* GetComponent(EntityID entity, std::string componentType);
+	T* GetComponent(EntityID entity);
 	// Triggers commit events in systems
 	void CommitEntity(EntityID entity);
 
@@ -117,11 +121,13 @@ protected:
 };
 
 template <class T>
-std::shared_ptr<T> World::GetSystem(std::string systemType)
+std::shared_ptr<T> World::GetSystem()
 {
+	const char* systemType = typeid(T).name();
+
 	if (m_Systems.find(systemType) == m_Systems.end())
 	{
-		LOG_WARNING("Tried to get pointer to unregistered system \"%s\"!", systemType.c_str());
+		LOG_WARNING("Tried to get pointer to unregistered system \"%s\"!", systemType);
 		return nullptr;
 	}
 
@@ -129,12 +135,14 @@ std::shared_ptr<T> World::GetSystem(std::string systemType)
 }
 
 template <class T>
-std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentType)
+std::shared_ptr<T> World::AddComponent(EntityID entity)
 {
-	std::shared_ptr<T> component = std::shared_ptr<T>(static_cast<T*>(m_ComponentFactory.Create(componentType)));
+	const char* componentType = typeid(T).name();
+
+	std::shared_ptr<T> component = std::shared_ptr<T>(static_cast<T*>(m_ComponentFactory.Create<T>()));
 	if (component == nullptr)
 	{
-		LOG_ERROR("Failed to attach invalid component \"%s\" to entity #%i", componentType.c_str(), entity);
+		LOG_ERROR("Failed to attach invalid component \"%s\" to entity #%i", componentType, entity);
 		return nullptr;
 	}
 
@@ -145,17 +153,11 @@ std::shared_ptr<T> World::AddComponent(EntityID entity, std::string componentTyp
 
 
 template <class T>
-T* World::GetComponent(EntityID entity, std::string componentType)
+T* World::GetComponent(EntityID entity)
 {
-	
-	/*auto it0 = m_EntityComponents.find(entity);
-
-	if (it0 == m_EntityComponents.end())
-	return nullptr;*/
-
 	auto components = m_EntityComponents[entity]; 
 
-	auto it = components.find(componentType);
+	auto it = components.find(typeid(T).name());
 	if (it != components.end())
 	{
 		return static_cast<T*>(it->second.get());

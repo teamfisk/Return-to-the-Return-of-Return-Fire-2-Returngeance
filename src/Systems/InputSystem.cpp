@@ -4,7 +4,7 @@
 
 void Systems::InputSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("Input", []() { return new Components::Input(); });
+	cf->Register<Components::Input>([]() { return new Components::Input(); });
 }
 
 void Systems::InputSystem::Initialize()

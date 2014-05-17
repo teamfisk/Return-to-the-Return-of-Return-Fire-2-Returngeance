@@ -4,9 +4,9 @@
 
 void Systems::TankSteeringSystem::RegisterComponents( ComponentFactory* cf )
 {
-	cf->Register("TankSteering", []() { return new Components::TankSteering(); });
-	cf->Register("TowerSteering", []() { return new Components::TowerSteering(); });
-	cf->Register("BarrelSteering", []() { return new Components::BarrelSteering(); });
+	cf->Register<Components::TankSteering>([]() { return new Components::TankSteering(); });
+	cf->Register<Components::TowerSteering>([]() { return new Components::TowerSteering(); });
+	cf->Register<Components::BarrelSteering>([]() { return new Components::BarrelSteering(); });
 }
 
 void Systems::TankSteeringSystem::Initialize()
@@ -23,7 +23,7 @@ void Systems::TankSteeringSystem::Update(double dt)
 
 void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity, "TankSteering");
+	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity);
 	if(tankSteeringComponent)
 	{
 		Events::TankSteer e;
@@ -34,27 +34,27 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		EventBroker->Publish(e);
 	}
 
-	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(entity, "TowerSteering");
+	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(entity);
 	if(towerSteeringComponent)
 	{
-		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 		glm::quat orientation =  glm::angleAxis(towerSteeringComponent->TurnSpeed * m_TowerInputController->TowerDirection * (float)dt, towerSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 	}
 
-	auto barrelSteeringComponent = m_World->GetComponent<Components::BarrelSteering>(entity, "BarrelSteering");
+	auto barrelSteeringComponent = m_World->GetComponent<Components::BarrelSteering>(entity);
 	if(barrelSteeringComponent)
 	{
-		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
-		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+		auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
+		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * m_TowerInputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 
 		if(m_TowerInputController->Shoot && m_TimeSinceLastShot[entity] > 1.0)
 		{
 			EntityID clone = m_World->CloneEntity(barrelSteeringComponent->ShotTemplate);
-			auto templateAbsoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(barrelSteeringComponent->ShotTemplate);
-			auto cloneTransform = m_World->GetComponent<Components::Transform>(clone, "Transform");
+			auto templateAbsoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(barrelSteeringComponent->ShotTemplate);
+			auto cloneTransform = m_World->GetComponent<Components::Transform>(clone);
 			cloneTransform->Position = templateAbsoluteTransform.Position;
 			cloneTransform->Orientation = absoluteTransform.Orientation * cloneTransform->Orientation;
 			Events::SetVelocity e;
