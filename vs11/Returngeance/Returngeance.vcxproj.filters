@@ -352,6 +352,9 @@
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Health.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl">

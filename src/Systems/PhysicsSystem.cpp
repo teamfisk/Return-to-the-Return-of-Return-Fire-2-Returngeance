@@ -27,6 +27,8 @@
 
 void Systems::PhysicsSystem::Initialize()
 {
+	
+
 	m_Accumulator = 0;
 
 	// Events
@@ -102,6 +104,8 @@ void Systems::PhysicsSystem::Initialize()
 		SetupVisualDebugger(m_Context);
 
 		m_PhysicsWorld->unmarkForWrite();
+
+		m_collisionResolution = new MyCollisionResolution;
 	}
 
 }
@@ -324,9 +328,11 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				m_PhysicsWorld->markForWrite();
 				vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
 				// Add the vehicle's entities and phantoms to the world
+				rigidBody->addContactListener( m_collisionResolution );
 				m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
-
 				m_RigidBodies[entity] = rigidBody;
+				m_collisionResolution->m_RigidBodies[rigidBody] = entity;
+
 
 				// The vehicle is an action
 				m_PhysicsWorld->addAction(m_Vehicles[entity]);
@@ -340,8 +346,10 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			else
 			{
 				m_PhysicsWorld->markForWrite();
+				rigidBody->addContactListener( m_collisionResolution );
 				m_PhysicsWorld->addEntity(rigidBody);
 				m_RigidBodies[entity] = rigidBody;
+				m_collisionResolution->m_RigidBodies[rigidBody] = entity;
 				m_PhysicsWorld->unmarkForWrite();
 
 				shape->removeReference();
@@ -394,6 +402,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			m_PhysicsWorld->markForWrite();
 			m_PhysicsWorld->addEntity(rigidBody);
 			m_RigidBodies[entity] = rigidBody;
+			m_collisionResolution->m_RigidBodies[rigidBody] = entity;
 			m_PhysicsWorld->unmarkForWrite();
 
 			shape->removeReference();

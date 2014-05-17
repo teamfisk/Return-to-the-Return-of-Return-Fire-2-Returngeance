@@ -60,9 +60,27 @@
 #include "Physics/VehicleSetup.h"
 
 #include <unordered_map>
+
+#include <Physics2012/Dynamics/Collide/ContactListener/hkpContactListener.h>
+
+class MyCollisionResolution: public hkReferencedObject, public hkpContactListener
+{
+public:
+	std::unordered_map<hkpRigidBody*, EntityID> m_RigidBodies;
+
+	virtual void contactPointCallback( const hkpContactPointEvent& event ) 
+	{
+		
+		EntityID entity1 = m_RigidBodies[event.getBody(0)];
+		EntityID entity2 = m_RigidBodies[event.getBody(1)];
+		LOG_INFO("Entities colliding: %i, %i ", entity1, entity2);
+
+	}
+};
+
+
 namespace Systems
 {
-
 class PhysicsSystem : public System
 {
 public:
@@ -77,7 +95,7 @@ public:
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
-
+	
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
@@ -145,8 +163,9 @@ private:
 		hkpMoppBvTreeShape* MoppShape;
 	};
 	std::unordered_map<EntityID, ExtendedShapeData > m_ExtendedMeshShapes;
+
+	MyCollisionResolution* m_collisionResolution;
 };
 
 }
-
 #endif // PhysicsSystem_h__

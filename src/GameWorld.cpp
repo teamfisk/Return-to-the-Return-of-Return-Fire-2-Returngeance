@@ -340,7 +340,7 @@ void GameWorld::Initialize()
 		//Create wheels
 		float wheelOffset = 0.4f;
 		float springLength = 0.3f;
-		float suspensionStrength = 25.f;
+		float suspensionStrength = 15.f;
 
 		{
 			auto wheel = CreateEntity(tank);
