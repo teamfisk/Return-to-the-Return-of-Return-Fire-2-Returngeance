@@ -22,7 +22,7 @@ void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpV
 	//
 	vehicle.m_data = new hkpVehicleData;
 	vehicle.m_driverInput = new hkpVehicleDefaultAnalogDriverInput;
-	vehicle.m_steering = new hkpVehicleDefaultSteering;
+	vehicle.m_steering = new TankSteering;
 	vehicle.m_engine = new hkpVehicleDefaultEngine;
 	vehicle.m_transmission = new hkpVehicleDefaultTransmission;
 	vehicle.m_brake = new hkpVehicleDefaultBrake;

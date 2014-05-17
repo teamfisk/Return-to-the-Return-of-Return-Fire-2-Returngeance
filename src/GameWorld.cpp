@@ -248,6 +248,7 @@ void GameWorld::Initialize()
 		physics->Static = false;
 		auto vehicle = AddComponent<Components::Vehicle>(tank, "Vehicle");
 		vehicle->MaxTorque = 5200.f;
+		vehicle->MaxSteeringAngle = 90.f;
 		AddComponent<Components::TankSteering>(tank, "TankSteering");
 		AddComponent<Components::Input>(tank, "Input");
 
@@ -445,7 +446,7 @@ void GameWorld::Initialize()
 			Wheel->AxleID = 0;
 			Wheel->Mass = 2000;
 			Wheel->Radius = 0.6f;
-			Wheel->Steering = false;
+			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
 			Wheel->Friction = 4.f;
 			Wheel->ConnectedToHandbrake = true;
