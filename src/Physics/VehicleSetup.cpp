@@ -7,13 +7,13 @@
 
 void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpVehicleInstance& vehicle, EntityID vehicleEntity, std::vector<EntityID> wheelEntities)
 {
-	auto vehicleComponent = world->GetComponent<Components::Vehicle>(vehicleEntity, "Vehicle");
+	auto vehicleComponent = world->GetComponent<Components::Vehicle>(vehicleEntity);
 	
 	WheelData wheelData;
 	for (int i = 0; i < wheelEntities.size(); i++)
 	{
-		wheelData.WheelComponent = world->GetComponent<Components::Wheel>(wheelEntities[i], "Wheel");
-		wheelData.TransformComponent = world->GetComponent<Components::Transform>(wheelEntities[i], "Transform");
+		wheelData.WheelComponent = world->GetComponent<Components::Wheel>(wheelEntities[i]);
+		wheelData.TransformComponent = world->GetComponent<Components::Transform>(wheelEntities[i]);
 		m_Wheels.push_back(wheelData);	
 	}
 	

@@ -162,6 +162,7 @@
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\LockMouse.h" />
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
+    <ClInclude Include="..\..\src\Util\defferedUtil.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
     <ClInclude Include="..\..\src\Util\Rectangle.h" />
     <ClInclude Include="..\..\src\Util\Logging.h" />
@@ -204,7 +206,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
     <None Include="..\..\src\Shaders\Fragment.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2-Debug.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2.glsl" />
     <None Include="..\..\src\Shaders\Normals.frag.glsl" />
     <None Include="..\..\src\Shaders\Normals.geo.glsl" />
     <None Include="..\..\src\Shaders\ShadowMap.frag.glsl" />
@@ -212,6 +218,7 @@
     <None Include="..\..\src\Shaders\Skybox.frag.glsl" />
     <None Include="..\..\src\Shaders\Skybox.vert.glsl" />
     <None Include="..\..\src\Shaders\Vertex.glsl" />
+    <None Include="..\..\src\Shaders\Vertex2.glsl" />
     <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl" />
     <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl" />
   </ItemGroup>

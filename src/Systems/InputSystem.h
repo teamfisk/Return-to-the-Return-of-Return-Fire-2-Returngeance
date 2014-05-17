@@ -34,10 +34,13 @@ public:
 	void Update(double dt) override;
 
 private:
-	std::unordered_map<std::string, float> m_CommandValues; // command string -> command current value
+	std::unordered_map<std::string, std::unordered_map<int, float>> m_CommandKeyboardValues; // command string -> keyboard key value for command
+	std::unordered_map<std::string, std::unordered_map<int, float>> m_CommandMouseButtonValues; // command string -> mouse button value for command
+	std::unordered_map<std::string, std::unordered_map<Gamepad::Axis, float>> m_CommandGamepadAxisValues; // command string -> gamepad axis value for command
+	std::unordered_map<std::string, std::unordered_map<Gamepad::Button, float>> m_CommandGamepadButtonValues; // command string -> gamepad button value for command
 	// Input binding tables
 	std::unordered_map<int, std::tuple<std::string, float>> m_KeyBindings; // GLFW_KEY... -> command string & value
-	std::unordered_map<int, std::string> m_MouseButtonBindings; // GLFW_MOUSE_BUTTON... -> command string
+	std::unordered_map<int, std::tuple<std::string, float>> m_MouseButtonBindings; // GLFW_MOUSE_BUTTON... -> command string
 	std::unordered_map<Gamepad::Axis, std::tuple<std::string, float>> m_GamepadAxisBindings; // Gamepad::Axis -> command string & value
 	std::unordered_map<Gamepad::Button, std::tuple<std::string, float>> m_GamepadButtonBindings; // Gamepad::Button -> command string
 
@@ -66,6 +69,7 @@ private:
 	EventRelay<Events::BindGamepadButton> m_EBindGamepadButton;
 	bool OnBindGamepadButton(const Events::BindGamepadButton &event);
 
+	float GetCommandTotalValue(std::string command);
 	void PublishCommand(int playerID, std::string command, float value);
 };
 

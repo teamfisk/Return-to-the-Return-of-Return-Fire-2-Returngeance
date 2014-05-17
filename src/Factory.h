@@ -10,14 +10,34 @@ template <typename T>
 class Factory
 {
 public:
-	void Register(std::string name, std::function<T(void)> factoryFunction)
+	/*void Register(std::string name, std::function<T(void)> factoryFunction)
 	{
 		m_FactoryFunctions[name] = factoryFunction;
+	}*/
+
+	template <typename T2>
+	void Register(std::function<T(void)> factoryFunction)
+	{
+		m_FactoryFunctions[typeid(T2).name()] = factoryFunction;
 	}
 
-	T Create(std::string name)
+	/*T Create(std::string name)
 	{
 		auto it = m_FactoryFunctions.find(name);
+		if (it != m_FactoryFunctions.end())
+		{
+			return it->second();
+		}
+		else
+		{
+			return nullptr;
+		}
+	}*/
+
+	template <typename T2>
+	T Create()
+	{
+		auto it = m_FactoryFunctions.find(typeid(T2).name());
 		if (it != m_FactoryFunctions.end())
 		{
 			return it->second();

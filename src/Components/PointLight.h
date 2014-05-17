@@ -9,13 +9,22 @@ namespace Components
 
 struct PointLight : Component
 {
-	float Intensity;
-	float MaxRange;
+	PointLight() 
+		: Specular(1.0f, 1.0f, 1.0f)
+		, Diffuse(1.0f, 1.0f, 1.0f)
+		, specularExponent(50.0f)
+		, ConstantAttenuation(1.0f)
+		, LinearAttenuation(0.f)
+		, QuadraticAttenuation(3.f)
+	{ }
+
+	float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
+	Color color;
+
 	glm::vec3 Specular;
 	glm::vec3 Diffuse;
-	float constantAttenuation, linearAttenuation, quadraticAttenuation;
-	float spotExponent;
-	Color color;
+	float specularExponent;
+	float Scale;
 	
 	virtual PointLight* Clone() const override { return new PointLight(*this); }
 };

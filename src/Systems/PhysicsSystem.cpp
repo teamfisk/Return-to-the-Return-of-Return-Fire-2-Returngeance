@@ -112,14 +112,14 @@ void Systems::PhysicsSystem::Initialize()
 
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("Physics", []() { return new Components::Physics(); });
-	cf->Register("BoxShape", []() { return new Components::BoxShape(); });
-	cf->Register("SphereShape", []() { return new Components::SphereShape(); });
-	cf->Register("Vehicle", []() { return new Components::Vehicle(); });
-	cf->Register("Wheel", []() { return new Components::Wheel(); });
-	cf->Register("MeshShape", []() { return new Components::MeshShape(); });
-	cf->Register("HingeConstraint", []() { return new Components::HingeConstraint(); });
-	cf->Register("WheelPair", []() { return new Components::WheelPair(); });
+	cf->Register<Components::Physics>([]() { return new Components::Physics(); });
+	cf->Register<Components::BoxShape>([]() { return new Components::BoxShape(); });
+	cf->Register<Components::SphereShape>([]() { return new Components::SphereShape(); });
+	cf->Register<Components::Vehicle>([]() { return new Components::Vehicle(); });
+	cf->Register<Components::Wheel>([]() { return new Components::Wheel(); });
+	cf->Register<Components::MeshShape>([]() { return new Components::MeshShape(); });
+	cf->Register<Components::HingeConstraint>([]() { return new Components::HingeConstraint(); });
+	cf->Register<Components::WheelPair>([]() { return new Components::WheelPair(); });
 }
 
 void Systems::PhysicsSystem::Update(double dt)
@@ -132,7 +132,7 @@ void Systems::PhysicsSystem::Update(double dt)
 		if (m_RigidBodies.find(entity) == m_RigidBodies.end())
 			continue;
 
-		auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 		if (!transformComponent)
 			continue;
 
@@ -143,7 +143,7 @@ void Systems::PhysicsSystem::Update(double dt)
 
 			if (parent)
 			{
-				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				position = ConvertPosition(absoluteTransform.Position);
 				rotation = ConvertRotation(absoluteTransform.Orientation);
 			}
@@ -184,11 +184,11 @@ void Systems::PhysicsSystem::Update(double dt)
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {	
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (!transformComponent)
 		return;
 	
-	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity, "Wheel");
+	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity);
 	if (wheelComponent)
 	{
 		EntityID car = m_World->GetEntityParent(entity);
@@ -212,7 +212,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	}
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent, "Transform");
+		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
 
 		transformComponent->Position = ConvertPosition(m_RigidBodies[entity]->getPosition());
 		transformComponent->Orientation = ConvertRotation(m_RigidBodies[entity]->getRotation());
@@ -231,11 +231,11 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 
 void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (!transformComponent)
 		return;
 
-	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity, "Wheel");
+	auto wheelComponent = m_World->GetComponent<Components::Wheel>(entity);
 	if (wheelComponent)
 	{
 		wheelComponent->ID = m_Wheels.size();
@@ -245,9 +245,9 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 	EntityID entityParent = m_World->GetEntityBaseParent(entity);
 
-	auto sphereComponent = m_World->GetComponent<Components::SphereShape>(entity, "SphereShape");
-	auto boxComponent = m_World->GetComponent<Components::BoxShape>(entity, "BoxShape");
-	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape >(entity, "MeshShape");
+	auto sphereComponent = m_World->GetComponent<Components::SphereShape>(entity);
+	auto boxComponent = m_World->GetComponent<Components::BoxShape>(entity);
+	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape >(entity);
 	
 	if(entityParent == entity && (sphereComponent || boxComponent || meshShapeComponent))
 	{
@@ -255,7 +255,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		return;
 	}
 
-	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity, "Physics");
+	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity);
 	if (physicsComponent)
 	{
 		hkpShape* shape;	
@@ -296,7 +296,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			{
 				rigidBodyInfo.m_shape = shape;
 				rigidBodyInfo.m_motionType = hkpMotion::MOTION_DYNAMIC;
-				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				hkVector4 position = ConvertPosition(absoluteTransform.Position);
 				hkQuaternion rotation = ConvertRotation(absoluteTransform.Orientation);
 				rigidBodyInfo.m_position.set(position(0), position(1), position(2), position(3));
@@ -309,7 +309,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
 
-			auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity, "Vehicle");
+			auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity);
 			if (vehicleComponent && m_Vehicles.find(entity) == m_Vehicles.end())
 			{
 				for (int i = 0; i < m_Wheels.size(); i++)
@@ -365,7 +365,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			for (auto &shapeData : m_Shapes[entity])
 			{
 				
-				auto childTransformComponent = m_World->GetComponent<Components::Transform>(shapeData.Entity, "Transform");
+				auto childTransformComponent = m_World->GetComponent<Components::Transform>(shapeData.Entity);
 
 				hkVector4 position = ConvertPosition(childTransformComponent->Position);
 				hkQuaternion rotation = ConvertRotation(childTransformComponent->Orientation);
@@ -386,7 +386,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			{
 				rigidBodyInfo.m_shape = shape;
 				rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
-				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>("TransformSystem")->AbsoluteTransform(entity);
+				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				hkVector4 position = ConvertPosition(absoluteTransform.Position);
 				hkQuaternion rotation = ConvertRotation(absoluteTransform.Orientation);
 				rigidBodyInfo.m_position.set(position(0), position(1), position(2), position(3));
@@ -576,7 +576,7 @@ const hkVector4& Systems::PhysicsSystem::ConvertScale(glm::vec3 glmScale)
 
 bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 {
-	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity, "Vehicle");
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
 	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
 		m_PhysicsWorld->markForWrite();
