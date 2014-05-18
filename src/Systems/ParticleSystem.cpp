@@ -101,43 +101,42 @@ void Systems::ParticleSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 {
-	auto emitterComponent = m_World->GetComponent<Components::ParticleEmitter>(emitterID, "ParticleEmitter");
-	auto emitterTransform = m_World->GetComponent<Components::Transform>(emitterID, "Transform");
-	glm::vec3 emitterPos = m_TransformSystem->AbsolutePosition(emitterID);
-	glm::quat emitterOrientation = emitterTransform->Orientation;
+	auto eComponent = m_World->GetComponent<Components::ParticleEmitter>(emitterID, "ParticleEmitter");
+	auto eTransform = m_World->GetComponent<Components::Transform>(emitterID, "Transform");
+	glm::vec3 ePosition = m_TransformSystem->AbsolutePosition(emitterID);
+	glm::quat eOrientation = eTransform->Orientation;
 
-	float tempSpeed =  4;
-	glm::vec3 speed = glm::vec3(tempSpeed);
+	glm::vec3 paticleSpeed = glm::vec3(eComponent->Speed);
 
-	for(int i = 0; i < emitterComponent->SpawnCount; i++)
+	for(int i = 0; i < eComponent->SpawnCount; i++)
 	{
-		auto ent = m_World->CloneEntity(emitterComponent->ParticleTemplate);
+		auto particleEntity = m_World->CloneEntity(eComponent->ParticleTemplate);
 
-		auto particleTransform = m_World->GetComponent<Components::Transform>(ent, "Transform");
-		particleTransform->Position = emitterPos;
+		auto particleTransform = m_World->GetComponent<Components::Transform>(particleEntity, "Transform");
+		particleTransform->Position = ePosition;
 
-		particleTransform->Orientation = emitterOrientation;
+		particleTransform->Orientation = eOrientation;
 		//The emitter's orientation as "start value" times the default direction for emitter. Times the speed, and then rotate on x and y axis with the randomized spread angle. 
-		float spreadAngle = emitterComponent->SpreadAngle;
-		particleTransform->Velocity = emitterOrientation * glm::vec3(0, 0, -1) * speed * 
+		float spreadAngle = eComponent->SpreadAngle;
+		particleTransform->Velocity = eOrientation * glm::vec3(0, 0, -1) * paticleSpeed * 
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(1, 0, 0))) * 
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(0, 1, 0))) *
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(0, 0, 1)));
 
-		auto particle = m_World->AddComponent<Components::Particle>(ent, "Particle");
-		particle->LifeTime = emitterComponent->LifeTime;
-		particle->ScaleSpectrum = emitterComponent->ScaleSpectrum; 
-		particle->VelocitySpectrum.push_back(particleTransform->Velocity);
+		auto particleComponent = m_World->AddComponent<Components::Particle>(particleEntity, "Particle");
+		particleComponent->LifeTime = eComponent->LifeTime;
+		particleComponent->ScaleSpectrum = eComponent->ScaleSpectrum; 
+		particleComponent->VelocitySpectrum.push_back(particleTransform->Velocity);
 		
-		if (emitterComponent->ScaleSpectrum.size() > 0)
+		if (eComponent->ScaleSpectrum.size() > 0)
 		{
-			if (emitterComponent->ScaleSpectrum.size() > 1)
+			if (eComponent->ScaleSpectrum.size() > 1)
 			{
-				particle->ScaleSpectrum = emitterComponent->ScaleSpectrum;
+				particleComponent->ScaleSpectrum = eComponent->ScaleSpectrum;
 			}
 			else
 			{
-				particleTransform->Scale = emitterComponent->ScaleSpectrum[0];
+				particleTransform->Scale = eComponent->ScaleSpectrum[0];
 			}
 		}
 		else
@@ -145,23 +144,22 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 			particleTransform->Scale = glm::vec3(1, 1, 1);
 		}
 		
-		if(emitterComponent->UseGoalVelocity)
-			particle->VelocitySpectrum.push_back(emitterComponent->GoalVelocity);
-		particle->OrientationSpectrum = emitterComponent->OrientationSpectrum;
-		if(particle->OrientationSpectrum.size() != 0)
-			particleTransform->Orientation = glm::angleAxis(0.f, particle->OrientationSpectrum[0]);
-		particle->AngularVelocitySpectrum = emitterComponent->AngularVelocitySpectrum;
+		if(eComponent->UseGoalVelocity)
+			particleComponent->VelocitySpectrum.push_back(eComponent->GoalVelocity);
+		particleComponent->OrientationSpectrum = eComponent->OrientationSpectrum;
+		if(particleComponent->OrientationSpectrum.size() != 0)
+			particleTransform->Orientation = glm::angleAxis(0.f, particleComponent->OrientationSpectrum[0]);
+		particleComponent->AngularVelocitySpectrum = eComponent->AngularVelocitySpectrum;
 		
 
 		ParticleData data;
-		data.ParticleID = ent;
+		data.ParticleID = particleEntity;
 		data.SpawnTime = glfwGetTime();
-		if (particle->AngularVelocitySpectrum.size() != 0)
-			data.AngularVelocity = particle->AngularVelocitySpectrum[0];
-		if (particle->OrientationSpectrum.size() != 0)
-			data.Orientation = particle->OrientationSpectrum[0];
-		else data.Orientation = emitterOrientation * glm::vec3(0,0,-1);
-		
+		if (particleComponent->AngularVelocitySpectrum.size() != 0)
+			data.AngularVelocity = particleComponent->AngularVelocitySpectrum[0];
+		if (particleComponent->OrientationSpectrum.size() != 0)
+			data.Orientation = particleComponent->OrientationSpectrum[0];
+		else data.Orientation = eOrientation * glm::vec3(0,0,-1);
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
 }
