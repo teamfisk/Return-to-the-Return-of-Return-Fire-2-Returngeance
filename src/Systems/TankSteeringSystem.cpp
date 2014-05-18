@@ -87,6 +87,7 @@ bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const E
 	if (event.Command == "horizontal")
 	{
 		m_Horizontal = val;
+		m_Vertical = -0.4f;
 	}
 	else if (event.Command == "vertical")
 	{

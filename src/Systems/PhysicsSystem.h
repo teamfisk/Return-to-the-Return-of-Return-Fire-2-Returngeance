@@ -73,7 +73,7 @@ public:
 		
 		EntityID entity1 = m_RigidBodies[event.getBody(0)];
 		EntityID entity2 = m_RigidBodies[event.getBody(1)];
-		LOG_INFO("Entities colliding: %i, %i ", entity1, entity2);
+		//LOG_INFO("Entities colliding: %i, %i ", entity1, entity2);
 
 	}
 };
