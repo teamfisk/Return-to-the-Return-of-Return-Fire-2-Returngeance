@@ -35,7 +35,8 @@ void Systems::PhysicsSystem::Initialize()
 	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnTankSteer);
 	EVENT_SUBSCRIBE_MEMBER(m_ESetVelocity, &Systems::PhysicsSystem::OnSetVelocity);
 	EVENT_SUBSCRIBE_MEMBER(m_EApplyForce, &Systems::PhysicsSystem::OnApplyForce);
-
+	EVENT_SUBSCRIBE_MEMBER(m_EApplyPointImpulse, &Systems::PhysicsSystem::OnApplyPointImpulse);
+	
 	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
 	hkBaseSystem::init(memoryRouter, HavokErrorReport);
@@ -603,5 +604,14 @@ bool Systems::PhysicsSystem::OnApplyForce(const Events::ApplyForce &event)
 	m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, ConvertPosition(event.Force));
 	m_PhysicsWorld->unmarkForWrite();
 	
+	return true;
+}
+
+bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpulse &event )
+{
+	m_PhysicsWorld->markForWrite();
+	m_RigidBodies[event.Entity]->applyPointImpulse(ConvertPosition(event.Impulse), ConvertPosition(event.Position));
+	m_PhysicsWorld->unmarkForWrite();
+
 	return true;
 }

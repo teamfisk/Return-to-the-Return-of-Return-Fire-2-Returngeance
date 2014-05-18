@@ -222,7 +222,7 @@ void GameWorld::Initialize()
 		transform->Position = glm::vec3(0, 5, 0);
 		//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
 		auto physics = AddComponent<Components::Physics>(tank);
-		physics->Mass = 25000;
+		physics->Mass = 63000 - 16000;
 		physics->Static = false;
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
 		vehicle->MaxTorque = 5200.f;
@@ -280,7 +280,7 @@ void GameWorld::Initialize()
 					transform->Scale = glm::vec3(3.f);
 					AddComponent<Components::Template>(shot);
 					auto physics = AddComponent<Components::Physics>(shot);
-					physics->Mass = 10.f;
+					physics->Mass = 25.f;
 					physics->Static = false;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";

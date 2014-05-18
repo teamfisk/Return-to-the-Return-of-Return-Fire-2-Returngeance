@@ -63,7 +63,9 @@
     <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp">
       <Filter>Physics\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp">
+      <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -381,6 +383,10 @@
       <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\ApplyForce.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Util\defferedUtil.h" />
+    <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
   </ItemGroup>

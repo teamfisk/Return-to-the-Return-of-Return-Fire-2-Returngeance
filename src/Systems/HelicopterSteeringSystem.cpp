@@ -4,7 +4,7 @@
 
 void Systems::HelicopterSteeringSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("HelicopterSteering", []() { return new Components::HelicopterSteering(); });
+	cf->Register<Components::HelicopterSteering>([]() { return new Components::HelicopterSteering(); });
 }
 
 void Systems::HelicopterSteeringSystem::Initialize()
@@ -19,11 +19,11 @@ void Systems::HelicopterSteeringSystem::Update(double dt)
 
 void Systems::HelicopterSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	auto transform = m_World->GetComponent<Components::Transform>(entity);
 	if (!transform)
 		return;
 
-	auto helicopterComponent = m_World->GetComponent<Components::HelicopterSteering>(entity, "HelicopterSteering");
+	auto helicopterComponent = m_World->GetComponent<Components::HelicopterSteering>(entity);
 	if (helicopterComponent)
 	{
 		glm::vec3 controllerRotationEuler = m_InputController->Rotation * (float)dt;

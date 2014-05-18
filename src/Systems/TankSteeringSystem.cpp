@@ -62,6 +62,17 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			e.Velocity = absoluteTransform.Orientation * (glm::vec3(0.f, 0.f, -1.f) * barrelSteeringComponent->ShotSpeed);
 			EventBroker->Publish(e);
 			m_TimeSinceLastShot[entity] = 0;
+
+
+			auto clonePhysicsComponent = m_World->GetComponent<Components::Physics>(clone);
+			//1,670m/s
+			//25kg
+			EntityID baseParent = m_World->GetEntityBaseParent(entity);
+			Events::ApplyPointImpulse ePointImpulse ;
+			ePointImpulse.Entity = baseParent;
+			ePointImpulse.Position = absoluteTransform.Position;
+			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 1670.f;
+			EventBroker->Publish(ePointImpulse);
 		}
 
 		m_TimeSinceLastShot[entity] += dt;
@@ -83,7 +94,16 @@ void Systems::TankSteeringSystem::TowerSteeringInputController::Update( double d
 
 bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const Events::InputCommand &event)
 {
-	float val = event.Value;
+	float val;
+	if(abs(event.Value) < 0.3f)
+	{
+		val = 0.f;
+	}
+	else
+	{
+		val = event.Value;
+	}
+	
 	if (event.Command == "horizontal")
 	{
 		m_Horizontal = val;

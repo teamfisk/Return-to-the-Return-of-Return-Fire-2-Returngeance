@@ -16,6 +16,7 @@
 #include "Events/TankSteer.h"
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"
+#include "Events/ApplyPointImpulse.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -108,6 +109,8 @@ private:
 	bool OnSetVelocity(const Events::SetVelocity &event);
 	EventRelay<Events::ApplyForce> m_EApplyForce;
 	bool OnApplyForce(const Events::ApplyForce &event);
+	EventRelay<Events::ApplyPointImpulse> m_EApplyPointImpulse;
+	bool OnApplyPointImpulse(const Events::ApplyPointImpulse &event);
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);
