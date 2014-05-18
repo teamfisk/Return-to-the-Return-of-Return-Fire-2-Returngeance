@@ -111,6 +111,7 @@
     <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\Health.h" />
+    <ClInclude Include="..\..\src\Components\HelicopterSteering.h" />
     <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\MeshShape.h" />
@@ -153,6 +155,7 @@
     <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Events\ApplyForce.h" />
     <ClInclude Include="..\..\src\Events\BindGamepadAxis.h" />
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h" />
     <ClInclude Include="..\..\src\Events\BindKey.h" />
@@ -189,6 +192,7 @@
     <ClInclude Include="..\..\src\System.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />
     <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />

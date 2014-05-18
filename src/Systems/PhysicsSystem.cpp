@@ -34,6 +34,7 @@ void Systems::PhysicsSystem::Initialize()
 	// Events
 	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnTankSteer);
 	EVENT_SUBSCRIBE_MEMBER(m_ESetVelocity, &Systems::PhysicsSystem::OnSetVelocity);
+	EVENT_SUBSCRIBE_MEMBER(m_EApplyForce, &Systems::PhysicsSystem::OnApplyForce);
 
 	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
@@ -164,7 +165,7 @@ void Systems::PhysicsSystem::Update(double dt)
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
-		m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
+		hkpStepResult stepresult = m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
 		//m_PhysicsWorld->stepDeltaTime(timestep);
 
 		m_Accumulator -= timestep;
@@ -176,10 +177,7 @@ void Systems::PhysicsSystem::Update(double dt)
 		// Clear accumulated timer data in this thread and all slave threads
 		hkMonitorStream::getInstance().reset();
 		m_ThreadPool->clearTimerData();
-	}
-	
-
-	
+	}	
 }
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
@@ -595,5 +593,15 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 	m_PhysicsWorld->markForWrite();
 	m_RigidBodies[event.Entity]->setLinearVelocity(ConvertPosition(event.Velocity));
 	m_PhysicsWorld->unmarkForWrite();
+	
+	return true;
+}
+
+bool Systems::PhysicsSystem::OnApplyForce(const Events::ApplyForce &event)
+{
+	m_PhysicsWorld->markForWrite();
+	m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, ConvertPosition(event.Force));
+	m_PhysicsWorld->unmarkForWrite();
+	
 	return true;
 }
