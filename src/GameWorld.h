@@ -28,6 +28,7 @@
 #include "Components/Sprite.h"
 #include "Components/Template.h"
 #include "Components/Transform.h"
+#include "Components/Viewport.h"
 
 #include "Components/Physics.h"
 #include "Components/SphereShape.h"

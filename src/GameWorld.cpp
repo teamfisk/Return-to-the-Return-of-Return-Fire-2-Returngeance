@@ -67,6 +67,20 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
+	auto viewport1 = CreateEntity();
+	{
+		auto viewport = AddComponent<Components::Viewport>(viewport1, "Transform");
+		viewport->Right = 0.5f;
+	}
+	CommitEntity(viewport1);
+
+	auto viewport2 = CreateEntity();
+	{
+		auto viewport = AddComponent<Components::Viewport>(viewport1, "Transform");
+		viewport->Left = 0.5f;
+	}
+	CommitEntity(viewport2);
+
 	{
 		auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
@@ -74,6 +88,7 @@ void GameWorld::Initialize()
 		transform->Position.y = 20.f;
 		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
+		cameraComp->Viewport = viewport1;
 		cameraComp->FarClip = 2000.f;
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
 		CommitEntity(camera);

@@ -147,6 +147,7 @@
     <ClInclude Include="..\..\src\Components\TowerSteering.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\Viewport.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\Components\WheelPair.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
