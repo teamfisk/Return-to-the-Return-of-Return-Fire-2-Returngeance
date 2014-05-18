@@ -225,7 +225,7 @@ void GameWorld::Initialize()
 		physics->Mass = 63000 - 16000;
 		physics->Static = false;
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
-		vehicle->MaxTorque = 5200.f;
+		vehicle->MaxTorque = 8000.f;
 		vehicle->MaxSteeringAngle = 90.f;
 		vehicle->MaxSpeedFullSteeringAngle = 4.f;
 		AddComponent<Components::TankSteering>(tank);
@@ -350,7 +350,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -380,7 +380,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -411,7 +411,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -441,7 +441,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -473,7 +473,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -502,7 +502,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -557,7 +557,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -586,7 +586,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;

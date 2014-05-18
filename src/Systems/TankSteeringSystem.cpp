@@ -94,15 +94,8 @@ void Systems::TankSteeringSystem::TowerSteeringInputController::Update( double d
 
 bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const Events::InputCommand &event)
 {
-	float val;
-	if(abs(event.Value) < 0.3f)
-	{
-		val = 0.f;
-	}
-	else
-	{
-		val = event.Value;
-	}
+	
+	float val = event.Value;
 	
 	if (event.Command == "horizontal")
 	{

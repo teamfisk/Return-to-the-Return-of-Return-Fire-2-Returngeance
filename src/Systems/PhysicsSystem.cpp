@@ -582,6 +582,10 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
 		deviceStatus->m_positionX = event.PositionX;
 		deviceStatus->m_positionY = event.PositionY;
+		if(event.PositionY > 0)
+		{
+			deviceStatus->m_reverseButtonPressed = true;
+		}
 		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
 		m_PhysicsWorld->unmarkForWrite();
 	}
