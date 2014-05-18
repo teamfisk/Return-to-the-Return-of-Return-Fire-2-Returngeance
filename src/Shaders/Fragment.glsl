@@ -2,6 +2,9 @@
 
 layout (binding=0) uniform sampler2D DiffuseTexture;
 layout (binding=1) uniform sampler2D ShadowTexture;
+layout (binding=2) uniform sampler2D NormalMapTexture;
+layout (binding=3) uniform sampler2D SpecularMapTexture;
+
 
 in VertexData
 {
@@ -9,11 +12,14 @@ in VertexData
 	vec3 Normal;
 	vec2 TextureCoord;
 	vec4 ShadowCoord;
+	vec3 Tangent;
+	vec3 BiTangent;
 } Input;
 
 out vec4 frag_Diffuse;
 out vec4 frag_Position;
 out vec4 frag_Normal;
+out vec4 frag_specular;
 
 float Shadow(vec4 ShadowCoord)
 {
@@ -32,6 +38,7 @@ float Shadow(vec4 ShadowCoord)
 
 void main()
 {
+	
 	// Diffuse Texture
 	frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord) * Shadow(Input.ShadowCoord);
 
@@ -39,5 +46,10 @@ void main()
 	frag_Position = vec4(Input.Position.xyz, 1.0);
 
 	// G-buffer Normal
-	frag_Normal = vec4(Input.Normal, 0.0);
+	mat3 TBN = transpose(mat3(Input.Tangent, Input.BiTangent, Input.Normal));
+	frag_Normal = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
+	//frag_Normal = vec4(Input.Normal, 0.0);
+
+	//G-buffer Specular
+	frag_specular = texture(SpecularMapTexture, Input.TextureCoord);
 }

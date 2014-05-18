@@ -17,7 +17,7 @@ Renderer::Renderer()
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
-	m_ShadowMapRes = 2048*16;
+	m_ShadowMapRes = 2048*6;
 	m_SunPosition = glm::vec3(0, 3.5f, 10);
 	m_SunTarget = glm::vec3(0, 0, 0);
 	m_SunProjection = glm::ortho<float>(10.f, -10.f, 10.f, -10.f, 10.f, -10.f);
@@ -551,6 +551,15 @@ void Renderer::FrameBufferTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	//Generate and bind normal texture
+	glGenTextures(1, &m_fSpecularTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	/*glGenTextures(1, &m_fShadowTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fShadowTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -567,6 +576,7 @@ void Renderer::FrameBufferTextures()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fDiffuseTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_fPositionTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_fNormalsTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fSpecularTexture, 0);
 	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fShadowTexture, 0);
 
 	GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -713,6 +723,11 @@ void Renderer::DrawFBOScene()
 		{
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
+			if (texGroup.NormalMap)
+			{
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, *texGroup.NormalMap);
+			}
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}

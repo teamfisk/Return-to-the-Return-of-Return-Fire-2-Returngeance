@@ -38,10 +38,14 @@ public:
 private:
 
 	std::vector<glm::vec3> Normals;
+	std::vector<glm::vec3> TangentNormals;
+	std::vector<glm::vec3> BiTangentNormals;
 	std::vector<glm::vec2> TextureCoords;
 
 	GLuint VertexBuffer;
 	GLuint NormalBuffer;
+	GLuint TangentNormalsBuffer;
+	GLuint BiTangentNormalsBuffer;
 	GLuint TextureCoordBuffer;
 
 	bool Loadobj(
@@ -53,9 +57,15 @@ private:
 
 	void CreateBuffers(
 	    std::vector<glm::vec3> _Vertices,
-	    std::vector<glm::vec3> _Normals,
+		std::vector<glm::vec3> _Normals,
+		std::vector<glm::vec3> _Tangents,
+		std::vector<glm::vec3> _BiTangents,
 	    std::vector<glm::vec2>_TextureCoords
 	);
+
+	void CreateTangents();
+	bool IsNear(float v1, float v2);
+	void getSimilarVertexIndex();
 
 };
 #endif // Model_h__
