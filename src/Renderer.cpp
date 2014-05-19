@@ -868,5 +868,16 @@ void Renderer::UpdateSunProjection()
 	//Pass the bounding box's extents to glOrtho or similar to set up the orthographic projection matrix for the shadow map.
 }
 
+void Renderer::CreateViewport(int identifier, float left, float top, float right, float bottom)
+{
+	Viewport v;
+	v.Left = left;
+	v.Top = top;
+	v.Right = right;
+	v.Bottom = bottom;
+	m_Viewports[identifier] = v;
+}
+
+
 
 

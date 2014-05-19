@@ -13,6 +13,7 @@
 #include "Components/Sprite.h"
 #include "Components/PointLight.h"
 #include "Components/DirectionalLight.h"
+#include "Components/Viewport.h"
 
 #include "Components/Template.h"
 #include "Components/Transform.h"
@@ -34,7 +35,7 @@ public:
 
 	std::unordered_map<std::string, std::shared_ptr<Model>> m_CachedModels;
 
-	void OnComponentCreated(std::string type, std::	shared_ptr<Component> component) override;
+	void OnEntityCommit(EntityID entity);
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 

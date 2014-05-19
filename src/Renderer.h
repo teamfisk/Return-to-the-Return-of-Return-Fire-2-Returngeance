@@ -35,6 +35,7 @@ public:
 	void Draw(double dt);
 	void DrawText();
 
+	void CreateViewport(int identifier, float left, float top, float right, float bottom);
 	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
 	void AddTextToDraw();
@@ -66,6 +67,16 @@ public:
 
 private:
 	int m_Width, m_Height;
+
+	struct Viewport
+	{
+		float Left;
+		float Top;
+		float Right;
+		float Bottom;
+	};
+
+	std::unordered_map<int, Viewport> m_Viewports;
 
 	struct Light
 	{

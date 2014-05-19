@@ -2,11 +2,12 @@
 #include "RenderSystem.h"
 #include "World.h"
 
-void Systems::RenderSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
+void Systems::RenderSystem::OnEntityCommit(EntityID entity)
 {
-	if(type == "Model")
+	auto viewport = m_World->GetComponent<Components::Viewport>(entity, "Viewport");
+	if (viewport)
 	{
-		auto modelComponent = std::static_pointer_cast<Components::Model>(component);
+		m_Renderer->CreateViewport(entity, viewport->Left, viewport->Top, viewport->Right, viewport->Bottom);
 	}
 }
 
@@ -91,7 +92,6 @@ void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)
 	rm->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
 	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 }
-
 
 
 
