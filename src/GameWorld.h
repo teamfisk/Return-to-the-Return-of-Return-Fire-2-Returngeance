@@ -58,7 +58,7 @@ private:
 	std::shared_ptr<Renderer> m_Renderer;
 
 	void BindKey(int keyCode, std::string command, float value);
-	void BindMouseButton(int button, std::string command);
+	void BindMouseButton(int button, std::string command, float value);
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
 	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
 };

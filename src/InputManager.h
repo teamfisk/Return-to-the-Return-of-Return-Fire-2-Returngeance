@@ -9,22 +9,24 @@
 #include "Events/MousePress.h"
 #include "Events/MouseRelease.h"
 #include "Events/MouseMove.h"
+#include "Events/LockMouse.h"
 #include "Events/GamepadAxis.h"
 #include "Events/GamepadButton.h"
 
 class InputManager
 {
 public:
-	InputManager(GLFWwindow* window, std::shared_ptr<EventBroker> eventBroker)
+	InputManager(GLFWwindow* window, std::shared_ptr<::EventBroker> eventBroker)
 	: m_GLFWWindow(window)
-	, m_EventBroker(eventBroker)
+	, EventBroker(eventBroker)
 	, m_CurrentKeyState()
 	, m_LastKeyState()
 	, m_CurrentMouseState()
 	, m_LastMouseState()
 	, m_CurrentMouseX(0), m_CurrentMouseY(0)
 	, m_LastMouseX(0), m_LastMouseY(0)
-	, m_CurrentMouseDeltaX(0), m_CurrentMouseDeltaY(0) 
+	, m_CurrentMouseDeltaX(0), m_CurrentMouseDeltaY(0)
+	, m_MouseLocked(false)
 	{ Initialize(); }
 
 	void Initialize();
@@ -35,8 +37,13 @@ public:
 
 private:
 	GLFWwindow* m_GLFWWindow;
-	std::shared_ptr<EventBroker> m_EventBroker;
-	
+	std::shared_ptr<::EventBroker> EventBroker;
+
+	EventRelay<Events::LockMouse> m_ELockMouse;
+	bool OnLockMouse(const Events::LockMouse &event);
+	EventRelay<Events::UnlockMouse> m_EUnlockMouse;
+	bool OnUnlockMouse(const Events::UnlockMouse &event);
+
 	std::array<int, GLFW_KEY_LAST+1> m_CurrentKeyState;
 	std::array<int, GLFW_KEY_LAST+1> m_LastKeyState;
 	std::array<int, GLFW_MOUSE_BUTTON_LAST+1> m_CurrentMouseState;
@@ -51,6 +58,7 @@ private:
 	double m_CurrentMouseX, m_CurrentMouseY;
 	double m_LastMouseX, m_LastMouseY;
 	double m_CurrentMouseDeltaX, m_CurrentMouseDeltaY;
+	bool m_MouseLocked;
 
 	void PublishGamepadAxisIfChanged(int gamepadID, Gamepad::Axis axis);
 	void PublishGamepadButtonIfChanged(int gamepadID, Gamepad::Button button);
