@@ -22,8 +22,10 @@ void main()
 	vec4 ShadowTexel = texture(ShadowTexture, Input.TextureCoord);
 
 
-	vec4 _FragmentColor = DiffuseTexel * vec4(La, 1.0) + LightingTexel;
-	FragmentColor = vec4(pow(_FragmentColor.rgb, vec3(1.0 / Gamma)), _FragmentColor.a);
+	FragmentColor = DiffuseTexel * (LightingTexel + vec4(La, 0.0));
+	//FragmentColor = vec4(pow(_FragmentColor.rgb, vec3(1.0 / Gamma)), _FragmentColor.a);
+	
+	//FragmentColor = DiffuseTexel;
 	//FragmentColor = DiffuseTexel;
 
 }

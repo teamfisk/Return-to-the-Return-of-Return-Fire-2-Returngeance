@@ -19,7 +19,7 @@ in VertexData
 out vec4 frag_Diffuse;
 out vec4 frag_Position;
 out vec4 frag_Normal;
-out vec4 frag_specular;
+out vec4 frag_Specular;
 
 float Shadow(vec4 ShadowCoord)
 {
@@ -51,5 +51,5 @@ void main()
 	//frag_Normal = vec4(Input.Normal, 0.0);
 
 	//G-buffer Specular
-	frag_specular = texture(SpecularMapTexture, Input.TextureCoord);
+	frag_Specular = texture(SpecularMapTexture, Input.TextureCoord);
 }

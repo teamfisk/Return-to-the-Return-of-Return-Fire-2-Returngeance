@@ -2,6 +2,7 @@
 
 layout (binding=0) uniform sampler2D PositionTexture;
 layout (binding=1) uniform sampler2D NormalsTexture;
+layout (binding=2) uniform sampler2D SpecularTexture;
 
 uniform vec2 ViewportSize;
 uniform mat4 MVP;
@@ -22,6 +23,7 @@ const vec3 ks = vec3(1.0, 1.0, 1.0);
 const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
+const float LRadius = 5.0;
 
 in VertexData
 {
@@ -31,7 +33,7 @@ in VertexData
 
 out vec4 FragColor;
 
-vec4 phong(vec3 position, vec3 normal)
+vec4 phong(vec3 position, vec3 normal, vec3 specular)
 {
 	// Diffuse
 	vec3 lightPos = vec3(V * vec4(lp, 1.0));
@@ -47,13 +49,15 @@ vec4 phong(vec3 position, vec3 normal)
 	vec3 halfWay = normalize(surfaceToViewer + directionToLight);
 	float dotSpecular = max(dot(halfWay, normal), 0.0);
 	float specularFactor = pow(dotSpecular, specularExponent * 2.0);
-	vec3 Is = ks * ls * specularFactor;
+	vec3 Is = specular.r * ls * specularFactor;
 
 	//Attenuation
 	float dist = distance(lightPos, position);
 	//float attenuation = -log(min(1.0, dist / LightRadius));
 
-	float attenuation = 1.0 / (ConstantAttenuation + (LinearAttenuation * dist) + (QuadraticAttenuation * dist * dist));
+	//float attenuation = 1.0 / (ConstantAttenuation + (LinearAttenuation * dist) + (QuadraticAttenuation * dist * dist));
+
+	float attenuation = pow(max(0.0f, 1.0 - (dist / LRadius)), 2);
 
 	//float attenuation = 1.0 / (1.0 - 0.0001 * pow(dist, 2));
 
@@ -79,7 +83,8 @@ void main()
 	vec2 TextureCoord = gl_FragCoord.xy / ViewportSize;
 	vec4 PositionTexel = texture(PositionTexture, TextureCoord);
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
+	vec4 SpecularTexel = texture(SpecularTexture, TextureCoord);
 
-	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel));
+	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel));
 	//FragColor = NormalTexel;
 }

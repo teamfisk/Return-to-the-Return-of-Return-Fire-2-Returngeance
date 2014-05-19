@@ -536,7 +536,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind position texture
 	glGenTextures(1, &m_fPositionTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -545,7 +545,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind normal texture
 	glGenTextures(1, &m_fNormalsTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -554,7 +554,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind normal texture
 	glGenTextures(1, &m_fSpecularTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, WIDTH, HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -621,15 +621,15 @@ void Renderer::DrawFBO()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
 
 	// Clear G-buffer
-	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, windowBuffClear);
-	glClearColor(0.f, 0.f, 0.f, 0.f);
+	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, windowBuffClear);
+	glClearColor(0.5f, 0.f, 0.f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
 	m_FirstPassProgram.Bind();
-	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, windowBuffOpaque);
+	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, windowBuffOpaque);
 
 	glCullFace(GL_BACK);
 
@@ -651,6 +651,8 @@ void Renderer::DrawFBO()
 	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
 
 	glCullFace(GL_FRONT);
 	DrawLightScene();
@@ -664,7 +666,7 @@ void Renderer::DrawFBO()
 	m_FinalPassProgram.Bind();
 
 	// Ambient light
-	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.1f, 0.1f, 0.1f)));
+	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.4f, 0.4f, 0.4f)));
 	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -727,6 +729,11 @@ void Renderer::DrawFBOScene()
 			{
 				glActiveTexture(GL_TEXTURE2);
 				glBindTexture(GL_TEXTURE_2D, *texGroup.NormalMap);
+			}
+			if (texGroup.SpecularMap)
+			{
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, *texGroup.SpecularMap);
 			}
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
