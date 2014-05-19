@@ -6,8 +6,9 @@
 #include "Components/Transform.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
-#include "Components/Model.h"
-#include "Components/PointLight.h"
+#include "Components/Sprite.h"
+#include "EventBroker.h"
+#include "Events/KeyUp.h"
 #include "Color.h"
 #include <GLFW/glfw3.h>
 
@@ -33,6 +34,11 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void Initialize() override;
+
+	void CreateExplosion(glm::vec3 _pos, double _lifeTime, int _particlesToSpawn, std::string _spritePath, glm::quat _relativeUpOri, float _speed, float _spreadAngle, float _particleScale);
+
+	virtual bool OnCommand(const Events::KeyUp &event) { return false; }
+
 private:
 	void SpawnParticles(EntityID emitterID);
 	float RandomizeAngle(float spreadAngle);
@@ -43,9 +49,14 @@ private:
 	void Billboard();
 	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
 	std::map<EntityID, double> m_TimeSinceLastSpawn;
+	std::map<EntityID, double> m_ExplosionEmitters;
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 
+	bool tempSpawnedExplosions;
 	
+	EventRelay<Events::KeyUp> m_EKeyUp;
+	bool OnKeyUp(const Events::KeyUp &e);
+
 };
 
 }

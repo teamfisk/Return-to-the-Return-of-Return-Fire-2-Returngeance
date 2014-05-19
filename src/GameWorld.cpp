@@ -395,7 +395,7 @@ void GameWorld::Initialize()
 			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
 			emitterComponent->SpawnCount = 2;
-			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpawnFrequency = 10;
 			emitterComponent->SpreadAngle = glm::pi<float>();
 			emitterComponent->UseGoalVelocity = false;
 			emitterComponent->LifeTime = 0.5;
@@ -473,7 +473,6 @@ void GameWorld::Initialize()
 			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity, "Sprite");
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
-
 			CommitEntity(particleEntity);
 		}
 
