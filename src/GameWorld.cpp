@@ -67,33 +67,32 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
-	auto viewport1 = CreateEntity();
+	auto camera = CreateEntity();
 	{
-		auto viewport = AddComponent<Components::Viewport>(viewport1, "Transform");
-		viewport->Right = 0.5f;
-	}
-	CommitEntity(viewport1);
-
-	auto viewport2 = CreateEntity();
-	{
-		auto viewport = AddComponent<Components::Viewport>(viewport1, "Transform");
-		viewport->Left = 0.5f;
-	}
-	CommitEntity(viewport2);
-
-	{
-		auto camera = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(camera, "Transform");
 		transform->Position.z = 20.f;
 		transform->Position.y = 20.f;
 		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 		auto cameraComp = AddComponent<Components::Camera>(camera, "Camera");
-		cameraComp->Viewport = viewport1;
 		cameraComp->FarClip = 2000.f;
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera, "FreeSteering");
-		CommitEntity(camera);
 	}
+	CommitEntity(camera);
 
+	auto viewport1 = CreateEntity();
+	{
+		auto viewport = AddComponent<Components::Viewport>(viewport1, "Viewport");
+		viewport->Right = 0.5f;
+		viewport->Camera = camera;
+	}
+	CommitEntity(viewport1);
+
+	auto viewport2 = CreateEntity();
+	{
+		auto viewport = AddComponent<Components::Viewport>(viewport2, "Viewport");
+		viewport->Left = 0.5f;
+	}
+	CommitEntity(viewport2);
 
 	{
 		auto ground = CreateEntity();
@@ -334,6 +333,19 @@ void GameWorld::Initialize()
 				}
 				CommitEntity(barrel);
 			}
+
+			auto cameraTower = CreateEntity(tower);
+			{
+				auto transform = AddComponent<Components::Transform>(cameraTower, "Transform");
+				transform->Position.z = 11.f;
+				transform->Position.y = 4.f;
+				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+				auto cameraComp = AddComponent<Components::Camera>(cameraTower, "Camera");
+				cameraComp->FarClip = 2000.f;
+				auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower, "FreeSteering");
+			}
+			CommitEntity(cameraTower);
+			GetComponent<Components::Viewport>(viewport2, "Viewport")->Camera = cameraTower;
 		}
 
 		{

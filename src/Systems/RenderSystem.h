@@ -35,7 +35,7 @@ public:
 
 	std::unordered_map<std::string, std::shared_ptr<Model>> m_CachedModels;
 
-	void OnEntityCommit(EntityID entity);
+	void OnEntityCommit(EntityID entity) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 

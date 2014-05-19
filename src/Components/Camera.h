@@ -14,7 +14,6 @@ struct Camera : Component
 	, NearClip(0.1f)
 	, FarClip(100.f) { }
 
-	EntityID Viewport;
 	float FOV;
 	float NearClip;
 	float FarClip;
