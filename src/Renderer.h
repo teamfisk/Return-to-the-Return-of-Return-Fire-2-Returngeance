@@ -105,6 +105,7 @@ private:
 	GLuint m_fDiffuseTexture;
 	GLuint m_fPositionTexture;
 	GLuint m_fNormalsTexture;
+	GLuint m_fSpecularTexture;
 	GLuint m_fBlendTexture;
 	GLuint m_fbLightingPass;
 	GLuint m_fLightingTexture;
@@ -144,6 +145,9 @@ private:
 	void DrawLightScene();
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
+	void UpdateSunProjection();
+	void CreateNormalMapTangent();
+
 	
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();
