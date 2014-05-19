@@ -7,6 +7,7 @@
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/SoundEmitter.h"
+#include "Components/Listener.h"
 #include "Events/PlaySound.h"
 #include "Sound.h"
 
@@ -23,6 +24,8 @@ public:
 	void RegisterResourceTypes(ResourceManager* rm) override;
 	void Initialize() override;
 	void Update(double dt) override;
+	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
+	//void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 
 	FMOD::System *m_FmodSystem;
 

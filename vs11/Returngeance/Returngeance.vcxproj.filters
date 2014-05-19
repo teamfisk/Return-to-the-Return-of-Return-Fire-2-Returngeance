@@ -356,6 +356,9 @@
     <ClInclude Include="..\..\src\Events\LockMouse.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Listener.h">
+      <Filter>Audio\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

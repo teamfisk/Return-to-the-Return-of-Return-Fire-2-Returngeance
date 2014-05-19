@@ -133,6 +133,7 @@
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
+    <ClInclude Include="..\..\src\Components\Listener.h" />
     <ClInclude Include="..\..\src\Components\MeshShape.h" />
     <ClInclude Include="..\..\src\Components\Model.h" />
     <ClInclude Include="..\..\src\Components\Particle.h" />
