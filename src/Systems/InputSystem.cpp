@@ -53,7 +53,7 @@ bool Systems::InputSystem::OnKeyDown(const Events::KeyDown &event)
 		float value;
 		std::tie(command, value) = bindingIt->second;
 		m_CommandKeyboardValues[command][event.KeyCode] = value;
-		PublishCommand(0, command, GetCommandTotalValue(command));
+		PublishCommand(1, command, GetCommandTotalValue(command));
 	}
 
 	return true;
@@ -68,7 +68,7 @@ bool Systems::InputSystem::OnKeyUp(const Events::KeyUp &event)
 		float value;
 		std::tie(command, value) = bindingIt->second;
 		m_CommandKeyboardValues[command][event.KeyCode] = 0;
-		PublishCommand(0, command, GetCommandTotalValue(command));;
+		PublishCommand(1, command, GetCommandTotalValue(command));;
 	}
 
 	return true;
@@ -83,7 +83,7 @@ bool Systems::InputSystem::OnMousePress(const Events::MousePress &event)
 		float value;
 		std::tie(command, value) = bindingIt->second;
 		m_CommandMouseButtonValues[command][event.Button] = value;
-		PublishCommand(0, command, GetCommandTotalValue(command));
+		PublishCommand(1, command, GetCommandTotalValue(command));
 	}
 
 	return true;
@@ -98,7 +98,7 @@ bool Systems::InputSystem::OnMouseRelease(const Events::MouseRelease &event)
 		float value;
 		std::tie(command, value) = bindingIt->second;
 		m_CommandMouseButtonValues[command][event.Button] = 0;
-		PublishCommand(0, command, GetCommandTotalValue(command));
+		PublishCommand(1, command, GetCommandTotalValue(command));
 	}
 
 	return true;

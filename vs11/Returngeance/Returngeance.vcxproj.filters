@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp" />
@@ -154,6 +154,9 @@
     </Filter>
     <Filter Include="Gameplay\Vehicles\Helicopter\Systems">
       <UniqueIdentifier>{b34c0c95-a887-4cf4-af24-cf7c1f459aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Components">
+      <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -371,7 +374,7 @@
       <Filter>Input\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Viewport.h">
-    	<Filter>Physics\Components</Filter>
+      <Filter>Physics\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Health.h">
       <Filter>Physics\Components</Filter>
@@ -388,9 +391,11 @@
     <ClInclude Include="..\..\src\Events\ApplyForce.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Util\defferedUtil.h" />
     <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h">
       <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Player.h">
+      <Filter>Gameplay\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

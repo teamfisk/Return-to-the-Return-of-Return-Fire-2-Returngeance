@@ -43,11 +43,15 @@ void Systems::RenderSystem::OnEntityCommit(EntityID entity)
 
 void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
+	auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+	if (templateComponent)
+		return;
+
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 
 	// Draw models
 	auto modelComponent = m_World->GetComponent<Components::Model>(entity);
-	if (transformComponent&& modelComponent)
+	if (transformComponent && modelComponent)
 	{
 		auto model = m_World->GetResourceManager()->Load<Model>("Model", modelComponent->ModelFile);
 		if (model)

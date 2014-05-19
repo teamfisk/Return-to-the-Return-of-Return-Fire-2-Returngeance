@@ -75,7 +75,7 @@ void Systems::PhysicsSystem::Initialize()
 
 		worldInfo.setupSolverInfo(hkpWorldCinfo::SOLVER_TYPE_4ITERS_MEDIUM);
 		worldInfo.m_gravity = hkVector4(0.0f, -9.82f, 0.0f);
-		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY; // just fix the entity if the object falls off too far
+		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_DO_NOTHING;
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
 		worldInfo.setBroadPhaseWorldSize(1000.0f);
