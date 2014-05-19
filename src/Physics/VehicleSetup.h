@@ -33,6 +33,32 @@
 #include "Components/Wheel.h"
 #include "Components/Transform.h"
 
+
+/// Tank specific steering implementation. Rear wheels steer in opposite direction
+/// to front wheels.
+class TankSteering: public hkpVehicleDefaultSteering
+{
+public:
+	virtual void calcSteering(const hkReal deltaTime, const hkpVehicleInstance* vehicle, const hkpVehicleDriverInput::FilteredDriverInputOutput& filteredInfoOutput, SteeringAnglesOutput& steeringOutput )
+	{
+		hkpVehicleDefaultSteering::calcMainSteeringAngle( deltaTime, vehicle, filteredInfoOutput, steeringOutput );
+
+		// Wheels.
+		for (int w_it = 0; w_it < m_doesWheelSteer.getSize(); w_it++)
+		{
+			if ( m_doesWheelSteer[w_it] )
+			{
+				steeringOutput.m_wheelsSteeringAngle [w_it] = steeringOutput.m_mainSteeringAngle;
+			}
+			else
+			{
+				// Steer with front and back wheels to simulate a tank.
+				steeringOutput.m_wheelsSteeringAngle [w_it] = -steeringOutput.m_mainSteeringAngle;
+			}
+		}
+	}
+};
+
 class VehicleSetup
 {
 public:

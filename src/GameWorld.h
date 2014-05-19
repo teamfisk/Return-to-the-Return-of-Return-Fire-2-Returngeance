@@ -13,6 +13,7 @@
 //#include "Systems/PlayerSystem.h"
 #include "Systems/FreeSteeringSystem.h"
 #include "Systems/TankSteeringSystem.h"
+#include "Systems/HelicopterSteeringSystem.h"
 #include "Systems/RenderSystem.h"
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"

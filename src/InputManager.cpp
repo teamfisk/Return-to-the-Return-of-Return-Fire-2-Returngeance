@@ -110,6 +110,19 @@ void InputManager::Update(double dt)
 		dwResult = XInputGetState(i, &state);
 		if (dwResult == 0)
 		{
+			if(std::abs(state.Gamepad.sThumbLX) <= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+				state.Gamepad.sThumbLX = 0;
+			if(std::abs(state.Gamepad.sThumbLY) <= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+				state.Gamepad.sThumbLY = 0;
+			if(std::abs(state.Gamepad.sThumbRX) <= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+				state.Gamepad.sThumbRX = 0;
+			if(std::abs(state.Gamepad.sThumbRY) <= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+				state.Gamepad.sThumbRY = 0;
+			if(std::abs(state.Gamepad.bLeftTrigger) <= XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+				state.Gamepad.bLeftTrigger = 0;
+			if(std::abs(state.Gamepad.bRightTrigger) <= XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+				state.Gamepad.bRightTrigger = 0;
+
 			m_CurrentGamepadAxisState[i][static_cast<int>(Gamepad::Axis::LeftX)] = state.Gamepad.sThumbLX / 32767.f;
 			m_CurrentGamepadAxisState[i][static_cast<int>(Gamepad::Axis::LeftY)] = state.Gamepad.sThumbLY / 32767.f;
 			m_CurrentGamepadAxisState[i][static_cast<int>(Gamepad::Axis::RightX)] = state.Gamepad.sThumbRX / 32767.f;
