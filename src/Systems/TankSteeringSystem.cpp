@@ -24,6 +24,9 @@ void Systems::TankSteeringSystem::Update(double dt)
 void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
 	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity);
+	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(entity);
+	auto barrelSteeringComponent = m_World->GetComponent<Components::BarrelSteering>(entity);
+
 	if(tankSteeringComponent)
 	{
 		Events::TankSteer e;
@@ -33,17 +36,13 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		e.Handbrake = m_TankInputController->Handbrake;
 		EventBroker->Publish(e);
 	}
-
-	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(entity);
-	if(towerSteeringComponent)
+	else if(towerSteeringComponent)
 	{
 		auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 		glm::quat orientation =  glm::angleAxis(towerSteeringComponent->TurnSpeed * m_TowerInputController->TowerDirection * (float)dt, towerSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 	}
-
-	auto barrelSteeringComponent = m_World->GetComponent<Components::BarrelSteering>(entity);
-	if(barrelSteeringComponent)
+	else if(barrelSteeringComponent)
 	{
 		auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);

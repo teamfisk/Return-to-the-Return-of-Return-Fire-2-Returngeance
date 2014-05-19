@@ -166,8 +166,8 @@ void Systems::PhysicsSystem::Update(double dt)
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
-		//hkpStepResult stepresult = m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
-		m_PhysicsWorld->stepDeltaTime(timestep);
+		m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
+		//m_PhysicsWorld->stepDeltaTime(timestep);
 
 		m_Accumulator -= timestep;
 
@@ -541,7 +541,6 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
 	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
-		m_PhysicsWorld->markForWrite();
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
 		deviceStatus->m_positionX = event.PositionX;
 		deviceStatus->m_positionY = event.PositionY;
@@ -550,7 +549,6 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 			deviceStatus->m_reverseButtonPressed = true;
 		}
 		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
-		m_PhysicsWorld->unmarkForWrite();
 	}
 
 	return true;
@@ -561,7 +559,6 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 	m_PhysicsWorld->markForWrite();
 	m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
 	m_PhysicsWorld->unmarkForWrite();
-	
 	return true;
 }
 
@@ -570,7 +567,6 @@ bool Systems::PhysicsSystem::OnApplyForce(const Events::ApplyForce &event)
 	m_PhysicsWorld->markForWrite();
 	m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, GLMVEC3_TO_HKVECTOR4(event.Force));
 	m_PhysicsWorld->unmarkForWrite();
-	
 	return true;
 }
 
@@ -579,6 +575,5 @@ bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpuls
 	m_PhysicsWorld->markForWrite();
 	m_RigidBodies[event.Entity]->applyPointImpulse(GLMVEC3_TO_HKVECTOR4(event.Impulse), GLMVEC3_TO_HKVECTOR4(event.Position));
 	m_PhysicsWorld->unmarkForWrite();
-
 	return true;
 }
