@@ -146,13 +146,13 @@ void Systems::PhysicsSystem::Update(double dt)
 			if (parent)
 			{
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
-				position = ConvertPosition(absoluteTransform.Position);
-				rotation = ConvertRotation(absoluteTransform.Orientation);
+				position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
+				rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
 			}
 			else
 			{
-				position = ConvertPosition(transformComponent->Position);
-				rotation = ConvertRotation(transformComponent->Orientation);
+				position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
+				rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
 			}
 			m_PhysicsWorld->markForWrite();
 			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
@@ -166,8 +166,8 @@ void Systems::PhysicsSystem::Update(double dt)
 	m_Accumulator += dt;
 	while (m_Accumulator >= timestep)
 	{
-		hkpStepResult stepresult = m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
-		//m_PhysicsWorld->stepDeltaTime(timestep);
+		//hkpStepResult stepresult = m_PhysicsWorld->stepMultithreaded(m_JobQueue, m_ThreadPool, timestep);
+		m_PhysicsWorld->stepDeltaTime(timestep);
 
 		m_Accumulator -= timestep;
 
@@ -204,7 +204,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			
 			hkQuaternion steeringOrientation = m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_steeringOrientationChassisSpace;
 			hkReal spinAngle = -m_Vehicles[car]->m_wheelsInfo[wheelComponent->ID].m_spinAngle;
-			glm::quat orientation = ConvertRotation(steeringOrientation) * glm::angleAxis<float>(spinAngle, glm::vec3(1, 0, 0));
+			glm::quat orientation = HKQUATERNION_TO_GLMQUAT(steeringOrientation) * glm::angleAxis<float>(spinAngle, glm::vec3(1, 0, 0));
 			transformComponent->Orientation = orientation * wheelComponent->OriginalOrientation;
 			m_PhysicsWorld->unmarkForWrite();
 		}
@@ -213,8 +213,8 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	{
 		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
 
-		transformComponent->Position = ConvertPosition(m_RigidBodies[entity]->getPosition());
-		transformComponent->Orientation = ConvertRotation(m_RigidBodies[entity]->getRotation());
+		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
+		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
 		// TODO: No support for Scale, MIGHT be possible
 
 		if (transformComponentParent)
@@ -277,13 +277,9 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpListShape* listShape = new hkpListShape(shapeArray.begin(), shapeArray.getSize(), hkpShapeContainer::REFERENCE_POLICY_INCREMENT);
 			// Save the listShape for further use
 			m_ListShapes[entity] = listShape;
-			shape = listShape;
-
-			//////////////////////////////////
-			//******************************//
-			//     Add a hkpBvShape         //
-			//******************************//
-			//////////////////////////////////
+			//shape = listShape;
+			hkpBoxShape* box = new hkpBoxShape(listShape->m_aabbHalfExtents, 0.0f);
+			shape = new hkpBvShape(listShape, box);
 
 			// Clean up for less memory usage
 			m_Shapes.erase(entity);
@@ -296,8 +292,8 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_shape = shape;
 				rigidBodyInfo.m_motionType = hkpMotion::MOTION_DYNAMIC;
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
-				hkVector4 position = ConvertPosition(absoluteTransform.Position);
-				hkQuaternion rotation = ConvertRotation(absoluteTransform.Orientation);
+				hkVector4 position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
+				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
 				rigidBodyInfo.m_position.set(position(0), position(1), position(2), position(3));
 				rigidBodyInfo.m_rotation.set(rotation(0), rotation(1), rotation(2), rotation(3));
 
@@ -366,9 +362,9 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				
 				auto childTransformComponent = m_World->GetComponent<Components::Transform>(shapeData.Entity);
 
-				hkVector4 position = ConvertPosition(childTransformComponent->Position);
-				hkQuaternion rotation = ConvertRotation(childTransformComponent->Orientation);
-				hkVector4 scale = ConvertScale(childTransformComponent->Scale);
+				hkVector4 position = GLMVEC3_TO_HKVECTOR4(childTransformComponent->Position);
+				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(childTransformComponent->Orientation);
+				hkVector4 scale = GLMVEC3_TO_HKVECTOR4(childTransformComponent->Scale);
 				hkQsTransform transform(position, rotation, scale);
 
 				staticCompoundShape->addInstance(shapeData.Shape, transform);
@@ -386,8 +382,8 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_shape = shape;
 				rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
-				hkVector4 position = ConvertPosition(absoluteTransform.Position);
-				hkQuaternion rotation = ConvertRotation(absoluteTransform.Orientation);
+				hkVector4 position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
+				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
 				rigidBodyInfo.m_position.set(position(0), position(1), position(2), position(3));
 				rigidBodyInfo.m_rotation.set(rotation(0), rotation(1), rotation(2), rotation(3));
 
@@ -419,7 +415,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		{
 			hkpSphereShape* sphereShape = new hkpSphereShape(sphereComponent->Radius);
 			
-			hkQsTransform transform( ConvertPosition(transformComponent->Position), ConvertRotation(transformComponent->Orientation), ConvertScale(transformComponent->Scale));
+			hkQsTransform transform( GLMVEC3_TO_HKVECTOR4(transformComponent->Position), GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation), GLMVEC3_TO_HKVECTOR4(transformComponent->Scale));
 			hkpConvexTransformShape* transformedSphereShape = new hkpConvexTransformShape( sphereShape, transform );
 			
 			m_Shapes[entityParent].push_back(ShapeArrayData(entity, transformedSphereShape));
@@ -432,7 +428,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkReal thickness = 0.05;
 			hkpBoxShape* boxShape = new hkpBoxShape(hkVector4(boxComponent->Width- thickness, boxComponent->Height -thickness, boxComponent->Depth - thickness), thickness);
 			
-			hkQsTransform transform( ConvertPosition(transformComponent->Position), ConvertRotation(transformComponent->Orientation), ConvertScale(transformComponent->Scale));
+			hkQsTransform transform( GLMVEC3_TO_HKVECTOR4(transformComponent->Position), GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation), GLMVEC3_TO_HKVECTOR4(transformComponent->Scale));
 			hkpConvexTransformShape* transformedBoxShape = new hkpConvexTransformShape( boxShape, transform );
 			m_Shapes[entityParent].push_back(ShapeArrayData(entity, transformedBoxShape));
 			boxShape->removeReference();
@@ -540,39 +536,6 @@ void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 	LOG_INFO("%s", msg);
 }
 
-
-glm::vec3 Systems::PhysicsSystem::ConvertPosition(const hkVector4 &hkPosition)
-{
-	return glm::vec3(hkPosition(0), hkPosition(1), hkPosition(2));
-}
-
-const hkVector4& Systems::PhysicsSystem::ConvertPosition(glm::vec3 glmPosition)
-{
-	return hkVector4( glmPosition.x, glmPosition.y, glmPosition.z);
-}
-
-glm::quat Systems::PhysicsSystem::ConvertRotation(const hkQuaternion &hkRotation)
-{
-	return glm::quat(hkRotation(3), hkRotation(0), hkRotation(1), hkRotation(2));
-}
-
-const hkQuaternion& Systems::PhysicsSystem::ConvertRotation(glm::quat glmRotation)
-{
-	hkQuaternion quat = hkQuaternion(glmRotation.x, glmRotation.y, glmRotation.z, glmRotation.w);
-	quat.normalize();
-	return quat;
-}
-
-glm::vec3 Systems::PhysicsSystem::ConvertScale(const hkVector4 &hkScale)
-{
-	return glm::vec3(hkScale(0), hkScale(1), hkScale(2));
-}
-
-const hkVector4& Systems::PhysicsSystem::ConvertScale(glm::vec3 glmScale)
-{
-	return hkVector4(glmScale.x, glmScale.y, glmScale.z);
-}
-
 bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 {
 	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
@@ -596,7 +559,7 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 {
 	m_PhysicsWorld->markForWrite();
-	m_RigidBodies[event.Entity]->setLinearVelocity(ConvertPosition(event.Velocity));
+	m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
 	m_PhysicsWorld->unmarkForWrite();
 	
 	return true;
@@ -605,7 +568,7 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 bool Systems::PhysicsSystem::OnApplyForce(const Events::ApplyForce &event)
 {
 	m_PhysicsWorld->markForWrite();
-	m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, ConvertPosition(event.Force));
+	m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, GLMVEC3_TO_HKVECTOR4(event.Force));
 	m_PhysicsWorld->unmarkForWrite();
 	
 	return true;
@@ -614,7 +577,7 @@ bool Systems::PhysicsSystem::OnApplyForce(const Events::ApplyForce &event)
 bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpulse &event )
 {
 	m_PhysicsWorld->markForWrite();
-	m_RigidBodies[event.Entity]->applyPointImpulse(ConvertPosition(event.Impulse), ConvertPosition(event.Position));
+	m_RigidBodies[event.Entity]->applyPointImpulse(GLMVEC3_TO_HKVECTOR4(event.Impulse), GLMVEC3_TO_HKVECTOR4(event.Position));
 	m_PhysicsWorld->unmarkForWrite();
 
 	return true;

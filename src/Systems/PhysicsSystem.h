@@ -1,6 +1,16 @@
 #ifndef PhysicsSystem_h__
 #define PhysicsSystem_h__
 
+#define HKVECTOR4_TO_GLMVEC3(hkvec) \
+	glm::vec3(hkvec(0), hkvec(1), hkvec(2))
+#define GLMVEC3_TO_HKVECTOR4(glmvec) \
+	hkVector4(glmvec.x, glmvec.y, glmvec.z)
+
+#define HKQUATERNION_TO_GLMQUAT(gkquat) \
+	glm::quat(gkquat(3), gkquat(0), gkquat(1), gkquat(2))
+#define GLMQUAT_TO_HKQUATERNION(glmquat) \
+	hkQuaternion(glmquat.x, glmquat.y, glmquat.z, glmquat.w)
+
 #include "System.h"
 #include "Systems/TransformSystem.h"
 #include "Components/Transform.h"
@@ -121,16 +131,6 @@ private:
 	static void HK_CALL HavokErrorReport(const char* msg, void*);
 	void SetupPhysics(hkpWorld* physicsWorld);
 	
-	// Converterfunctions
-	glm::vec3 ConvertPosition(const hkVector4 &hkPosition);
-	const hkVector4& ConvertPosition(glm::vec3 glmPosition);
-
-	glm::quat ConvertRotation(const hkQuaternion &hkRotation);
-	const hkQuaternion& ConvertRotation(glm::quat glmRotation);
-
-	glm::vec3 ConvertScale(const hkVector4 &hkScale);
-	const hkVector4&ConvertScale(glm::vec3 glmScale);
-
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
 	
 	hkJobThreadPool* m_ThreadPool;
