@@ -26,7 +26,7 @@ public:
 	int Height() const { return m_Height; }
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
-	std::list<std::tuple<Texture*, glm::mat4, glm::mat4>> TexturesToRender;
+	std::list<std::tuple<Texture*, glm::mat4, glm::vec3>> TexturesToRender;
 	std::list<std::tuple<glm::mat4, bool>> AABBsToRender;
 
 	Renderer();

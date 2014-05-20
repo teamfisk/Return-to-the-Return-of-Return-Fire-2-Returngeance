@@ -397,6 +397,9 @@
     <ClInclude Include="..\..\src\Components\Player.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\Collision.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

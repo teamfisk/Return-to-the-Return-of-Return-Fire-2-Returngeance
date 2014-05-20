@@ -11,6 +11,8 @@ void Systems::TankSteeringSystem::RegisterComponents( ComponentFactory* cf )
 
 void Systems::TankSteeringSystem::Initialize()
 {
+	EVENT_SUBSCRIBE_MEMBER(m_ECollision, &Systems::TankSteeringSystem::OnCollision);
+
 	for (int i = 0; i < 4; i++)
 	{
 		m_TankInputControllers[i] = std::shared_ptr<TankSteeringInputController>(new TankSteeringInputController(EventBroker, i + 1));
@@ -91,6 +93,32 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 		m_TimeSinceLastShot[tankSteeringComponent->Barrel] += dt;
 	}
+}
+
+bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
+{
+	// TODO:
+	auto modelComponent = m_World->GetComponent<Components::Model>(e.Entity1);
+
+	if (modelComponent && modelComponent->ModelFile == "Models/Placeholders/rocket/Rocket.obj")
+	{
+		auto transform = m_World->GetComponent<Components::Transform>(e.Entity1);
+		m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(
+			transform->Position,
+			1,
+			60,
+			"Textures/Sprites/NewtonTreeDeleteASAPPlease.png",
+			glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)),
+			40,
+			glm::pi<float>(),
+			0.5f
+			);
+		//m_World->RemoveEntity(e.Entity1);
+	}
+
+	//LOG_INFO("Ent1 %i Ent2 %i", e.Entity1, e.Entity2);
+
+	return true;
 }
 
 void Systems::TankSteeringSystem::TankSteeringInputController::Update( double dt )

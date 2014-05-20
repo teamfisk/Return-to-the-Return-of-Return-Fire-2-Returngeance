@@ -5,6 +5,7 @@
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
+#include "Events/Collision.h"
 #include "Components/Transform.h"
 #include "Components/TankSteering.h"
 #include "Components/TowerSteering.h"
@@ -12,7 +13,9 @@
 #include "Components/Physics.h"
 #include "Components/Vehicle.h"
 #include "Components/Player.h"
+#include "Components/Model.h"
 #include "Systems/TransformSystem.h"
+#include "Systems/ParticleSystem.h"
 #include "InputController.h"
 
 namespace Systems
@@ -31,6 +34,9 @@ namespace Systems
 		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 	private:
+		EventRelay<Events::Collision> m_ECollision;
+		bool OnCollision(const Events::Collision &e);
+
 		class TankSteeringInputController;
 		std::array<std::shared_ptr<TankSteeringInputController>, 4> m_TankInputControllers;
 

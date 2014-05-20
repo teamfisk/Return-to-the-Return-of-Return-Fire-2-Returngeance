@@ -27,6 +27,7 @@
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
+#include "Events/Collision.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -75,27 +76,45 @@
 
 #include <Physics2012/Dynamics/Collide/ContactListener/hkpContactListener.h>
 
-class MyCollisionResolution: public hkReferencedObject, public hkpContactListener
-{
-public:
-	std::unordered_map<hkpRigidBody*, EntityID> m_RigidBodies;
-
-	virtual void contactPointCallback( const hkpContactPointEvent& event ) 
-	{
-		
-		EntityID entity1 = m_RigidBodies[event.getBody(0)];
-		EntityID entity2 = m_RigidBodies[event.getBody(1)];
-		//LOG_INFO("Entities colliding: %i, %i ", entity1, entity2);
-
-	}
-};
-
-
+#include "Components/Model.h"
 namespace Systems
 {
 class PhysicsSystem : public System
 {
 public:
+	class MyCollisionResolution: public hkReferencedObject, public hkpContactListener
+	{
+	public:
+
+		MyCollisionResolution(Systems::PhysicsSystem* physicsSystem)
+			: m_PhysicsSystem(physicsSystem) { }
+
+		virtual void contactPointCallback( const hkpContactPointEvent& event ) 
+		{
+			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(0)];
+			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(1)];
+
+			Events::Collision e;
+			e.Entity1 = entity1;
+			e.Entity2 = entity2;
+			m_PhysicsSystem->EventBroker->Publish(e);
+
+			auto modelComponent = m_PhysicsSystem->m_World->GetComponent<Components::Model>(entity1);
+
+			if (modelComponent && modelComponent->ModelFile == "Models/Placeholders/rocket/Rocket.obj" && entity2 == 6)
+			{
+				m_PhysicsSystem->m_PhysicsWorld->markForWrite();
+				m_PhysicsSystem->m_RigidBodies[entity1]->setPosition(hkVector4(2000, -2000, 2000));
+				m_PhysicsSystem->m_PhysicsWorld->unmarkForWrite();
+			}
+		}
+
+	private:
+		Systems::PhysicsSystem* m_PhysicsSystem;
+	};
+
+	friend class MyCollisionResolution;
+
 	PhysicsSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
 		: System(world, eventBroker) { }
 
@@ -107,7 +126,8 @@ public:
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
-	
+	void OnEntityRemoved(EntityID entity) override;
+
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
@@ -132,6 +152,7 @@ private:
 	void SetupPhysics(hkpWorld* physicsWorld);
 	
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+	std::unordered_map<hkpRigidBody*, EntityID> m_RigidBodyEntities;
 	
 	hkJobThreadPool* m_ThreadPool;
 	hkJobQueue* m_JobQueue;

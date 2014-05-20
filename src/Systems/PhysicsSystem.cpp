@@ -78,7 +78,7 @@ void Systems::PhysicsSystem::Initialize()
 		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_DO_NOTHING;
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
-		worldInfo.setBroadPhaseWorldSize(1000.0f);
+		worldInfo.setBroadPhaseWorldSize(1500.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
 
 		// When the simulation type is SIMULATION_TYPE_MULTITHREADED, in the debug build, the sdk performs checks
@@ -107,7 +107,7 @@ void Systems::PhysicsSystem::Initialize()
 
 		m_PhysicsWorld->unmarkForWrite();
 
-		m_collisionResolution = new MyCollisionResolution;
+		m_collisionResolution = new MyCollisionResolution(this);
 	}
 
 }
@@ -326,7 +326,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBody->addContactListener( m_collisionResolution );
 				m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
 				m_RigidBodies[entity] = rigidBody;
-				m_collisionResolution->m_RigidBodies[rigidBody] = entity;
+				m_RigidBodyEntities[rigidBody] = entity;
 
 
 				// The vehicle is an action
@@ -344,7 +344,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBody->addContactListener( m_collisionResolution );
 				m_PhysicsWorld->addEntity(rigidBody);
 				m_RigidBodies[entity] = rigidBody;
-				m_collisionResolution->m_RigidBodies[rigidBody] = entity;
+				m_RigidBodyEntities[rigidBody] = entity;
 				m_PhysicsWorld->unmarkForWrite();
 
 				shape->removeReference();
@@ -397,7 +397,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			m_PhysicsWorld->markForWrite();
 			m_PhysicsWorld->addEntity(rigidBody);
 			m_RigidBodies[entity] = rigidBody;
-			m_collisionResolution->m_RigidBodies[rigidBody] = entity;
+			m_RigidBodyEntities[rigidBody] = entity;
 			m_PhysicsWorld->unmarkForWrite();
 
 			shape->removeReference();
@@ -576,4 +576,18 @@ bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpuls
 	m_RigidBodies[event.Entity]->applyPointImpulse(GLMVEC3_TO_HKVECTOR4(event.Impulse), GLMVEC3_TO_HKVECTOR4(event.Position));
 	m_PhysicsWorld->unmarkForWrite();
 	return true;
+}
+
+void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
+{
+	// TODO:
+	/*auto rigidBodyIt = m_RigidBodies.find(entity);
+	if (rigidBodyIt == m_RigidBodies.end())
+		return;
+
+	auto rigidBody = rigidBodyIt->second;
+	m_RigidBodies.erase(entity);
+	m_RigidBodyEntities.erase(rigidBody);
+	rigidBody->removeReference();*/
+
 }

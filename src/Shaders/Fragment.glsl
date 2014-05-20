@@ -40,7 +40,7 @@ void main()
 {
 	
 	// Diffuse Texture
-	frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord) * Shadow(Input.ShadowCoord);
+	frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord); // * Shadow(Input.ShadowCoord);
 
 	// G-buffer Position
 	frag_Position = vec4(Input.Position.xyz, 1.0);

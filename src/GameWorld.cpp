@@ -335,7 +335,7 @@ void GameWorld::Initialize()
 			auto cameraTower = CreateEntity(tower);
 			{
 				auto transform = AddComponent<Components::Transform>(cameraTower);
-				transform->Position.z = 11.f;
+				transform->Position.z = 14.f;
 				transform->Position.y = 4.f;
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
@@ -754,7 +754,7 @@ void GameWorld::Initialize()
 			auto cameraTower = CreateEntity(tower);
 			{
 				auto transform = AddComponent<Components::Transform>(cameraTower);
-				transform->Position.z = 11.f;
+				transform->Position.z = 14.f;
 				transform->Position.y = 4.f;
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);

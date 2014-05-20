@@ -33,6 +33,7 @@ public:
 	virtual void OnComponentRemoved(std::string type, Component* component) { }
 	// Called when components are committed to an entity
 	virtual void OnEntityCommit(EntityID entity) { }
+	virtual void OnEntityRemoved(EntityID entity) { }
 
 protected:
 	World* m_World;
