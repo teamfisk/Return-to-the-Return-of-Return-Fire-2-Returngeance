@@ -46,8 +46,9 @@ void main()
 	frag_Position = vec4(Input.Position.xyz, 1.0);
 
 	// G-buffer Normal
-	mat3 TBN = transpose(mat3(Input.Tangent, Input.BiTangent, Input.Normal));
+	mat3 TBN = mat3(Input.Tangent, Input.BiTangent, Input.Normal);
 	frag_Normal = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
+	//frag_Diffuse = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
 	//frag_Normal = vec4(Input.Normal, 0.0);
 
 	//G-buffer Specular

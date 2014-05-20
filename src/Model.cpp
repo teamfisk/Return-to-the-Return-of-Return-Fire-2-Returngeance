@@ -23,11 +23,23 @@ Model::Model(OBJ &obj, ResourceManager* rm)
 			// TODO: Load normal map
 			std::shared_ptr<Texture> normalMap = nullptr;
 			if (!currentMaterial->NormalMap.FileName.empty())
+			{
 				normalMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->NormalMap.FileName));
+			}
+			else
+			{
+				normalMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", "Textures/NeutralNormalMap.png"));
+			}
 			// Load specular map
 			std::shared_ptr<Texture> specularMap = nullptr;
 			if (!currentMaterial->SpecularMap.FileName.empty())
+			{
 				specularMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->SpecularMap.FileName));
+			}
+			else
+			{
+				specularMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", "Textures/NeutralSpecularMap.png"));
+			}
 
 			// TODO: Load material parameters
 			// Create new texture group (start index of new group is upcoming index)

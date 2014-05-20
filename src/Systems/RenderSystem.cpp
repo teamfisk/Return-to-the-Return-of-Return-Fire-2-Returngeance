@@ -41,7 +41,8 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 			pointLightComponent->specularExponent,
 			pointLightComponent->ConstantAttenuation,
 			pointLightComponent->LinearAttenuation,
-			pointLightComponent->QuadraticAttenuation
+			pointLightComponent->QuadraticAttenuation,
+			pointLightComponent->Radius
 			);
 	}
 

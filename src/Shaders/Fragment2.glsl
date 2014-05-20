@@ -18,12 +18,13 @@ uniform vec3 CameraPosition;
 uniform float ConstantAttenuation;
 uniform float LinearAttenuation;
 uniform float QuadraticAttenuation;
+uniform float LightRadius;
 
 const vec3 ks = vec3(1.0, 1.0, 1.0);
 const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
-const float LRadius = 5.0;
+
 
 in VertexData
 {
@@ -57,7 +58,7 @@ vec4 phong(vec3 position, vec3 normal, vec3 specular)
 
 	//float attenuation = 1.0 / (ConstantAttenuation + (LinearAttenuation * dist) + (QuadraticAttenuation * dist * dist));
 
-	float attenuation = pow(max(0.0f, 1.0 - (dist / LRadius)), 2);
+	float attenuation = pow(max(0.0f, 1.0 - (dist / LightRadius)), 2);
 
 	//float attenuation = 1.0 / (1.0 - 0.0001 * pow(dist, 2));
 
@@ -85,6 +86,6 @@ void main()
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 	vec4 SpecularTexel = texture(SpecularTexture, TextureCoord);
 
-	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel));
+	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel))+vec4(0.1f);
 	//FragColor = NormalTexel;
 }

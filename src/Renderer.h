@@ -41,7 +41,8 @@ public:
 	    float _specularExponent,
 		float _ConstantAttenuation, 
 		float _LinearAttenuation, 
-		float _QuadraticAttenuation
+		float _QuadraticAttenuation,
+		float _radius
 	);
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
@@ -71,7 +72,7 @@ private:
 		glm::vec3 Diffuse;
 		float SpecularExponent;
 		glm::mat4 SphereModelMatrix;
-		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
+		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation, Radius;
 	};
 
 	float Gamma;

@@ -358,7 +358,8 @@ void Renderer::AddPointLightToDraw(
     float _specularExponent,
 	float _ConstantAttenuation,
 	float _LinearAttenuation, 
-	float _QuadraticAttenuation
+	float _QuadraticAttenuation,
+	float _radius
 )
 {
 	Light light;
@@ -369,6 +370,7 @@ void Renderer::AddPointLightToDraw(
 	light.ConstantAttenuation = _ConstantAttenuation;
 	light.LinearAttenuation = _LinearAttenuation;
 	light.QuadraticAttenuation = _QuadraticAttenuation;
+	light.Radius = _radius;
 	light.SphereModelMatrix = CreateLightMatrix(light);
 	Lights.push_back(light);
 }
@@ -775,6 +777,7 @@ void Renderer::DrawLightScene()
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), CAtt);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LightRadius"), light.Radius);
 
  		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
@@ -793,14 +796,14 @@ glm::mat4 Renderer::CreateLightMatrix(Light &_light)
 // 	float c = _light.ConstantAttenuation;
 // 	float l = _light.LinearAttenuation;
 // 	float q = _light.QuadraticAttenuation;
-	float c = CAtt;
-	float l = LAtt;
-	float q = QAtt;
-	float cutOffRadius = abs(sqrt((-4*c*q) + pow(l, 2) + (1024*q) - l) / (2*q));
+	//float c = CAtt;
+	//float l = LAtt;
+	//float q = QAtt;
+	//float cutOffRadius = abs(sqrt((-4*c*q) + pow(l, 2) + (1024*q) - l) / (2*q));
 
 	glm::mat4 model;
 	model *= glm::translate(_light.Position);
-	model *= glm::scale(glm::vec3(cutOffRadius));
+	model *= glm::scale(glm::vec3(_light.Radius*2));
 	return model;
 }
 
@@ -830,6 +833,3 @@ void Renderer::UpdateSunProjection()
 
 	//Pass the bounding box's extents to glOrtho or similar to set up the orthographic projection matrix for the shadow map.
 }
-
-
-

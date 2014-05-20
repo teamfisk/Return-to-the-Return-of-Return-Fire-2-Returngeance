@@ -16,9 +16,11 @@ struct PointLight : Component
 		, ConstantAttenuation(1.0f)
 		, LinearAttenuation(0.f)
 		, QuadraticAttenuation(3.f)
+		, Radius(5.f)
 	{ }
 
 	float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
+	float Radius;
 	Color color;
 
 	glm::vec3 Specular;
