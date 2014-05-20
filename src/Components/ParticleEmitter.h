@@ -19,7 +19,7 @@ struct ParticleEmitter : Component
 		, SpawnCount(0)
 		, SpreadAngle(0)
 		, LifeTime(0)
-		, TimeSinceLastSpawn(0) { } 
+		, TimeSinceLastSpawn(100) { } // TEMP fulhack så att partiklarna spawnar direkt
 
 	EntityID ParticleTemplate;
 	float SpawnFrequency;
@@ -34,10 +34,11 @@ struct ParticleEmitter : Component
 	std::vector<float> AngularVelocitySpectrum;
 	std::vector<glm::vec3> OrientationSpectrum; //Keep?
 
-	virtual ParticleEmitter* Clone() const override { return new ParticleEmitter(*this); }
-
 private:
 	double TimeSinceLastSpawn;
+
+	virtual ParticleEmitter* Clone() const override { return new ParticleEmitter(*this); }
+
 };
 
 }

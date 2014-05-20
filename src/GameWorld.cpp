@@ -551,15 +551,16 @@ void GameWorld::Initialize()
 
 			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
-			transformComponent->Position = glm::vec3(2,-1.7,2.0);
+			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
 			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
 			emitterComponent->SpawnCount = 2;
-			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpawnFrequency = 10;
 			emitterComponent->SpreadAngle = glm::pi<float>();
 			emitterComponent->UseGoalVelocity = false;
 			emitterComponent->LifeTime = 0.5;
+			emitterComponent->Speed = 5;
 			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
@@ -635,7 +636,7 @@ void GameWorld::Initialize()
 
 			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
-			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
+			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
 			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
@@ -644,6 +645,7 @@ void GameWorld::Initialize()
 			emitterComponent->SpreadAngle = glm::pi<float>();
 			emitterComponent->UseGoalVelocity = false;
 			emitterComponent->LifeTime = 0.5;
+			emitterComponent->Speed = 5;
 			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
@@ -654,7 +656,6 @@ void GameWorld::Initialize()
 			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
-
 			CommitEntity(particleEntity);
 		}
 
