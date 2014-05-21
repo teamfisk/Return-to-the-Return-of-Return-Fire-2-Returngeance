@@ -122,6 +122,7 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register<Components::MeshShape>([]() { return new Components::MeshShape(); });
 	cf->Register<Components::HingeConstraint>([]() { return new Components::HingeConstraint(); });
 	cf->Register<Components::WheelPair>([]() { return new Components::WheelPair(); });
+	cf->Register<Components::TankShell>([]() { return new Components::TankShell(); });
 }
 
 void Systems::PhysicsSystem::Update(double dt)
@@ -159,7 +160,6 @@ void Systems::PhysicsSystem::Update(double dt)
 			m_PhysicsWorld->unmarkForWrite();
 			
 		}
-		
 	}
 
 	static const double timestep = 1 / 60.0;
@@ -580,14 +580,18 @@ bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpuls
 
 void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
 {
-	// TODO:
-	/*auto rigidBodyIt = m_RigidBodies.find(entity);
-	if (rigidBodyIt == m_RigidBodies.end())
-		return;
-
-	auto rigidBody = rigidBodyIt->second;
-	m_RigidBodies.erase(entity);
-	m_RigidBodyEntities.erase(rigidBody);
-	rigidBody->removeReference();*/
-
+	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
+	{
+		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+		m_PhysicsWorld->markForWrite();
+		m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
+		m_PhysicsWorld->unmarkForWrite();
+		m_RigidBodies.erase(entity);
+	}
+	if(m_Vehicles.find(entity) != m_Vehicles.end())
+	{
+		m_PhysicsWorld->markForWrite();
+		m_Vehicles[entity]->removeFromWorld();
+		m_PhysicsWorld->unmarkForWrite();
+	}
 }

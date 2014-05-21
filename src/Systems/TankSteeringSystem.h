@@ -18,6 +18,10 @@
 #include "Systems/ParticleSystem.h"
 #include "InputController.h"
 
+#include "Components/Health.h"
+#include "Components/TankShell.h"
+#include "Components/SphereShape.h"
+
 namespace Systems
 {
 

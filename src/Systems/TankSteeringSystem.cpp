@@ -97,26 +97,40 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 {
-	// TODO:
-	auto modelComponent = m_World->GetComponent<Components::Model>(e.Entity1);
-
-	if (modelComponent && modelComponent->ModelFile == "Models/Placeholders/rocket/Rocket.obj")
+	if(m_World->ValidEntity(e.Entity1) && m_World->ValidEntity(e.Entity1))
 	{
-		auto transform = m_World->GetComponent<Components::Transform>(e.Entity1);
-		m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(
-			transform->Position,
-			1,
-			60,
-			"Textures/Sprites/NewtonTreeDeleteASAPPlease.png",
-			glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)),
-			40,
-			glm::pi<float>(),
-			0.5f
-			);
-		//m_World->RemoveEntity(e.Entity1);
-	}
+		auto tankShell1 = m_World->GetComponent<Components::TankShell>(e.Entity1);
+		auto tankShell2 = m_World->GetComponent<Components::TankShell>(e.Entity2);
+		
 
-	//LOG_INFO("Ent1 %i Ent2 %i", e.Entity1, e.Entity2);
+		if(tankShell1)
+		{
+			auto transform = m_World->GetComponent<Components::Transform>(e.Entity1);
+			m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(transform->Position, 1, 60, "Textures/Sprites/NewtonTreeDeleteASAPPlease.png", glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)), 40, glm::pi<float>(), 0.5f);
+
+			auto health2 = m_World->GetComponent<Components::Health>(e.Entity2);
+			if(health2)
+			{
+				health2->health -= tankShell1->Damage;
+			}
+
+			m_World->RemoveEntity(e.Entity1);
+		}
+
+		if(tankShell2)
+		{
+			auto transform = m_World->GetComponent<Components::Transform>(e.Entity2);
+			m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(transform->Position, 1, 60, "Textures/Sprites/NewtonTreeDeleteASAPPlease.png", glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)), 40, glm::pi<float>(), 0.5f);
+
+			auto health1 = m_World->GetComponent<Components::Health>(e.Entity2);
+			if(health1)
+			{
+				health1->health -= tankShell1->Damage;
+			}
+			
+			m_World->RemoveEntity(e.Entity2);
+		}
+	}
 
 	return true;
 }

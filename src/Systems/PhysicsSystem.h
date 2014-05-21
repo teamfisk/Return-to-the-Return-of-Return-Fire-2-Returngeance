@@ -76,7 +76,8 @@
 
 #include <Physics2012/Dynamics/Collide/ContactListener/hkpContactListener.h>
 
-#include "Components/Model.h"
+#include "Components/TankShell.h"
+#include <Physics2012/Collide/Shape/Misc/PhantomCallback/hkpPhantomCallbackShape.h>
 namespace Systems
 {
 class PhysicsSystem : public System
@@ -94,27 +95,47 @@ public:
 			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(0)];
 			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(1)];
 
+			m_PhysicsSystem->m_PhysicsWorld->unmarkForRead();
 			Events::Collision e;
 			e.Entity1 = entity1;
 			e.Entity2 = entity2;
 			m_PhysicsSystem->EventBroker->Publish(e);
-
-			auto modelComponent = m_PhysicsSystem->m_World->GetComponent<Components::Model>(entity1);
-
-			if (modelComponent && modelComponent->ModelFile == "Models/Placeholders/rocket/Rocket.obj" && entity2 == 6)
-			{
-				m_PhysicsSystem->m_PhysicsWorld->markForWrite();
-				m_PhysicsSystem->m_RigidBodies[entity1]->setPosition(hkVector4(2000, -2000, 2000));
-				m_PhysicsSystem->m_PhysicsWorld->unmarkForWrite();
-			}
+			m_PhysicsSystem->m_PhysicsWorld->markForRead();
 		}
 
 	private:
 		Systems::PhysicsSystem* m_PhysicsSystem;
 	};
-
 	friend class MyCollisionResolution;
 
+	/*class PhantomCallbackShape: public hkpPhantomCallbackShape
+	{
+	public:
+
+		PhantomCallbackShape(Systems::PhysicsSystem* physicsSystem)
+			: m_PhysicsSystem(physicsSystem) { }
+
+		virtual void phantomEnterEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB, const hkpCollisionInput& env )
+		{
+			Events::ApplyPointImpulse e;
+			e.Entity = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableB)];
+			e.Position = HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableB)->getPosition());
+
+			glm::vec3 impulse;
+			impulse = HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableA)->getPosition()) - HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableB)->getPosition());
+			e.Impulse = impulse;
+		}
+
+		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
+		{
+
+		}
+
+	private:
+		Systems::PhysicsSystem* m_PhysicsSystem;
+	};
+	friend class PhantomCallbackShape;
+	*/
 	PhysicsSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
 		: System(world, eventBroker) { }
 

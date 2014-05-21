@@ -258,7 +258,8 @@ void GameWorld::Initialize()
 		auto tankSteering = AddComponent<Components::TankSteering>(tank);
 		tankSteering->Player = player1;
 		AddComponent<Components::Input>(tank);
-
+		auto health = AddComponent<Components::Health>(tank);
+		health->health = 1;
 		{
 			auto shape = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -312,7 +313,8 @@ void GameWorld::Initialize()
 					physics->Static = false;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
-
+					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
+					tankShellComponent->Damage = 20.f;
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -361,7 +363,7 @@ void GameWorld::Initialize()
 // 		auto wheelpair = CreateEntity(tank);
 // 		SetProperty(wheelpair, "Name", "WheelPair");
 // 		AddComponent(wheelpair, "WheelPairThingy");
-
+		#pragma region Wheels
 		//Create wheels
 		float wheelOffset = 0.4f;
 		float springLength = 0.3f;
@@ -658,6 +660,7 @@ void GameWorld::Initialize()
 			emitterComponent->ParticleTemplate = particleEntity;
 			CommitEntity(particleEntity);
 		}
+#pragma endregion
 
 		CommitEntity(tank);
 	}
@@ -677,7 +680,8 @@ void GameWorld::Initialize()
 		auto tankSteering = AddComponent<Components::TankSteering>(tank);
 		tankSteering->Player = player2;
 		AddComponent<Components::Input>(tank);
-
+		auto health = AddComponent<Components::Health>(tank);
+		health->health = 1;
 		{
 			auto shape = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -731,7 +735,8 @@ void GameWorld::Initialize()
 					physics->Static = false;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
-
+					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
+					tankShellComponent->Damage = 20.f;
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -780,6 +785,7 @@ void GameWorld::Initialize()
 // 		auto wheelpair = CreateEntity(tank);
 // 		SetProperty(wheelpair, "Name", "WheelPair");
 // 		AddComponent(wheelpair, "WheelPairThingy");
+		#pragma region Wheels
 
 		//Create wheels
 		float wheelOffset = 0.4f;
@@ -1076,7 +1082,7 @@ void GameWorld::Initialize()
 
 			CommitEntity(particleEntity);
 		}
-
+#pragma endregion
 		CommitEntity(tank);
 	}
 
@@ -1104,7 +1110,7 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
-	for(int i = 0; i < 1; i++)
+	for(int i = 0; i < 0; i++)
 	{
 		for (int y = 0; y < 15; y++)
 		{
@@ -1180,6 +1186,7 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
 	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
+	m_ComponentFactory.Register<Components::Health>([]() { return new Components::Health(); });		
 }
 
 void GameWorld::RegisterSystems()

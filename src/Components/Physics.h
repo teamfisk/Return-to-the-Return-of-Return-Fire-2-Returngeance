@@ -9,10 +9,11 @@ namespace Components
 struct Physics : Component
 {
 	Physics()
-		: Mass(0.f), Static(false){}
+		: Mass(1.f), Static(false), Phantom(false){}
 
 	float Mass;
 	bool Static;
+	bool Phantom;
 
 	virtual Physics* Clone() const override { return new Physics(*this); }
 };
