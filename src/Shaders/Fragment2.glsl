@@ -54,29 +54,10 @@ vec4 phong(vec3 position, vec3 normal, vec3 specular)
 
 	//Attenuation
 	float dist = distance(lightPos, position);
-	//float attenuation = -log(min(1.0, dist / LightRadius));
-
-	//float attenuation = 1.0 / (ConstantAttenuation + (LinearAttenuation * dist) + (QuadraticAttenuation * dist * dist));
 
 	float attenuation = pow(max(0.0f, 1.0 - (dist / LightRadius)), 2);
 
-	//float attenuation = 1.0 / (1.0 - 0.0001 * pow(dist, 2));
-
-	//float attenuation = clamp(0.0, 1.0, 1.0 / (0.001 + (0.001 * dist) + (0.001 * dist * dist)));
-
-	//float attenuation = 1.0 / dot(directionToLight, directionToLight);
-
-	//float att_s = 5;
-	//float attenuation = pow(dist, 2) / pow(5.0, 2);
-	//attenuation = 1.0 / (1.0 + attenuation * att_s);
-	//att_s = 1.0 / (1.0 + att_s);
-	//attenuation = attenuation / (1.0 - att_s);
-
-	//float radius = 5.0;
-	//float alpha = dist / radius;
-	//float dampingFactor = 1.0 - pow(alpha, 3);
-
-	return vec4((Id + Is) * attenuation, 1.0);
+	return vec4((Id) * attenuation, Is.r * attenuation);
 }
 
 void main()
@@ -86,6 +67,6 @@ void main()
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 	vec4 SpecularTexel = texture(SpecularTexture, TextureCoord);
 
-	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel))+vec4(0.1f);
+	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel));
 	//FragColor = NormalTexel;
 }

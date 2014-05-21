@@ -13,14 +13,14 @@ Renderer::Renderer()
 	m_DrawWireframe = false;
 	m_DrawBounds = false;
 #endif
-	Gamma = 2.2f;
+	Gamma = 0.85f;
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
 	m_ShadowMapRes = 2048*6;
-	m_SunPosition = glm::vec3(0, 3.5f, 10);
+	m_SunPosition = glm::vec3(3.f, 5.f, 3.f);
 	m_SunTarget = glm::vec3(0, 0, 0);
-	m_SunProjection = glm::ortho<float>(10.f, -10.f, 10.f, -10.f, 10.f, -10.f);
+	m_SunProjection = glm::ortho<float>(200.f, -200.f, 200.f, -200.f, -100.f, 100.f);
 /*	Lights = 0;*/
 }
 
@@ -529,7 +529,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind diffuse texture
 	glGenTextures(1, &m_fDiffuseTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -547,7 +547,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind normal texture
 	glGenTextures(1, &m_fNormalsTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -593,7 +593,7 @@ void Renderer::FrameBufferTextures()
 
 	glGenTextures(1, &m_fLightingTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -625,7 +625,7 @@ void Renderer::DrawFBO()
 	// Clear G-buffer
 	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 	glDrawBuffers(4, windowBuffClear);
-	glClearColor(0.5f, 0.f, 0.f, 0.f);
+	glClearColor(0.0f, 0.3f, 0.7f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
@@ -668,7 +668,7 @@ void Renderer::DrawFBO()
 	m_FinalPassProgram.Bind();
 
 	// Ambient light
-	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.4f, 0.4f, 0.4f)));
+	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.7f)));
 	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
 	glActiveTexture(GL_TEXTURE0);

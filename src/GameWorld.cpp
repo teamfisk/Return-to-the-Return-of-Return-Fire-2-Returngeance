@@ -33,6 +33,19 @@ void GameWorld::Initialize()
  		CommitEntity(ground);
  	}
 
+	for(int i = 15; i < 200; i++)
+	{
+		auto Light = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(Light, "Transform");
+		transform->Position = glm::vec3((5+(i/2.f))*cos(i/5.0f), 3.f, (5+(i/2.f))*sin(i/5.0f));
+		auto light = AddComponent<Components::PointLight>(Light, "PointLight");
+		light->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		light->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+		light->Radius = 15.f;
+		light->specularExponent = 100.f;
+		auto model = AddComponent<Components::Model>(Light, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	}
 
  	{
  		auto jeep = CreateEntity();
@@ -49,18 +62,7 @@ void GameWorld::Initialize()
  
  		AddComponent<Components::Input>(jeep, "Input");
  
- 		for(int i = 0; i < 1; i++)
- 		{
- 			auto Light = CreateEntity(jeep);
- 			auto transform = AddComponent<Components::Transform>(Light, "Transform");
- 			transform->Position = glm::vec3((5+(i/2.f))*cos(i/5.0f), 0.3f, 0 + (5+(i/5.f))*sin(i/2.0f));
- 			auto light = AddComponent<Components::PointLight>(Light, "PointLight");
- 			light->Specular = glm::vec3(1.0f, 1.0f, 1.0f);
- 			light->Diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-			light->Radius = 150.f;
-  			auto model = AddComponent<Components::Model>(Light, "Model");
-  			model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
- 		}
+
  
 		{
 			auto camera = CreateEntity();

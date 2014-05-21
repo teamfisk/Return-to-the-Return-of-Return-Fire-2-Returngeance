@@ -48,6 +48,21 @@ Model::Model(OBJ &obj, ResourceManager* rm)
 			currentTexGroup = &TextureGroups.back();
 		}
 
+		/*std::unordered_map<int, glm::vec3> similarNormals;
+		std::unordered_map<int, int> normalCount;
+		for (auto &faceDef : face.Definitions)
+		{
+			if (faceDef.NormalIndex == 0)
+				continue;
+
+
+			similarNormals[faceDef.VertexIndex - 1] += normal;
+			normalCount[faceDef.VertexIndex - 1]++;
+			int index = pair.first;
+			glm::vec3 averagedNormal = ;
+			Normals[]
+		}*/
+
 		// Face definitions
 		for (auto faceDef : face.Definitions)
 		{
@@ -190,7 +205,7 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 
 bool Model::IsNear( float v1, float v2 )
 {
-	return fabs(v1 - v2) < 0.01f;
+	return fabs(v1 - v2) < 0.001f;
 }
 
 void Model::getSimilarVertexIndex()
@@ -202,15 +217,15 @@ void Model::getSimilarVertexIndex()
 			if(i != t)
 			{
 				if(IsNear(Vertices[i].x, Vertices[t].x)
-					& IsNear(Vertices[i].y, Vertices[t].y)
-					& IsNear(Vertices[i].z, Vertices[t].z)
+					&& IsNear(Vertices[i].y, Vertices[t].y)
+					&& IsNear(Vertices[i].z, Vertices[t].z)
 					)
 				{
 					glm::vec3 tempNormal, tempTangent, tempBiTangent;
 
-					tempNormal = glm::normalize(Normals[i] + Normals[t]);
-					tempTangent = glm::normalize(TangentNormals[i] + TangentNormals[t]);
-					tempBiTangent = glm::normalize(BiTangentNormals[i] + BiTangentNormals[t]);
+					tempNormal = Normals[i] + Normals[t];
+					tempTangent = TangentNormals[i] + TangentNormals[t];
+					tempBiTangent = BiTangentNormals[i] + BiTangentNormals[t];
 
 					Normals[i] = tempNormal;
 					Normals[t] = tempNormal;

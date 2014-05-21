@@ -28,7 +28,7 @@ float Shadow(vec4 ShadowCoord)
 	bias = clamp(bias, 0.0, 0.01);
 	if( texture(ShadowTexture, Input.ShadowCoord.xy).z < ShadowCoord.z - bias)
 	{
-		return 0.3;
+		return 0.6;
 	}
 	else 
 	{
