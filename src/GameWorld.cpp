@@ -72,7 +72,6 @@ void GameWorld::Initialize()
 		physics->Mass = 10;
 		physics->Static = true;
 
-
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
@@ -218,6 +217,8 @@ void GameWorld::Initialize()
 
 	{
 		auto tank = CreateEntity();
+
+		auto listener = AddComponent<Components::Listener>(tank);
 		auto transform = AddComponent<Components::Transform>(tank);
 		transform->Position = glm::vec3(0, 5, 0);
 		//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
@@ -671,6 +672,7 @@ void GameWorld::Initialize()
 
 				auto physics = AddComponent<Components::Physics>(brick);
 				physics->Mass = 3;
+
 				
 
 
@@ -685,6 +687,15 @@ void GameWorld::Initialize()
 			}
 		}
 	}
+
+	auto soundEmitter = CreateEntity();
+	auto transform = AddComponent<Components::Transform>(soundEmitter);
+	transform->Position = glm::vec3(0,10,0);
+	transform->Scale = glm::vec3(3);
+	AddComponent<Components::SoundEmitter>(soundEmitter);
+	auto model = AddComponent<Components::Model>(soundEmitter);
+	model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
+
 
 	/*for (int x = 0; x < 5; x++)
 		for (int y = 0; y < 5; y++)
