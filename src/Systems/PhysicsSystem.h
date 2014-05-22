@@ -113,13 +113,13 @@ private:
 	hkpWorld* m_PhysicsWorld;
 
 	// Events
-	EventRelay<Events::TankSteer> m_ETankSteer;
+	EventRelay<PhysicsSystem, Events::TankSteer> m_ETankSteer;
 	bool OnTankSteer(const Events::TankSteer &event);
-	EventRelay<Events::SetVelocity> m_ESetVelocity;
+	EventRelay<PhysicsSystem, Events::SetVelocity> m_ESetVelocity;
 	bool OnSetVelocity(const Events::SetVelocity &event);
-	EventRelay<Events::ApplyForce> m_EApplyForce;
+	EventRelay<PhysicsSystem, Events::ApplyForce> m_EApplyForce;
 	bool OnApplyForce(const Events::ApplyForce &event);
-	EventRelay<Events::ApplyPointImpulse> m_EApplyPointImpulse;
+	EventRelay<PhysicsSystem, Events::ApplyPointImpulse> m_EApplyPointImpulse;
 	bool OnApplyPointImpulse(const Events::ApplyPointImpulse &event);
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);

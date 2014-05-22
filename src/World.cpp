@@ -36,7 +36,9 @@ void World::Update(double dt)
 {
 	for (auto pair : m_Systems)
 	{
+		const std::string &type = pair.first;
 		auto system = pair.second;
+		m_EventBroker->Process(type);
 		system->Update(dt);
 		RecursiveUpdate(system, dt, 0);
 	}
