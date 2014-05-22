@@ -406,6 +406,12 @@
     <ClInclude Include="..\..\src\Components\TankShell.h">
       <Filter>Physics\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\DisableCollisions.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\EnableCollisions.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

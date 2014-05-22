@@ -83,12 +83,6 @@ void World::RemoveEntity(EntityID entity)
 			m_EntitiesToRemove.push_back(pair.first);
 		}
 	}
-	// Trigger events
-	for (auto pair : m_Systems)
-	{
-		auto system = pair.second;
-		system->OnEntityRemoved(entity);
-	}
 }
 
 void World::ProcessEntityRemovals()
@@ -111,8 +105,14 @@ void World::ProcessEntityRemovals()
 			m_ComponentsOfType[type].remove(component);
 		}
 		m_EntityComponents.erase(entity);
-
 		RecycleEntityID(entity);
+
+		// Trigger events
+		for (auto pair : m_Systems)
+		{
+			auto system = pair.second;
+			system->OnEntityRemoved(entity);
+		}
 	}
 	m_EntitiesToRemove.clear();
 }

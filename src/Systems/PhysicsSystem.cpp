@@ -36,7 +36,9 @@ void Systems::PhysicsSystem::Initialize()
 	EVENT_SUBSCRIBE_MEMBER(m_ESetVelocity, &Systems::PhysicsSystem::OnSetVelocity);
 	EVENT_SUBSCRIBE_MEMBER(m_EApplyForce, &Systems::PhysicsSystem::OnApplyForce);
 	EVENT_SUBSCRIBE_MEMBER(m_EApplyPointImpulse, &Systems::PhysicsSystem::OnApplyPointImpulse);
-	
+	EVENT_SUBSCRIBE_MEMBER(m_EEnableCollisions, &Systems::PhysicsSystem::OnEnableCollisions);
+	EVENT_SUBSCRIBE_MEMBER(m_EDisableCollisions, &Systems::PhysicsSystem::OnDisableCollisions);
+
 	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
 	hkBaseSystem::init(memoryRouter, HavokErrorReport);
@@ -102,14 +104,20 @@ void Systems::PhysicsSystem::Initialize()
 		m_Context = new hkpPhysicsContext;
 		hkpPhysicsContext::registerAllPhysicsProcesses(); // all the physics viewers
 		m_Context->addWorld(m_PhysicsWorld); // add the physics world so the viewers can see it
-
 		SetupVisualDebugger(m_Context);
-
+		m_CollisionFilter = new hkpGroupFilter();
+		m_PhysicsWorld->setCollisionFilter( m_CollisionFilter );
 		m_PhysicsWorld->unmarkForWrite();
 
 		m_collisionResolution = new MyCollisionResolution(this);
 	}
-
+	
+	{
+		Events::DisableCollisions e;
+		e.Layer1 = 1;
+		e.Layer2 = 2;
+		EventBroker->Publish(e);
+	}
 }
 
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
@@ -298,8 +306,21 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_rotation.set(rotation(0), rotation(1), rotation(2), rotation(3));
 
 				rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
-				//rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass; //HACK: CENTER OF MASS ALWAYS IN THE CENTER
+				if(physicsComponent->CalculateCenterOfMass)
+					physicsComponent->CenterOfMass = HKVECTOR4_TO_GLMVEC3(massProperties.m_centerOfMass);
+				rigidBodyInfo.m_centerOfMass = GLMVEC3_TO_HKVECTOR4(physicsComponent->CenterOfMass);
 				rigidBodyInfo.m_mass = massProperties.m_mass;
+				rigidBodyInfo.m_linearVelocity = GLMVEC3_TO_HKVECTOR4(physicsComponent->InitialLinearVelocity);
+				rigidBodyInfo.m_angularVelocity = GLMVEC3_TO_HKVECTOR4(physicsComponent->InitialAngularVelocity);
+				rigidBodyInfo.m_linearDamping = physicsComponent->LinearDamping;
+				rigidBodyInfo.m_angularDamping = physicsComponent->AngularDamping;
+				rigidBodyInfo.m_gravityFactor = physicsComponent->GravityFactor;
+				rigidBodyInfo.m_linearDamping = physicsComponent->LinearDamping;
+				rigidBodyInfo.m_friction = physicsComponent->Friction;
+				rigidBodyInfo.m_restitution = physicsComponent->Restitution;
+				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
+				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
+				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -386,10 +407,24 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
 				rigidBodyInfo.m_position.set(position(0), position(1), position(2), position(3));
 				rigidBodyInfo.m_rotation.set(rotation(0), rotation(1), rotation(2), rotation(3));
-
+				
 				rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
-				//rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass; //HACK: CENTER OF MASS ALWAYS IN THE CENTER
+				if(physicsComponent->CalculateCenterOfMass)
+					physicsComponent->CenterOfMass = HKVECTOR4_TO_GLMVEC3(massProperties.m_centerOfMass);
+				rigidBodyInfo.m_centerOfMass = GLMVEC3_TO_HKVECTOR4(physicsComponent->CenterOfMass);
 				rigidBodyInfo.m_mass = massProperties.m_mass;
+				rigidBodyInfo.m_linearVelocity = GLMVEC3_TO_HKVECTOR4(physicsComponent->InitialLinearVelocity);
+				rigidBodyInfo.m_angularVelocity = GLMVEC3_TO_HKVECTOR4(physicsComponent->InitialAngularVelocity);
+				rigidBodyInfo.m_linearDamping = physicsComponent->LinearDamping;
+				rigidBodyInfo.m_angularDamping = physicsComponent->AngularDamping;
+				rigidBodyInfo.m_gravityFactor = physicsComponent->GravityFactor;
+				rigidBodyInfo.m_linearDamping = physicsComponent->LinearDamping;
+				rigidBodyInfo.m_friction = physicsComponent->Friction;
+				rigidBodyInfo.m_restitution = physicsComponent->Restitution;
+				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
+				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
+				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
+
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -402,8 +437,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 			shape->removeReference();
 			rigidBody->removeReference();
-
-			
 		}
 
 	}
@@ -594,4 +627,22 @@ void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
 		m_Vehicles[entity]->removeFromWorld();
 		m_PhysicsWorld->unmarkForWrite();
 	}
+}
+
+bool Systems::PhysicsSystem::OnEnableCollisions( const Events::EnableCollisions &e )
+{
+	m_CollisionFilter->enableCollisionsBetween(e.Layer1, e.Layer2);
+	m_PhysicsWorld->markForWrite();
+	m_PhysicsWorld->setCollisionFilter(m_CollisionFilter);
+	m_PhysicsWorld->unmarkForWrite();
+	return true;
+}
+
+bool Systems::PhysicsSystem::OnDisableCollisions( const Events::DisableCollisions &e )
+{
+	m_CollisionFilter->disableCollisionsBetween(e.Layer1, e.Layer2);
+	m_PhysicsWorld->markForWrite();
+	m_PhysicsWorld->setCollisionFilter(m_CollisionFilter);
+	m_PhysicsWorld->unmarkForWrite();
+	return true;
 }

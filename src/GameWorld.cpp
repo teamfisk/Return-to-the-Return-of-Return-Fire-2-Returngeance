@@ -15,6 +15,9 @@ void GameWorld::Initialize()
 	BindGamepadAxis(Gamepad::Axis::LeftX, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftY, "vertical", 1.f);
 
+	BindKey(GLFW_KEY_1, "EnableCollisions", 1.f);
+	BindKey(GLFW_KEY_2, "DisableCollisions", 1.f);
+
 	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
 	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
 	BindKey(GLFW_KEY_LEFT, "tower_rotation", -1.f);
@@ -98,7 +101,7 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
 		physics->Static = true;
-
+		physics->CollisionLayer = 0;
 
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
@@ -251,6 +254,8 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(tank);
 		physics->Mass = 63000 - 16000;
 		physics->Static = false;
+		physics->CollisionLayer = 2;
+
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
 		vehicle->MaxTorque = 36000.f;
 		vehicle->MaxSteeringAngle = 90.f;
@@ -551,7 +556,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(tank);
+			/*auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
 			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -574,7 +579,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);
+			CommitEntity(particleEntity);*/
 		}
 
 		{
@@ -636,7 +641,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(tank);
+			/*auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
 			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -658,7 +663,7 @@ void GameWorld::Initialize()
 			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
-			CommitEntity(particleEntity);
+			CommitEntity(particleEntity);*/
 		}
 #pragma endregion
 
@@ -673,6 +678,7 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(tank);
 		physics->Mass = 63000 - 16000;
 		physics->Static = false;
+		physics->CollisionLayer = 1;
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
 		vehicle->MaxTorque = 36000.f;
 		vehicle->MaxSteeringAngle = 90.f;
@@ -974,7 +980,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(tank);
+			/*auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
 			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -996,7 +1002,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);
+			CommitEntity(particleEntity);*/
 		}
 
 		{
@@ -1058,7 +1064,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			auto entity = CreateEntity(tank);
+			/*auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
 			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -1080,7 +1086,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);
+			CommitEntity(particleEntity);*/
 		}
 #pragma endregion
 		CommitEntity(tank);

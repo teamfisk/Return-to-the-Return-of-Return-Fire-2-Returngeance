@@ -78,6 +78,9 @@
 
 #include "Components/TankShell.h"
 #include <Physics2012/Collide/Shape/Misc/PhantomCallback/hkpPhantomCallbackShape.h>
+#include "Events/EnableCollisions.h"
+#include "Events/DisableCollisions.h"
+
 namespace Systems
 {
 class PhysicsSystem : public System
@@ -95,20 +98,18 @@ public:
 			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(0)];
 			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(1)];
 
-			m_PhysicsSystem->m_PhysicsWorld->unmarkForRead();
 			Events::Collision e;
 			e.Entity1 = entity1;
 			e.Entity2 = entity2;
-			m_PhysicsSystem->EventBroker->Publish(e);
-			m_PhysicsSystem->m_PhysicsWorld->markForRead();
+			//m_PhysicsSystem->EventBroker->Publish(e);
 		}
-
+		
 	private:
 		Systems::PhysicsSystem* m_PhysicsSystem;
 	};
 	friend class MyCollisionResolution;
 
-	/*class PhantomCallbackShape: public hkpPhantomCallbackShape
+	class PhantomCallbackShape: public hkpPhantomCallbackShape
 	{
 	public:
 
@@ -124,6 +125,8 @@ public:
 			glm::vec3 impulse;
 			impulse = HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableA)->getPosition()) - HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableB)->getPosition());
 			e.Impulse = impulse;
+
+			m_PhysicsSystem->EventBroker->Publish(e);
 		}
 
 		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
@@ -135,7 +138,7 @@ public:
 		Systems::PhysicsSystem* m_PhysicsSystem;
 	};
 	friend class PhantomCallbackShape;
-	*/
+	
 	PhysicsSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
 		: System(world, eventBroker) { }
 
@@ -152,6 +155,7 @@ public:
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
+	hkpGroupFilter* m_CollisionFilter;
 
 	// Events
 	EventRelay<Events::TankSteer> m_ETankSteer;
@@ -162,6 +166,12 @@ private:
 	bool OnApplyForce(const Events::ApplyForce &event);
 	EventRelay<Events::ApplyPointImpulse> m_EApplyPointImpulse;
 	bool OnApplyPointImpulse(const Events::ApplyPointImpulse &event);
+
+	EventRelay<Events::EnableCollisions> m_EEnableCollisions;
+	bool OnEnableCollisions(const Events::EnableCollisions &e);
+	EventRelay<Events::DisableCollisions> m_EDisableCollisions;
+	bool OnDisableCollisions(const Events::DisableCollisions &e);
+
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);

@@ -114,6 +114,25 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 				health2->health -= tankShell1->Damage;
 			}
 
+			{
+				auto hitSphere = m_World->CreateEntity();
+				auto transformHit = m_World->AddComponent<Components::Transform>(hitSphere);
+				transformHit->Position = transform->Position;
+
+				auto physics = m_World->AddComponent<Components::Physics>(hitSphere);
+				physics->Static = false;
+				physics->Phantom = true;
+
+				{
+					auto shape = m_World->CreateEntity(hitSphere);
+					auto transformHit = m_World->AddComponent<Components::Transform>(shape);
+					auto sphereShape = m_World->AddComponent<Components::SphereShape>(shape);
+					sphereShape->Radius = 40.f*0.5f; //HACK:
+					m_World->CommitEntity(shape);
+				}
+				m_World->CommitEntity(hitSphere);
+			}
+
 			m_World->RemoveEntity(e.Entity1);
 		}
 
@@ -128,6 +147,26 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 				health1->health -= tankShell1->Damage;
 			}
 			
+			{
+				auto hitSphere = m_World->CreateEntity();
+				auto transformHit = m_World->AddComponent<Components::Transform>(hitSphere);
+				transformHit->Position = transform->Position;
+
+				auto physics = m_World->AddComponent<Components::Physics>(hitSphere);
+				physics->Static = false;
+				physics->Phantom = true;
+
+				{
+					auto shape = m_World->CreateEntity(hitSphere);
+					auto transformHit = m_World->AddComponent<Components::Transform>(shape);
+					auto sphereShape = m_World->AddComponent<Components::SphereShape>(shape);
+					sphereShape->Radius = 40.f*0.5f; //HACK:
+					m_World->CommitEntity(shape);
+				}
+				m_World->CommitEntity(hitSphere);
+			}
+
+
 			m_World->RemoveEntity(e.Entity2);
 		}
 	}
@@ -183,6 +222,20 @@ bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const E
 		m_Shoot = val > 0;
 	}
 
+	else if(event.Command == "EnableCollisions")
+	{
+		Events::EnableCollisions e;
+		e.Layer1 = 1;
+		e.Layer2 = 2;
+		EventBroker->Publish(e);
+	}
+	else if(event.Command == "DisableCollisions")
+	{
+		Events::DisableCollisions e;
+		e.Layer1 = 1;
+		e.Layer2 = 2;
+		EventBroker->Publish(e);
+	}
 	return true;
 }
 
