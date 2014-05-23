@@ -16,10 +16,10 @@ Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
 	UpdateViewMatrix();
 }
 
-//glm::vec3 Camera::Forward()
-//{
-//	return glm::rotate(glm::vec3(0.f, 0.f, -1.f), -m_Yaw, glm::vec3(0.f, 1.f, 0.f));
-//}
+glm::vec3 Camera::Forward()
+{
+	return m_Orientation * glm::vec3(0, 0, -1);
+}
 //
 //glm::vec3 Camera::Right()
 //{

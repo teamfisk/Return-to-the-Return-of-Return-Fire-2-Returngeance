@@ -17,14 +17,14 @@ void GameWorld::Initialize()
  		auto ground = CreateEntity();
  		auto transform = AddComponent<Components::Transform>(ground, "Transform");
  		transform->Position = glm::vec3(0, -5, 0);
- 		transform->Scale = glm::vec3(800.0f, 10.0f, 800.0f);
+ 		transform->Scale = glm::vec3(1600.0f, 10.0f, 1600.0f);
  		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
   		auto model = AddComponent<Components::Model>(ground, "Model");
   		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
  		auto box = AddComponent<Components::Box>(ground, "Box");
- 		box->Width = 400;
+ 		box->Width = 800;
  		box->Height = 5;
- 		box->Depth = 400;
+ 		box->Depth = 800;
  
  		auto physics = AddComponent<Components::Physics>(ground, "Physics");
  		physics->Mass = 10;
@@ -33,18 +33,18 @@ void GameWorld::Initialize()
  		CommitEntity(ground);
  	}
 
-	for(int i = 15; i < 200; i++)
+	for(int i = 0; i < 50; i++)
 	{
 		auto Light = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(Light, "Transform");
-		transform->Position = glm::vec3((5+(i/2.f))*cos(i/5.0f), 3.f, (5+(i/2.f))*sin(i/5.0f));
+		transform->Position = glm::vec3((5+(i*2.f))*cos(i*2.f), 3.f, (5+(i*2.f))*sin(i*2.f));
 		auto light = AddComponent<Components::PointLight>(Light, "PointLight");
 		light->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		light->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 		light->Radius = 15.f;
 		light->specularExponent = 100.f;
-		auto model = AddComponent<Components::Model>(Light, "Model");
-		model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+		//auto model = AddComponent<Components::Model>(Light, "Model");
+		//model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 	}
 
  	{
@@ -239,11 +239,11 @@ void GameWorld::Initialize()
  }
 */
 
- 	for(int i = 0; i < 10; i++)
+ 	for(int i = 0; i < 20; i++)
  	{
  		auto cube = CreateEntity();
  		auto transform = AddComponent<Components::Transform>(cube, "Transform");
- 		transform->Position = glm::vec3(20, 10 + i*2, 0);
+ 		transform->Position = glm::vec3(10, 2, -10+i);
  		//transform->Scale = glm::vec3(1);
  		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
  		auto model = AddComponent<Components::Model>(cube, "Model");
@@ -257,6 +257,79 @@ void GameWorld::Initialize()
  		box->Depth = 0.5f;
  		CommitEntity(cube);
  	}
+	for(int i = 0; i < 20; i++)
+ 	{
+ 		auto cube = CreateEntity();
+ 		auto transform = AddComponent<Components::Transform>(cube, "Transform");
+ 		transform->Position = glm::vec3(-10, 2, -10+i);
+ 		//transform->Scale = glm::vec3(1);
+ 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+ 		auto model = AddComponent<Components::Model>(cube, "Model");
+ 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+ 		
+ 		auto physics = AddComponent<Components::Physics>(cube, "Physics");
+ 		physics->Mass = 100;
+ 		auto box = AddComponent<Components::Box>(cube, "Box");
+ 		box->Width = 0.5f;
+ 		box->Height = 0.5f;
+ 		box->Depth = 0.5f;
+ 		CommitEntity(cube);
+ 	}
+
+	for(int i = 0; i < 20; i++)
+	{
+		auto cube = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(cube, "Transform");
+		transform->Position = glm::vec3(-10+i, 2, 10);
+		//transform->Scale = glm::vec3(1);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(cube, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+
+		auto physics = AddComponent<Components::Physics>(cube, "Physics");
+		physics->Mass = 100;
+		auto box = AddComponent<Components::Box>(cube, "Box");
+		box->Width = 0.5f;
+		box->Height = 0.5f;
+		box->Depth = 0.5f;
+		CommitEntity(cube);
+	}
+
+	for(int i = 0; i < 20; i++)
+	{
+		auto cube = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(cube, "Transform");
+		transform->Position = glm::vec3(-10+i, 2, -10);
+		//transform->Scale = glm::vec3(1);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(cube, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
+
+		auto physics = AddComponent<Components::Physics>(cube, "Physics");
+		physics->Mass = 100;
+		auto box = AddComponent<Components::Box>(cube, "Box");
+		box->Width = 0.5f;
+		box->Height = 0.5f;
+		box->Depth = 0.5f;
+		CommitEntity(cube);
+	}
+
+	for(int i = 0; i < 10; i++)
+	{
+		auto sphere = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(sphere, "Transform");
+		transform->Position = glm::vec3(5, 10 + i*2, 5);
+		//transform->Scale = glm::vec3(1);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(sphere, "Model");
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Sphere.obj";
+
+		auto physics = AddComponent<Components::Physics>(sphere, "Physics");
+		physics->Mass = 100;
+		auto ball = AddComponent<Components::Sphere>(sphere, "Sphere");
+		ball->Radius = 0.5;
+		CommitEntity(sphere);
+	}
 
 	/*{
 		auto entity = CreateEntity();

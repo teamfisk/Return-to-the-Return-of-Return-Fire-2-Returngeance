@@ -17,10 +17,13 @@ Renderer::Renderer()
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
-	m_ShadowMapRes = 2048*6;
-	m_SunPosition = glm::vec3(3.f, 5.f, 3.f);
+	m_ShadowMapRes = 2048*8;
+	m_SunPosition = glm::vec3(0.f, 1.0f, 0.5f);
 	m_SunTarget = glm::vec3(0, 0, 0);
-	m_SunProjection = glm::ortho<float>(200.f, -200.f, 200.f, -200.f, -100.f, 100.f);
+	m_SunProjection_height = glm::vec2(-40.f, 40.f);
+	m_SunProjection_width = glm::vec2(-40.f, 40.f);
+	m_SunProjection_length = glm::vec2(-50.f, 50.f);
+	m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 /*	Lights = 0;*/
 }
 
@@ -152,16 +155,43 @@ void Renderer::Draw(double dt)
 		m_QuadView = true;
 	}
 
-	if(glfwGetKey(m_Window, GLFW_KEY_KP_1))
+	//if(glfwGetKey(m_Window, GLFW_KEY_KP_1))
+	//{
+	//	Gamma -= 0.3f * dt; 
+	//	LOG_INFO("Gamma_UP: %f", Gamma);
+	//}
+	//if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
+	//{
+	//	Gamma += 0.3f * dt;
+	//	LOG_INFO("Gamma_DOWN: %f", Gamma);
+	//}
+
+	if(glfwGetKey(m_Window, GLFW_KEY_KP_7))
 	{
-		Gamma -= 0.3f * dt; 
-		LOG_INFO("Gamma_UP: %f", Gamma);
+		m_SunProjection_height.x += 10.f * dt;
+		LOG_INFO("Heightx+: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 	}
-	if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
+	else if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
 	{
-		Gamma += 0.3f * dt;
-		LOG_INFO("Gamma_DOWN: %f", Gamma);
+		m_SunProjection_height.x -= 10.f * dt;
+		LOG_INFO("Heightx-: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 	}
+
+	if(glfwGetKey(m_Window, GLFW_KEY_KP_8))
+	{
+		m_SunProjection_height.y += 10.f * dt;
+		LOG_INFO("Heightx+: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
+	}
+	else if(glfwGetKey(m_Window, GLFW_KEY_KP_5))
+	{
+		m_SunProjection_height.y -= 10.f * dt;
+		LOG_INFO("Heightx-: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
+	}
+
 
 	if(glfwGetKey(m_Window, GLFW_KEY_1))
 	{
@@ -235,8 +265,8 @@ void Renderer::CreateShadowMap(int resolution)
 	glGenTextures(1, &m_ShadowDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, resolution, resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
@@ -256,7 +286,7 @@ void Renderer::DrawShadowMap()
 {
 	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
 	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
-	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
+	glCullFace(GL_FRONT);	//Make it so that only the back faces are rendered
 
 	//Binds the FBO and sets the veiwport, witch in effect is how large the shadowmap is and what resolution it has.
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
@@ -266,7 +296,7 @@ void Renderer::DrawShadowMap()
 	//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Creates the "camera" for the shadowmap from the direction of the sun.
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate((-m_Camera->Position() + (glm::vec3(40.0) * -m_Camera->Forward())) * glm::vec3(1,0,1));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
 	glm::mat4 MVP;
 
@@ -292,7 +322,6 @@ void Renderer::DrawShadowMap()
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
-
 }
 
 void Renderer::DrawDebugShadowMap()
@@ -698,10 +727,14 @@ void Renderer::DrawFBOScene()
 		0.5, 0.5, 0.5, 1.0
 		);
 
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate((-m_Camera->Position() + (glm::vec3(40.0) * -m_Camera->Forward())) * glm::vec3(1,0,1));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
 	glm::mat4 depthCameraMatrix = biasMatrix * depthCamera;
 	glm::mat4 depthMVP;
+
+	glm::vec3 sunDirection = m_SunTarget - m_SunPosition;
+	glm::vec3 sunDirection_cameraview = glm::vec3(m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix() * glm::vec4(sunDirection, 1.0));
+	//Proj * view * vector
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
@@ -722,6 +755,8 @@ void Renderer::DrawFBOScene()
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
+
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
 		{

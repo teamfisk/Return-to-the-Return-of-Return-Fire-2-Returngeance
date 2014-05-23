@@ -94,6 +94,10 @@ private:
 	glm::vec3 m_SunPosition;
 	glm::vec3 m_SunTarget;
 	glm::mat4 m_SunProjection;
+	glm::vec2 m_SunProjection_width;
+	glm::vec2 m_SunProjection_height;
+	glm::vec2 m_SunProjection_length;
+
 
 	GLuint m_DebugAABB;
 	GLuint m_ShadowFrameBuffer;
