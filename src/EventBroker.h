@@ -3,6 +3,7 @@
 
 #include <typeinfo>
 #include <functional>
+#include <map>
 #include <unordered_map>
 #include <list>
 
@@ -30,7 +31,7 @@ protected:
 	~BaseEventRelay();
 
 public:
-	virtual bool Receive(std::shared_ptr<Event> event) = 0;
+	virtual bool Receive(const std::shared_ptr<Event> event) = 0;
 
 protected:
 	std::string m_ContextTypeName;
@@ -52,18 +53,18 @@ public:
 		, BaseEventRelay(typeid(ContextType).name(), typeid(EventType).name()) { }
 
 protected:
-	bool Receive(std::shared_ptr<Event> event) override;
+	bool Receive(const std::shared_ptr<Event> event) override;
 
 private:
 	CallbackType m_Callback;
 };
 
 template <typename ContextType, typename EventType>
-bool EventRelay<ContextType, EventType>::Receive(std::shared_ptr<Event> event)
+bool EventRelay<ContextType, EventType>::Receive(const std::shared_ptr<Event> event)
 {
 	if (m_Callback != nullptr)
 	{
-		return m_Callback(static_cast<const EventType&>(*event.get()));
+		return m_Callback(*static_cast<const EventType*>(event.get()));
 	}
 	else
 	{
@@ -99,20 +100,21 @@ public:
 	int Process(std::string contextTypeName);
 	void Clear();
 	void Unsubscribe(BaseEventRelay &relay);
+	template <typename ContextType>
+	void UnsubscribeAll();
 
 private:
 	typedef std::string ContextTypeName_t; // typeid(ContextType).name()
 	typedef std::string EventTypeName_t; // typeid(EventType).name()
 
-	typedef std::unordered_map<EventTypeName_t, BaseEventRelay*> EventRelays_t;
-	typedef std::unordered_map<ContextTypeName_t, EventRelays_t> ContextSubscribers_t;
-	ContextSubscribers_t m_ContextSubscribers;
+	typedef std::unordered_multimap<EventTypeName_t, BaseEventRelay*> EventRelays_t;
+	typedef std::unordered_map<ContextTypeName_t, EventRelays_t> ContextRelays_t;
+	ContextRelays_t m_ContextRelays;
 
 	typedef std::list<std::pair<EventTypeName_t, std::shared_ptr<Event>>> EventQueue_t;
 	std::shared_ptr<EventQueue_t> m_EventQueueRead;
 	std::shared_ptr<EventQueue_t> m_EventQueueWrite;
 };
-
 
 template <typename EventType>
 void EventBroker::Publish(const EventType &event)
@@ -123,7 +125,7 @@ void EventBroker::Publish(const EventType &event)
 		it->second->Receive(event);
 	}*/
 
-	m_EventQueueWrite->push_back(std::make_pair(typeid(EventType).name(), std::shared_ptr<Event>(new EventType(event))));
+	m_EventQueueWrite->push_back(std::make_pair(typeid(EventType).name(), std::shared_ptr<EventType>(new EventType(event))));
 }
 
 template <typename ContextType>
@@ -133,6 +135,15 @@ int EventBroker::Process()
 	return Process(contextTypeName);
 }
 
-
+template <typename ContextType>
+void EventBroker::UnsubscribeAll()
+{
+	const std::string contextTypeName = typeid(ContextType).name();
+	auto contextIt = m_ContextRelays.find(contextTypeName);
+	if (contextIt != m_ContextRelays.end())
+	{
+		m_ContextRelays.erase(contextIt);
+	}
+}
 
 #endif // MessageRelay_h__
