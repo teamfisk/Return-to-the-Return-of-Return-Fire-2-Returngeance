@@ -44,7 +44,7 @@ private:
 	//unsigned long dataSize;
 
 	// Events
-	EventRelay<Events::PlaySound> m_EPlaySound;
+	EventRelay<SoundSystem, Events::PlaySound> m_EPlaySound;
 	bool OnPlaySound(const Events::PlaySound &event);
 
 	std::map<Component*, ALuint> m_Sources;

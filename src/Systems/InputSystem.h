@@ -45,28 +45,28 @@ private:
 	std::unordered_map<Gamepad::Button, std::tuple<std::string, float>> m_GamepadButtonBindings; // Gamepad::Button -> command string
 
 	// Input events
-	EventRelay<Events::KeyDown> m_EKeyDown;
+	EventRelay<InputSystem, Events::KeyDown> m_EKeyDown;
 	bool OnKeyDown(const Events::KeyDown &event);
-	EventRelay<Events::KeyUp> m_EKeyUp;
+	EventRelay<InputSystem, Events::KeyUp> m_EKeyUp;
 	bool OnKeyUp(const Events::KeyUp &event);
-	EventRelay<Events::MousePress> m_EMousePress;
+	EventRelay<InputSystem, Events::MousePress> m_EMousePress;
 	bool OnMousePress(const Events::MousePress &event);
-	EventRelay<Events::MouseRelease> m_EMouseRelease;
+	EventRelay<InputSystem, Events::MouseRelease> m_EMouseRelease;
 	bool OnMouseRelease(const Events::MouseRelease &event);
-	EventRelay<Events::GamepadAxis> m_EGamepadAxis;
+	EventRelay<InputSystem, Events::GamepadAxis> m_EGamepadAxis;
 	bool OnGamepadAxis(const Events::GamepadAxis &event);
-	EventRelay<Events::GamepadButtonDown> m_EGamepadButtonDown;
+	EventRelay<InputSystem, Events::GamepadButtonDown> m_EGamepadButtonDown;
 	bool OnGamepadButtonDown(const Events::GamepadButtonDown &event);
-	EventRelay<Events::GamepadButtonUp> m_EGamepadButtonUp;
+	EventRelay<InputSystem, Events::GamepadButtonUp> m_EGamepadButtonUp;
 	bool OnGamepadButtonUp(const Events::GamepadButtonUp &event);
 	// Input binding events
-	EventRelay<Events::BindKey> m_EBindKey;
+	EventRelay<InputSystem, Events::BindKey> m_EBindKey;
 	bool OnBindKey(const Events::BindKey &event);
-	EventRelay<Events::BindMouseButton> m_EBindMouseButton;
+	EventRelay<InputSystem, Events::BindMouseButton> m_EBindMouseButton;
 	bool OnBindMouseButton(const Events::BindMouseButton &event);
-	EventRelay<Events::BindGamepadAxis> m_EBindGamepadAxis;
+	EventRelay<InputSystem, Events::BindGamepadAxis> m_EBindGamepadAxis;
 	bool OnBindGamepadAxis(const Events::BindGamepadAxis &event);
-	EventRelay<Events::BindGamepadButton> m_EBindGamepadButton;
+	EventRelay<InputSystem, Events::BindGamepadButton> m_EBindGamepadButton;
 	bool OnBindGamepadButton(const Events::BindGamepadButton &event);
 
 	float GetCommandTotalValue(std::string command);

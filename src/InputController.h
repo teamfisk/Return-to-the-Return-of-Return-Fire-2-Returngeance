@@ -7,6 +7,7 @@
 #include "Events/InputCommand.h"
 #include "Events/MouseMove.h"
 
+template <typename EventContext>
 class InputController
 {
 public:
@@ -26,8 +27,8 @@ protected:
 	std::shared_ptr<::EventBroker> EventBroker;
 
 private:
-	EventRelay<Events::InputCommand> m_EInputCommand;
-	EventRelay<Events::MouseMove> m_EMouseMove;
+	EventRelay<EventContext, Events::InputCommand> m_EInputCommand;
+	EventRelay<EventContext, Events::MouseMove> m_EMouseMove;
 };
 
 #endif // InputController_h__

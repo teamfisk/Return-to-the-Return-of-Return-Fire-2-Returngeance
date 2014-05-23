@@ -27,7 +27,7 @@ private:
 	std::map<EntityID, double> m_TimeSinceLastShot;
 };
 
-class HelicopterSteeringSystem::HelicopterSteeringInputController : InputController
+class HelicopterSteeringSystem::HelicopterSteeringInputController : InputController<HelicopterSteeringSystem>
 {
 public:
 	HelicopterSteeringInputController(std::shared_ptr<::EventBroker> eventBroker)

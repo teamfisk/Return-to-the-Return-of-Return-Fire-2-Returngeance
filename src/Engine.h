@@ -38,6 +38,7 @@ public:
 		m_InputManager->Update(dt);
 		m_World->Update(dt);
 		m_Renderer->Draw(dt);
+		m_EventBroker->Clear();
 
 		glfwPollEvents();
 	}

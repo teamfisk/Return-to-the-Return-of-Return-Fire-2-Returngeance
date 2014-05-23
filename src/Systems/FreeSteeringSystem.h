@@ -27,7 +27,7 @@ private:
 	std::unique_ptr<FreeSteeringInputController> m_InputController;
 };
 
-class FreeSteeringSystem::FreeSteeringInputController : InputController
+class FreeSteeringSystem::FreeSteeringInputController : InputController<FreeSteeringSystem>
 {
 public:
 	FreeSteeringInputController(std::shared_ptr<::EventBroker> eventBroker)

@@ -19,7 +19,7 @@ public:
 
 	void Update(double dt) override;
 
-	EventRelay<Events::KeyDown> m_EKeyDown;
+	EventRelay<DebugSystem, Events::KeyDown> m_EKeyDown;
 	bool OnKeyDown(const Events::KeyDown &event);
 	
 	//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;

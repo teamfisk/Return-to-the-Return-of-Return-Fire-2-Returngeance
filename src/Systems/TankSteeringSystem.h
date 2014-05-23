@@ -37,7 +37,7 @@ namespace Systems
 		std::map<EntityID, double> m_TimeSinceLastShot;
 	};
 
-	class TankSteeringSystem::TankSteeringInputController : InputController
+	class TankSteeringSystem::TankSteeringInputController : InputController<TankSteeringSystem>
 	{
 	public:
 		TankSteeringInputController(std::shared_ptr<::EventBroker> eventBroker, int playerID)
