@@ -1,5 +1,6 @@
 #include "PrecompiledHeader.h"
 #include "InputManager.h"
+#include <XInput.h>
 
 void InputManager::Initialize()
 {
@@ -12,6 +13,13 @@ void InputManager::Initialize()
 
 void InputManager::Update(double dt)
 {
+	EventBroker->Process<InputManager>();
+
+	m_LastKeyState = m_CurrentKeyState;
+	m_LastMouseState = m_CurrentMouseState;
+	m_LastMouseX = m_CurrentMouseX;
+	m_LastMouseY = m_CurrentMouseY;
+
 	// Keyboard input
 	for (int i = 0; i <= GLFW_KEY_LAST; ++i)
 	{
@@ -40,17 +48,23 @@ void InputManager::Update(double dt)
 		m_CurrentMouseState[i] = glfwGetMouseButton(m_GLFWWindow, i);
 		if (m_CurrentMouseState[i] != m_LastMouseState[i])
 		{
+			double x, y;
+			glfwGetCursorPos(m_GLFWWindow, &x, &y);
 			// Publish mouse button events
 			if (m_CurrentMouseState[i])
 			{
 				Events::MousePress e;
 				e.Button = i;
+				e.X = x;
+				e.Y = y;
 				EventBroker->Publish(e);
 			}
 			else
 			{
 				Events::MouseRelease e;
 				e.Button = i;
+				e.X = x;
+				e.Y = y;
 				EventBroker->Publish(e);
 			}
 		}
@@ -89,14 +103,28 @@ void InputManager::Update(double dt)
 	// }
 
 	// Xbox360 controller
+	//using namespace ;
 	DWORD dwResult;
-	for (int i = 0; i < XUSER_MAX_COUNT; i++)
+	for (int i = 0; i < MAX_GAMEPADS; i++)
 	{
 		XINPUT_STATE state = { 0 };
 		// Simply get the state of the controller from XInput.
 		dwResult = XInputGetState(i, &state);
 		if (dwResult == 0)
 		{
+			if(std::abs(state.Gamepad.sThumbLX) <= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+				state.Gamepad.sThumbLX = 0;
+			if(std::abs(state.Gamepad.sThumbLY) <= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+				state.Gamepad.sThumbLY = 0;
+			if(std::abs(state.Gamepad.sThumbRX) <= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+				state.Gamepad.sThumbRX = 0;
+			if(std::abs(state.Gamepad.sThumbRY) <= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+				state.Gamepad.sThumbRY = 0;
+			if(std::abs(state.Gamepad.bLeftTrigger) <= XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+				state.Gamepad.bLeftTrigger = 0;
+			if(std::abs(state.Gamepad.bRightTrigger) <= XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+				state.Gamepad.bRightTrigger = 0;
+
 			m_CurrentGamepadAxisState[i][static_cast<int>(Gamepad::Axis::LeftX)] = state.Gamepad.sThumbLX / 32767.f;
 			m_CurrentGamepadAxisState[i][static_cast<int>(Gamepad::Axis::LeftY)] = state.Gamepad.sThumbLY / 32767.f;
 			m_CurrentGamepadAxisState[i][static_cast<int>(Gamepad::Axis::RightX)] = state.Gamepad.sThumbRX / 32767.f;

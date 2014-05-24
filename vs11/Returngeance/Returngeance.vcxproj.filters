@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp">
       <Filter>Physics\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp">
+      <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -136,6 +139,24 @@
     </Filter>
     <Filter Include="Physics\Events">
       <UniqueIdentifier>{42ae084f-ade8-402c-87ba-f03f6b846bc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{5b992473-73e6-485e-8f13-17e0801fb2ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Vehicles">
+      <UniqueIdentifier>{8a78be3a-a3c5-4054-a2f1-1456f3fcbab0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Vehicles\Helicopter">
+      <UniqueIdentifier>{8ccc0abe-5bdd-4656-ab11-5708a39c71ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Vehicles\Helicopter\Components">
+      <UniqueIdentifier>{b2416d05-a49e-4fef-a5c4-cd03d8cc2efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Vehicles\Helicopter\Systems">
+      <UniqueIdentifier>{b34c0c95-a887-4cf4-af24-cf7c1f459aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Components">
+      <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -352,9 +373,29 @@
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Util\defferedUtil.h" />
+    <ClInclude Include="..\..\src\Components\Viewport.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Health.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\LockMouse.h">
       <Filter>Input\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\HelicopterSteering.h">
+      <Filter>Gameplay\Vehicles\Helicopter\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h">
+      <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\ApplyForce.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Player.h">
+      <Filter>Gameplay\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Listener.h">
       <Filter>Audio\Components</Filter>

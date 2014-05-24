@@ -81,4 +81,5 @@ void main()
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 
 	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel));
+	//FragColor = NormalTexel;
 }

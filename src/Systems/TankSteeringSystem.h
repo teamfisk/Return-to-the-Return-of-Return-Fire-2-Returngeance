@@ -3,11 +3,15 @@
 #include "System.h"
 #include "Events/TankSteer.h"
 #include "Events/SetVelocity.h"
+#include "Events/ApplyForce.h"
+#include "Events/ApplyPointImpulse.h"
 #include "Components/Transform.h"
 #include "Components/TankSteering.h"
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
+#include "Components/Physics.h"
 #include "Components/Vehicle.h"
+#include "Components/Player.h"
 #include "Systems/TransformSystem.h"
 #include "InputController.h"
 
@@ -28,45 +32,25 @@ namespace Systems
 
 	private:
 		class TankSteeringInputController;
-		std::unique_ptr<TankSteeringInputController> m_TankInputController;
-		class TowerSteeringInputController;
-		std::unique_ptr<TowerSteeringInputController> m_TowerInputController;
+		std::array<std::shared_ptr<TankSteeringInputController>, 4> m_TankInputControllers;
 
 		std::map<EntityID, double> m_TimeSinceLastShot;
 	};
 
-	class TankSteeringSystem::TankSteeringInputController : InputController
+	class TankSteeringSystem::TankSteeringInputController : InputController<TankSteeringSystem>
 	{
 	public:
-		TankSteeringInputController(std::shared_ptr<::EventBroker> eventBroker)
+		TankSteeringInputController(std::shared_ptr<::EventBroker> eventBroker, int playerID)
 			: InputController(eventBroker)
 		{
+			PlayerID = playerID;
+
 			m_Horizontal = 0.f;
 			m_Vertical = 0.f;
 			PositionX = 0;
 			PositionY = 0;
 			Handbrake = false;
-		}
 
-		float PositionY;
-		float PositionX;
-		bool Handbrake;
-		void Update(double dt);
-	protected:
-		virtual bool OnCommand(const Events::InputCommand &event);
-		virtual bool OnMouseMove(const Events::MouseMove &event);
-
-	private:
-		float m_Horizontal;
-		float m_Vertical;
-	};
-
-	class TankSteeringSystem::TowerSteeringInputController : InputController
-	{
-	public:
-		TowerSteeringInputController(std::shared_ptr<::EventBroker> eventBroker)
-			: InputController(eventBroker)
-		{
 			m_TowerDirection = 0.f;
 			m_BarrelDirection = 0.f;
 			TowerDirection = 0.f;
@@ -75,18 +59,28 @@ namespace Systems
 			m_Shoot = false;
 		}
 
+		int PlayerID;
+
+		float PositionY;
+		float PositionX;
+		bool Handbrake;
+
 		float TowerDirection;
 		float BarrelDirection;
 		bool Shoot;
+
 		void Update(double dt);
 	protected:
 		virtual bool OnCommand(const Events::InputCommand &event);
-		virtual bool OnMouseMove(const Events::MouseMove &event);
+		//virtual bool OnMouseMove(const Events::MouseMove &event);
 
 	private:
-	 float m_TowerDirection;
-	 float m_BarrelDirection;
-	 bool m_Shoot;
-	};
+		float m_Horizontal;
+		float m_Vertical;
 
+		float m_TowerDirection;
+		float m_BarrelDirection;
+
+		bool m_Shoot;
+	};
 }

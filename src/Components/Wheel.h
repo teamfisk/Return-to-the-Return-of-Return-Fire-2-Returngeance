@@ -14,7 +14,7 @@ struct Wheel : Component
 
 	Wheel()
 		: AxleID(0), Radius(0), Width(0), Mass(0), Steering(false), DownDirection(glm::vec3(0, -1, 0)), Friction(1.5f), SlipAngle(0.0f),
-	MaxBreakingTorque(1500.0f), ConnectedToHandbrake(false), SuspensionStrength(50.0f), TorqueRatio(0.25f) { }
+	MaxBreakingTorque(50000.f), ConnectedToHandbrake(false), SuspensionStrength(50.0f), TorqueRatio(0.25f) { }
 
 	// The Hardpoint MUST be positioned INSIDE the chassis.
 	glm::vec3 Hardpoint;

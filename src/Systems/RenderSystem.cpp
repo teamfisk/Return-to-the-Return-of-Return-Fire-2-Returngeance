@@ -2,26 +2,59 @@
 #include "RenderSystem.h"
 #include "World.h"
 
-void Systems::RenderSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
+void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)
 {
-	if(type == "Model")
+	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
+	rm->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
+	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
+}
+
+void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
+{
+	cf->Register<Components::Camera>([]() { return new Components::Camera(); });
+	cf->Register<Components::Model>([]() { return new Components::Model(); });
+	cf->Register<Components::Sprite>([]() { return new Components::Sprite(); });
+	cf->Register<Components::PointLight>([]() { return new Components::PointLight(); });
+	cf->Register<Components::DirectionalLight>([]() { return new Components::DirectionalLight(); });
+	cf->Register<Components::Viewport>([]() { return new Components::Viewport(); });
+}
+
+void Systems::RenderSystem::OnEntityCommit(EntityID entity)
+{
+	auto transform = m_World->GetComponent<Components::Transform>(entity);
+
+	auto camera = m_World->GetComponent<Components::Camera>(entity);
+	if (transform && camera)
 	{
-		auto modelComponent = std::static_pointer_cast<Components::Model>(component);
+		m_Renderer->RegisterCamera(entity, camera->FOV, camera->NearClip, camera->FarClip);
+		m_Renderer->UpdateCamera(entity, m_TransformSystem->AbsolutePosition(entity), m_TransformSystem->AbsoluteOrientation(entity), camera->FOV, camera->NearClip, camera->FarClip);
+	}
+
+	auto viewport = m_World->GetComponent<Components::Viewport>(entity);
+	if (viewport)
+	{
+		m_Renderer->RegisterViewport(entity, viewport->Left, viewport->Top, viewport->Right, viewport->Bottom);
+		if (viewport->Camera != 0)
+		{
+			m_Renderer->UpdateViewport(entity, viewport->Camera);
+		}
 	}
 }
 
 void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
-	if (transformComponent == nullptr)
+	auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+	if (templateComponent)
 		return;
+
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 
 	// Draw models
 	auto modelComponent = m_World->GetComponent<Components::Model>(entity);
-	if (modelComponent != nullptr)
+	if (transformComponent && modelComponent)
 	{
 		auto model = m_World->GetResourceManager()->Load<Model>("Model", modelComponent->ModelFile);
-		if (model != nullptr)
+		if (model)
 		{
 			/*glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 			glm::quat orientation = m_TransformSystem->AbsoluteOrientation(entity);
@@ -32,7 +65,7 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 	}
 
 	auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity);
-	if (pointLightComponent != nullptr)
+	if (transformComponent && pointLightComponent)
 	{
 		glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
 		m_Renderer->AddPointLightToDraw(
@@ -47,18 +80,27 @@ void Systems::RenderSystem::UpdateEntity(double dt, EntityID entity, EntityID pa
 	}
 
 	auto cameraComponent = m_World->GetComponent<Components::Camera>(entity);
-	if (cameraComponent != nullptr)
+	if (transformComponent && cameraComponent)
 	{
-		m_Renderer->GetCamera()->Position(m_TransformSystem->AbsolutePosition(entity));
-		m_Renderer->GetCamera()->Orientation(m_TransformSystem->AbsoluteOrientation(entity));
+		m_Renderer->UpdateCamera(entity
+			, m_TransformSystem->AbsolutePosition(entity)
+			, m_TransformSystem->AbsoluteOrientation(entity)
+			, cameraComponent->FOV
+			, cameraComponent->NearClip
+			, cameraComponent->FarClip);
+	}
 
-		m_Renderer->GetCamera()->FOV(cameraComponent->FOV);
-		m_Renderer->GetCamera()->NearClip(cameraComponent->NearClip);
-		m_Renderer->GetCamera()->FarClip(cameraComponent->FarClip);
+	auto viewportComponent = m_World->GetComponent<Components::Viewport>(entity);
+	if (viewportComponent)
+	{
+		if (viewportComponent->Camera != 0)
+		{
+			m_Renderer->UpdateViewport(entity, viewportComponent->Camera);
+		}
 	}
 
 	auto spriteComponent = m_World->GetComponent<Components::Sprite>(entity);
-	if(spriteComponent != nullptr)
+	if (transformComponent && spriteComponent)
 	{
 		//TEMP
 		Texture* texture = m_World->GetResourceManager()->Load<Texture>("Texture", spriteComponent->SpriteFile);
@@ -75,24 +117,4 @@ void Systems::RenderSystem::Initialize()
 
 	m_Renderer->SetSphereModel(m_World->GetResourceManager()->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj"));
 }
-
-void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
-{
-	cf->Register<Components::Camera>([]() { return new Components::Camera(); });
-	cf->Register<Components::Model>([]() { return new Components::Model(); });
-	cf->Register<Components::Sprite>([]() { return new Components::Sprite(); });
-	cf->Register<Components::PointLight>([]() { return new Components::PointLight(); });
-	cf->Register<Components::DirectionalLight>([]() { return new Components::DirectionalLight(); });
-}
-
-void Systems::RenderSystem::RegisterResourceTypes(ResourceManager* rm)
-{
-	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
-	rm->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
-	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
-}
-
-
-
-
 

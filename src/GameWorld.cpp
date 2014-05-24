@@ -45,28 +45,55 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
-	//{
-	//	auto camera = CreateEntity();
-	//	auto transform = AddComponent<Components::Transform>(camera);
-	//	transform->Position.z = 20.f;
-	//	transform->Position.y = 20.f;
-	//	//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
-	//	auto cameraComp = AddComponent<Components::Camera>(camera);
-	//	cameraComp->FarClip = 2000.f;
-	//	auto freeSteering = AddComponent<Components::FreeSteering>(camera);
-	//	CommitEntity(camera);
-	//}
+	auto camera = CreateEntity();
+	{
+		auto transform = AddComponent<Components::Transform>(camera);
+		transform->Position.z = 20.f;
+		transform->Position.y = 20.f;
+		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+		auto cameraComp = AddComponent<Components::Camera>(camera);
+		cameraComp->FarClip = 2000.f;
+		auto freeSteering = AddComponent<Components::FreeSteering>(camera);
+	}
+	CommitEntity(camera);
 
+	auto viewport1 = CreateEntity();
+	{
+		auto viewport = AddComponent<Components::Viewport>(viewport1);
+		viewport->Right = 0.5f;
+		viewport->Camera = camera;
+	}
+	CommitEntity(viewport1);
 
+	auto viewport2 = CreateEntity();
+	{
+		auto viewport = AddComponent<Components::Viewport>(viewport2);
+		viewport->Left = 0.5f;
+	}
+	CommitEntity(viewport2);
+
+	auto player1 = CreateEntity();
+	{
+		auto player = AddComponent<Components::Player>(player1);
+		player->ID = 1;
+	}
+	
+	auto player2 = CreateEntity();
+	{
+		auto player = AddComponent<Components::Player>(player2);
+		player->ID = 2;
+	}
+
+	
 	{
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground);
-		transform->Position = glm::vec3(0, 0, 0);
+		transform->Position = glm::vec3(0, -50, 0);
 		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground);
-		//model->ModelFile = "Models/TestScene/testScene.obj";
-		model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
+		model->ModelFile = "Models/TestScene3/testScene.obj";
+		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
 		
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
@@ -75,8 +102,8 @@ void GameWorld::Initialize()
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-		//meshShape->ResourceName = "Models/TestScene/testScene.obj";
+		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
+		meshShape->ResourceName = "Models/TestScene3/testScene.obj";
 
 		
 		CommitEntity(groundshape);
@@ -223,11 +250,14 @@ void GameWorld::Initialize()
 		transform->Position = glm::vec3(0, 5, 0);
 		//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
 		auto physics = AddComponent<Components::Physics>(tank);
-		physics->Mass = 45000;
+		physics->Mass = 63000 - 16000;
 		physics->Static = false;
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
-		vehicle->MaxTorque = 5200.f;
-		AddComponent<Components::TankSteering>(tank);
+		vehicle->MaxTorque = 36000.f;
+		vehicle->MaxSteeringAngle = 90.f;
+		vehicle->MaxSpeedFullSteeringAngle = 4.f;
+		auto tankSteering = AddComponent<Components::TankSteering>(tank);
+		tankSteering->Player = player1;
 		AddComponent<Components::Input>(tank);
 
 		{
@@ -249,24 +279,24 @@ void GameWorld::Initialize()
 			auto transform = AddComponent<Components::Transform>(chassis);
 			transform->Position = glm::vec3(0, 0, 0);
 			auto model = AddComponent<Components::Model>(chassis);
-			model->ModelFile = "Models/Tank/Fix/Chassi.obj";
+			model->ModelFile = "Models/Tank/tankBody.obj";
 		}
 		{
 			auto tower = CreateEntity(tank);
 			SetProperty(tower, "Name", "tower");
 			auto transform = AddComponent<Components::Transform>(tower);
-			transform->Position = glm::vec3(0.f, 1.2f, 1.8f);
+			transform->Position = glm::vec3(0.f, 0.68f, 0.9f);
 			auto model = AddComponent<Components::Model>(tower);
-			model->ModelFile = "Models/Tank/Fix/Top.obj";
+			model->ModelFile = "Models/Tank/tankTop.obj";
 			auto towerSteering = AddComponent<Components::TowerSteering>(tower);
 			towerSteering->Axis = glm::vec3(0.f, 1.f, 0.f);
 			towerSteering->TurnSpeed = glm::pi<float>()/4.f;
 			{
 				auto barrel = CreateEntity(tower);
 				auto transform = AddComponent<Components::Transform>(barrel);
-				transform->Position = glm::vec3(-0.018f, -0.2, -1.3f);
+				transform->Position = glm::vec3(-0.012f, 0.4f, -0.75);
 				auto model = AddComponent<Components::Model>(barrel);
-				model->ModelFile = "Models/Tank/Fix/Barrel.obj";
+				model->ModelFile = "Models/Tank/tankBarrel.obj";
 				auto barrelSteering = AddComponent<Components::BarrelSteering>(barrel);
 				barrelSteering->Axis = glm::vec3(1.f, 0.f, 0.f);
 				barrelSteering->TurnSpeed = glm::pi<float>()/4.f;
@@ -279,7 +309,7 @@ void GameWorld::Initialize()
 					transform->Scale = glm::vec3(3.f);
 					AddComponent<Components::Template>(shot);
 					auto physics = AddComponent<Components::Physics>(shot);
-					physics->Mass = 10.f;
+					physics->Mass = 25.f;
 					physics->Static = false;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
@@ -297,22 +327,25 @@ void GameWorld::Initialize()
 					barrelSteering->ShotTemplate = shot;
 				}
 				CommitEntity(barrel);
+				tankSteering->Barrel = barrel;
 			}
+			CommitEntity(tower);
+			tankSteering->Turret = tower;
+			
 
+			auto cameraTower = CreateEntity(tower);
 			{
-				auto camera = CreateEntity(tower);
-				auto transform = AddComponent<Components::Transform>(camera);
-				transform->Position.z = 30.f;
-				transform->Position.y = 5.f;
-				//transform->Orientation = glm::quat(glm::vec3(-glm::pi<float>() / 8.f, 0.f, 0.f));
-				transform->Orientation = glm::angleAxis(glm::pi<float>() / 100, glm::vec3(1, 0, 0));
-				auto cameraComp = AddComponent<Components::Camera>(camera);
+				auto transform = AddComponent<Components::Transform>(cameraTower);
+				transform->Position.z = 11.f;
+				transform->Position.y = 4.f;
+				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
 				cameraComp->FarClip = 2000.f;
-				AddComponent<Components::Input>(camera);
+				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 				AddComponent<Components::Listener>(tank);
-				//auto freeSteering = AddComponent<Components::FreeSteering>(camera);
-				CommitEntity(camera);
 			}
+			CommitEntity(cameraTower);
+			GetComponent<Components::Viewport>(viewport1)->Camera = cameraTower;
 		}
 
 		{
@@ -334,7 +367,7 @@ void GameWorld::Initialize()
 		//Create wheels
 		float wheelOffset = 0.4f;
 		float springLength = 0.3f;
-		float suspensionStrength = 25.f;
+		float suspensionStrength = 15.f;
 
 		{
 			auto wheel = CreateEntity(tank);
@@ -350,7 +383,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -380,7 +413,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -411,7 +444,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -439,9 +472,9 @@ void GameWorld::Initialize()
 			Wheel->AxleID = 0;
 			Wheel->Mass = 2000;
 			Wheel->Radius = 0.6f;
-			Wheel->Steering = false;
+			Wheel->Steering = true;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -473,7 +506,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -502,7 +535,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -557,7 +590,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -586,7 +619,7 @@ void GameWorld::Initialize()
 			Wheel->Radius = 0.6f;
 			Wheel->Steering = false;
 			Wheel->SuspensionStrength = suspensionStrength;
-			Wheel->Friction = 4.f;
+			Wheel->Friction = 3.f;
 			Wheel->ConnectedToHandbrake = true;
 			Wheel->TorqueRatio = 0.125f;
 			Wheel->Width = 0.6f;
@@ -630,7 +663,423 @@ void GameWorld::Initialize()
 		CommitEntity(tank);
 	}
 
-	
+	{
+		auto tank = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(tank);
+		transform->Position = glm::vec3(20, 5, 0);
+		//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
+		auto physics = AddComponent<Components::Physics>(tank);
+		physics->Mass = 63000 - 16000;
+		physics->Static = false;
+		auto vehicle = AddComponent<Components::Vehicle>(tank);
+		vehicle->MaxTorque = 36000.f;
+		vehicle->MaxSteeringAngle = 90.f;
+		vehicle->MaxSpeedFullSteeringAngle = 4.f;
+		auto tankSteering = AddComponent<Components::TankSteering>(tank);
+		tankSteering->Player = player2;
+		AddComponent<Components::Input>(tank);
+
+		{
+			auto shape = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto meshShape = AddComponent<Components::MeshShape>(shape);
+			meshShape->ResourceName = "Models/Tank/Fix/ChassiCollision.obj";
+			CommitEntity(shape);
+
+			// 		auto box = AddComponent<Components::Box>(jeep);
+			// 		box->Width = 1.487f;
+			// 		box->Height = 0.727f;
+			// 		box->Depth = 2.594f;
+
+		}
+
+		{
+			auto chassis = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(chassis);
+			transform->Position = glm::vec3(0, 0, 0);
+			auto model = AddComponent<Components::Model>(chassis);
+			model->ModelFile = "Models/Tank/tankBody.obj";
+		}
+		{
+			auto tower = CreateEntity(tank);
+			SetProperty(tower, "Name", "tower");
+			auto transform = AddComponent<Components::Transform>(tower);
+			transform->Position = glm::vec3(0.f, 0.68f, 0.9f);
+			auto model = AddComponent<Components::Model>(tower);
+			model->ModelFile = "Models/Tank/tankTop.obj";
+			auto towerSteering = AddComponent<Components::TowerSteering>(tower);
+			towerSteering->Axis = glm::vec3(0.f, 1.f, 0.f);
+			towerSteering->TurnSpeed = glm::pi<float>()/4.f;
+			{
+				auto barrel = CreateEntity(tower);
+				auto transform = AddComponent<Components::Transform>(barrel);
+				transform->Position = glm::vec3(-0.012f, 0.4f, -0.75);
+				auto model = AddComponent<Components::Model>(barrel);
+				model->ModelFile = "Models/Tank/tankBarrel.obj";
+				auto barrelSteering = AddComponent<Components::BarrelSteering>(barrel);
+				barrelSteering->Axis = glm::vec3(1.f, 0.f, 0.f);
+				barrelSteering->TurnSpeed = glm::pi<float>()/4.f;
+				barrelSteering->ShotSpeed = 70.f;
+				{
+					auto shot = CreateEntity(barrel);
+					auto transform = AddComponent<Components::Transform>(shot);
+					transform->Position = glm::vec3(0.35f, 0.f, -2.f);
+					transform->Orientation = glm::angleAxis(-glm::pi<float>()/2.f, glm::vec3(1, 0, 0));
+					transform->Scale = glm::vec3(3.f);
+					AddComponent<Components::Template>(shot);
+					auto physics = AddComponent<Components::Physics>(shot);
+					physics->Mass = 25.f;
+					physics->Static = false;
+					auto modelComponent = AddComponent<Components::Model>(shot);
+					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
+
+					{
+						auto shape = CreateEntity(shot);
+						auto transform = AddComponent<Components::Transform>(shape);
+						auto boxShape = AddComponent<Components::BoxShape>(shape);
+						boxShape->Width = 0.5f;
+						boxShape->Height = 0.5f;
+						boxShape->Depth = 0.5f;
+						CommitEntity(shape);
+					}
+					CommitEntity(shot);
+					barrelSteering->ShotTemplate = shot;
+				}
+				CommitEntity(barrel);
+				tankSteering->Barrel = barrel;
+			}
+			CommitEntity(tower);
+			tankSteering->Turret = tower;
+			
+
+			auto cameraTower = CreateEntity(tower);
+			{
+				auto transform = AddComponent<Components::Transform>(cameraTower);
+				transform->Position.z = 11.f;
+				transform->Position.y = 4.f;
+				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
+				cameraComp->FarClip = 2000.f;
+				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
+			}
+			CommitEntity(cameraTower);
+			GetComponent<Components::Viewport>(viewport2)->Camera = cameraTower;
+		}
+
+		{
+			auto lightentity = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(lightentity);
+			transform->Position = glm::vec3(0, 0, 0);
+			auto light = AddComponent<Components::PointLight>(lightentity);
+			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+			//light->Specular = glm::vec3(1.f);
+			/*light->ConstantAttenuation = 0.3f;
+			light->LinearAttenuation = 0.003f;
+			light->QuadraticAttenuation = 0.002f;*/
+		}
+
+// 		auto wheelpair = CreateEntity(tank);
+// 		SetProperty(wheelpair, "Name", "WheelPair");
+// 		AddComponent(wheelpair, "WheelPairThingy");
+
+		//Create wheels
+		float wheelOffset = 0.4f;
+		float springLength = 0.3f;
+		float suspensionStrength = 15.f;
+
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(1.68f, -0.83f - wheelOffset, -2.6f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(1.68f, -0.83f - wheelOffset, -0.83f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+		}
+
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(-1.68f, -0.83f - wheelOffset, -2.6f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(-1.68f, -0.83f - wheelOffset, -0.83f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 0;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = true;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+		}
+
+
+		//Back
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(1.68f, -0.83f - wheelOffset, 1.f);
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(1.68f, -0.83f - wheelOffset, 2.95f);
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+
+			auto entity = CreateEntity(tank);
+			auto transformComponent = AddComponent<Components::Transform>(entity);
+			transformComponent->Position = glm::vec3(2,-1.7,2.0);
+			transformComponent->Scale = glm::vec3(3,3,3);
+			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
+			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
+			emitterComponent->SpawnCount = 2;
+			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpreadAngle = glm::pi<float>();
+			emitterComponent->UseGoalVelocity = false;
+			emitterComponent->LifeTime = 0.5;
+			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+			CommitEntity(entity);
+
+			auto particleEntity = CreateEntity(entity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity);
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			emitterComponent->ParticleTemplate = particleEntity;
+
+			CommitEntity(particleEntity);
+		}
+
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(-1.68f, -0.83f - wheelOffset, 1.f);
+			transform->Orientation =  glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+		}
+		{
+			auto wheel = CreateEntity(tank);
+			auto transform = AddComponent<Components::Transform>(wheel);
+			transform->Position = glm::vec3(-1.68f, -0.83f - wheelOffset, 2.95f);
+			auto model = AddComponent<Components::Model>(wheel);
+			model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+			auto Wheel = AddComponent<Components::Wheel>(wheel);
+			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+			Wheel->AxleID = 1;
+			Wheel->Mass = 2000;
+			Wheel->Radius = 0.6f;
+			Wheel->Steering = false;
+			Wheel->SuspensionStrength = suspensionStrength;
+			Wheel->Friction = 3.f;
+			Wheel->ConnectedToHandbrake = true;
+			Wheel->TorqueRatio = 0.125f;
+			Wheel->Width = 0.6f;
+			{
+				auto shape = CreateEntity(wheel);
+				auto shapetransform = AddComponent<Components::Transform>(shape);
+				shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+				auto boxShape = AddComponent<Components::BoxShape>(shape);
+				boxShape->Width = 0.7f;
+				boxShape->Height = 0.34f;
+				boxShape->Depth = 0.7f;
+				CommitEntity(shape);
+			}
+			CommitEntity(wheel);
+
+			auto entity = CreateEntity(tank);
+			auto transformComponent = AddComponent<Components::Transform>(entity);
+			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
+			transformComponent->Scale = glm::vec3(3,3,3);
+			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
+			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
+			emitterComponent->SpawnCount = 2;
+			emitterComponent->SpawnFrequency = 0.005;
+			emitterComponent->SpreadAngle = glm::pi<float>();
+			emitterComponent->UseGoalVelocity = false;
+			emitterComponent->LifeTime = 0.5;
+			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+			CommitEntity(entity);
+
+			auto particleEntity = CreateEntity(entity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity);
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			emitterComponent->ParticleTemplate = particleEntity;
+
+			CommitEntity(particleEntity);
+		}
+
+		CommitEntity(tank);
+	}
 
 	/*
 		for(int i = 0; i < 10; i++)
@@ -763,6 +1212,7 @@ void GameWorld::RegisterComponents()
 {
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
+	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
 }
 
 void GameWorld::RegisterSystems()

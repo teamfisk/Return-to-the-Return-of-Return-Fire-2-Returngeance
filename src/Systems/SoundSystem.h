@@ -32,7 +32,7 @@ public:
 
 private:
 	// Events
-	EventRelay<Events::PlaySound> m_EPlaySound;
+	EventRelay<SoundSystem, Events::PlaySound> m_EPlaySound;
 
 	FMOD_RESULT LoadSound(FMOD_SOUND*&, std::string, float, float, bool, float, float);
 	void PlaySound(FMOD_CHANNEL*, FMOD_SOUND*, float volume, bool loop);

@@ -13,6 +13,7 @@
 //#include "Systems/PlayerSystem.h"
 #include "Systems/FreeSteeringSystem.h"
 #include "Systems/TankSteeringSystem.h"
+#include "Systems/HelicopterSteeringSystem.h"
 #include "Systems/RenderSystem.h"
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
@@ -28,6 +29,7 @@
 #include "Components/Sprite.h"
 #include "Components/Template.h"
 #include "Components/Transform.h"
+#include "Components/Viewport.h"
 
 #include "Components/Physics.h"
 #include "Components/SphereShape.h"
@@ -38,6 +40,7 @@
 #include "Components/TankSteering.h"
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
+#include "Components/Player.h"
 
 class GameWorld : public World
 {

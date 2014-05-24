@@ -2,6 +2,7 @@
 #define Components_Camera_h__
 
 #include "Component.h"
+#include "Entity.h"
 
 namespace Components
 {
@@ -13,7 +14,6 @@ struct Camera : Component
 	, NearClip(0.1f)
 	, FarClip(100.f) { }
 
-	std::string Viewport;
 	float FOV;
 	float NearClip;
 	float FarClip;

@@ -9,6 +9,7 @@ namespace Events
 struct MousePress : Event
 {
 	int Button;
+	double X, Y;
 };
 
 }

@@ -24,6 +24,6 @@ void main()
 
 	vec4 _FragmentColor = DiffuseTexel * vec4(La, 1.0) + LightingTexel;
 	FragmentColor = vec4(pow(_FragmentColor.rgb, vec3(1.0 / Gamma)), _FragmentColor.a);
-	//FragmentColor = ShadowTexel;
+	//FragmentColor = DiffuseTexel;
 
 }

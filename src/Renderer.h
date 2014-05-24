@@ -35,6 +35,11 @@ public:
 	void Draw(double dt);
 	void DrawText();
 
+	void RegisterViewport(int identifier, float left, float top, float right, float bottom);
+	void RegisterCamera(int identifier, float FOV, float nearClip, float farClip);
+	void UpdateViewport(int viewportIdentifier, int cameraIdentifier);
+	void UpdateCamera(int cameraIdentifier, glm::vec3 position, glm::quat orientation, float FOV, float nearClip, float farClip);
+
 	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
 	void AddTextToDraw();
@@ -66,6 +71,18 @@ public:
 
 private:
 	int m_Width, m_Height;
+
+	struct Viewport
+	{
+		float Left;
+		float Top;
+		float Right;
+		float Bottom;
+		std::shared_ptr<Camera> Camera;
+	};
+
+	std::unordered_map<int, Viewport> m_Viewports;
+	std::unordered_map<int, std::shared_ptr<Camera>> m_Cameras;
 
 	struct Light
 	{
@@ -105,6 +122,7 @@ private:
 	GLuint m_fDiffuseTexture;
 	GLuint m_fPositionTexture;
 	GLuint m_fNormalsTexture;
+	GLuint m_fSpecularTexture;
 	GLuint m_fBlendTexture;
 	GLuint m_fbLightingPass;
 	GLuint m_fLightingTexture;
@@ -140,10 +158,13 @@ private:
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
-	void DrawFBOScene();
-	void DrawLightScene();
+	void DrawFBOScene(Viewport &viewport);
+	void DrawLightScene(Viewport &viewport);
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
+	void UpdateSunProjection();
+	void CreateNormalMapTangent();
+
 	
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();

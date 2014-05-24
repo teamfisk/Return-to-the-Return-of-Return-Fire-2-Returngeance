@@ -60,7 +60,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
@@ -111,6 +111,7 @@
     <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
@@ -131,6 +132,8 @@
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
+    <ClInclude Include="..\..\src\Components\Health.h" />
+    <ClInclude Include="..\..\src\Components\HelicopterSteering.h" />
     <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\Listener.h" />
@@ -139,6 +142,7 @@
     <ClInclude Include="..\..\src\Components\Particle.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
+    <ClInclude Include="..\..\src\Components\Player.h" />
     <ClInclude Include="..\..\src\Components\PointLight.h" />
     <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
     <ClInclude Include="..\..\src\Components\SphereShape.h" />
@@ -148,11 +152,14 @@
     <ClInclude Include="..\..\src\Components\TowerSteering.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\Viewport.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\Components\WheelPair.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Events\ApplyForce.h" />
+    <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h" />
     <ClInclude Include="..\..\src\Events\BindGamepadAxis.h" />
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h" />
     <ClInclude Include="..\..\src\Events\BindKey.h" />
@@ -189,6 +196,7 @@
     <ClInclude Include="..\..\src\System.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />
     <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />
@@ -197,7 +205,6 @@
     <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
-    <ClInclude Include="..\..\src\Util\defferedUtil.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
     <ClInclude Include="..\..\src\Util\Rectangle.h" />
     <ClInclude Include="..\..\src\Util\Logging.h" />
