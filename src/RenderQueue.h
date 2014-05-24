@@ -14,6 +14,7 @@ struct RenderJob
 {
 	friend class RenderQueue;
 
+	unsigned int Layer;
 	unsigned int ViewportID;
 	unsigned int TextureID;
 
