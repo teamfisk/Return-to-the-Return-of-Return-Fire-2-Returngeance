@@ -26,20 +26,25 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
+	void OnEntityCommit(EntityID entity) override;
 
-	FMOD::System *m_FmodSystem;
+	
 
 private:
 	// Events
 	EventRelay<Events::PlaySound> m_EPlaySound;
 
-	bool LoadSound(std::string filePath);
-	void PlaySound(FMOD_CHANNEL*, float volume, bool loop);
+	FMOD_RESULT LoadSound(FMOD_SOUND*&, std::string, float, float, bool, float, float);
+	void PlaySound(FMOD_CHANNEL*, FMOD_SOUND*, float volume, bool loop);
+	void RemoveEmitter(EntityID ent);
 	std::vector<EntityID> m_Listeners;
 	FMOD_SYSTEM* m_System;
 	FMOD_CHANNELGROUP* m_ChannelGruoup;
+	//std::map<EntityID, FMOD_CHANNEL*> m_Channels;
 	std::map<EntityID, FMOD_CHANNEL*> m_Channels;
-
+	std::map<EntityID, FMOD_SOUND*> m_Sounds;
+	FMOD::System *m_FmodSystem;
+	
 	FMOD_SOUND* m_Sound; //Temp
 	bool m_Playing; //TEMP
 };

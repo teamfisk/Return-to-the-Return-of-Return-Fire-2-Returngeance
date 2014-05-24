@@ -19,9 +19,11 @@ void Systems::SoundSystem::Initialize()
 	m_FmodSystem->playSound(FMOD_CHANNEL_FREE, sound, false, 0);*/
 
 	FMOD_System_Create(&m_System);
-	FMOD_System_Init(m_System, 32, FMOD_INIT_NORMAL, nullptr);
-	FMOD_System_Set3DSettings(m_System, 10.0f, 10.f, 1.0f); //dopplerScale, distancefactor, rolloffscale
-	FMOD_System_GetMasterChannelGroup(m_System, &m_ChannelGruoup);
+	FMOD_System_Init(m_System, 1024, FMOD_INIT_NORMAL, nullptr);
+	FMOD_System_Set3DSettings(m_System, 10.0f, 1.f, 100.f); //dopplerScale, distancefactor, rolloffscale
+	//FMOD_System_GetMasterChannelGroup(m_System, &m_ChannelGruoup);
+	m_Playing = false;
+	
 }
 
 void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
@@ -60,13 +62,14 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 		glm::vec3 tForward = tOri[2];
 		FMOD_VECTOR lForward = {tForward.x, tForward.y, tForward.z};
 
-		FMOD_System_Set3DListenerAttributes(m_System, 0, (const FMOD_VECTOR*)&lPos, (const FMOD_VECTOR*)&lVel, (const FMOD_VECTOR*)&lForward, (const FMOD_VECTOR*)&lUp);
+		FMOD_System_Set3DListenerAttributes(m_System, lID, (const FMOD_VECTOR*)&lPos, (const FMOD_VECTOR*)&lVel, (const FMOD_VECTOR*)&lForward, (const FMOD_VECTOR*)&lUp);
 	}
 
 	auto emitter = m_World->GetComponent<Components::SoundEmitter>(entity);
 	if(emitter)
 	{
 		FMOD_CHANNEL* channel = m_Channels[entity];
+		FMOD_SOUND* sound = m_Sounds[entity];
 		auto eTransform = m_World->GetComponent<Components::Transform>(entity);
 
 		glm::vec3 tPos = eTransform->Position;
@@ -75,53 +78,74 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 		glm::vec3 tVel = eTransform->Velocity;
 		FMOD_VECTOR eVel = {tVel.x, tVel.y, tVel.z};
 
-		
-		FMOD_Channel_SetMode(channel, FMOD_3D_LINEARROLLOFF);
 		FMOD_Channel_Set3DAttributes(channel, (const FMOD_VECTOR*)&ePos, (const FMOD_VECTOR*)&eVel);
+
 		if(!m_Playing)
 		{
-			PlaySound(m_Channels[entity], 1, false);
+			PlaySound(channel, sound, 1, emitter->Loop);
+			m_Playing = true;
 		}
 	}
-
 }
 
 void Systems::SoundSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
 {
-	if(type ==  typeid(Components::SoundEmitter).name())
+
+// 	if(type ==  typeid(Components::Listener).name())
+// 	{
+// 		m_Listeners.push_back(component->Entity);
+// 	}
+// 
+// 	if (type == typeid(Components::SoundEmitter).name())
+// 	{
+// 		//std::shared_ptr<Components::SoundEmitter> eComponent = std::dynamic_pointer_cast<Components::SoundEmitter>(component);
+// 		
+// 		FMOD_CHANNEL* channel;
+// 		m_Channels.insert(std::pair<EntityID, FMOD_CHANNEL*>(component->Entity, channel));
+// 		
+// 		LoadSound("Sounds/DarkHorse.mp3", 100, 30, false, 1, 0);
+// 	}
+}
+
+void Systems::SoundSystem::OnEntityCommit(EntityID entity)
+{
+	//TEMP ska slängas in i OnComponentCreated
+	auto lComponent = m_World->GetComponent<Components::Listener>(entity);
+	if(lComponent)
 	{
-		m_Listeners.push_back(component->Entity);
+		m_Listeners.push_back(entity);
 	}
 
-	if (type == typeid(Components::SoundEmitter).name())
+	auto eCompoonent = m_World->GetComponent<Components::SoundEmitter>(entity);
+	if(eCompoonent)
 	{
 		FMOD_CHANNEL* channel;
-		m_Channels.insert(std::pair<EntityID, FMOD_CHANNEL*>(component->Entity, channel));
-		LoadSound("Sounds/WUB.mp3");
+		FMOD_SOUND* sound;
+
+		std::string path = eCompoonent->Path;
+		float volume = eCompoonent->Gain;
+		bool loop = eCompoonent->Loop;
+		float maxDist = eCompoonent->MaxDistance;
+		float minDist = eCompoonent->MinDistance;
+		float pitch = eCompoonent->Pitch;
+
+		if(LoadSound(sound, path, maxDist, minDist, loop, volume, pitch) != FMOD_OK)
+			LOG_ERROR("FMOD did not load sound file");
+		m_Channels.insert(std::make_pair(entity, channel));
+		m_Sounds.insert(std::make_pair(entity, sound));
 	}
 }
 
-bool Systems::SoundSystem::LoadSound(std::string filePath)
+FMOD_RESULT Systems::SoundSystem::LoadSound(FMOD_SOUND* &sound, std::string filePath, float maxDist, float minDist, bool loop, float volume, float pitch)
 {
-	bool loadedFile;
-	FMOD_RESULT result = FMOD_System_CreateSound(m_System, filePath.c_str(), FMOD_3D_LINEARROLLOFF, NULL, &m_Sound);
-	result =  FMOD_Sound_Set3DMinMaxDistance(m_Sound, 1.f, 100.f);
+	FMOD_RESULT result = FMOD_System_CreateSound(m_System, filePath.c_str(), FMOD_3D , 0, &sound);
+	FMOD_Sound_Set3DMinMaxDistance(m_Sound, minDist, maxDist);
 
-	if(result != FMOD_OK)
-	{
-		loadedFile = false;		
-		LOG_ERROR("FMOD ERROR: Could not load sound file: %s \n", filePath.c_str());
-	}
-	else
-	{
-		loadedFile = true;
-	}
-	return loadedFile;
+	return result;
 }
 
-void Systems::SoundSystem::PlaySound(FMOD_CHANNEL* channel, float volume, bool loop)
+void Systems::SoundSystem::PlaySound(FMOD_CHANNEL* channel, FMOD_SOUND* sound, float volume, bool loop)
 {
-	m_Playing = true;
-	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, m_Sound, false, &channel);
+	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, sound, false, &channel);
 	FMOD_Channel_SetVolume(channel, volume);
 }
