@@ -39,9 +39,9 @@ private:
 	GLFWwindow* m_GLFWWindow;
 	std::shared_ptr<::EventBroker> EventBroker;
 
-	EventRelay<Events::LockMouse> m_ELockMouse;
+	EventRelay<InputManager, Events::LockMouse> m_ELockMouse;
 	bool OnLockMouse(const Events::LockMouse &event);
-	EventRelay<Events::UnlockMouse> m_EUnlockMouse;
+	EventRelay<InputManager, Events::UnlockMouse> m_EUnlockMouse;
 	bool OnUnlockMouse(const Events::UnlockMouse &event);
 
 	std::array<int, GLFW_KEY_LAST+1> m_CurrentKeyState;

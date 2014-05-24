@@ -13,6 +13,8 @@ void InputManager::Initialize()
 
 void InputManager::Update(double dt)
 {
+	EventBroker->Process<InputManager>();
+
 	m_LastKeyState = m_CurrentKeyState;
 	m_LastMouseState = m_CurrentMouseState;
 	m_LastMouseX = m_CurrentMouseX;
