@@ -158,6 +158,9 @@
     <Filter Include="Gameplay\Components">
       <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Events">
+      <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\World.h" />
@@ -396,6 +399,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Player.h">
       <Filter>Gameplay\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\TextureFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\WorldFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\SetViewportCamera.h">
+      <Filter>Rendering\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

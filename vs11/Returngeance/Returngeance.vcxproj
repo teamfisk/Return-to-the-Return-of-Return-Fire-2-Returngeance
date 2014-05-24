@@ -174,11 +174,14 @@
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
+    <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\GUI\WorldFrame.h" />
+    <ClInclude Include="..\..\src\GUI\TextureFrame.h" />
     <ClInclude Include="..\..\src\GUI\Viewport.h" />
     <ClInclude Include="..\..\src\InputController.h" />
     <ClInclude Include="..\..\src\InputManager.h" />

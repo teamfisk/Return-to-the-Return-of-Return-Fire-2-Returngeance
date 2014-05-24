@@ -12,24 +12,13 @@ class RenderQueue;
 
 struct RenderJob
 {
-	friend class RenderQueue;
-
-	unsigned int Layer;
-	unsigned int ViewportID;
-	unsigned int TextureID;
-
-	GLuint DiffuseTexture;
-	GLuint NormalTexture;
-	GLuint SpecularTexture;
-	GLuint VAO;
-	unsigned int StartIndex;
-	unsigned int EndIndex;
-	glm::mat4 ModelMatrix;
+	template <typename JobType>
+	friend class RenderQueue<JobType>;
 
 protected:
 	uint64_t Hash;
 
-	void CalculateHash()
+	virtual void CalculateHash() = 0;
 	{
 		Hash = ViewportID << 58 // 6 bits 
 			 | TextureID << 42; // 16 bits
@@ -41,10 +30,40 @@ protected:
 	}
 };
 
+struct ModelJob : RenderJob
+{
+	unsigned int TextureID;
+	GLuint DiffuseTexture;
+	GLuint NormalTexture;
+	GLuint SpecularTexture;
+	GLuint VAO;
+	unsigned int StartIndex;
+	unsigned int EndIndex;
+	glm::mat4 ModelMatrix;
+
+	void CalculateHash() override
+	{
+		Hash = TextureID;
+	}
+};
+
+struct SpriteJob : RenderJob
+{
+	unsigned int TextureID;
+	GLuint Texture;
+	glm::mat4 ModelMatrix;
+
+	void CalculateHash() override
+	{
+		Hash = TextureID;
+	}
+};
+
+template <typename JobType>
 class RenderQueue
 {
 public:
-	void Add(RenderJob &job)
+	void Add(JobType &job)
 	{
 		job.CalculateHash();
 		m_Jobs.push_front(job);
@@ -57,7 +76,7 @@ public:
 	}
 
 private:
-	std::forward_list<RenderJob> m_Jobs;
+	std::forward_list<JobType> m_Jobs;
 };
 
 #endif // RenderQueue_h__

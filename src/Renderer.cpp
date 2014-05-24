@@ -372,10 +372,10 @@ void Renderer::AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat 
 }
 
 void Renderer::AddPointLightToDraw(
-    glm::vec3 _position,
-    glm::vec3 _specular,
-    glm::vec3 _diffuse,
-    float _specularExponent,
+	glm::vec3 _position,
+	glm::vec3 _specular,
+	glm::vec3 _diffuse,
+	float _specularExponent,
 	float _ConstantAttenuation,
 	float _LinearAttenuation, 
 	float _QuadraticAttenuation
@@ -826,7 +826,7 @@ void Renderer::DrawLightScene(Viewport &viewport)
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
 
- 		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
+		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
 	glEnable (GL_DEPTH_TEST);
 	glDepthMask (GL_TRUE);

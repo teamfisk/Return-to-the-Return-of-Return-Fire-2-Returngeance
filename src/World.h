@@ -88,14 +88,13 @@ public:
 
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
 
-	ResourceManager* GetResourceManager() { return &m_ResourceManager; }
+	//ResourceManager* GetResourceManager() { return &m_ResourceManager; }
 	std::shared_ptr<::EventBroker> EventBroker() { return m_EventBroker; }
 
 protected:
 	std::shared_ptr<::EventBroker> m_EventBroker;
 	SystemFactory m_SystemFactory;
 	ComponentFactory m_ComponentFactory;
-	ResourceManager m_ResourceManager;
 
 	std::unordered_map<std::string, std::shared_ptr<System>> m_Systems;
 

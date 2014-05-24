@@ -9,10 +9,7 @@ Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
 	m_FarClip = farClip;
 
 	m_Position = glm::vec3(0.0);
-	/*m_Pitch = 0.f;
-	m_Yaw = 0.f;*/
 
-	UpdateProjectionMatrix();
 	UpdateViewMatrix();
 }
 
@@ -33,12 +30,6 @@ Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
 //	orientation = glm::rotate(orientation, m_Yaw, glm::vec3(0.f, 1.f, 0.f));
 //	return orientation;
 //}
-
-void Camera::AspectRatio(float val)
-{
-	m_AspectRatio = val;
-	UpdateProjectionMatrix();
-}
 
 void Camera::Position(glm::vec3 val)
 {
@@ -65,16 +56,6 @@ void Camera::Orientation(glm::quat val)
 //	UpdateViewMatrix();
 //}
 
-void Camera::UpdateProjectionMatrix()
-{
-	m_ProjectionMatrix = glm::perspective(
-	                         m_FOV,
-	                         m_AspectRatio,
-	                         m_NearClip,
-	                         m_FarClip
-	                     );
-}
-
 void Camera::UpdateViewMatrix()
 {
 	m_ViewMatrix = glm::toMat4(glm::inverse(m_Orientation)) * glm::translate(-m_Position);
@@ -83,17 +64,24 @@ void Camera::UpdateViewMatrix()
 void Camera::FOV(float val)
 {
 	m_FOV = val;
-	UpdateProjectionMatrix();
 }
 
 void Camera::NearClip(float val)
 {
 	m_NearClip = val;
-	UpdateProjectionMatrix();
 }
 
 void Camera::FarClip(float val)
 {
 	m_FarClip = val;
-	UpdateProjectionMatrix();
+}
+
+glm::mat4 Camera::ProjectionMatrix(float aspectRatio)
+{
+	return glm::perspective(
+		m_FOV,
+		aspectRatio,
+		m_NearClip,
+		m_FarClip
+		);
 }
