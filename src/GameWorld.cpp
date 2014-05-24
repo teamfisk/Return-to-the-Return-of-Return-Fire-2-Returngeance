@@ -33,7 +33,7 @@ void GameWorld::Initialize()
  		CommitEntity(ground);
  	}
 
-	for(int i = 0; i < 50; i++)
+	for(int i = 0; i < 500; i++)
 	{
 		auto Light = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(Light, "Transform");
@@ -92,8 +92,8 @@ void GameWorld::Initialize()
  			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
  			transform->Position = glm::vec3(1.4f, 0.5546f - 0.6577f - 0.2, -0.9242f);
  			transform->Scale = glm::vec3(1.0f);
- 			//auto model = AddComponent<Components::Model>(wheel, "Model");
- 			//model->ModelFile = "Models/Jeep/WheelFront/wheelFront.obj";
+ 			auto model = AddComponent<Components::Model>(wheel, "Model");
+ 			model->ModelFile = "Models/Jeep/WheelFront/wheelFront.obj";
  			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
  			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f, 0.f);
  			Wheel->AxleID = 0;
@@ -112,8 +112,8 @@ void GameWorld::Initialize()
  			transform->Position = glm::vec3(-1.4f, 0.5546f - 0.6577f - 0.2, -0.9242f);
  			transform->Scale = glm::vec3(1.0f);
  			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
- 			//auto model = AddComponent<Components::Model>(wheel, "Model");
- 			//model->ModelFile = "Models/Jeep/WheelFront/wheelFront.obj";
+ 			auto model = AddComponent<Components::Model>(wheel, "Model");
+ 			model->ModelFile = "Models/Jeep/WheelFront/wheelFront.obj";
  			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
  			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f, 0.f);
  			Wheel->AxleID = 0;
@@ -130,8 +130,8 @@ void GameWorld::Initialize()
  			auto wheel = CreateEntity(jeep);
  			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
  			transform->Position = glm::vec3(0.2726f, 0.2805f - 0.6577f, 1.9307f);
- 			//auto model = AddComponent<Components::Model>(wheel, "Model");
- 			//model->ModelFile = "Models/Jeep/WheelBack/wheelBack.obj";
+ 			auto model = AddComponent<Components::Model>(wheel, "Model");
+ 			model->ModelFile = "Models/Jeep/WheelBack/wheelBack.obj";
  			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
  			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f, 0.f);
  			Wheel->AxleID = 1;
@@ -148,8 +148,8 @@ void GameWorld::Initialize()
  			auto transform = AddComponent<Components::Transform>(wheel, "Transform");
  			transform->Position = glm::vec3(-0.2726f, 0.2805f - 0.6577f, 1.9307f);
  			transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 0, 1));
-			//auto model = AddComponent<Components::Model>(wheel, "Model");
-			//model->ModelFile = "Models/Jeep/WheelBack/wheelBack.obj";
+			auto model = AddComponent<Components::Model>(wheel, "Model");
+			model->ModelFile = "Models/Jeep/WheelBack/wheelBack.obj";
  			auto Wheel = AddComponent<Components::Wheel>(wheel, "Wheel");
  			Wheel->Hardpoint = transform->Position + glm::vec3(0.f, 1.f, 0.f);
  			Wheel->AxleID = 1;

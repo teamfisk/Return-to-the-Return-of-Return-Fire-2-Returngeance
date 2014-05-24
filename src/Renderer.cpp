@@ -111,6 +111,11 @@ void Renderer::LoadContent()
 	m_ShaderProgramSkybox.Compile();
 	m_ShaderProgramSkybox.Link();*/
 
+	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ForwardRendering.vert.glsl")));
+	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ForwardRendering.frag.glsl")));
+	m_ForwardRendering.Compile();
+	m_ForwardRendering.Link();
+
 	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ShadowMap.vert.glsl")));
 	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ShadowMap.frag.glsl")));
 	m_ShaderProgramShadows.Compile();
@@ -711,6 +716,11 @@ void Renderer::DrawFBO()
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+void Renderer::DrawFBO2()
+{
+	ForwardRendering();
+}
+
 void Renderer::DrawFBOScene()
 {	
 // 	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
@@ -734,7 +744,6 @@ void Renderer::DrawFBOScene()
 
 	glm::vec3 sunDirection = m_SunTarget - m_SunPosition;
 	glm::vec3 sunDirection_cameraview = glm::vec3(m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix() * glm::vec4(sunDirection, 1.0));
-	//Proj * view * vector
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
@@ -867,4 +876,46 @@ void Renderer::UpdateSunProjection()
 	//Calculate the bounding box of the transformed frustum corners. This will be the view frustum for the shadow map.
 
 	//Pass the bounding box's extents to glOrtho or similar to set up the orthographic projection matrix for the shadow map.
+}
+
+void Renderer::ForwardRendering()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, WIDTH, HEIGHT);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * m_Camera->ViewMatrix();
+	glm::mat4 MVP;
+
+	m_ForwardRendering.Bind();
+
+	for (auto tuple : ModelsToRender) //// Todo: Add so it's TransparentModelsToRender
+	{
+		Model* model;
+		glm::mat4 modelMatrix;
+		bool visible;
+		std::tie(model, modelMatrix, visible, std::ignore) = tuple;
+		if (!visible)
+			continue;
+
+		MVP = cameraMatrix * modelMatrix;
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix()));
+
+		glBindVertexArray(model->VAO);
+		for (auto texGroup : model->TextureGroups)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
+			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
+		}
+	}
 }

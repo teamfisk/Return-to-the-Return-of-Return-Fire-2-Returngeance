@@ -277,5 +277,11 @@
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

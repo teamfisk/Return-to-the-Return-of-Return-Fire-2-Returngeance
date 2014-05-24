@@ -127,6 +127,7 @@ private:
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_FinalPassProgram;
+	ShaderProgram m_ForwardRendering;
 
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
@@ -143,12 +144,14 @@ private:
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
+	void DrawFBO2();
 	void DrawFBOScene();
 	void DrawLightScene();
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();
 	void CreateNormalMapTangent();
+	void ForwardRendering();
 
 	
 	GLuint CreateQuad();
