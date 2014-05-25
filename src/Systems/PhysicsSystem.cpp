@@ -110,14 +110,61 @@ void Systems::PhysicsSystem::Initialize()
 		m_PhysicsWorld->unmarkForWrite();
 
 		m_collisionResolution = new MyCollisionResolution(this);
+
+		hkpBoxShape* shape = new hkpBoxShape(hkVector4(5, 5, 5), 0);
+		
+		PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
+		hkpBvShape* phantomShape = new hkpBvShape(shape, phantom);
+		
+		hkMassProperties massProperties;
+		hkpInertiaTensorComputer::computeBoxVolumeMassProperties(hkVector4(5, 5, 5),1, massProperties);
+
+		hkpRigidBodyCinfo rigidBodyInfo;
+		{
+			rigidBodyInfo.m_shape = shape;
+			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+			rigidBodyInfo.m_position = hkVector4(0, 0, 0);
+
+			rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
+			rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
+			rigidBodyInfo.m_mass = massProperties.m_mass;
+		}
+		// Create RigidBody
+		
+		hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+		m_PhysicsWorld->markForWrite();
+		m_PhysicsWorld->addEntity(rigidBody);
+		m_PhysicsWorld->unmarkForWrite();
+
+		shape->removeReference();
+		rigidBody->removeReference();
 	}
 	
+	enum
+	{
+		GROUND_LAYER = 1,
+		VEHICLE1_LAYER = 2,
+		VEHICLE2_LAYER = 3,
+		EXPLOSION_LAYER = 4,
+	};
 	{
 		Events::DisableCollisions e;
-		e.Layer1 = 1;
-		e.Layer2 = 2;
+		e.Layer1 = GROUND_LAYER;
+		e.Layer2 = EXPLOSION_LAYER;
 		EventBroker->Publish(e);
 	}
+	/*{
+		Events::DisableCollisions e;
+		e.Layer1 = VEHICLE1_LAYER;
+		e.Layer2 = EXPLOSION_LAYER;
+		EventBroker->Publish(e);
+	}
+	{
+		Events::DisableCollisions e;
+		e.Layer1 = VEHICLE2_LAYER;
+		e.Layer2 = EXPLOSION_LAYER;
+		EventBroker->Publish(e);
+	}*/
 }
 
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
@@ -277,7 +324,20 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkArray<hkpShape*> shapeArray;
 			for (auto &shapeData : m_Shapes[entity])
 			{
-				shapeArray.pushBack(shapeData.Shape);
+				auto childTransformComponent = m_World->GetComponent<Components::Transform>(shapeData.Entity);
+				hkpShape* shape;
+
+				if(shapeData.ConvexShape != nullptr)
+				{
+					hkQsTransform transform( GLMVEC3_TO_HKVECTOR4(childTransformComponent->Position), GLMQUAT_TO_HKQUATERNION(childTransformComponent->Orientation), GLMVEC3_TO_HKVECTOR4(childTransformComponent->Scale));
+					hkpConvexTransformShape* transformedBoxShape = new hkpConvexTransformShape( shapeData.ConvexShape, transform );
+					shapeArray.pushBack(transformedBoxShape);
+				}
+				
+				if(shapeData.Shape != nullptr)
+				{
+					shapeArray.pushBack(shapeData.Shape);
+				}
 			}
 
 
@@ -285,15 +345,26 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpListShape* listShape = new hkpListShape(shapeArray.begin(), shapeArray.getSize(), hkpShapeContainer::REFERENCE_POLICY_INCREMENT);
 			// Save the listShape for further use
 			m_ListShapes[entity] = listShape;
-			//shape = listShape;
-			hkpBoxShape* box = new hkpBoxShape(listShape->m_aabbHalfExtents, 0.0f);
-			shape = new hkpBvShape(listShape, box);
+			hkMassProperties massProperties;
+			if(physicsComponent->Phantom)
+			{
+				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
+				shape = new hkpBvShape(listShape, phantom);
+				hkpInertiaTensorComputer::computeSphereVolumeMassProperties(1, physicsComponent->Mass, massProperties);
+			}
+			else
+			{
+				hkpBoxShape* box = new hkpBoxShape(listShape->m_aabbHalfExtents, 0.0f);
+				shape = new hkpBvShape(listShape, box);
+				hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
+			}
+			
 
 			// Clean up for less memory usage
 			m_Shapes.erase(entity);
 
-			hkMassProperties massProperties;
-			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
+			
+			
 			
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
@@ -344,7 +415,10 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				m_PhysicsWorld->markForWrite();
 				vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
 				// Add the vehicle's entities and phantoms to the world
-				rigidBody->addContactListener( m_collisionResolution );
+				if(physicsComponent->CollisionEvent)
+				{
+					rigidBody->addContactListener( m_collisionResolution );
+				}
 				m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
 				m_RigidBodies[entity] = rigidBody;
 				m_RigidBodyEntities[rigidBody] = entity;
@@ -362,7 +436,10 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			else
 			{
 				m_PhysicsWorld->markForWrite();
-				rigidBody->addContactListener( m_collisionResolution );
+				if(physicsComponent->CollisionEvent)
+				{
+					rigidBody->addContactListener( m_collisionResolution );
+				}
 				m_PhysicsWorld->addEntity(rigidBody);
 				m_RigidBodies[entity] = rigidBody;
 				m_RigidBodyEntities[rigidBody] = entity;
@@ -388,15 +465,35 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				hkVector4 scale = GLMVEC3_TO_HKVECTOR4(childTransformComponent->Scale);
 				hkQsTransform transform(position, rotation, scale);
 
-				staticCompoundShape->addInstance(shapeData.Shape, transform);
+				if(shapeData.ConvexShape != nullptr)
+				{
+					staticCompoundShape->addInstance(shapeData.ConvexShape, transform);
+				}
+				
+				if(shapeData.Shape != nullptr)
+				{
+					staticCompoundShape->addInstance(shapeData.Shape, transform);
+				}
 			}
 			
 			// This must be called after adding the instances and before using the shape.
 			staticCompoundShape->bake();
 			shape = staticCompoundShape;
-			m_Shapes.erase(entity);
 			hkMassProperties massProperties;
-			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
+			if(physicsComponent->Phantom)
+			{
+				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
+				shape = new hkpBvShape(shape, phantom);
+				hkpInertiaTensorComputer::computeSphereVolumeMassProperties(1, physicsComponent->Mass, massProperties);
+			}
+			else
+			{
+				hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
+			}
+
+			m_Shapes.erase(entity);
+			
+			
 
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
@@ -424,7 +521,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
-
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -447,24 +543,17 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		if(sphereComponent)
 		{
 			hkpSphereShape* sphereShape = new hkpSphereShape(sphereComponent->Radius);
-			
-			hkQsTransform transform( GLMVEC3_TO_HKVECTOR4(transformComponent->Position), GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation), GLMVEC3_TO_HKVECTOR4(transformComponent->Scale));
-			hkpConvexTransformShape* transformedSphereShape = new hkpConvexTransformShape( sphereShape, transform );
-			
-			m_Shapes[entityParent].push_back(ShapeArrayData(entity, transformedSphereShape));
+			m_Shapes[entityParent].push_back(ShapeArrayData(entity, sphereShape, nullptr));
 
-			sphereShape->removeReference();
+			//sphereShape->removeReference();
 		}
 		//TODO: COMMENT THIS SECTION
 		else if(boxComponent)
 		{
 			hkReal thickness = 0.05;
 			hkpBoxShape* boxShape = new hkpBoxShape(hkVector4(boxComponent->Width- thickness, boxComponent->Height -thickness, boxComponent->Depth - thickness), thickness);
-			
-			hkQsTransform transform( GLMVEC3_TO_HKVECTOR4(transformComponent->Position), GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation), GLMVEC3_TO_HKVECTOR4(transformComponent->Scale));
-			hkpConvexTransformShape* transformedBoxShape = new hkpConvexTransformShape( boxShape, transform );
-			m_Shapes[entityParent].push_back(ShapeArrayData(entity, transformedBoxShape));
-			boxShape->removeReference();
+			m_Shapes[entityParent].push_back(ShapeArrayData(entity, boxShape, nullptr));
+			//boxShape->removeReference();
 		}
 		else if(meshShapeComponent)
 		{
@@ -513,7 +602,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 			m_ExtendedMeshShapes[entity].Code = code;
 			m_ExtendedMeshShapes[entity].MoppShape = moppShape;
-			m_Shapes[entityParent].push_back(ShapeArrayData(entity, moppShape)); //HACK: Should maybe have transform, not sure yet
+			m_Shapes[entityParent].push_back(ShapeArrayData(entity, nullptr, moppShape));
 		}
 	}
 

@@ -101,7 +101,7 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
 		physics->Static = true;
-		physics->CollisionLayer = 0;
+		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
@@ -316,6 +316,7 @@ void GameWorld::Initialize()
 					auto physics = AddComponent<Components::Physics>(shot);
 					physics->Mass = 25.f;
 					physics->Static = false;
+					physics->CollisionEvent = true;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
@@ -678,7 +679,7 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(tank);
 		physics->Mass = 63000 - 16000;
 		physics->Static = false;
-		physics->CollisionLayer = 1;
+		physics->CollisionLayer = 3;
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
 		vehicle->MaxTorque = 36000.f;
 		vehicle->MaxSteeringAngle = 90.f;
@@ -739,6 +740,7 @@ void GameWorld::Initialize()
 					auto physics = AddComponent<Components::Physics>(shot);
 					physics->Mass = 25.f;
 					physics->Static = false;
+					physics->CollisionEvent = true;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 					auto tankShellComponent = AddComponent<Components::TankShell>(shot);

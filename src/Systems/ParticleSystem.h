@@ -54,7 +54,7 @@ private:
 
 	bool tempSpawnedExplosions;
 	
-	EventRelay<Events::KeyUp> m_EKeyUp;
+	EventRelay<ParticleSystem, Events::KeyUp> m_EKeyUp;
 	bool OnKeyUp(const Events::KeyUp &e);
 
 };

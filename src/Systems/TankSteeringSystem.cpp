@@ -120,8 +120,9 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 				transformHit->Position = transform->Position;
 
 				auto physics = m_World->AddComponent<Components::Physics>(hitSphere);
-				physics->Static = false;
-				physics->Phantom = true;
+				physics->Static = true;
+				physics->Phantom = false;
+				physics->CollisionLayer = 4;
 
 				{
 					auto shape = m_World->CreateEntity(hitSphere);
@@ -132,7 +133,7 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 				}
 				m_World->CommitEntity(hitSphere);
 			}
-
+			
 			m_World->RemoveEntity(e.Entity1);
 		}
 
@@ -153,8 +154,9 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 				transformHit->Position = transform->Position;
 
 				auto physics = m_World->AddComponent<Components::Physics>(hitSphere);
-				physics->Static = false;
-				physics->Phantom = true;
+				physics->Static = true;
+				physics->Phantom = false;
+				physics->CollisionLayer = 4;
 
 				{
 					auto shape = m_World->CreateEntity(hitSphere);

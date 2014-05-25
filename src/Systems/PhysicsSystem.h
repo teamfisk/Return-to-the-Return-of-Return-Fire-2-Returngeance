@@ -76,6 +76,8 @@
 
 #include <Physics2012/Dynamics/Collide/ContactListener/hkpContactListener.h>
 
+#include <Physics2012/Collide/Agent/CompoundAgent/BvTree/hkpBvTreeAgent.h>
+
 #include "Components/TankShell.h"
 #include <Physics2012/Collide/Shape/Misc/PhantomCallback/hkpPhantomCallbackShape.h>
 #include "Events/EnableCollisions.h"
@@ -101,7 +103,7 @@ public:
 			Events::Collision e;
 			e.Entity1 = entity1;
 			e.Entity2 = entity2;
-			//m_PhysicsSystem->EventBroker->Publish(e);
+			m_PhysicsSystem->EventBroker->Publish(e);
 		}
 		
 	private:
@@ -118,20 +120,14 @@ public:
 
 		virtual void phantomEnterEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB, const hkpCollisionInput& env )
 		{
-			Events::ApplyPointImpulse e;
-			e.Entity = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableB)];
-			e.Position = HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableB)->getPosition());
-
-			glm::vec3 impulse;
-			impulse = HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableA)->getPosition()) - HKVECTOR4_TO_GLMVEC3(hkpGetRigidBody(collidableB)->getPosition());
-			e.Impulse = impulse;
-
-			m_PhysicsSystem->EventBroker->Publish(e);
+			
+			LOG_INFO("AAAAAAAAAAAAAAAAAAAAAAAAAH!");
 		}
 
 		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
 		{
-
+			
+			LOG_INFO("AAAAAAAAAAAAAAAAAAAAAAAAAH!");
 		}
 
 	private:
@@ -167,9 +163,9 @@ private:
 	EventRelay<PhysicsSystem, Events::ApplyPointImpulse> m_EApplyPointImpulse;
 	bool OnApplyPointImpulse(const Events::ApplyPointImpulse &event);
 
-	EventRelay<Events::EnableCollisions> m_EEnableCollisions;
+	EventRelay<PhysicsSystem, Events::EnableCollisions> m_EEnableCollisions;
 	bool OnEnableCollisions(const Events::EnableCollisions &e);
-	EventRelay<Events::DisableCollisions> m_EDisableCollisions;
+	EventRelay<PhysicsSystem, Events::DisableCollisions> m_EDisableCollisions;
 	bool OnDisableCollisions(const Events::DisableCollisions &e);
 
 
@@ -198,12 +194,14 @@ private:
 
 	struct ShapeArrayData
 	{
-		ShapeArrayData(EntityID entity, hkpShape* shape)
+		ShapeArrayData(EntityID entity, hkpConvexShape* convexShape, hkpShape* shape)
 		{
 			Entity = entity;
+			ConvexShape = convexShape;
 			Shape = shape;
 		}
 		EntityID Entity;
+		hkpConvexShape* ConvexShape;
 		hkpShape* Shape;
 	};
 	std::unordered_map<EntityID, std::list<ShapeArrayData>> m_Shapes;

@@ -40,7 +40,7 @@ namespace Systems
 		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 	private:
-		EventRelay<Events::Collision> m_ECollision;
+		EventRelay<TankSteeringSystem, Events::Collision> m_ECollision;
 		bool OnCollision(const Events::Collision &e);
 
 		class TankSteeringInputController;
