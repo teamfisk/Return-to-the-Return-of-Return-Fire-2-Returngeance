@@ -781,6 +781,7 @@ void Renderer::DrawFBOScene()
 				glActiveTexture(GL_TEXTURE3);
 				glBindTexture(GL_TEXTURE_2D, *texGroup.SpecularMap);
 			}
+			//Kolla om den har blendmap, skicka då med texture 4/5/6/7
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
