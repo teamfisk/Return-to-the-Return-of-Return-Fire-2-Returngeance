@@ -4,6 +4,7 @@
 
 void Systems::SoundSystem::Initialize()
 {
+	EVENT_SUBSCRIBE_MEMBER(m_EComponentCreated, &SoundSystem::OnComponentCreated);
 	/*FMOD_RESULT result;
 	result = FMOD::System_Create(&m_FmodSystem);
 	result = m_FmodSystem->init(32, FMOD_INIT_NORMAL, 0);
@@ -88,53 +89,39 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 	}
 }
 
-void Systems::SoundSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
+bool Systems::SoundSystem::OnComponentCreated(const Events::ComponentCreated &event)
 {
-
-// 	if(type ==  typeid(Components::Listener).name())
-// 	{
-// 		m_Listeners.push_back(component->Entity);
-// 	}
-// 
-// 	if (type == typeid(Components::SoundEmitter).name())
-// 	{
-// 		//std::shared_ptr<Components::SoundEmitter> eComponent = std::dynamic_pointer_cast<Components::SoundEmitter>(component);
-// 		
-// 		FMOD_CHANNEL* channel;
-// 		m_Channels.insert(std::pair<EntityID, FMOD_CHANNEL*>(component->Entity, channel));
-// 		
-// 		LoadSound("Sounds/DarkHorse.mp3", 100, 30, false, 1, 0);
-// 	}
-}
-
-void Systems::SoundSystem::OnEntityCommit(EntityID entity)
-{
-	//TEMP ska slängas in i OnComponentCreated
-	auto lComponent = m_World->GetComponent<Components::Listener>(entity);
-	if(lComponent)
+	auto listener = std::dynamic_pointer_cast<Components::Listener>(event.Component);
+	if(listener)
 	{
-		m_Listeners.push_back(entity);
+		m_Listeners.push_back(listener->Entity);
 	}
 
-	auto eCompoonent = m_World->GetComponent<Components::SoundEmitter>(entity);
-	if(eCompoonent)
+	auto emitter = std::dynamic_pointer_cast<Components::SoundEmitter>(event.Component);
+	if(emitter)
 	{
 		FMOD_CHANNEL* channel;
 		FMOD_SOUND* sound;
 
-		std::string path = eCompoonent->Path;
-		float volume = eCompoonent->Gain;
-		bool loop = eCompoonent->Loop;
-		float maxDist = eCompoonent->MaxDistance;
-		float minDist = eCompoonent->MinDistance;
-		float pitch = eCompoonent->Pitch;
+		std::string path = emitter->Path;
+		float volume = emitter->Gain;
+		bool loop = emitter->Loop;
+		float maxDist = emitter->MaxDistance;
+		float minDist = emitter->MinDistance;
+		float pitch = emitter->Pitch;
 
 		if(LoadSound(sound, path, maxDist, minDist, loop, volume, pitch) != FMOD_OK)
 			LOG_ERROR("FMOD did not load sound file");
-		m_Channels.insert(std::make_pair(entity, channel));
-		m_Sounds.insert(std::make_pair(entity, sound));
+		std::cout<<path<<std::endl;
+		m_Channels.insert(std::make_pair(emitter->Entity, channel));
+		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
 	}
+
+	return true;
 }
+
+
+
 
 FMOD_RESULT Systems::SoundSystem::LoadSound(FMOD_SOUND* &sound, std::string filePath, float maxDist, float minDist, bool loop, float volume, float pitch)
 {

@@ -54,6 +54,19 @@ void GameWorld::Initialize()
 		auto cameraComp = AddComponent<Components::Camera>(camera);
 		cameraComp->FarClip = 2000.f;
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera);
+		{
+			auto se1 = CreateEntity(camera);
+			auto transform = AddComponent<Components::Transform>(se1);
+			transform->Position = glm::vec3(0,10,0);
+			transform->Scale = glm::vec3(3);
+			auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
+			emitterComponent->Path = "Sounds/WUB.mp3";
+			emitterComponent->MinDistance = 1.f;
+			emitterComponent->MaxDistance = 10000.f;
+			emitterComponent->Gain = 1;
+// 			auto model = AddComponent<Components::Model>(se1);
+// 			model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
+		}
 	}
 	CommitEntity(camera);
 
@@ -660,6 +673,8 @@ void GameWorld::Initialize()
 			CommitEntity(particleEntity);
 		}
 
+		
+
 		CommitEntity(tank);
 	}
 
@@ -1076,6 +1091,8 @@ void GameWorld::Initialize()
 			emitterComponent->ParticleTemplate = particleEntity;
 
 			CommitEntity(particleEntity);
+
+			
 		}
 
 		CommitEntity(tank);
@@ -1105,7 +1122,7 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
-	for(int i = 0; i < 1; i++)
+	/*for(int i = 0; i < 1; i++)
 	{
 		for (int y = 0; y < 15; y++)
 		{
@@ -1136,37 +1153,26 @@ void GameWorld::Initialize()
 				CommitEntity(brick);
 			}
 		}
-	}
+	}*/
 
-	{
-		auto se1 = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(se1);
-		transform->Position = glm::vec3(0,10,0);
-		transform->Scale = glm::vec3(3);
-		auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
-		emitterComponent->Path = "Sounds/WUB.mp3";
-		emitterComponent->MinDistance = 1.f;
-		emitterComponent->MaxDistance = 50.f;
-		emitterComponent->Gain = 1;
-		auto model = AddComponent<Components::Model>(se1);
-		model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
-		CommitEntity(se1);
-	}
-
-	{
-		auto se2 = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(se2);
-		transform->Position = glm::vec3(100,10,0);
-		transform->Scale = glm::vec3(3);
-		auto emitterComponent = AddComponent<Components::SoundEmitter>(se2);
-		emitterComponent->Path = "Sounds/DarkHorse.mp3";
-		emitterComponent->Gain = 1;
-		emitterComponent->MinDistance = 1.f;
-		emitterComponent->MaxDistance = 50.f;
-		auto model = AddComponent<Components::Model>(se2);
-		model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
-		CommitEntity(se2);
-	}
+// 	{
+// 		
+// 	}
+// 
+// 	{
+// 		auto se2 = CreateEntity();
+// 		auto transform = AddComponent<Components::Transform>(se2);
+// 		transform->Position = glm::vec3(100,10,0);
+// 		transform->Scale = glm::vec3(3);
+// 		auto emitterComponent = AddComponent<Components::SoundEmitter>(se2);
+// 		emitterComponent->Path = "Sounds/DarkHorse.mp3";
+// 		emitterComponent->Gain = 1;
+// 		emitterComponent->MinDistance = 1.f;
+// 		emitterComponent->MaxDistance = 50.f;
+// 		auto model = AddComponent<Components::Model>(se2);
+// 		model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
+// 		CommitEntity(se2);
+// 	}
 
 
 	/*for (int x = 0; x < 5; x++)
