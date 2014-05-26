@@ -5,25 +5,19 @@
 void Systems::SoundSystem::Initialize()
 {
 	EVENT_SUBSCRIBE_MEMBER(m_EComponentCreated, &SoundSystem::OnComponentCreated);
-	/*FMOD_RESULT result;
-	result = FMOD::System_Create(&m_FmodSystem);
-	result = m_FmodSystem->init(32, FMOD_INIT_NORMAL, 0);
-
-
-	FMOD::Sound *sound;
-	FMOD::Channel *channel;
-	FMOD_VECTOR pos;
-	pos.x = 0.f;
-	pos.y = 0.f;
-	pos.z = 0.f;
-	m_FmodSystem->createSound("Sounds/WUB.mp3", FMOD_HARDWARE, 0, &sound);
-	m_FmodSystem->playSound(FMOD_CHANNEL_FREE, sound, false, 0);*/
-
+	EVENT_SUBSCRIBE_MEMBER(m_EPlaySound, &SoundSystem::PlayASound);
+	
 	FMOD_System_Create(&m_System);
-	FMOD_System_Init(m_System, 1024, FMOD_INIT_NORMAL, nullptr);
+	FMOD_RESULT result = FMOD_System_Init(m_System, 1024, FMOD_INIT_NORMAL, nullptr);
+	if(result != FMOD_OK)
+	{
+		LOG_ERROR("Did not load FMOD correctly");
+	}
+	else
+	{
+		LOG_INFO("FMOD Initialized");
+	}
 	FMOD_System_Set3DSettings(m_System, 10.0f, 1.f, 100.f); //dopplerScale, distancefactor, rolloffscale
-	//FMOD_System_GetMasterChannelGroup(m_System, &m_ChannelGruoup);
-	m_Playing = false;
 	
 }
 
@@ -41,6 +35,25 @@ void Systems::SoundSystem::RegisterResourceTypes(ResourceManager* rm)
 void Systems::SoundSystem::Update(double dt)
 {
 	FMOD_System_Update(m_System);
+	
+	//Delete sounds. Not until it's done playing
+	std::map<EntityID, FMOD_CHANNEL*>::iterator it;
+	for(it = m_DeleteChannels.begin(); it != m_DeleteChannels.end();)
+	{
+		FMOD_BOOL *isPlaying = false;
+		FMOD_Channel_IsPlaying(it->second, isPlaying);
+		if(isPlaying)
+		{
+			it++;
+		}
+		else
+		{
+			FMOD_Sound_Release(m_DeleteSounds[it->first]);
+			m_DeleteSounds.erase(it->first);
+			it = m_DeleteChannels.erase(it);
+		}
+
+	}
 }
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
@@ -78,14 +91,8 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 
 		glm::vec3 tVel = eTransform->Velocity;
 		FMOD_VECTOR eVel = {tVel.x, tVel.y, tVel.z};
-
+		
 		FMOD_Channel_Set3DAttributes(channel, (const FMOD_VECTOR*)&ePos, (const FMOD_VECTOR*)&eVel);
-
-		if(!m_Playing)
-		{
-			PlaySound(channel, sound, 1, emitter->Loop);
-			m_Playing = true;
-		}
 	}
 }
 
@@ -109,30 +116,62 @@ bool Systems::SoundSystem::OnComponentCreated(const Events::ComponentCreated &ev
 		float maxDist = emitter->MaxDistance;
 		float minDist = emitter->MinDistance;
 		float pitch = emitter->Pitch;
-
-		if(LoadSound(sound, path, maxDist, minDist, loop, volume, pitch) != FMOD_OK)
-			LOG_ERROR("FMOD did not load sound file");
-		std::cout<<path<<std::endl;
+		LoadSound(sound, path, maxDist, minDist);
 		m_Channels.insert(std::make_pair(emitter->Entity, channel));
 		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
 	}
-
 	return true;
 }
 
+bool Systems::SoundSystem::PlayASound(const Events::PlaySound &event)
+{
+	auto emitter = m_World->GetComponent<Components::SoundEmitter>(event.Emitter);
+	if(!emitter)
+	{
+		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
+		return false;
+	}
 
+	if(emitter->Path != event.Resource) //Caching sound file
+	{
+		LoadSound(m_Sounds[event.Emitter], event.Resource, 1000.f, 1.f);
+		emitter->Path = event.Resource;
+	}
 
+	PlaySound( m_Channels[event.Emitter], m_Sounds[event.Emitter], 1, event.Loop);
+	return true;
+}
 
-FMOD_RESULT Systems::SoundSystem::LoadSound(FMOD_SOUND* &sound, std::string filePath, float maxDist, float minDist, bool loop, float volume, float pitch)
+void Systems::SoundSystem::LoadSound(FMOD_SOUND* &sound, std::string filePath, float maxDist, float minDist)
 {
 	FMOD_RESULT result = FMOD_System_CreateSound(m_System, filePath.c_str(), FMOD_3D , 0, &sound);
-	FMOD_Sound_Set3DMinMaxDistance(m_Sound, minDist, maxDist);
-
-	return result;
+	if (result != FMOD_OK)
+	{
+		LOG_ERROR("FMOD did not load file: %s", filePath.c_str());
+	}
+	FMOD_Sound_Set3DMinMaxDistance(sound, minDist, maxDist);
 }
 
 void Systems::SoundSystem::PlaySound(FMOD_CHANNEL* channel, FMOD_SOUND* sound, float volume, bool loop)
 {
 	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, sound, false, &channel);
 	FMOD_Channel_SetVolume(channel, volume);
+	if(loop)
+	{
+		FMOD_Channel_SetMode(channel, FMOD_LOOP_NORMAL);
+		FMOD_Sound_SetLoopCount(sound, -1);
+	}
+}
+
+void Systems::SoundSystem::OnComponentRemoved(std::string type, Component* component)
+{
+	auto emitter = dynamic_cast<Components::SoundEmitter*>(component);
+	if(emitter)
+	{
+		EntityID ent = component->Entity;
+		m_DeleteChannels.insert(std::make_pair(ent, m_Channels[ent]));
+		m_DeleteSounds.insert(std::make_pair(ent, m_Sounds[ent]));
+		m_Channels.erase(ent);
+		m_Sounds.erase(ent);
+	}
 }

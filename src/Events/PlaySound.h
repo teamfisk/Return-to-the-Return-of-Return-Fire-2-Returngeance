@@ -11,6 +11,7 @@ struct PlaySound : Event
 {
 	EntityID Emitter;
 	std::string Resource;
+	bool Loop;
 };
 
 }

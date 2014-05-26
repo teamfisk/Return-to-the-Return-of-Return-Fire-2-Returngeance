@@ -42,11 +42,12 @@ void InputManager::Update(double dt)
 		}
 	}
 
-	if(m_CurrentKeyState[GLFW_KEY_BACKSPACE])
+	if(m_CurrentKeyState[GLFW_KEY_Z])
 	{
 		Events::PlaySound e;
-		e.Resource = "Sounds/WUB.mp3";
-		e.Emitter = 2;
+		e.Resource = "Sounds/BGM/MainMenu.mp3";
+		e.Emitter = 66;
+		e.Loop = true;
 		EventBroker->Publish(e);
 	}
 
