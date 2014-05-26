@@ -41,7 +41,6 @@ public:
 		, m_Layer(0)
 	{ SetParent(std::shared_ptr<Frame>(parent)); }
 
-
 	::RenderQueue RenderQueue;
 
 	std::shared_ptr<Frame> Parent() const { return m_Parent; }
@@ -84,10 +83,7 @@ public:
 	}
 	int Right() const override
 	{ 
-		if (m_Parent)
-			return m_Parent->Right() + X + Width;
-		else
-			return X + Width; 
+		return Left() + Width;
 	}
 	int Top() const override
 	{ 
@@ -98,24 +94,31 @@ public:
 	}
 	int Bottom() const override 
 	{
-		if (m_Parent)
-			return m_Parent->Bottom() + Y + Height;
-		else
-			return Y + Height;
+		return Top() + Height;
 	}
 
 	Rectangle AbsoluteRectangle()
 	{
-		return Rectangle(Left(), Right(), Width, Height);
+		return Rectangle(Left(), Top(), Width, Height);
 	}
 
-	virtual void Update(double dt)
+	void UpdateLayered(double dt)
 	{
-		for (auto &pair : m_Children[m_Layer + 1])
+		// Update ourselves
+		this->Update(dt);
+
+		// Update children
+		for (auto &pairLayer : m_Children)
 		{
-			pair.second->Update(dt);
+			auto children = pairLayer.second;
+			for (auto &pairChild : children)
+			{
+				auto child = pairChild.second;
+				child->Update(dt);
+			}
 		}
 	}
+	virtual void Update(double dt) { }
 
 	void DrawLayered(std::shared_ptr<Renderer> renderer)
 	{
@@ -130,7 +133,8 @@ public:
 			for (auto &pairChild : children)
 			{
 				auto child = pairChild.second;
-				renderer->SetViewport(child->AbsoluteRectangle());
+				Rectangle rect = child->AbsoluteRectangle();
+				renderer->SetViewport(rect);
 				child->Draw(renderer);
 			}
 		}

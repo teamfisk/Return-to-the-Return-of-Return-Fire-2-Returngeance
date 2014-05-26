@@ -23,17 +23,20 @@ public:
 		, m_World(world)
 	{
 		EVENT_SUBSCRIBE_MEMBER(m_ESetViewportCamera, &WorldFrame::OnSetViewportCamera);
-		m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	}
 
 	void Update(double dt) override
 	{
+		if (!m_TransformSystem)
+			m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
+
 		m_World->Update(dt);
 	}
 
 	void Draw(std::shared_ptr<Renderer> renderer) override
 	{
 		RenderQueue.Clear();
+		renderer->ClearPointLights();
 
 		for (auto &pair : *m_World->GetEntities())
 		{
@@ -75,8 +78,17 @@ public:
 			auto pointLightComponent = m_World->GetComponent<Components::PointLight>(entity);
 			if (pointLightComponent)
 			{
-				// TODO: Push lights to renderer
-				// renderer->PushLight(...);
+				glm::vec3 position = m_TransformSystem->AbsolutePosition(entity);
+				renderer->AddPointLightToDraw(
+					position,
+					pointLightComponent->Specular,
+					pointLightComponent->Diffuse,
+					pointLightComponent->specularExponent,
+					pointLightComponent->ConstantAttenuation,
+					pointLightComponent->LinearAttenuation,
+					pointLightComponent->QuadraticAttenuation,
+					pointLightComponent->Radius
+					);
 			}
 		}
 	}

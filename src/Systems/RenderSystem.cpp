@@ -4,9 +4,7 @@
 
 void Systems::RenderSystem::RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm)
 {
-	rm->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
-	rm->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
-	rm->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
+	rm->RegisterType("Shader", [](std::string resourceName) { return new ShaderProgram(resourceName); });
 }
 
 void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)

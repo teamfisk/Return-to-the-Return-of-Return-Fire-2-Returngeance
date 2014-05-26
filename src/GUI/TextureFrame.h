@@ -10,7 +10,7 @@ namespace GUI
 class TextureFrame : public Frame
 {
 public:
-	TextureFrame(std::shared_ptr<Frame> parent, std::string name)
+	TextureFrame(Frame* parent, std::string name)
 		: Frame(parent, name) { }
 
 	void Draw(std::shared_ptr<Renderer> renderer) override
@@ -25,7 +25,7 @@ public:
 		RenderQueue.Add(job);
 
 		renderer->SetCamera(nullptr);
-		renderer->Draw(RenderQueue);
+		renderer->DrawFrame(RenderQueue);
 	}
 
 	std::shared_ptr<::Texture> Texture() const { return m_Texture; }

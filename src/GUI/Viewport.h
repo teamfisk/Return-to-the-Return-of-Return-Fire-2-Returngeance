@@ -20,9 +20,7 @@ public:
 	Viewport(Frame* parent, std::string name, std::shared_ptr<World> world)
 		: Frame(parent, name)
 		, m_World(world)
-	{
-			m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
-	}
+	{ }
 
 	EntityID CameraEntity() const { return m_CameraEntity; }
 	void SetCameraEntity(EntityID cameraEntity) 
@@ -41,6 +39,9 @@ public:
 
 	void Update(double dt) override
 	{
+		if (!m_TransformSystem)
+			m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
+
 		auto transformComponent = m_World->GetComponent<Components::Transform>(m_CameraEntity);
 		if (!transformComponent)
 			return;
@@ -60,8 +61,11 @@ public:
 
 	void Draw(std::shared_ptr<Renderer> renderer) override
 	{
+		if (!m_Camera)
+			return;
+
 		renderer->SetCamera(m_Camera);
-		renderer->Draw(m_Parent->RenderQueue);
+		renderer->DrawWorld(m_Parent->RenderQueue);
 	}
 
 private:

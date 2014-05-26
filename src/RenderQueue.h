@@ -27,7 +27,10 @@ protected:
 
 struct ModelJob : RenderJob
 {
+	unsigned int ShaderID;
 	unsigned int TextureID;
+
+	GLuint ShaderProgram;
 	GLuint DiffuseTexture;
 	GLuint NormalTexture;
 	GLuint SpecularTexture;
@@ -44,7 +47,10 @@ struct ModelJob : RenderJob
 
 struct SpriteJob : RenderJob
 {
+	unsigned int ShaderID;
 	unsigned int TextureID;
+
+	GLuint ShaderProgram;
 	GLuint Texture;
 	glm::mat4 ModelMatrix;
 
@@ -68,6 +74,16 @@ public:
 	void Clear()
 	{
 		m_Jobs.clear();
+	}
+
+	std::forward_list<std::shared_ptr<RenderJob>>::const_iterator begin()
+	{
+		return m_Jobs.begin();
+	}
+
+	std::forward_list<std::shared_ptr<RenderJob>>::const_iterator end()
+	{
+		return m_Jobs.end();
 	}
 
 private:

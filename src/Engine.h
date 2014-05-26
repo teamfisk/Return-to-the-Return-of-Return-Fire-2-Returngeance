@@ -2,6 +2,9 @@
 #include <sstream>
 
 #include "ResourceManager.h"
+#include "OBJ.h"
+#include "Model.h"
+#include "Texture.h"
 #include "EventBroker.h"
 #include "RenderQueue.h"
 #include "Renderer.h"
@@ -15,7 +18,12 @@ public:
 	Engine(int argc, char* argv[])
 	{
 		m_EventBroker = std::make_shared<EventBroker>();
+
 		m_ResourceManager = std::make_shared<ResourceManager>();
+		m_ResourceManager->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
+		auto rm = m_ResourceManager;
+		m_ResourceManager->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
+		m_ResourceManager->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 
 		m_Renderer = std::make_shared<Renderer>();
 		m_Renderer->Initialize();
@@ -23,6 +31,8 @@ public:
 		m_InputManager = std::make_shared<InputManager>(m_Renderer->GetWindow(), m_EventBroker);
 
 		m_FrameStack = new GUI::Frame(m_EventBroker, m_ResourceManager); 
+		m_FrameStack->Width = 1280;
+		m_FrameStack->Height = 720;
 		new GUI::GameFrame(m_FrameStack, "GameFrame");
 
 		//m_World = std::make_shared<GameWorld>(m_EventBroker, m_ResourceManager);
@@ -36,12 +46,21 @@ public:
 	void Tick()
 	{
 		double currentTime = glfwGetTime();
-		double dt =  currentTime - m_LastTime;
+		double dt = currentTime - m_LastTime;
 		m_LastTime = currentTime;
 
+		// Update input
 		m_InputManager->Update(dt);
+
+		// Update frame stack
+		m_EventBroker->Process<GUI::Frame>();
+		m_FrameStack->UpdateLayered(dt);
+
+		// Render scene
 		m_FrameStack->DrawLayered(m_Renderer);
+		m_Renderer->Swap();
 		
+		// Swap event queues
 		m_EventBroker->Clear();
 
 		glfwPollEvents();

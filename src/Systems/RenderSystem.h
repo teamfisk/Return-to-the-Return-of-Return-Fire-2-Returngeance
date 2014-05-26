@@ -5,6 +5,7 @@
 
 #include "System.h"
 #include "Systems/TransformSystem.h"
+#include "ShaderProgram.h"
 #include "Model.h"
 #include "Texture.h"
 #include "Components/Transform.h"
@@ -14,11 +15,11 @@
 #include "Components/PointLight.h"
 #include "Components/DirectionalLight.h"
 #include "Components/Viewport.h"
-
 #include "Components/Template.h"
 #include "Components/Transform.h"
 #include "Renderer.h"
 #include "RenderQueue.h"
+#include "Events/SetViewportCamera.h"
 
 namespace Systems
 {

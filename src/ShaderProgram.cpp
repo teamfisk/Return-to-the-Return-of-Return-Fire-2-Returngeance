@@ -156,3 +156,40 @@ void ShaderProgram::Unbind()
 {
 	glActiveShaderProgram(0, 0);
 }
+
+void ShaderProgram::LoadFromFolder(std::string folderPath)
+{
+	auto path = boost::filesystem::path(folderPath);
+
+	if (!boost::filesystem::is_directory(path))
+	{
+		LOG_ERROR("Failed to load shader program: \"%s\" is not a directory", folderPath.c_str());
+		return;
+	}
+
+	for (auto it = boost::filesystem::directory_iterator(path); it != boost::filesystem::directory_iterator(); it++)
+	{
+		std::string filename = it->path().filename().string();
+		if (filename == "Vertex.glsl")
+		{
+			AddShader(std::shared_ptr<Shader>(new VertexShader(filename)));
+		}
+		else if (filename == "Fragment.glsl")
+		{
+			AddShader(std::shared_ptr<Shader>(new FragmentShader(filename)));
+
+		}
+		else if (filename == "Geometry.glsl")
+		{
+			AddShader(std::shared_ptr<Shader>(new GeometryShader(filename)));
+		}
+	}
+}
+
+void ShaderProgram::BindFragDataLocation(int colorNumber, std::string name)
+{
+	if (m_ShaderProgramHandle == 0)
+		return;
+
+	glBindFragDataLocation(m_ShaderProgramHandle, colorNumber, name.c_str());
+}

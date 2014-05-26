@@ -53,7 +53,9 @@ public:
 		m_Camera = camera;
 	}
 
-	void Draw(RenderQueue &rq);
+	void DrawFrame(RenderQueue &rq);
+	void DrawWorld(RenderQueue &rq);
+	void Swap();
 
 #pragma endregion
 
@@ -70,6 +72,8 @@ public:
 		float _QuadraticAttenuation,
 		float _radius
 	);
+	void ClearPointLights();
+
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
 	void LoadContent();
@@ -178,13 +182,13 @@ private:
 	void ClearStuff();
 	void DrawScene();
 	void DrawModels(ShaderProgram &shader);
-	void DrawShadowMap();
+	void DrawShadowMap(RenderQueue &rq);
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
 	void DrawFBO2();
-	void DrawFBOScene(Viewport &viewport);
-	void DrawLightScene(Viewport &viewport);
+	void DrawFBOScene(RenderQueue &rq);
+	void DrawLightScene(RenderQueue &rq);
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();

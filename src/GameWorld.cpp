@@ -45,32 +45,17 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
-	auto camera = CreateEntity();
-	{
-		auto transform = AddComponent<Components::Transform>(camera);
-		transform->Position.z = 20.f;
-		transform->Position.y = 20.f;
-		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
-		auto cameraComp = AddComponent<Components::Camera>(camera);
-		cameraComp->FarClip = 2000.f;
-		auto freeSteering = AddComponent<Components::FreeSteering>(camera);
-	}
-	CommitEntity(camera);
-
-	auto viewport1 = CreateEntity();
-	{
-		auto viewport = AddComponent<Components::Viewport>(viewport1);
-		viewport->Right = 0.5f;
-		viewport->Camera = camera;
-	}
-	CommitEntity(viewport1);
-
-	auto viewport2 = CreateEntity();
-	{
-		auto viewport = AddComponent<Components::Viewport>(viewport2);
-		viewport->Left = 0.5f;
-	}
-	CommitEntity(viewport2);
+	//auto camera = CreateEntity();
+	//{
+	//	auto transform = AddComponent<Components::Transform>(camera);
+	//	transform->Position.z = 20.f;
+	//	transform->Position.y = 20.f;
+	//	//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+	//	auto cameraComp = AddComponent<Components::Camera>(camera);
+	//	cameraComp->FarClip = 2000.f;
+	//	auto freeSteering = AddComponent<Components::FreeSteering>(camera);
+	//}
+	
 
 	auto player1 = CreateEntity();
 	{
@@ -343,7 +328,12 @@ void GameWorld::Initialize()
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 			}
 			CommitEntity(cameraTower);
-			GetComponent<Components::Viewport>(viewport1)->Camera = cameraTower;
+			{
+				Events::SetViewportCamera e;
+				e.CameraEntity = cameraTower;
+				e.ViewportFrame = "Viewport1";
+				EventBroker->Publish(e);
+			}
 		}
 
 		{
@@ -761,7 +751,12 @@ void GameWorld::Initialize()
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 			}
 			CommitEntity(cameraTower);
-			GetComponent<Components::Viewport>(viewport2)->Camera = cameraTower;
+			{
+				Events::SetViewportCamera e;
+				e.CameraEntity = cameraTower;
+				e.ViewportFrame = "Viewport2";
+				EventBroker->Publish(e);
+			}
 		}
 
 		{
@@ -1103,7 +1098,7 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
-	for(int i = 0; i < 1; i++)
+	/*for(int i = 0; i < 1; i++)
 	{
 		for (int y = 0; y < 15; y++)
 		{
@@ -1133,7 +1128,7 @@ void GameWorld::Initialize()
 				CommitEntity(brick);
 			}
 		}
-	}
+	}*/
 
 	/*for (int x = 0; x < 5; x++)
 		for (int y = 0; y < 5; y++)
