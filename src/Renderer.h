@@ -67,7 +67,8 @@ public:
 	    float _specularExponent,
 		float _ConstantAttenuation, 
 		float _LinearAttenuation, 
-		float _QuadraticAttenuation
+		float _QuadraticAttenuation,
+		float _radius
 	);
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
@@ -111,7 +112,7 @@ private:
 		glm::vec3 Diffuse;
 		float SpecularExponent;
 		glm::mat4 SphereModelMatrix;
-		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
+		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation, Radius;
 	};
 
 	float Gamma;
@@ -133,6 +134,10 @@ private:
 	glm::vec3 m_SunPosition;
 	glm::vec3 m_SunTarget;
 	glm::mat4 m_SunProjection;
+	glm::vec2 m_SunProjection_width;
+	glm::vec2 m_SunProjection_height;
+	glm::vec2 m_SunProjection_length;
+
 
 	GLuint m_DebugAABB;
 	GLuint m_ShadowFrameBuffer;
@@ -160,6 +165,7 @@ private:
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_FinalPassProgram;
+	ShaderProgram m_ForwardRendering;
 
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
@@ -176,12 +182,14 @@ private:
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
+	void DrawFBO2();
 	void DrawFBOScene(Viewport &viewport);
 	void DrawLightScene(Viewport &viewport);
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();
 	void CreateNormalMapTangent();
+	void ForwardRendering();
 
 	
 	GLuint CreateQuad();

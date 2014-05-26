@@ -13,14 +13,17 @@ Renderer::Renderer()
 	m_DrawWireframe = false;
 	m_DrawBounds = false;
 #endif
-	Gamma = 2.2f;
+	Gamma = 0.85f;
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
-	m_ShadowMapRes = 2048*6;
-	m_SunPosition = glm::vec3(0, 3.5f, 10);
+	m_ShadowMapRes = 2048*8;
+	m_SunPosition = glm::vec3(0.f, 1.0f, 0.5f);
 	m_SunTarget = glm::vec3(0, 0, 0);
-	m_SunProjection = glm::ortho<float>(10.f, -10.f, 10.f, -10.f, 10.f, -10.f);
+	m_SunProjection_height = glm::vec2(-40.f, 40.f);
+	m_SunProjection_width = glm::vec2(-40.f, 40.f);
+	m_SunProjection_length = glm::vec2(-50.f, 50.f);
+	m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 /*	Lights = 0;*/
 }
 
@@ -108,6 +111,11 @@ void Renderer::LoadContent()
 	m_ShaderProgramSkybox.Compile();
 	m_ShaderProgramSkybox.Link();*/
 
+	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ForwardRendering.vert.glsl")));
+	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ForwardRendering.frag.glsl")));
+	m_ForwardRendering.Compile();
+	m_ForwardRendering.Link();
+
 	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ShadowMap.vert.glsl")));
 	m_ShaderProgramShadows.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ShadowMap.frag.glsl")));
 	m_ShaderProgramShadows.Compile();
@@ -152,16 +160,43 @@ void Renderer::Draw(double dt)
 		m_QuadView = true;
 	}
 
-	if(glfwGetKey(m_Window, GLFW_KEY_KP_1))
+	//if(glfwGetKey(m_Window, GLFW_KEY_KP_1))
+	//{
+	//	Gamma -= 0.3f * dt; 
+	//	LOG_INFO("Gamma_UP: %f", Gamma);
+	//}
+	//if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
+	//{
+	//	Gamma += 0.3f * dt;
+	//	LOG_INFO("Gamma_DOWN: %f", Gamma);
+	//}
+
+	if(glfwGetKey(m_Window, GLFW_KEY_KP_7))
 	{
-		Gamma -= 0.3f * dt; 
-		LOG_INFO("Gamma_UP: %f", Gamma);
+		m_SunProjection_height.x += 10.f * dt;
+		LOG_INFO("Heightx+: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 	}
-	if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
+	else if(glfwGetKey(m_Window, GLFW_KEY_KP_4))
 	{
-		Gamma += 0.3f * dt;
-		LOG_INFO("Gamma_DOWN: %f", Gamma);
+		m_SunProjection_height.x -= 10.f * dt;
+		LOG_INFO("Heightx-: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 	}
+
+	if(glfwGetKey(m_Window, GLFW_KEY_KP_8))
+	{
+		m_SunProjection_height.y += 10.f * dt;
+		LOG_INFO("Heightx+: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
+	}
+	else if(glfwGetKey(m_Window, GLFW_KEY_KP_5))
+	{
+		m_SunProjection_height.y -= 10.f * dt;
+		LOG_INFO("Heightx-: %f", m_SunProjection_height);
+		m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
+	}
+
 
 	if(glfwGetKey(m_Window, GLFW_KEY_1))
 	{
@@ -240,8 +275,8 @@ void Renderer::CreateShadowMap(int resolution)
 	glGenTextures(1, &m_ShadowDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, resolution, resolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
@@ -262,7 +297,7 @@ void Renderer::DrawShadowMap()
 {
 	glEnable(GL_DEPTH_TEST);//Tests where objects are and display them correctly
 	glEnable(GL_CULL_FACE);	//removes triangles on the wrong side of the object
-	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
+	glCullFace(GL_FRONT);	//Make it so that only the back faces are rendered
 
 	//Binds the FBO and sets the veiwport, witch in effect is how large the shadowmap is and what resolution it has.
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
@@ -272,7 +307,7 @@ void Renderer::DrawShadowMap()
 	//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Creates the "camera" for the shadowmap from the direction of the sun.
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate((-m_Camera->Position() + (glm::vec3(40.0) * -m_Camera->Forward())) * glm::vec3(1,0,1));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
 	glm::mat4 MVP;
 
@@ -298,7 +333,6 @@ void Renderer::DrawShadowMap()
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
 	}
-
 
 }
 
@@ -383,7 +417,8 @@ void Renderer::AddPointLightToDraw(
 	float _specularExponent,
 	float _ConstantAttenuation,
 	float _LinearAttenuation, 
-	float _QuadraticAttenuation
+	float _QuadraticAttenuation,
+	float _radius
 )
 {
 	Light light;
@@ -394,6 +429,7 @@ void Renderer::AddPointLightToDraw(
 	light.ConstantAttenuation = _ConstantAttenuation;
 	light.LinearAttenuation = _LinearAttenuation;
 	light.QuadraticAttenuation = _QuadraticAttenuation;
+	light.Radius = _radius;
 	light.SphereModelMatrix = CreateLightMatrix(light);
 	Lights.push_back(light);
 }
@@ -553,7 +589,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind diffuse texture
 	glGenTextures(1, &m_fDiffuseTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -562,7 +598,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind position texture
 	glGenTextures(1, &m_fPositionTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -571,7 +607,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind normal texture
 	glGenTextures(1, &m_fNormalsTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -580,7 +616,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind normal texture
 	glGenTextures(1, &m_fSpecularTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB10_A2, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_Width, m_Height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -617,7 +653,7 @@ void Renderer::FrameBufferTextures()
 
 	glGenTextures(1, &m_fLightingTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -659,15 +695,15 @@ void Renderer::DrawFBO()
 		glViewport(0, 0, m_Width, m_Height);
 
 		// Clear G-buffer
-		GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-		glDrawBuffers(3, windowBuffClear);
-		glClearColor(0.f, 0.f, 0.f, 0.f);
+	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, windowBuffClear);
+	glClearColor(0.0f, 0.3f, 0.7f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Execute the first render stage which will fill out the internal buffers with data(??)
 		m_FirstPassProgram.Bind();
-		GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-		glDrawBuffers(3, windowBuffOpaque);
+	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, windowBuffOpaque);
 
 		glCullFace(GL_BACK);
 		
@@ -688,6 +724,8 @@ void Renderer::DrawFBO()
 		glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
 
 		glCullFace(GL_FRONT);
 		DrawLightScene(viewport);
@@ -702,7 +740,7 @@ void Renderer::DrawFBO()
 		m_FinalPassProgram.Bind();
 
 		// Ambient light
-		glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.1f, 0.1f, 0.1f)));
+	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.7f)));
 		glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
 
 		glActiveTexture(GL_TEXTURE0);
@@ -715,6 +753,11 @@ void Renderer::DrawFBO()
 		glEnableVertexAttribArray(0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
+}
+
+void Renderer::DrawFBO2()
+{
+	ForwardRendering();
 }
 
 void Renderer::DrawFBOScene(Viewport &viewport)
@@ -733,10 +776,13 @@ void Renderer::DrawFBOScene(Viewport &viewport)
 		0.5, 0.5, 0.5, 1.0
 		);
 
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0));
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate((-m_Camera->Position() + (glm::vec3(40.0) * -m_Camera->Forward())) * glm::vec3(1,0,1));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
 	glm::mat4 depthCameraMatrix = biasMatrix * depthCamera;
 	glm::mat4 depthMVP;
+
+	glm::vec3 sunDirection = m_SunTarget - m_SunPosition;
+	glm::vec3 sunDirection_cameraview = glm::vec3(m_Camera->ProjectionMatrix((float)m_Width / m_Height) * m_Camera->ViewMatrix() * glm::vec4(sunDirection, 1.0));
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
@@ -757,6 +803,8 @@ void Renderer::DrawFBOScene(Viewport &viewport)
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ViewMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix((float)m_Width / m_Height)));
+		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
+
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -766,6 +814,11 @@ void Renderer::DrawFBOScene(Viewport &viewport)
 			{
 				glActiveTexture(GL_TEXTURE2);
 				glBindTexture(GL_TEXTURE_2D, *texGroup.NormalMap);
+			}
+			if (texGroup.SpecularMap)
+			{
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, *texGroup.SpecularMap);
 			}
 			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
 		}
@@ -830,6 +883,7 @@ void Renderer::DrawLightScene(Viewport &viewport)
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), CAtt);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
+		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LightRadius"), light.Radius);
 
 		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
@@ -848,14 +902,14 @@ glm::mat4 Renderer::CreateLightMatrix(Light &_light)
 // 	float c = _light.ConstantAttenuation;
 // 	float l = _light.LinearAttenuation;
 // 	float q = _light.QuadraticAttenuation;
-	float c = CAtt;
-	float l = LAtt;
-	float q = QAtt;
-	float cutOffRadius = abs(sqrt((-4*c*q) + pow(l, 2) + (1024*q) - l) / (2*q));
+	//float c = CAtt;
+	//float l = LAtt;
+	//float q = QAtt;
+	//float cutOffRadius = abs(sqrt((-4*c*q) + pow(l, 2) + (1024*q) - l) / (2*q));
 
 	glm::mat4 model;
 	model *= glm::translate(_light.Position);
-	model *= glm::scale(glm::vec3(cutOffRadius));
+	model *= glm::scale(glm::vec3(_light.Radius*2));
 	return model;
 }
 
@@ -886,15 +940,46 @@ void Renderer::UpdateSunProjection()
 	//Pass the bounding box's extents to glOrtho or similar to set up the orthographic projection matrix for the shadow map.
 }
 
-void Renderer::RegisterViewport(int identifier, float left, float top, float right, float bottom)
+void Renderer::ForwardRendering()
 {
-	/*Viewport v;
-	v.Left = left;
-	v.Top = top;
-	v.Right = right;
-	v.Bottom = bottom;
-	v.Camera = nullptr;
-	m_Viewports[identifier] = v;*/
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, m_Width, m_Height);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix((float)m_Width / m_Height) * m_Camera->ViewMatrix();
+	glm::mat4 MVP;
+
+	m_ForwardRendering.Bind();
+
+	for (auto tuple : ModelsToRender) //// Todo: Add so it's TransparentModelsToRender
+	{
+		Model* model;
+		glm::mat4 modelMatrix;
+		bool visible;
+		std::tie(model, modelMatrix, visible, std::ignore) = tuple;
+		if (!visible)
+			continue;
+
+		MVP = cameraMatrix * modelMatrix;
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix((float)m_Width / m_Height)));
+
+		glBindVertexArray(model->VAO);
+		for (auto texGroup : model->TextureGroups)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, *texGroup.Texture);
+			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
+		}
+	}
 }
 
 void Renderer::RegisterCamera(int identifier, float FOV, float nearClip, float farClip)
