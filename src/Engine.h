@@ -7,26 +7,26 @@
 #include "Renderer.h"
 #include "InputManager.h"
 #include "GUI/Frame.h"
-#include "GameWorld.h"
+#include "GUI/GameFrame.h"
 
 class Engine
 {
 public:
 	Engine(int argc, char* argv[])
 	{
-		m_ResourceManager = std::make_shared<ResourceManager>();
-
 		m_EventBroker = std::make_shared<EventBroker>();
+		m_ResourceManager = std::make_shared<ResourceManager>();
 
 		m_Renderer = std::make_shared<Renderer>();
 		m_Renderer->Initialize();
 
 		m_InputManager = std::make_shared<InputManager>(m_Renderer->GetWindow(), m_EventBroker);
 
-		m_FrameStack = std::make_shared<GUI::Frame>(m_EventBroker, m_Renderer);
+		m_FrameStack = new GUI::Frame(m_EventBroker, m_ResourceManager); 
+		new GUI::GameFrame(m_FrameStack, "GameFrame");
 
-		m_World = std::make_shared<GameWorld>(m_EventBroker, m_Renderer);
-		m_World->Initialize();
+		//m_World = std::make_shared<GameWorld>(m_EventBroker, m_ResourceManager);
+		//m_World->Initialize();
 
 		m_LastTime = glfwGetTime();
 	}
@@ -40,8 +40,8 @@ public:
 		m_LastTime = currentTime;
 
 		m_InputManager->Update(dt);
-		m_World->Update(dt);
-		m_Renderer->Draw(dt);
+		m_FrameStack->DrawLayered(m_Renderer);
+		
 		m_EventBroker->Clear();
 
 		glfwPollEvents();
@@ -52,9 +52,9 @@ private:
 	std::shared_ptr<EventBroker> m_EventBroker;
 	std::shared_ptr<Renderer> m_Renderer;
 	std::shared_ptr<InputManager> m_InputManager;
-	std::shared_ptr<GUI::Frame> m_FrameStack;
+	GUI::Frame* m_FrameStack;
 	// TODO: This should ultimately live in GameFrame
-	std::shared_ptr<GameWorld> m_World;
+	//std::shared_ptr<GameWorld> m_World;
 
 	double m_LastTime;
 };

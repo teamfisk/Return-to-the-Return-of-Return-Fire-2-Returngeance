@@ -12,17 +12,12 @@ class RenderQueue;
 
 struct RenderJob
 {
-	template <typename JobType>
-	friend class RenderQueue<JobType>;
+	friend class RenderQueue;
 
 protected:
 	uint64_t Hash;
 
 	virtual void CalculateHash() = 0;
-	{
-		Hash = ViewportID << 58 // 6 bits 
-			 | TextureID << 42; // 16 bits
-	}
 
 	bool operator<(const RenderJob& rhs)
 	{
@@ -59,14 +54,14 @@ struct SpriteJob : RenderJob
 	}
 };
 
-template <typename JobType>
 class RenderQueue
 {
 public:
-	void Add(JobType &job)
+	template <typename T>
+	void Add(T &job)
 	{
 		job.CalculateHash();
-		m_Jobs.push_front(job);
+		m_Jobs.push_front(std::shared_ptr<T>(new T(job)));
 		m_Jobs.sort();
 	}
 
@@ -76,7 +71,7 @@ public:
 	}
 
 private:
-	std::forward_list<JobType> m_Jobs;
+	std::forward_list<std::shared_ptr<RenderJob>> m_Jobs;
 };
 
 #endif // RenderQueue_h__

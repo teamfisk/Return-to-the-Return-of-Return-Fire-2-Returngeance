@@ -32,7 +32,7 @@ void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register<Components::SoundEmitter>([]() { return new Components::SoundEmitter(); });
 }
 
-void Systems::SoundSystem::RegisterResourceTypes(ResourceManager* rm)
+void Systems::SoundSystem::RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm)
 {
 	rm->RegisterType("Sound", [](std::string resourceName) { return new Sound(resourceName); });
 }
@@ -94,7 +94,7 @@ void Systems::SoundSystem::PlaySound(Components::SoundEmitter* emitter, std::str
 	if (m_Sources.find(emitter) == m_Sources.end())
 		return;
 
-	ALuint buffer = *m_World->GetResourceManager()->Load<Sound>("Sound", fileName);
+	ALuint buffer = *ResourceManager->Load<Sound>("Sound", fileName);
 	if (buffer == 0)
 		return;
 	ALuint source = m_Sources[emitter];
@@ -104,7 +104,7 @@ void Systems::SoundSystem::PlaySound(Components::SoundEmitter* emitter, std::str
 
 void Systems::SoundSystem::PlaySound(std::shared_ptr<Components::SoundEmitter> emitter)
 {
-	ALuint buffer = *m_World->GetResourceManager()->Load<Sound>("Sound", emitter->Path);
+	ALuint buffer = *ResourceManager->Load<Sound>("Sound", emitter->Path);
 	ALuint source = m_Sources[emitter.get()];
 	alSourcei(source, AL_BUFFER, buffer);
 	alSourcePlay(m_Sources[emitter.get()]);
@@ -151,7 +151,7 @@ bool Systems::SoundSystem::OnPlaySound(const Events::PlaySound &event)
 {
 	LOG_DEBUG("Events::PlaySound.Resource = %s", event.Resource.c_str());
 
-	ALuint buffer = *m_World->GetResourceManager()->Load<Sound>("Sound", event.Resource);
+	ALuint buffer = *ResourceManager->Load<Sound>("Sound", event.Resource);
 	ALuint source = m_Sources.begin()->second;
 	alSourcei(source, AL_BUFFER, buffer);
 	alSourcePlay(source);

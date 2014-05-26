@@ -18,6 +18,7 @@
 #include "Components/Template.h"
 #include "Components/Transform.h"
 #include "Renderer.h"
+#include "RenderQueue.h"
 
 namespace Systems
 {
@@ -25,12 +26,12 @@ namespace Systems
 class  RenderSystem : public System
 {
 public:
-	RenderSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
-		: System(world, eventBroker)
-		, m_Renderer(renderer) { }
+	RenderSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: System(world, eventBroker, resourceManager)
+	{ }
 
 	void RegisterComponents(ComponentFactory* cf) override;
-	void RegisterResourceTypes(ResourceManager* rm) override;
+	void RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm) override;
 	void Initialize() override;
 
 	std::unordered_map<std::string, std::shared_ptr<Model>> m_CachedModels;
@@ -38,12 +39,12 @@ public:
 	void OnEntityCommit(EntityID entity) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
-
-
-
 private:
-	std::shared_ptr<Renderer> m_Renderer;
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
+
+	void EnqueueModel(Model* model, glm::mat4 modelMatrix);
+	void EnqueueSprite(Texture* texture, glm::mat4 modelMatrix);
+
 };
 
 

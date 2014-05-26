@@ -66,8 +66,8 @@ void Renderer::Initialize()
 	}
 
 	// Create Camera
-	m_Camera = std::make_shared<Camera>(45.f, (float)m_Width / m_Height, 0.01f, 1000.f);
-	m_Camera->Position(glm::vec3(0.0f, 0.0f, 2.f));
+	m_Camera = std::make_shared<Camera>(45.f, 0.01f, 1000.f);
+	m_Camera->SetPosition(glm::vec3(0.0f, 0.0f, 2.f));
 
 	glfwSwapInterval(m_VSync);
 	glEnable(GL_CULL_FACE);
@@ -211,6 +211,11 @@ void Renderer::Draw(double dt)
 	glfwSwapBuffers(m_Window);
 }
 
+void Renderer::Draw(RenderQueue &rq)
+{
+
+}
+
 #pragma region TempRegion
 
 void Renderer::DrawSkybox()
@@ -220,7 +225,7 @@ void Renderer::DrawSkybox()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_ShaderProgramSkybox.Bind();
-	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix() * glm::toMat4(glm::inverse(m_Camera->Orientation()));
+	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix((float)m_Width / m_Height) * glm::toMat4(glm::inverse(m_Camera->Orientation()));
 	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramSkybox.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	m_Skybox->Draw();
@@ -719,7 +724,7 @@ void Renderer::DrawFBOScene(Viewport &viewport)
 // 	glCullFace(GL_BACK);	//Make it so that only the back faces are rendered
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draws filled polygons
 
-	glm::mat4 cameraMatrix = viewport.Camera->ProjectionMatrix() * viewport.Camera->ViewMatrix();
+	glm::mat4 cameraMatrix = viewport.Camera->ProjectionMatrix((float)m_Width / m_Height) * viewport.Camera->ViewMatrix();
 	glm::mat4 MVP;
 	glm::mat4 biasMatrix(
 		0.5, 0.0, 0.0, 0.0,
@@ -751,7 +756,7 @@ void Renderer::DrawFBOScene(Viewport &viewport)
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix((float)m_Width / m_Height)));
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -781,7 +786,7 @@ void Renderer::DrawFBOScene(Viewport &viewport)
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix((float)m_Width / m_Height)));
 		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, *texture);
@@ -802,7 +807,7 @@ void Renderer::DrawLightScene(Viewport &viewport)
 	glDepthMask (GL_FALSE);
 	glBindVertexArray(m_sphereModel->VAO);
 
-	glm::mat4 cameraMatrix = viewport.Camera->ProjectionMatrix() * viewport.Camera->ViewMatrix();
+	glm::mat4 cameraMatrix = viewport.Camera->ProjectionMatrix((float)m_Width / m_Height) * viewport.Camera->ViewMatrix();
 	glm::mat4 MVP;
 
 	for (auto &light : Lights)
@@ -812,7 +817,7 @@ void Renderer::DrawLightScene(Viewport &viewport)
 		glUniform2fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ViewportSize"), 1,glm::value_ptr(glm::vec2(m_Width, m_Height)));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(viewport.Camera->ProjectionMatrix((float)m_Width / m_Height)));
 		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(light.SphereModelMatrix));
 		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), 1, glm::value_ptr(light.Specular));
 		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), 1, glm::value_ptr(light.Diffuse));
@@ -868,7 +873,7 @@ void Renderer::UpdateSunProjection()
 		glm::vec3(1.f, 1.f, 1.f)
 	};
 
-	glm::mat4 inverseProjectionViewMatrix =  glm::inverse(m_Camera->ViewMatrix()) * glm::inverse(m_Camera->ProjectionMatrix());
+	glm::mat4 inverseProjectionViewMatrix = glm::inverse(m_Camera->ViewMatrix()) * glm::inverse(m_Camera->ProjectionMatrix((float)m_Width / m_Height));
 	//Also * with world matrix for light
 
 	for(auto corner : NDCCube)
@@ -883,33 +888,33 @@ void Renderer::UpdateSunProjection()
 
 void Renderer::RegisterViewport(int identifier, float left, float top, float right, float bottom)
 {
-	Viewport v;
+	/*Viewport v;
 	v.Left = left;
 	v.Top = top;
 	v.Right = right;
 	v.Bottom = bottom;
 	v.Camera = nullptr;
-	m_Viewports[identifier] = v;
+	m_Viewports[identifier] = v;*/
 }
 
 void Renderer::RegisterCamera(int identifier, float FOV, float nearClip, float farClip)
 {
-	m_Cameras[identifier] = std::make_shared<Camera>(FOV, (float)m_Width / m_Height, nearClip, farClip);
+	m_Cameras[identifier] = std::make_shared<Camera>(FOV, nearClip, farClip);
 }
 
 void Renderer::UpdateViewport(int viewportIdentifier, int cameraIdentifier)
 {
-	auto &viewport = m_Viewports[viewportIdentifier];
-	auto camera = m_Cameras[cameraIdentifier];
-	camera->AspectRatio(((viewport.Right - viewport.Left) * m_Width) / ((viewport.Bottom - viewport.Top) * m_Height));
-	viewport.Camera = camera;
+	//auto &viewport = m_Viewports[viewportIdentifier];
+	//auto camera = m_Cameras[cameraIdentifier];
+	//camera->AspectRatio(((viewport.Right - viewport.Left) * m_Width) / ((viewport.Bottom - viewport.Top) * m_Height));
+	//viewport.Camera = camera;
 }
 
 void Renderer::UpdateCamera(int cameraIdentifier, glm::vec3 position, glm::quat orientation, float FOV, float nearClip, float farClip)
 {
-	m_Cameras[cameraIdentifier]->Position(position);
+	/*m_Cameras[cameraIdentifier]->Position(position);
 	m_Cameras[cameraIdentifier]->Orientation(orientation);
 	m_Cameras[cameraIdentifier]->FOV(FOV);
 	m_Cameras[cameraIdentifier]->NearClip(nearClip);
-	m_Cameras[cameraIdentifier]->FarClip(farClip);
+	m_Cameras[cameraIdentifier]->FarClip(farClip);*/
 }

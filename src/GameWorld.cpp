@@ -5,8 +5,8 @@ void GameWorld::Initialize()
 {
 	World::Initialize();
 
-	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
-	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
+	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
+	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
 	BindKey(GLFW_KEY_W, "vertical", 1.f);
 	BindKey(GLFW_KEY_S, "vertical", -1.f);
@@ -1183,18 +1183,18 @@ void GameWorld::RegisterComponents()
 
 void GameWorld::RegisterSystems()
 {
-	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::LevelGenerationSystem>([this]() { return new Systems::LevelGenerationSystem(this); });
-	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::DebugSystem>([this]() { return new Systems::DebugSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::DebugSystem>([this]() { return new Systems::DebugSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::CollisionSystem>([this]() { return new Systems::CollisionSystem(this); });
-	m_SystemFactory.Register<Systems::ParticleSystem>([this]() { return new Systems::ParticleSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::ParticleSystem>([this]() { return new Systems::ParticleSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::PlayerSystem>([this]() { return new Systems::PlayerSystem(this); });
-	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, m_EventBroker, m_Renderer); });
+	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
 }
 
 void GameWorld::AddSystems()
@@ -1219,7 +1219,7 @@ void GameWorld::BindKey(int keyCode, std::string command, float value)
 	e.KeyCode = keyCode;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }
 
 void GameWorld::BindMouseButton(int button, std::string command, float value)
@@ -1228,7 +1228,7 @@ void GameWorld::BindMouseButton(int button, std::string command, float value)
 	e.Button = button;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }
 
 void GameWorld::BindGamepadAxis(Gamepad::Axis axis, std::string command, float value)
@@ -1237,7 +1237,7 @@ void GameWorld::BindGamepadAxis(Gamepad::Axis axis, std::string command, float v
 	e.Axis = axis;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }
 
 void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, float value)
@@ -1246,5 +1246,5 @@ void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, f
 	e.Button = button;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }

@@ -409,6 +409,9 @@
     <ClInclude Include="..\..\src\Events\SetViewportCamera.h">
       <Filter>Rendering\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GUI\GameFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

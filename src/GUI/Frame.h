@@ -31,17 +31,29 @@ public:
 		, ResourceManager(resourceManager)
 		, Rectangle()
 		, m_Name("UIParent")
-	{ Initialize(); }
+		, m_Layer(0)
+	{ }
+
 	// Create a frame as a child
-	Frame(std::shared_ptr<Frame> parent, std::string name)
+	Frame(Frame* parent, std::string name)
 		: Rectangle(static_cast<Rectangle>(*parent)) // Clone parent rectangle using copy constructor
 		, m_Name(name)
-	{ SetParent(parent); Initialize(); }
+		, m_Layer(0)
+	{ SetParent(std::shared_ptr<Frame>(parent)); }
 
-	virtual void Initialize() { }
+
+	::RenderQueue RenderQueue;
+
 	std::shared_ptr<Frame> Parent() const { return m_Parent; }
 	void SetParent(std::shared_ptr<Frame> parent) 
-	{ 
+	{
+		if (parent == nullptr)
+		{
+			LOG_ERROR("Failed to create frame \"%s\": Invalid parent", m_Name.c_str());
+			return;
+		}
+
+		m_Layer = parent->Layer() + 1;
 		parent->AddChild(std::shared_ptr<Frame>(this));
 		m_Parent = parent;
 		EventBroker = parent->EventBroker;
@@ -50,25 +62,56 @@ public:
 
 	void AddChild(std::shared_ptr<Frame> child)
 	{
-		m_Children.push_back(std::make_pair(child->Name(), child));
+		m_Children[child->m_Layer].insert(std::make_pair(child->Name(), child));
+		if (m_Parent)
+		{
+			m_Parent->AddChild(child);
+		}
 	}
 
 	typedef std::map<std::string, std::shared_ptr<Frame>>::const_iterator FrameChildrenIterator;
-	FrameChildrenIterator begin()
-	{
-		return m_Children.begin();
-	}
-	FrameChildrenIterator end()
-	{
-		return m_Children.end();
-	}
 
 	std::string Name() const { return m_Name; }
 	void SetName(std::string val) { m_Name = val; }
+	int Layer() const { return m_Layer; }
+
+	int Left() const override
+	{ 
+		if (m_Parent)
+			return m_Parent->Left() + X;
+		else
+			return X; 
+	}
+	int Right() const override
+	{ 
+		if (m_Parent)
+			return m_Parent->Right() + X + Width;
+		else
+			return X + Width; 
+	}
+	int Top() const override
+	{ 
+		if (m_Parent)
+			return m_Parent->Top() + Y;
+		else
+			return Y;
+	}
+	int Bottom() const override 
+	{
+		if (m_Parent)
+			return m_Parent->Bottom() + Y + Height;
+		else
+			return Y + Height;
+	}
+
+	Rectangle AbsoluteRectangle()
+	{
+		return Rectangle(Left(), Right(), Width, Height);
+	}
 
 	virtual void Update(double dt)
 	{
-		for (auto &pair : m_Children)
+		for (auto &pair : m_Children[m_Layer + 1])
 		{
 			pair.second->Update(dt);
 		}
@@ -76,31 +119,35 @@ public:
 
 	void DrawLayered(std::shared_ptr<Renderer> renderer)
 	{
-		renderer->SetViewport(GetLeft(), GetTop(), GetRight(), GetBottom());
+		// Draw ourselves
+		renderer->SetViewport(AbsoluteRectangle());
 		this->Draw(renderer);
-		renderer->Draw();
 
-		for (auto &pair : m_Children)
+		// Draw children
+		for (auto &pairLayer : m_Children)
 		{
-			pair.second->Draw(renderer);
+			auto children = pairLayer.second;
+			for (auto &pairChild : children)
+			{
+				auto child = pairChild.second;
+				renderer->SetViewport(child->AbsoluteRectangle());
+				child->Draw(renderer);
+			}
 		}
 	}
 
-	virtual void Draw(std::shared_ptr<Renderer> renderer)
-	{
-		renderer->SetViewport(GetLeft(), GetTop(), GetRight(), GetBottom());
-		renderer->Draw();
-
-		
-	}
+	virtual void Draw(std::shared_ptr<Renderer> renderer) { }
 
 protected:
 	std::shared_ptr<::EventBroker> EventBroker;
 	std::shared_ptr<::ResourceManager> ResourceManager;
+
 	std::string m_Name;
+	int m_Layer;
 	
 	std::shared_ptr<Frame> m_Parent;
-	std::multimap<std::string, std::shared_ptr<Frame>> m_Children; // name -> frame
+	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame
+	std::map<int, Children_t> m_Children; // layer -> Children_t
 
 };
 

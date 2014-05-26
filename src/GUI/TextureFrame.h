@@ -13,28 +13,19 @@ public:
 	TextureFrame(std::shared_ptr<Frame> parent, std::string name)
 		: Frame(parent, name) { }
 
-	void Update(double dt) override
-	{
-		Frame::Update(dt);
-	}
-
 	void Draw(std::shared_ptr<Renderer> renderer) override
 	{
 		if (m_Texture == nullptr)
 			return;
 
-		RenderQueue<SpriteJob> rq;
-
-		auto textureAsset = ResourceManager->Load<Texture>("Texture", m_Texture);
-
+		RenderQueue.Clear();
 		SpriteJob job;
+		job.TextureID = m_Texture->ResourceID;
+		job.Texture = *m_Texture;
+		RenderQueue.Add(job);
 
-		Components::Transform absoluteTransform = m_TransformSystem->AbsoluteTransform(entity);
-		glm::quat orientation2D = glm::angleAxis(glm::eulerAngles(absoluteTransform->Orientation).z, glm::vec3(0, 0, -1));
-		glm::mat4 modelMatrix = glm::translate(absoluteTransform.Position);
-		*glm::toMat4(orientation2D)
-			* glm::scale(absoluteTransform.Scale);
-		EnqueueSprite(spriteQueue, textureAsset, modelMatrix);
+		renderer->SetCamera(nullptr);
+		renderer->Draw(RenderQueue);
 	}
 
 	std::shared_ptr<::Texture> Texture() const { return m_Texture; }

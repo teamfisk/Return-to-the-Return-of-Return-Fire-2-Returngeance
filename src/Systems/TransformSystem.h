@@ -10,8 +10,9 @@ namespace Systems
 class TransformSystem : public System
 {
 public:
-	TransformSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-		: System(world, eventBroker) { }
+	TransformSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: System(world, eventBroker, resourceManager)
+	{ }
 	//void Update(double dt) override;
 	//void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	

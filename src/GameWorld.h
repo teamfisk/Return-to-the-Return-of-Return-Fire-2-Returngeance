@@ -45,8 +45,9 @@
 class GameWorld : public World
 {
 public:
-	GameWorld(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
-		: World(eventBroker), m_Renderer(renderer) { }
+	GameWorld(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: World(eventBroker, resourceManager)
+	{ }
 
 	void Initialize();
 
@@ -57,8 +58,6 @@ public:
 	void Update(double dt);
 
 private:
-	std::shared_ptr<Renderer> m_Renderer;
-
 	void BindKey(int keyCode, std::string command, float value);
 	void BindMouseButton(int button, std::string command, float value);
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);

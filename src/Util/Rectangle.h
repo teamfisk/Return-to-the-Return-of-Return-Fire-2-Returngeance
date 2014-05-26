@@ -19,24 +19,24 @@ struct Rectangle
 	int Width;
 	int Height;
 
-	const int& GetLeft() const { return X; }
+	virtual int Left() const { return X; }
 	void SetLeft(int left) 
 	{
 		Width += X - left;
 		X = left;
 	}
-	int GetRight() const { return X + Width; }
+	virtual int Right() const { return X + Width; }
 	void SetRight(int right) 
 	{
 		Width = right - X;
 	}
-	const int& GetTop() const { return Y; }
+	virtual int Top() const { return Y; }
 	void SetTop(int top) 
 	{ 
 		Height += Y - top;
 		Y = top;
 	}
-	int GetBottom() const { return Y + Height; }
+	virtual int Bottom() const { return Y + Height; }
 	int SetBottom(int bottom)
 	{ 
 		Height = bottom - Y;
@@ -44,15 +44,15 @@ struct Rectangle
 
 	Rectangle& operator+=(const Rectangle &rhs)
 	{
-		SetLeft(std::min(GetLeft(), rhs.GetLeft()));
-		SetRight(std::max(GetRight(), rhs.GetRight()));
-		SetTop(std::min(GetTop(), rhs.GetTop()));
-		SetBottom(std::max(GetBottom(), rhs.GetBottom()));
+		SetLeft(std::min(Left(), rhs.Left()));
+		SetRight(std::max(Right(), rhs.Right()));
+		SetTop(std::min(Top(), rhs.Top()));
+		SetBottom(std::max(Bottom(), rhs.Bottom()));
 	}
 
 	static bool Intersects(const Rectangle &r1, const Rectangle &r2)
 	{
-		return !(r2.GetLeft() > r1.GetRight() || r2.GetRight() < r1.GetLeft() || r2.GetTop() > r1.GetBottom() || r2.GetBottom() < r1.GetTop());
+		return !(r2.Left() > r1.Right() || r2.Right() < r1.Left() || r2.Top() > r1.Bottom() || r2.Bottom() < r1.Top());
 	}
 };
 

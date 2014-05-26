@@ -1,10 +1,9 @@
 #include "PrecompiledHeader.h"
 #include "Camera.h"
 
-Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
+Camera::Camera(float yFOV, float nearClip, float farClip)
 {
 	m_FOV = yFOV;
-	m_AspectRatio = aspectRatio;
 	m_NearClip = nearClip;
 	m_FarClip = farClip;
 
@@ -31,14 +30,14 @@ Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
 //	return orientation;
 //}
 
-void Camera::Position(glm::vec3 val)
+void Camera::SetPosition(glm::vec3 val)
 {
 	m_Position = val;
 	UpdateViewMatrix();
 }
 
 
-void Camera::Orientation(glm::quat val)
+void Camera::SetOrientation(glm::quat val)
 {
 	m_Orientation = val;
 	UpdateViewMatrix();
@@ -61,17 +60,17 @@ void Camera::UpdateViewMatrix()
 	m_ViewMatrix = glm::toMat4(glm::inverse(m_Orientation)) * glm::translate(-m_Position);
 }
 
-void Camera::FOV(float val)
+void Camera::SetFOV(float val)
 {
 	m_FOV = val;
 }
 
-void Camera::NearClip(float val)
+void Camera::SetNearClip(float val)
 {
 	m_NearClip = val;
 }
 
-void Camera::FarClip(float val)
+void Camera::SetFarClip(float val)
 {
 	m_FarClip = val;
 }

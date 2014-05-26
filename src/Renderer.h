@@ -13,6 +13,8 @@
 #include "Components/PointLight.h"
 #include "Skybox.h"
 #include "ResourceManager.h"
+#include "Util/Rectangle.h"
+#include "RenderQueue.h"
 
 class Renderer
 {
@@ -39,6 +41,21 @@ public:
 	void RegisterCamera(int identifier, float FOV, float nearClip, float farClip);
 	void UpdateViewport(int viewportIdentifier, int cameraIdentifier);
 	void UpdateCamera(int cameraIdentifier, glm::vec3 position, glm::quat orientation, float FOV, float nearClip, float farClip);
+
+#pragma region NEWSTUFF
+	void SetViewport(const Rectangle &viewport)
+	{
+		m_Viewport = viewport;
+	}
+
+	void SetCamera(std::shared_ptr<Camera> camera)
+	{
+		m_Camera = camera;
+	}
+
+	void Draw(RenderQueue &rq);
+
+#pragma endregion
 
 	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
@@ -83,6 +100,9 @@ private:
 
 	std::unordered_map<int, Viewport> m_Viewports;
 	std::unordered_map<int, std::shared_ptr<Camera>> m_Cameras;
+
+	Rectangle m_Viewport;
+	std::shared_ptr<Camera> m_Camera;
 
 	struct Light
 	{
@@ -134,8 +154,6 @@ private:
 	Model* m_sphereModel;
 
 	bool m_QuadView;
-
-	std::shared_ptr<Camera> m_Camera;
 
 	ShaderProgram m_ShaderProgram;
 	ShaderProgram m_FirstPassProgram;

@@ -38,7 +38,7 @@ void World::Update(double dt)
 	{
 		const std::string &type = pair.first;
 		auto system = pair.second;
-		m_EventBroker->Process(type);
+		EventBroker->Process(type);
 		system->Update(dt);
 		RecursiveUpdate(system, dt, 0);
 	}
@@ -129,7 +129,7 @@ void World::Initialize()
 	{
 		auto system = pair.second;
 		system->RegisterComponents(&m_ComponentFactory);
-		system->RegisterResourceTypes(&m_ResourceManager);
+		system->RegisterResourceTypes(ResourceManager);
 		system->Initialize();
 	}
 }
