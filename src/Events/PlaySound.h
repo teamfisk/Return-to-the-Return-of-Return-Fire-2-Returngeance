@@ -2,6 +2,7 @@
 #define Event_PlaySound_h__
 
 #include "EventBroker.h"
+#include "Entity.h"
 
 namespace Events
 {

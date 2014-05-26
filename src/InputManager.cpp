@@ -42,6 +42,14 @@ void InputManager::Update(double dt)
 		}
 	}
 
+	if(m_CurrentKeyState[GLFW_KEY_BACKSPACE])
+	{
+		Events::PlaySound e;
+		e.Resource = "Sounds/WUB.mp3";
+		e.Emitter = 2;
+		EventBroker->Publish(e);
+	}
+
 	// Mouse buttons
 	for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; ++i)
 	{
