@@ -26,7 +26,7 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
-	void OnComponentRemoved(std::string type, Component* component) override;
+	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
 	void PlaySound(Components::SoundEmitter* emitter, std::string path); // Use if you want to play a temporary .wav file not from component
 	void PlaySound(std::shared_ptr<Components::SoundEmitter> emitter); // Use if you want to play .wav file from component // imon no hate plx T.T
 	void StopSound(std::shared_ptr<Components::SoundEmitter> emitter);

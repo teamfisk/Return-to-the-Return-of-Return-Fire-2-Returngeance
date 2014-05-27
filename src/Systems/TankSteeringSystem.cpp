@@ -97,80 +97,140 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 {
-	if(m_World->ValidEntity(e.Entity1) && m_World->ValidEntity(e.Entity1))
+	if(m_World->ValidEntity(e.Entity1) && m_World->ValidEntity(e.Entity2))
 	{
 		auto tankShell1 = m_World->GetComponent<Components::TankShell>(e.Entity1);
 		auto tankShell2 = m_World->GetComponent<Components::TankShell>(e.Entity2);
-		
 
-		if(tankShell1)
+		EntityID shellEntity = 0;
+		Components::TankShell* shellComponent;
+		EntityID otherEntity = 0;
+
+		if (tankShell1)
 		{
-			auto transform = m_World->GetComponent<Components::Transform>(e.Entity1);
-			m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(transform->Position, 1, 60, "Textures/Sprites/NewtonTreeDeleteASAPPlease.png", glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)), 40, glm::pi<float>(), 0.5f);
-
-			auto health2 = m_World->GetComponent<Components::Health>(e.Entity2);
-			if(health2)
-			{
-				health2->health -= tankShell1->Damage;
-			}
-
-			{
-				auto hitSphere = m_World->CreateEntity();
-				auto transformHit = m_World->AddComponent<Components::Transform>(hitSphere);
-				transformHit->Position = transform->Position;
-
-				auto physics = m_World->AddComponent<Components::Physics>(hitSphere);
-				physics->Static = true;
-				physics->Phantom = false;
-				physics->CollisionLayer = 4;
-
-				{
-					auto shape = m_World->CreateEntity(hitSphere);
-					auto transformHit = m_World->AddComponent<Components::Transform>(shape);
-					auto sphereShape = m_World->AddComponent<Components::SphereShape>(shape);
-					sphereShape->Radius = 40.f*0.5f; //HACK:
-					m_World->CommitEntity(shape);
-				}
-				m_World->CommitEntity(hitSphere);
-			}
-			
-			m_World->RemoveEntity(e.Entity1);
+			shellEntity = e.Entity1;
+			otherEntity = e.Entity2;
+			shellComponent = tankShell1;
+		}
+		else if (tankShell2)
+		{
+			shellEntity = e.Entity2;
+			otherEntity = e.Entity1;
+			shellComponent = tankShell2;
+		}
+		else
+		{
+			return false;
 		}
 
-		if(tankShell2)
+		auto physicsComponents = m_World->GetComponentsOfType<Components::Physics>();
+		auto shellTransform = m_World->GetComponent<Components::Transform>(shellEntity);
+		//auto otherTransform = m_World->GetComponent<Components::Transform>(otherEntity);
+		for (auto &physComponent : *physicsComponents)
 		{
-			auto transform = m_World->GetComponent<Components::Transform>(e.Entity2);
-			m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(transform->Position, 1, 60, "Textures/Sprites/NewtonTreeDeleteASAPPlease.png", glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)), 40, glm::pi<float>(), 0.5f);
+			EntityID physicsEntity = std::dynamic_pointer_cast<Components::Physics>(physComponent)->Entity;
+			auto physEntityTransform = m_World->GetComponent<Components::Transform>(physicsEntity);
 
-			auto health1 = m_World->GetComponent<Components::Health>(e.Entity2);
-			if(health1)
+			float distance = glm::distance(physEntityTransform->Position, shellTransform->Position);
+			if (distance <= shellComponent->ExplosionRadius)
 			{
-				health1->health -= tankShell1->Damage;
-			}
-			
-			{
-				auto hitSphere = m_World->CreateEntity();
-				auto transformHit = m_World->AddComponent<Components::Transform>(hitSphere);
-				transformHit->Position = transform->Position;
+				// DO STUFF! :D
+				float radius = shellComponent->ExplosionRadius;
+				float strength = (1.f - pow(distance / radius, 2)) * shellComponent->ExplosionStrength;
+				glm::vec3 direction = glm::normalize(physEntityTransform->Position - shellTransform->Position);
 
-				auto physics = m_World->AddComponent<Components::Physics>(hitSphere);
-				physics->Static = true;
-				physics->Phantom = false;
-				physics->CollisionLayer = 4;
+				Events::ApplyPointImpulse e;
+				e.Entity = physicsEntity;
+				e.Impulse = direction * strength;
+				e.Position = physEntityTransform->Position;
+				EventBroker->Publish(e);
 
+				auto health = m_World->GetComponent<Components::Health>(physicsEntity);
+				if(health)
 				{
-					auto shape = m_World->CreateEntity(hitSphere);
-					auto transformHit = m_World->AddComponent<Components::Transform>(shape);
-					auto sphereShape = m_World->AddComponent<Components::SphereShape>(shape);
-					sphereShape->Radius = 40.f*0.5f; //HACK:
-					m_World->CommitEntity(shape);
+					Events::Damage d;
+					d.Entity = physicsEntity;
+					d.damage =  (1.f - pow(distance / radius, 2)) * shellComponent->Damage;
+					EventBroker->Publish(d);
 				}
-				m_World->CommitEntity(hitSphere);
+				
+				
+
+				m_World->RemoveEntity(shellEntity);
 			}
-
-
-			m_World->RemoveEntity(e.Entity2);
 		}
+
+		//if(tankShell1)
+		//{
+		//	LOG_DEBUG("%i collided with %i", e.Entity1, e.Entity2);
+		//	auto transform = m_World->GetComponent<Components::Transform>(e.Entity1);
+		//	//m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(transform->Position, 1, 60, "Textures/Sprites/NewtonTreeDeleteASAPPlease.png", glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)), 40, glm::pi<float>(), 0.5f);
+
+		//	glm::vec3 pointOfImpact = transform->Position;
+
+
+		//	{
+		//		auto ent = m_World->CreateEntity();
+		//		LOG_DEBUG("Created trigger entity %i", ent);
+		//		auto transform = m_World->AddComponent<Components::Transform>(ent);
+		//		transform->Position = pointOfImpact;
+
+		//		auto trigger = m_World->AddComponent<Components::Trigger>(ent);
+		//		trigger->TriggerOnce = true;
+		//		auto frameTimer = m_World->AddComponent<Components::FrameTimer>(ent);
+		//		frameTimer->Frames = 100;
+		//		auto explosion = m_World->AddComponent<Components::TriggerExplosion>(ent);
+		//		explosion->MaxVelocity = 50.f;
+		//		explosion->Radius = 30.f;
+		//		{
+		//			auto shape = m_World->CreateEntity(ent);
+		//			auto transformshape = m_World->AddComponent<Components::Transform>(shape);
+		//			auto sphere = m_World->AddComponent<Components::SphereShape>(shape);
+		//			sphere->Radius = 30.f;
+		//			m_World->CommitEntity(shape);
+
+		//		}
+		//		m_World->CommitEntity(ent);
+		//	}
+		//	
+		//	m_World->RemoveEntity(e.Entity1);
+		//}
+
+		//if(tankShell2)
+		//{
+		//	LOG_DEBUG("%i collided with %i", e.Entity1, e.Entity2);
+		//	auto transform = m_World->GetComponent<Components::Transform>(e.Entity2);
+		//	//m_World->GetSystem<Systems::ParticleSystem>()->CreateExplosion(transform->Position, 1, 60, "Textures/Sprites/NewtonTreeDeleteASAPPlease.png", glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)), 40, glm::pi<float>(), 0.5f);
+
+		//	glm::vec3 pointOfImpact = transform->Position;
+
+
+		//	{
+		//		auto ent = m_World->CreateEntity();
+		//		LOG_DEBUG("Created trigger entity %i", ent);
+		//		auto transform = m_World->AddComponent<Components::Transform>(ent);
+		//		transform->Position = pointOfImpact;
+
+		//		auto trigger = m_World->AddComponent<Components::Trigger>(ent);
+		//		trigger->TriggerOnce = true;
+		//		auto frameTimer = m_World->AddComponent<Components::FrameTimer>(ent);
+		//		frameTimer->Frames = 100;
+		//		auto explosion = m_World->AddComponent<Components::TriggerExplosion>(ent);
+		//		explosion->MaxVelocity = 50.f;
+		//		explosion->Radius = 30.f;
+		//		{
+		//			auto shape = m_World->CreateEntity(ent);
+		//			auto transformshape = m_World->AddComponent<Components::Transform>(shape);
+		//			auto sphere = m_World->AddComponent<Components::SphereShape>(shape);
+		//			sphere->Radius = 30.f;
+		//			m_World->CommitEntity(shape);
+
+		//		}
+		//		m_World->CommitEntity(ent);
+		//	}
+
+		//	m_World->RemoveEntity(e.Entity2);
+		//}
 	}
 
 	return true;

@@ -82,6 +82,10 @@
 #include <Physics2012/Collide/Shape/Misc/PhantomCallback/hkpPhantomCallbackShape.h>
 #include "Events/EnableCollisions.h"
 #include "Events/DisableCollisions.h"
+#include "Components/Trigger.h"
+#include "Components/Template.h"
+
+#include "Events/EnterTrigger.h"
 
 namespace Systems
 {
@@ -104,6 +108,7 @@ public:
 			e.Entity1 = entity1;
 			e.Entity2 = entity2;
 			m_PhysicsSystem->EventBroker->Publish(e);
+			LOG_INFO("CollisionEvent!");
 		}
 		
 	private:
@@ -120,14 +125,26 @@ public:
 
 		virtual void phantomEnterEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB, const hkpCollisionInput& env )
 		{
-			
-			LOG_INFO("AAAAAAAAAAAAAAAAAAAAAAAAAH!");
+			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableA)];
+			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableB)];
+
+			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
+			{
+				auto trigger = m_PhysicsSystem->m_World->GetComponent<Components::Trigger>(entity1);
+				if(trigger->TriggerOnce)
+				{
+					m_PhysicsSystem->m_World->RemoveComponent<Components::Trigger>(entity1);
+				}
+				Events::EnterTrigger e;
+				e.Entity1 = entity1;
+				e.Entity2 = entity2;
+				m_PhysicsSystem->EventBroker->Publish(e);
+			}
 		}
 
 		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
 		{
-			
-			LOG_INFO("AAAAAAAAAAAAAAAAAAAAAAAAAH!");
+
 		}
 
 	private:
@@ -144,10 +161,10 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
-	void OnComponentRemoved(std::string type, Component* component) override;
+	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
 	void OnEntityRemoved(EntityID entity) override;
-
+	
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;

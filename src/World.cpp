@@ -72,17 +72,18 @@ EntityID World::GetEntityBaseParent(EntityID entity)
 
 bool World::ValidEntity(EntityID entity)
 {
-	return m_EntityParents.find(entity) != m_EntityParents.end();
+	return m_EntityParents.find(entity) != m_EntityParents.end()
+		&& m_EntitiesToRemove.find(entity) == m_EntitiesToRemove.end();
 }
 
 void World::RemoveEntity(EntityID entity)
 {
-	m_EntitiesToRemove.push_back(entity);
+	m_EntitiesToRemove.insert(entity);
 	for (auto pair : m_EntityParents)
 	{
 		if (pair.second == entity)
 		{
-			m_EntitiesToRemove.push_back(pair.first);
+			m_EntitiesToRemove.insert(pair.first);
 		}
 	}
 }
@@ -102,7 +103,7 @@ void World::ProcessEntityRemovals()
 			for (auto pair : m_Systems)
 			{
 				auto system = pair.second;
-				system->OnComponentRemoved(type, component.get());
+				system->OnComponentRemoved(entity, type, component.get());
 			}
 			m_ComponentsOfType[type].remove(component);
 		}

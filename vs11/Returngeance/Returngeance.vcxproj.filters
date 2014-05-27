@@ -66,6 +66,15 @@
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp">
       <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp">
+      <Filter>Physics\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\TimerSystem.cpp">
+      <Filter>Base\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\DamageSystem.cpp">
+      <Filter>Gameplay\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -157,6 +166,12 @@
     </Filter>
     <Filter Include="Gameplay\Components">
       <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Systems">
+      <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Events">
+      <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -400,9 +415,6 @@
     <ClInclude Include="..\..\src\Components\Health.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Components\DamageOnTouch.h">
-      <Filter>Gameplay\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Components\TankShell.h">
       <Filter>Physics\Components</Filter>
     </ClInclude>
@@ -411,6 +423,33 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Events\EnableCollisions.h">
       <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Trigger.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\TriggerSystem.h">
+      <Filter>Physics\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TriggerExplosion.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\EnterTrigger.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\TimerSystem.h">
+      <Filter>Base\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Timer.h">
+      <Filter>Base\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\FrameTimer.h">
+      <Filter>Base\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\DamageSystem.h">
+      <Filter>Gameplay\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\Damage.h">
+      <Filter>Gameplay\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

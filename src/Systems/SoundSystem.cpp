@@ -124,7 +124,7 @@ void Systems::SoundSystem::OnComponentCreated(std::string type, std::shared_ptr<
 	}
 }
 
-void Systems::SoundSystem::OnComponentRemoved(std::string type, Component* component)
+void Systems::SoundSystem::OnComponentRemoved(EntityID entity, std::string type, Component* component)
 {
 	if(type == "SoundEmitter")
 	{

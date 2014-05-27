@@ -24,6 +24,12 @@
 
 #include "Events/EnableCollisions.h"
 #include "Events/DisableCollisions.h"
+#include "Components/Trigger.h"
+#include "Components/TriggerExplosion.h"
+#include "Components/FrameTimer.h"
+
+#include "Events/Damage.h"
+
 namespace Systems
 {
 

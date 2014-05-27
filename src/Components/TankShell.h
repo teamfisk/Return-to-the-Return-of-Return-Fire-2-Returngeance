@@ -12,6 +12,8 @@
 			: Damage(1.0f){ }
 
 		float Damage;
+		float ExplosionRadius;
+		float ExplosionStrength;
 
 		virtual TankShell* Clone() const override { return new TankShell(*this); }
 	};

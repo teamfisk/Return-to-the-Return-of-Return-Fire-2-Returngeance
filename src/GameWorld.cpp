@@ -264,7 +264,7 @@ void GameWorld::Initialize()
 		tankSteering->Player = player1;
 		AddComponent<Components::Input>(tank);
 		auto health = AddComponent<Components::Health>(tank);
-		health->health = 1;
+		health->health = 100;
 		{
 			auto shape = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -321,6 +321,8 @@ void GameWorld::Initialize()
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
 					tankShellComponent->Damage = 20.f;
+					tankShellComponent->ExplosionRadius = 30.f;
+					tankShellComponent->ExplosionStrength = 300000.f;
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -688,7 +690,7 @@ void GameWorld::Initialize()
 		tankSteering->Player = player2;
 		AddComponent<Components::Input>(tank);
 		auto health = AddComponent<Components::Health>(tank);
-		health->health = 1;
+		health->health = 100;
 		{
 			auto shape = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -745,6 +747,8 @@ void GameWorld::Initialize()
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
 					tankShellComponent->Damage = 20.f;
+					tankShellComponent->ExplosionRadius = 30.f;
+					tankShellComponent->ExplosionStrength = 300000.f;
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -1118,44 +1122,12 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
-	for(int i = 0; i < 0; i++)
-	{
-		for (int y = 0; y < 15; y++)
-		{
-			for (int x = -5; x < 5; x++)
-			{
-				auto brick = CreateEntity();
-				auto transform = AddComponent<Components::Transform>(brick);
-				transform->Position = glm::vec3(x + 0.01f, y * 0.3f + 0.01f, -20);
-				transform->Position.x += (y % 2)*0.5f;
-				transform->Scale = glm::vec3(1, 0.3f, 0.4f);
-				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-				auto model = AddComponent<Components::Model>(brick);
-				model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
 
-				auto physics = AddComponent<Components::Physics>(brick);
-				physics->Mass = 3;
-				
-
-
-				auto shape = CreateEntity(brick);
-				auto transformshape = AddComponent<Components::Transform>(shape);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 0.5f;
-				box->Height = 0.15f;
-				box->Depth = 0.3f;
-				CommitEntity(shape);
-				CommitEntity(brick);
-			}
-		}
-	}
-
-	/*for (int x = 0; x < 5; x++)
 		for (int y = 0; y < 5; y++)
 		{
 			auto cube = CreateEntity();
 			auto transform = AddComponent<Components::Transform>(cube);
-			transform->Position = glm::vec3(3 * x + 0.1f + -20.f, 3 * y + 0.1f + 1.f, 0);
+			transform->Position = glm::vec3(0, 10*y, 50);
 			transform->Scale = glm::vec3(3);
 			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 			auto model = AddComponent<Components::Model>(cube);
@@ -1163,13 +1135,19 @@ void GameWorld::Initialize()
 
 			auto physics = AddComponent<Components::Physics>(cube);
 			physics->Mass = 100;
-			auto box = AddComponent<Components::BoxShape>(cube);
-			box->Width = 1.5f;
-			box->Height = 1.5f;
-			box->Depth = 1.5f;
+
+			{
+				auto shape = CreateEntity(cube);
+				auto transform = AddComponent<Components::Transform>(shape);
+				auto box = AddComponent<Components::BoxShape>(shape);
+				box->Width = 1.5f;
+				box->Height = 1.5f;
+				box->Depth = 1.5f;
+				CommitEntity(shape);
+			}
 			CommitEntity(cube);
 		}
-*/
+
 
 
 	/*{
@@ -1193,12 +1171,13 @@ void GameWorld::RegisterComponents()
 {
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
-	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
-	m_ComponentFactory.Register<Components::Health>([]() { return new Components::Health(); });		
+	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });		
 }
 
 void GameWorld::RegisterSystems()
 {
+	m_SystemFactory.Register<Systems::TimerSystem>([this]() { return new Systems::TimerSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::DamageSystem>([this]() { return new Systems::DamageSystem(this, m_EventBroker); });
 	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, m_EventBroker); });
 	//m_SystemFactory.Register<Systems::LevelGenerationSystem>([this]() { return new Systems::LevelGenerationSystem(this); });
 	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, m_EventBroker); });
@@ -1210,11 +1189,14 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, m_EventBroker); });
 	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, m_EventBroker); });
 	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::TriggerSystem>([this]() { return new Systems::TriggerSystem(this, m_EventBroker); });
 	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, m_EventBroker, m_Renderer); });
 }
 
 void GameWorld::AddSystems()
 {
+	AddSystem<Systems::TimerSystem>();
+	AddSystem<Systems::DamageSystem>();
 	AddSystem<Systems::TransformSystem>();
 	//AddSystem<Systems::LevelGenerationSystem>();
 	AddSystem<Systems::InputSystem>();
@@ -1226,6 +1208,7 @@ void GameWorld::AddSystems()
 	AddSystem<Systems::TankSteeringSystem>();
 	AddSystem<Systems::SoundSystem>();
 	AddSystem<Systems::PhysicsSystem>();
+	AddSystem<Systems::TriggerSystem>();
 	AddSystem<Systems::RenderSystem>();
 }
 

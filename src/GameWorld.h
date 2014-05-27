@@ -17,6 +17,9 @@
 #include "Systems/RenderSystem.h"
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
+#include "Systems/TriggerSystem.h"
+#include "Systems/TimerSystem.h"
+#include "Systems/DamageSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -42,6 +45,7 @@
 #include "Components/BarrelSteering.h"
 #include "Components/Player.h"
 #include "Components/Health.h"
+#include "Components/Trigger.h"
 
 class GameWorld : public World
 {

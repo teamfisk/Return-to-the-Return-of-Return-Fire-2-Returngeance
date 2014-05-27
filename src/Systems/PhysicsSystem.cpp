@@ -39,7 +39,7 @@ void Systems::PhysicsSystem::Initialize()
 	EVENT_SUBSCRIBE_MEMBER(m_EEnableCollisions, &Systems::PhysicsSystem::OnEnableCollisions);
 	EVENT_SUBSCRIBE_MEMBER(m_EDisableCollisions, &Systems::PhysicsSystem::OnDisableCollisions);
 
-	hkMemorySystem::FrameInfo finfo(6000 * 1024);	// Allocate 6MB of Physics solver buffer
+	hkMemorySystem::FrameInfo finfo(10000 * 1024);	// Allocate 10MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
 	hkBaseSystem::init(memoryRouter, HavokErrorReport);
 
@@ -77,7 +77,7 @@ void Systems::PhysicsSystem::Initialize()
 
 		worldInfo.setupSolverInfo(hkpWorldCinfo::SOLVER_TYPE_4ITERS_MEDIUM);
 		worldInfo.m_gravity = hkVector4(0.0f, -9.82f, 0.0f);
-		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_DO_NOTHING;
+		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY;
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
 		worldInfo.setBroadPhaseWorldSize(1500.0f);
@@ -110,34 +110,6 @@ void Systems::PhysicsSystem::Initialize()
 		m_PhysicsWorld->unmarkForWrite();
 
 		m_collisionResolution = new MyCollisionResolution(this);
-
-		hkpBoxShape* shape = new hkpBoxShape(hkVector4(5, 5, 5), 0);
-		
-		PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
-		hkpBvShape* phantomShape = new hkpBvShape(shape, phantom);
-		
-		hkMassProperties massProperties;
-		hkpInertiaTensorComputer::computeBoxVolumeMassProperties(hkVector4(5, 5, 5),1, massProperties);
-
-		hkpRigidBodyCinfo rigidBodyInfo;
-		{
-			rigidBodyInfo.m_shape = shape;
-			rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
-			rigidBodyInfo.m_position = hkVector4(0, 0, 0);
-
-			rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
-			rigidBodyInfo.m_centerOfMass = massProperties.m_centerOfMass;
-			rigidBodyInfo.m_mass = massProperties.m_mass;
-		}
-		// Create RigidBody
-		
-		hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
-		m_PhysicsWorld->markForWrite();
-		m_PhysicsWorld->addEntity(rigidBody);
-		m_PhysicsWorld->unmarkForWrite();
-
-		shape->removeReference();
-		rigidBody->removeReference();
 	}
 	
 	enum
@@ -147,12 +119,13 @@ void Systems::PhysicsSystem::Initialize()
 		VEHICLE2_LAYER = 3,
 		EXPLOSION_LAYER = 4,
 	};
+/*
 	{
 		Events::DisableCollisions e;
 		e.Layer1 = GROUND_LAYER;
 		e.Layer2 = EXPLOSION_LAYER;
 		EventBroker->Publish(e);
-	}
+	}*/
 	/*{
 		Events::DisableCollisions e;
 		e.Layer1 = VEHICLE1_LAYER;
@@ -285,6 +258,10 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 
 void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 {
+	auto tempalteComponent = m_World->GetComponent<Components::Template>(entity);
+	if(tempalteComponent)
+		return;
+
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (!transformComponent)
 		return;
@@ -310,15 +287,14 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	}
 
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity);
-	if (physicsComponent)
+	if (physicsComponent && m_Shapes[entity].size() > 0)
 	{
-		hkpShape* shape;	
 		if(entityParent != entity)
 		{
 			LOG_ERROR("Entity: %i , Only the baseparent can have a PhysicsComponent", entity);
 			return;
 		}
-
+		hkpShape* shape;	
 		if(! physicsComponent->Static) // Not static
 		{
 			hkArray<hkpShape*> shapeArray;
@@ -332,12 +308,15 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 					hkQsTransform transform( GLMVEC3_TO_HKVECTOR4(childTransformComponent->Position), GLMQUAT_TO_HKQUATERNION(childTransformComponent->Orientation), GLMVEC3_TO_HKVECTOR4(childTransformComponent->Scale));
 					hkpConvexTransformShape* transformedBoxShape = new hkpConvexTransformShape( shapeData.ConvexShape, transform );
 					shapeArray.pushBack(transformedBoxShape);
+					
 				}
 				
 				if(shapeData.Shape != nullptr)
 				{
 					shapeArray.pushBack(shapeData.Shape);
+					
 				}
+
 			}
 
 
@@ -346,20 +325,22 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			// Save the listShape for further use
 			m_ListShapes[entity] = listShape;
 			hkMassProperties massProperties;
-			if(physicsComponent->Phantom)
-			{
-				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
-				shape = new hkpBvShape(listShape, phantom);
-				hkpInertiaTensorComputer::computeSphereVolumeMassProperties(1, physicsComponent->Mass, massProperties);
-			}
-			else
-			{
-				hkpBoxShape* box = new hkpBoxShape(listShape->m_aabbHalfExtents, 0.0f);
-				shape = new hkpBvShape(listShape, box);
-				hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
-			}
+			hkpBoxShape* box = new hkpBoxShape(listShape->m_aabbHalfExtents, 0.0f);
+			shape = new hkpBvShape(listShape, box);
+			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
 			
-
+			
+			for (auto &shapeData : m_Shapes[entity])
+			{
+				if(shapeData.ConvexShape != nullptr)
+				{
+					shapeData.ConvexShape->removeReference();
+				}
+				if(shapeData.Shape != nullptr)
+				{
+					shapeData.Shape->removeReference();
+				}
+			}
 			// Clean up for less memory usage
 			m_Shapes.erase(entity);
 
@@ -392,6 +373,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
+				rigidBodyInfo.m_enableDeactivation = false;
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -480,17 +462,20 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			staticCompoundShape->bake();
 			shape = staticCompoundShape;
 			hkMassProperties massProperties;
-			if(physicsComponent->Phantom)
+			hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
+			
+			
+			for (auto &shapeData : m_Shapes[entity])
 			{
-				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
-				shape = new hkpBvShape(shape, phantom);
-				hkpInertiaTensorComputer::computeSphereVolumeMassProperties(1, physicsComponent->Mass, massProperties);
+				if(shapeData.ConvexShape != nullptr)
+				{
+					shapeData.ConvexShape->removeReference();
+				}
+				if(shapeData.Shape != nullptr)
+				{
+					shapeData.Shape->removeReference();
+				}
 			}
-			else
-			{
-				hkpInertiaTensorComputer::computeShapeVolumeMassProperties(shape, physicsComponent->Mass, massProperties);
-			}
-
 			m_Shapes.erase(entity);
 			
 			
@@ -521,6 +506,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
+				rigidBodyInfo.m_enableDeactivation = false;
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -538,22 +524,91 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	}
 	else
 	{
-		
-		//TODO: COMMENT THIS SECTION
 		if(sphereComponent)
 		{
 			hkpSphereShape* sphereShape = new hkpSphereShape(sphereComponent->Radius);
-			m_Shapes[entityParent].push_back(ShapeArrayData(entity, sphereShape, nullptr));
-
 			//sphereShape->removeReference();
+
+			auto triggerComponent = m_World->GetComponent<Components::Trigger >(entityParent);
+			if(triggerComponent)
+			{
+				auto parentTransformComponent = m_World->GetComponent<Components::Transform >(entityParent);
+
+				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
+				hkpBvShape* phantomShape = new hkpBvShape(sphereShape, phantom);
+
+				hkpRigidBodyCinfo rigidBodyInfo;
+				{
+					rigidBodyInfo.m_shape = phantomShape;
+					rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+					rigidBodyInfo.m_position = GLMVEC3_TO_HKVECTOR4(parentTransformComponent->Position);
+
+					rigidBodyInfo.m_mass = 1;
+					rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(4, 0, 0, 0);
+				}
+				// Create RigidBody
+
+				hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+				m_PhysicsWorld->markForWrite();
+				m_PhysicsWorld->addEntity(rigidBody);
+				m_PhysicsWorld->unmarkForWrite();
+
+				m_RigidBodies[entityParent] = rigidBody;
+				m_RigidBodyEntities[rigidBody] = entityParent;
+
+				phantomShape->removeReference();
+				phantom->removeReference();
+				sphereShape->removeReference();
+				rigidBody->removeReference();
+			}
+			else
+			{
+				m_Shapes[entityParent].push_back(ShapeArrayData(entity, sphereShape, nullptr));
+			}
 		}
 		//TODO: COMMENT THIS SECTION
 		else if(boxComponent)
 		{
 			hkReal thickness = 0.05;
 			hkpBoxShape* boxShape = new hkpBoxShape(hkVector4(boxComponent->Width- thickness, boxComponent->Height -thickness, boxComponent->Depth - thickness), thickness);
-			m_Shapes[entityParent].push_back(ShapeArrayData(entity, boxShape, nullptr));
-			//boxShape->removeReference();
+
+			auto triggerComponent = m_World->GetComponent<Components::Trigger >(entityParent);
+			if(triggerComponent)
+			{
+				auto parentTransformComponent = m_World->GetComponent<Components::Transform >(entityParent);
+
+				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
+				hkpBvShape* phantomShape = new hkpBvShape(boxShape, phantom);
+
+				hkpRigidBodyCinfo rigidBodyInfo;
+				{
+					rigidBodyInfo.m_shape = phantomShape;
+					rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+					rigidBodyInfo.m_position = GLMVEC3_TO_HKVECTOR4(parentTransformComponent->Position);
+
+					rigidBodyInfo.m_mass = 1;
+					rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(4, 0, 0, 0); // HACK:
+				}
+				// Create RigidBody
+
+				hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+				m_PhysicsWorld->markForWrite();
+				m_PhysicsWorld->addEntity(rigidBody);
+				m_PhysicsWorld->unmarkForWrite();
+
+				m_RigidBodies[entityParent] = rigidBody;
+				m_RigidBodyEntities[rigidBody] = entityParent;
+
+				phantomShape->removeReference();
+				boxShape->removeReference();
+				phantom->removeReference();
+				rigidBody->removeReference();
+			}
+			else
+			{
+				m_Shapes[entityParent].push_back(ShapeArrayData(entity, boxShape, nullptr));
+			}
+			
 		}
 		else if(meshShapeComponent)
 		{
@@ -605,9 +660,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			m_Shapes[entityParent].push_back(ShapeArrayData(entity, nullptr, moppShape));
 		}
 	}
-
-	
-
 }
 
 void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID parent)
@@ -619,12 +671,6 @@ void Systems::PhysicsSystem::OnComponentCreated(std::string type, std::shared_pt
 {
 
 }
-
-void Systems::PhysicsSystem::OnComponentRemoved(std::string type, Component* component)
-{
-
-}
-
 
 void Systems::PhysicsSystem::SetupVisualDebugger(hkpPhysicsContext* worlds)
 {
@@ -678,37 +724,71 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 
 bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 {
-	m_PhysicsWorld->markForWrite();
-	m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
-	m_PhysicsWorld->unmarkForWrite();
+	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	{
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
+		m_PhysicsWorld->unmarkForWrite();
+	}
 	return true;
 }
 
 bool Systems::PhysicsSystem::OnApplyForce(const Events::ApplyForce &event)
 {
-	m_PhysicsWorld->markForWrite();
-	m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, GLMVEC3_TO_HKVECTOR4(event.Force));
-	m_PhysicsWorld->unmarkForWrite();
+	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	{
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[event.Entity]->applyForce(event.DeltaTime, GLMVEC3_TO_HKVECTOR4(event.Force));
+		m_PhysicsWorld->unmarkForWrite();
+	}
 	return true;
 }
 
 bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpulse &event )
 {
-	m_PhysicsWorld->markForWrite();
-	m_RigidBodies[event.Entity]->applyPointImpulse(GLMVEC3_TO_HKVECTOR4(event.Impulse), GLMVEC3_TO_HKVECTOR4(event.Position));
-	m_PhysicsWorld->unmarkForWrite();
+	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	{
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[event.Entity]->applyPointImpulse(GLMVEC3_TO_HKVECTOR4(event.Impulse), GLMVEC3_TO_HKVECTOR4(event.Position));
+		m_PhysicsWorld->unmarkForWrite();
+	}
 	return true;
 }
 
+
+void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string type, Component* component)
+{
+	if(type == "Trigger")
+	{
+		if(m_RigidBodies.find(entity) != m_RigidBodies.end())
+		{
+			LOG_INFO("Removed Trigger of entity %i", entity);
+			m_PhysicsWorld->markForWrite();
+			m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+			m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
+			m_RigidBodies.erase(entity);
+			m_PhysicsWorld->unmarkForWrite();
+		}
+	}
+}
+
+
 void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
 {
-	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
+   	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+		LOG_INFO("Removed rigid body of entity %i", entity);
 		m_PhysicsWorld->markForWrite();
+		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+		if(m_ListShapes.find(entity) != m_ListShapes.end())
+		{
+			m_ListShapes[entity]->removeReference();
+			m_ListShapes.erase(entity);
+		}
+		
 		m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
-		m_PhysicsWorld->unmarkForWrite();
 		m_RigidBodies.erase(entity);
+		m_PhysicsWorld->unmarkForWrite();
 	}
 	if(m_Vehicles.find(entity) != m_Vehicles.end())
 	{

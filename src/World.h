@@ -3,6 +3,7 @@
 
 #include <stack>
 #include <map>
+#include <set>
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -76,9 +77,14 @@ public:
 	template <class T>
 	std::shared_ptr<T> AddComponent(EntityID entity);
 	template <class T>
+	void RemoveComponent(EntityID entity);
+	template <class T>
 	T* GetComponent(EntityID entity);
 	// Triggers commit events in systems
 	void CommitEntity(EntityID entity);
+
+	template <class T>
+	std::list<std::shared_ptr<Component>>* GetComponentsOfType();
 
 	/*std::vector<EntityID> GetEntityChildren(EntityID entity);*/
 
@@ -111,7 +117,7 @@ protected:
 	// Internal: Add a component to an entity
 	void AddComponent(EntityID entity, std::string componentType, std::shared_ptr<Component> component);
 
-	std::list<EntityID> m_EntitiesToRemove;
+	std::set<EntityID> m_EntitiesToRemove;
 	void ProcessEntityRemovals();
 
 	EntityID GenerateEntityID();
@@ -119,6 +125,18 @@ protected:
 	void RecycleEntityID(EntityID id);
 
 };
+
+template <class T>
+std::list<std::shared_ptr<Component>>* World::GetComponentsOfType()
+{
+	const char* componentType = typeid(T).name();
+
+	auto it = m_ComponentsOfType.find(componentType);
+	if (it == m_ComponentsOfType.end())
+		return nullptr;
+
+	return &it->second;
+}
 
 template <class T>
 std::shared_ptr<T> World::GetSystem()
@@ -151,6 +169,26 @@ std::shared_ptr<T> World::AddComponent(EntityID entity)
 	return component;
 }
 
+template <class T>
+void World::RemoveComponent(EntityID entity)
+{
+	const char* componentType = typeid(T).name();
+
+	auto it = m_EntityComponents[entity].find(componentType);
+	if (it == m_EntityComponents[entity].end())
+		return;
+
+	auto component = it->second;
+
+	component->Entity = 0;
+	m_ComponentsOfType[componentType].remove(component);
+	m_EntityComponents[entity].erase(it);
+	for (auto pair : m_Systems)
+	{
+		auto system = pair.second;
+		system->OnComponentRemoved(entity, componentType, component.get());
+	}
+}
 
 template <class T>
 T* World::GetComponent(EntityID entity)
