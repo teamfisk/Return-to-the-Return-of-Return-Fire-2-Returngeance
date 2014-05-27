@@ -16,7 +16,7 @@ MKLINK "%ConfigPath%\Sounds\" "assets\Sounds\" /J
 MKLINK "%ConfigPath%\Shaders\" "src\Shaders\" /J
 :: DLLs
 MKLINK "%ConfigPath%\glfw3.dll" "libs\glfw-3.0.4\lib\%Configuration%\glfw3.dll" /H
-MKLINK "%ConfigPath%\OpenAL32.dll" "libs\openal-soft-1.15.1\lib\Win32\%Configuration%\OpenAL32.dll" /H
+MKLINK "%ConfigPath%\fmodex.dll" "libs\FMOD\lib\fmodex.dll" /H
 IF %~1==Debug (
 	MKLINK "%ConfigPath%\glew32d.dll" "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32d.dll" /H
 )
