@@ -55,12 +55,6 @@ void GameWorld::Initialize()
 		cameraComp->FarClip = 2000.f;
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera);
 	}
-	{
-		Events::SetViewportCamera e;
-		e.CameraEntity = camera;
-		e.ViewportFrame = "Viewport2";
-		EventBroker->Publish(e);
-	}
 	
 
 	auto player1 = CreateEntity();
@@ -106,25 +100,59 @@ void GameWorld::Initialize()
 	{
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground);
-		transform->Position = glm::vec3(0, -5, 0);
-		transform->Scale = glm::vec3(1600.0f, 10.0f, 1600.0f);
+		transform->Position = glm::vec3(0, -50, 0);
+		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground);
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+		model->ModelFile = "Models/TestScene3/testScene.obj";
+		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
 
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
 		physics->Static = true;
+		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto box = AddComponent<Components::BoxShape>(groundshape);
-		box->Width = 800;
-		box->Height = 5;
-		box->Depth = 800;
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
+		meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+
 
 		CommitEntity(groundshape);
 		CommitEntity(ground);
+	}
+
+	{
+		auto flag = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(flag);
+		transform->Position = glm::vec3(0, -50, 100);
+		auto model = AddComponent<Components::Model>(flag);
+		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
+		{
+			auto fish = CreateEntity(flag);
+			auto transform = AddComponent<Components::Transform>(fish);
+			transform->Position = glm::vec3(-1.3f, 1.0, 0);
+			auto model = AddComponent<Components::Model>(fish);
+			model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
+			CommitEntity(fish);
+		}
+
+		auto trigger = AddComponent<Components::Trigger>(flag);
+		{
+			auto shape = CreateEntity(flag);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(-0.9f, 0.9f, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 1.1f;
+			box->Depth = 0.7f;
+			box->Height = 3.9f;
+			CommitEntity(shape);
+		}
+
+		auto flagComponent = AddComponent<Components::Flag>(flag);
+
+		CommitEntity(flag);
 	}
 
 	//for (int i = 0; i < 500; i++)
@@ -334,15 +362,19 @@ void GameWorld::Initialize()
 					auto shot = CreateEntity(barrel);
 					auto transform = AddComponent<Components::Transform>(shot);
 					transform->Position = glm::vec3(0.35f, 0.f, -2.f);
-					transform->Orientation = glm::angleAxis(-glm::pi<float>()/2.f, glm::vec3(1, 0, 0));
+					transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
 					transform->Scale = glm::vec3(3.f);
 					AddComponent<Components::Template>(shot);
 					auto physics = AddComponent<Components::Physics>(shot);
 					physics->Mass = 25.f;
 					physics->Static = false;
+					physics->CollisionEvent = true;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
-
+					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
+					tankShellComponent->Damage = 20.f;
+					tankShellComponent->ExplosionRadius = 30.f;
+					tankShellComponent->ExplosionStrength = 300000.f;
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -365,7 +397,7 @@ void GameWorld::Initialize()
 			auto cameraTower = CreateEntity(tower);
 			{
 				auto transform = AddComponent<Components::Transform>(cameraTower);
-				transform->Position.z = 11.f;
+				transform->Position.z = 16.f;
 				transform->Position.y = 4.f;
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
@@ -757,15 +789,19 @@ void GameWorld::Initialize()
 					auto shot = CreateEntity(barrel);
 					auto transform = AddComponent<Components::Transform>(shot);
 					transform->Position = glm::vec3(0.35f, 0.f, -2.f);
-					transform->Orientation = glm::angleAxis(-glm::pi<float>()/2.f, glm::vec3(1, 0, 0));
+					transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
 					transform->Scale = glm::vec3(3.f);
 					AddComponent<Components::Template>(shot);
 					auto physics = AddComponent<Components::Physics>(shot);
 					physics->Mass = 25.f;
 					physics->Static = false;
+					physics->CollisionEvent = true;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
-
+					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
+					tankShellComponent->Damage = 20.f;
+					tankShellComponent->ExplosionRadius = 30.f;
+					tankShellComponent->ExplosionStrength = 300000.f;
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -796,6 +832,12 @@ void GameWorld::Initialize()
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 			}
 			CommitEntity(cameraTower);
+			{
+				Events::SetViewportCamera e;
+				e.CameraEntity = cameraTower;
+				e.ViewportFrame = "Viewport2";
+				EventBroker->Publish(e);
+			}
 		}
 
 		//{
@@ -1213,10 +1255,13 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
 	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
+	m_ComponentFactory.Register<Components::Flag>([]() { return new Components::Flag(); });
 }
 
 void GameWorld::RegisterSystems()
 {
+	m_SystemFactory.Register<Systems::TimerSystem>([this]() { return new Systems::TimerSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::DamageSystem>([this]() { return new Systems::DamageSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::LevelGenerationSystem>([this]() { return new Systems::LevelGenerationSystem(this); });
 	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, EventBroker, ResourceManager); });
@@ -1228,11 +1273,14 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TriggerSystem>([this]() { return new Systems::TriggerSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
 }
 
 void GameWorld::AddSystems()
 {
+	AddSystem<Systems::TimerSystem>();
+	AddSystem<Systems::DamageSystem>();
 	AddSystem<Systems::TransformSystem>();
 	//AddSystem<Systems::LevelGenerationSystem>();
 	AddSystem<Systems::InputSystem>();
@@ -1244,6 +1292,7 @@ void GameWorld::AddSystems()
 	AddSystem<Systems::TankSteeringSystem>();
 	AddSystem<Systems::SoundSystem>();
 	AddSystem<Systems::PhysicsSystem>();
+	AddSystem<Systems::TriggerSystem>();
 	AddSystem<Systems::RenderSystem>();
 }
 

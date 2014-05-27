@@ -578,20 +578,20 @@ void Renderer::AddModelToDraw(Model* model, glm::vec3 position, glm::quat orient
 
 void Renderer::AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale)
 {
-	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
+	//glm::mat4 modelMatrix = glm::translate(glm::mat4(), position) * glm::toMat4(orientation) * glm::scale(scale);
 
-	glm::vec3 camToParticle = glm::normalize(m_Camera->Position() - position);
-	glm::vec3 up = glm::vec3(0,1,0);
-	glm::vec3 rightVec = glm::normalize(glm::cross(up, camToParticle));
-	glm::vec3 up2 = glm::normalize(glm::cross(camToParticle, rightVec));
-	
-	glm::mat4 billboardMatrix;
-	billboardMatrix[0] = glm::vec4(rightVec, 0);
-	billboardMatrix[1] = glm::vec4(up2, 0);
-	billboardMatrix[2] = glm::vec4(camToParticle, 0);
-	//billboardMatrix[3] = glm::vec4(position, 0);
+	//glm::vec3 camToParticle = glm::normalize(m_Camera->Position() - position);
+	//glm::vec3 up = glm::vec3(0,1,0);
+	//glm::vec3 rightVec = glm::normalize(glm::cross(up, camToParticle));
+	//glm::vec3 up2 = glm::normalize(glm::cross(camToParticle, rightVec));
+	//
+	//glm::mat4 billboardMatrix;
+	//billboardMatrix[0] = glm::vec4(rightVec, 0);
+	//billboardMatrix[1] = glm::vec4(up2, 0);
+	//billboardMatrix[2] = glm::vec4(camToParticle, 0);
+	////billboardMatrix[3] = glm::vec4(position, 0);
 
-	TexturesToRender.push_back(std::make_tuple(texture, modelMatrix, billboardMatrix));
+	//TexturesToRender.push_back(std::make_tuple(texture, modelMatrix, billboardMatrix));
 }
 
 void Renderer::AddPointLightToDraw(
