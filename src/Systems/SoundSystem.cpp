@@ -7,17 +7,19 @@ void Systems::SoundSystem::Initialize()
 	EVENT_SUBSCRIBE_MEMBER(m_EComponentCreated, &SoundSystem::OnComponentCreated);
 	EVENT_SUBSCRIBE_MEMBER(m_EPlaySound, &SoundSystem::PlayASound);
 	
+	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
+
 	FMOD_System_Create(&m_System);
-	FMOD_RESULT result = FMOD_System_Init(m_System, 1024, FMOD_INIT_NORMAL, nullptr);
+	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_NORMAL, 0);
 	if(result != FMOD_OK)
 	{
-		LOG_ERROR("Did not load FMOD correctly");
+		LOG_ERROR("Did initialized load FMOD correctly");
 	}
 	else
 	{
-		LOG_INFO("FMOD Initialized");
+		LOG_INFO("FMOD initialized successfully");
 	}
-	FMOD_System_Set3DSettings(m_System, 10.0f, 1.f, 100.f); //dopplerScale, distancefactor, rolloffscale
+	FMOD_System_Set3DSettings(m_System, 10.f, 1.f, 100.f); //dopplerScale, distancefactor, rolloffscale
 	
 }
 
@@ -64,16 +66,16 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 		int lID = std::find(m_Listeners.begin(), m_Listeners.end(), entity) - m_Listeners.begin();
 		auto lTransform = m_World->GetComponent<Components::Transform>(entity);
 		
-		glm::vec3 tPos = lTransform->Position;
+		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
 		FMOD_VECTOR lPos = {tPos.x, tPos.y, tPos.z}; 
 
-		glm::vec3 tVel = lTransform->Velocity;
+		glm::vec3 tVel = (lTransform->Velocity * 1000.f) / (float)dt;
 		FMOD_VECTOR lVel = {tVel.x, tVel.y, tVel.z};
 
 		glm::mat3 tOri = glm::toMat3(lTransform->Orientation);
-		glm::vec3 tUp = tOri[1];
+		glm::vec3 tUp = glm::normalize(tOri[1]);
 		FMOD_VECTOR lUp = {tUp.x, tUp.y, tUp.z}; 
-		glm::vec3 tForward = tOri[2];
+		glm::vec3 tForward = glm::normalize(tOri[2]);
 		FMOD_VECTOR lForward = {tForward.x, tForward.y, tForward.z};
 
 		FMOD_System_Set3DListenerAttributes(m_System, lID, (const FMOD_VECTOR*)&lPos, (const FMOD_VECTOR*)&lVel, (const FMOD_VECTOR*)&lForward, (const FMOD_VECTOR*)&lUp);
@@ -86,10 +88,10 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 		FMOD_SOUND* sound = m_Sounds[entity];
 		auto eTransform = m_World->GetComponent<Components::Transform>(entity);
 
-		glm::vec3 tPos = eTransform->Position;
+		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
 		FMOD_VECTOR ePos = {tPos.x, tPos.y, tPos.z};
 
-		glm::vec3 tVel = eTransform->Velocity;
+		glm::vec3 tVel = (eTransform->Velocity * 1000.f) / float(dt);
 		FMOD_VECTOR eVel = {tVel.x, tVel.y, tVel.z};
 		
 		FMOD_Channel_Set3DAttributes(channel, (const FMOD_VECTOR*)&ePos, (const FMOD_VECTOR*)&eVel);
@@ -138,13 +140,21 @@ bool Systems::SoundSystem::PlayASound(const Events::PlaySound &event)
 		emitter->Path = event.Resource;
 	}
 
-	PlaySound( m_Channels[event.Emitter], m_Sounds[event.Emitter], 1, event.Loop);
+	PlaySound(m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
+	FMOD_System_Update(m_System);
+	FMOD_BOOL* isPlaying = false;
+	if(!FMOD_Channel_IsPlaying(m_Channels[event.Emitter], isPlaying))
+		LOG_ERROR("FMOD: File %s is not playing", event.Resource.c_str());
+	else
+	{
+		LOG_INFO("Now playing sound %s", event.Resource.c_str());
+	}
 	return true;
 }
 
 void Systems::SoundSystem::LoadSound(FMOD_SOUND* &sound, std::string filePath, float maxDist, float minDist)
 {
-	FMOD_RESULT result = FMOD_System_CreateSound(m_System, filePath.c_str(), FMOD_3D , 0, &sound);
+	FMOD_RESULT result = FMOD_System_CreateSound(m_System, filePath.c_str(), FMOD_3D | FMOD_HARDWARE , 0, &sound);
 	if (result != FMOD_OK)
 	{
 		LOG_ERROR("FMOD did not load file: %s", filePath.c_str());

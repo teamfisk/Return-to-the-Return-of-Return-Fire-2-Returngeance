@@ -342,6 +342,19 @@ void GameWorld::Initialize()
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
 				cameraComp->FarClip = 2000.f;
+				{
+					auto se1 = CreateEntity(camera);
+					auto transform = AddComponent<Components::Transform>(se1);
+					transform->Position = glm::vec3(0,10,0);
+					transform->Scale = glm::vec3(3);
+					auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
+					emitterComponent->Path = "Sounds/WUB.mp3";
+					emitterComponent->MinDistance = 100.f;
+					emitterComponent->MaxDistance = 10000.f;
+					emitterComponent->Gain = 1;
+					// 			auto model = AddComponent<Components::Model>(se1);
+					// 			model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
+				}
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 				AddComponent<Components::Listener>(tank);
 			}
@@ -1144,20 +1157,7 @@ void GameWorld::Initialize()
 	}*/
 
 	
-	{
-		auto se1 = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(se1);
-		transform->Position = glm::vec3(0,-30,0);
-		transform->Scale = glm::vec3(3);
-		auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
-		emitterComponent->Path = "Sounds/WUB.mp3";
-		emitterComponent->MinDistance = 100.f;
-		emitterComponent->MaxDistance = 1000.f;
-		emitterComponent->Gain = 1;
-		auto model = AddComponent<Components::Model>(se1);
-		model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
-	}
-
+	
 
 	/*for (int x = 0; x < 5; x++)
 		for (int y = 0; y < 5; y++)
