@@ -89,11 +89,11 @@ void GameWorld::Initialize()
 	{
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground);
-		transform->Position = glm::vec3(0, -50, 0);
-		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
+		transform->Position = glm::vec3(0, 0, 0);
+		transform->Scale = glm::vec3(500.0f, 0.5f, 500.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground);
-		model->ModelFile = "Models/TestScene3/testScene.obj";
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
 		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
 		
 		auto physics = AddComponent<Components::Physics>(ground);
@@ -102,9 +102,12 @@ void GameWorld::Initialize()
 
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		auto box = AddComponent<Components::BoxShape>(groundshape);
+		box->Width = 1000.f;
+		box->Height = 1.f;
+		box->Depth = 1000.f;
 		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-		meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+		//meshShape->ResourceName = "Models/TestScene3/testScene.obj";
 
 		
 		CommitEntity(groundshape);
@@ -342,19 +345,6 @@ void GameWorld::Initialize()
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
 				cameraComp->FarClip = 2000.f;
-				{
-					auto se1 = CreateEntity(camera);
-					auto transform = AddComponent<Components::Transform>(se1);
-					transform->Position = glm::vec3(0,10,0);
-					transform->Scale = glm::vec3(3);
-					auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
-					emitterComponent->Path = "Sounds/WUB.mp3";
-					emitterComponent->MinDistance = 100.f;
-					emitterComponent->MaxDistance = 10000.f;
-					emitterComponent->Gain = 1;
-					// 			auto model = AddComponent<Components::Model>(se1);
-					// 			model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
-				}
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 				AddComponent<Components::Listener>(tank);
 			}
@@ -1098,6 +1088,19 @@ void GameWorld::Initialize()
 
 		CommitEntity(tank);
 	}
+
+	auto se1 = CreateEntity();
+	std::cout<<se1<<std::endl;
+	auto transform = AddComponent<Components::Transform>(se1);
+	transform->Position = glm::vec3(20,2,-15);
+	transform->Scale = glm::vec3(3);
+	auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
+	emitterComponent->Path = "Sounds/WUB.mp3";
+	emitterComponent->MinDistance = 0.1f;
+	emitterComponent->MaxDistance = 100000.f;
+	emitterComponent->Gain = 1;
+	auto model = AddComponent<Components::Model>(se1);
+	model->ModelFile = "Models/PlaceHolders/PhysicsTest/PointLight.obj";
 
 	/*
 		for(int i = 0; i < 10; i++)

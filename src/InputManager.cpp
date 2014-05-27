@@ -46,7 +46,7 @@ void InputManager::Update(double dt)
 	{
 		Events::PlaySound e;
 		e.Resource = "Sounds/WUB.mp3";
-		e.Emitter = 16;
+		e.Emitter = 66;
 		e.Loop = true;
 		EventBroker->Publish(e);
 	}

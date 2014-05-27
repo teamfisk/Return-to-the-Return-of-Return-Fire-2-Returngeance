@@ -37,7 +37,7 @@ private:
 	bool PlayASound(const Events::PlaySound &event);
 
 	void LoadSound(FMOD_SOUND*&, std::string, float, float);
-	void PlaySound(FMOD_CHANNEL*, FMOD_SOUND*, float volume, bool loop);
+	void PlaySound(FMOD_CHANNEL**, FMOD_SOUND*, float volume, bool loop);
 	
 	FMOD_SYSTEM* m_System;
 	std::vector<EntityID> m_Listeners;
@@ -46,7 +46,7 @@ private:
 	std::map<EntityID, FMOD_SOUND*> m_Sounds;	
 	std::map<EntityID, FMOD_SOUND*> m_DeleteSounds;	
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
-
+	
 };
 
 }
