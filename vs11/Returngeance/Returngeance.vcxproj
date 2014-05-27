@@ -163,6 +163,7 @@
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h" />
     <ClInclude Include="..\..\src\Events\BindKey.h" />
     <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
+    <ClInclude Include="..\..\src\Events\CreateExplosion.h" />
     <ClInclude Include="..\..\src\Events\GamepadAxis.h" />
     <ClInclude Include="..\..\src\Events\GamepadButton.h" />
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
