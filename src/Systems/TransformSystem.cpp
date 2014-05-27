@@ -7,8 +7,8 @@
 //	if (parent == 0)
 //		return;
 //
-//	auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
-//	auto parentTransform = m_World->GetComponent<Components::Transform>(parent, "Transform");
+//	auto transform = m_World->GetComponent<Components::Transform>(entity);
+//	auto parentTransform = m_World->GetComponent<Components::Transform>(parent);
 //
 //	transform->Position = parentTransform->Position + transform->RelativePosition;
 //}
@@ -20,14 +20,14 @@ glm::vec3 Systems::TransformSystem::AbsolutePosition(EntityID entity)
 
 	do
 	{
-		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
 		//absPosition += transform->Position;
 		entity = m_World->GetEntityParent(entity);
-		auto transform2 = m_World->GetComponent<Components::Transform>(entity, "Transform");
-		if (entity != 0)
-			absPosition += transform2->Orientation * transform->Position;
-		else
+		auto transform2 = m_World->GetComponent<Components::Transform>(entity);
+		if (entity == 0)
 			absPosition += transform->Position;
+		else
+			absPosition = transform2->Orientation * (absPosition + transform->Position);
 	} while (entity != 0);
 
 	return absPosition * accumulativeOrientation;
@@ -39,7 +39,7 @@ glm::quat Systems::TransformSystem::AbsoluteOrientation(EntityID entity)
 
 	do
 	{
-		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
 		absOrientation = transform->Orientation * absOrientation;
 		entity = m_World->GetEntityParent(entity);
 	} while (entity != 0);
@@ -53,7 +53,7 @@ glm::vec3 Systems::TransformSystem::AbsoluteScale(EntityID entity)
 
 	do
 	{
-		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
 		absScale *= transform->Scale;
 		entity = m_World->GetEntityParent(entity);
 	} while (entity != 0);
@@ -69,15 +69,15 @@ Components::Transform Systems::TransformSystem::AbsoluteTransform(EntityID entit
 
 	do
 	{
-		auto transform = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
 		entity = m_World->GetEntityParent(entity);
-		auto transform2 = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto transform2 = m_World->GetComponent<Components::Transform>(entity);
 
 		// Position
-		if (entity != 0)
-			absPosition += transform2->Orientation * transform->Position;
-		else
+		if (entity == 0)
 			absPosition += transform->Position;
+		else
+			absPosition = transform2->Orientation * (absPosition + transform->Position);
 		// Orientation
 		absOrientation = transform->Orientation * absOrientation;
 		// Scale

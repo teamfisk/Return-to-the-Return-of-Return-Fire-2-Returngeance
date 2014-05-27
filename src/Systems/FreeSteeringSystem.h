@@ -4,6 +4,7 @@
 #include "Components/Transform.h"
 #include "Components/FreeSteering.h"
 #include "InputController.h"
+#include "Events/LockMouse.h"
 
 namespace Systems
 {
@@ -26,16 +27,17 @@ private:
 	std::unique_ptr<FreeSteeringInputController> m_InputController;
 };
 
-class FreeSteeringSystem::FreeSteeringInputController : InputController
+class FreeSteeringSystem::FreeSteeringInputController : InputController<FreeSteeringSystem>
 {
 public:
 	FreeSteeringInputController(std::shared_ptr<::EventBroker> eventBroker)
 		: InputController(eventBroker)
-		, SpeedMultiplier(1.f)
+		, SpeedMultiplier(0.f)
 		, OrientationActive(false) { }
 
 	glm::vec3 Movement;
-	glm::quat Orientation;
+	glm::vec3 MouseOrientation;
+	glm::vec3 ControllerOrientation;
 	float SpeedMultiplier;
 	bool OrientationActive;
 

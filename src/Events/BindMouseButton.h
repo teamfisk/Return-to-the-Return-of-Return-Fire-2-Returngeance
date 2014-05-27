@@ -10,6 +10,7 @@ struct BindMouseButton : Event
 {
 	int Button;
 	std::string Command;
+	float Value;
 };
 
 }

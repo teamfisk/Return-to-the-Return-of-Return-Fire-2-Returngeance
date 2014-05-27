@@ -39,33 +39,33 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(HAVOK_2013_1_0_r1_ROOT)\Source;$(BOOST_1_55_0_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(HAVOK_2013_1_0_r1_ROOT)\Lib\win32_vs2012_win7\debug_dll;$(BOOST_1_55_0_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glew-1.10.0\lib\Debug\Win32;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Debug;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Debug;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Debug;$(SolutionDir)\..\libs\SOIL\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(HAVOK_2013_1_0_r1_ROOT)\Source;$(BOOST_1_55_0_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(HAVOK_2013_1_0_r1_ROOT)\Lib\win32_vs2012_win7\debug_dll;$(BOOST_1_55_0_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glew-1.10.0\lib\Debug\Win32;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Debug;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Debug;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Debug;$(SolutionDir)\..\libs\SOIL\lib\Debug;$(LibraryPath);$(DXSDK_DIR)\Lib\x86</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(HAVOK_2013_1_0_r1_ROOT)\Source;$(BOOST_1_55_0_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>$(HAVOK_2013_1_0_r1_ROOT)\Lib\win32_vs2012_win7\release_dll;$(BOOST_1_55_0_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Release;$(SolutionDir)\..\libs\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Release;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Release;$(SolutionDir)\..\libs\SOIL\lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(HAVOK_2013_1_0_r1_ROOT)\Source;$(BOOST_1_55_0_ROOT);$(SolutionDir)\..\src;$(SolutionDir)\..\libs;$(SolutionDir)\..\libs\glew-1.10.0\include;$(SolutionDir)\..\libs\glfw-3.0.4\include;$(SolutionDir)\..\libs\glm-0.9.5.3;$(SolutionDir)\..\libs\openal-soft-1.15.1\include;$(SolutionDir)\..\libs\bullet-2.82-r2704\src;$(SolutionDir)\..\libs\SOIL\src;$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(HAVOK_2013_1_0_r1_ROOT)\Lib\win32_vs2012_win7\release_dll;$(BOOST_1_55_0_ROOT)\lib32-msvc-11.0;$(SolutionDir)\..\libs\glfw-3.0.4\lib\Release;$(SolutionDir)\..\libs\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\..\libs\openal-soft-1.15.1\lib\Win32\Release;$(SolutionDir)\..\libs\bullet-2.82-r2704\lib\Release;$(SolutionDir)\..\libs\SOIL\lib\Release;$(LibraryPath);$(DXSDK_DIR)\Lib\x86</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;_WIN32;_DEBUG;HK_DEBUG;HK_DEBUG_SLOW;_XT_STATICLINK;_CONSOLE;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;HK_CONFIG_SIMD=1;DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_X86_;_WINDOWS;WIN32;_WIN32;_DEBUG;HK_DEBUG;HK_DEBUG_SLOW;_XT_STATICLINK;_CONSOLE;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;HK_CONFIG_SIMD=1;DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;hkpVehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;XInput9_1_0.lib;glew32d.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;hkpVehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /ignore:4221</AdditionalOptions>
     </Link>
     <CustomBuildStep />
@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;HK_CONFIG_SIMD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_X86_;_CRT_SECURE_NO_WARNINGS;_MBCS;HK_CONFIG_SIMD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -89,7 +89,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;glew32.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;hkpVehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glu32.lib;SOIL.lib;XInput9_1_0.lib;glew32.lib;glfw3.lib;hkBase.lib;hkVisualize.lib;hkInternal.lib;hkSerialize.lib;hkGeometryUtilities.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraint.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkSceneData.lib;hkpVehicle.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep />
   </ItemDefinitionGroup>
@@ -111,6 +111,7 @@
     <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
@@ -125,11 +126,14 @@
     <ClInclude Include="..\..\src\Camera.h" />
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
+    <ClInclude Include="..\..\src\Components\BarrelSteering.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
+    <ClInclude Include="..\..\src\Components\Health.h" />
+    <ClInclude Include="..\..\src\Components\HelicopterSteering.h" />
     <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
     <ClInclude Include="..\..\src\Components\Input.h" />
     <ClInclude Include="..\..\src\Components\MeshShape.h" />
@@ -137,28 +141,39 @@
     <ClInclude Include="..\..\src\Components\Particle.h" />
     <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
     <ClInclude Include="..\..\src\Components\Physics.h" />
+    <ClInclude Include="..\..\src\Components\Player.h" />
     <ClInclude Include="..\..\src\Components\PointLight.h" />
     <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
     <ClInclude Include="..\..\src\Components\SphereShape.h" />
     <ClInclude Include="..\..\src\Components\Sprite.h" />
     <ClInclude Include="..\..\src\Components\TankSteering.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
+    <ClInclude Include="..\..\src\Components\TowerSteering.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\Viewport.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\Components\WheelPair.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
     <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Events\ApplyForce.h" />
+    <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h" />
+    <ClInclude Include="..\..\src\Events\BindGamepadAxis.h" />
+    <ClInclude Include="..\..\src\Events\BindGamepadButton.h" />
     <ClInclude Include="..\..\src\Events\BindKey.h" />
     <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
+    <ClInclude Include="..\..\src\Events\GamepadAxis.h" />
+    <ClInclude Include="..\..\src\Events\GamepadButton.h" />
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\LockMouse.h" />
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
+    <ClInclude Include="..\..\src\Events\SetVelocity.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
@@ -180,6 +195,7 @@
     <ClInclude Include="..\..\src\System.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />
     <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />
@@ -196,7 +212,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
     <None Include="..\..\src\Shaders\Fragment.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2-Debug.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2.glsl" />
     <None Include="..\..\src\Shaders\Normals.frag.glsl" />
     <None Include="..\..\src\Shaders\Normals.geo.glsl" />
     <None Include="..\..\src\Shaders\ShadowMap.frag.glsl" />
@@ -204,6 +224,7 @@
     <None Include="..\..\src\Shaders\Skybox.frag.glsl" />
     <None Include="..\..\src\Shaders\Skybox.vert.glsl" />
     <None Include="..\..\src\Shaders\Vertex.glsl" />
+    <None Include="..\..\src\Shaders\Vertex2.glsl" />
     <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl" />
     <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl" />
   </ItemGroup>

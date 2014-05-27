@@ -36,7 +36,9 @@ void World::Update(double dt)
 {
 	for (auto pair : m_Systems)
 	{
+		const std::string &type = pair.first;
 		auto system = pair.second;
+		m_EventBroker->Process(type);
 		system->Update(dt);
 		RecursiveUpdate(system, dt, 0);
 	}
@@ -132,11 +134,6 @@ void World::Initialize()
 	}
 }
 
-std::shared_ptr<Component> World::AddComponent(EntityID entity, std::string componentType)
-{
-	return AddComponent<Component>(entity, componentType);
-}
-
 void World::CommitEntity(EntityID entity)
 {
 	for (auto pair : m_Systems)
@@ -158,11 +155,6 @@ void World::AddComponent(EntityID entity, std::string componentType, std::shared
 	}
 }
 
-void World::AddSystem(std::string systemType)
-{
-	m_Systems[systemType] = std::shared_ptr<System>(m_SystemFactory.Create(systemType));
-}
-
 EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)
 {
 	int clone = CreateEntity(parent);
@@ -170,6 +162,8 @@ EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)
 	for (auto pair : m_EntityComponents[entity])
 	{
 		auto type = pair.first;
+		if (type == typeid(Components::Template).name())
+			continue;
 		auto component = std::shared_ptr<Component>(pair.second->Clone());
 		if (component != nullptr)
 		{
@@ -185,6 +179,8 @@ EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)
 			CloneEntity(child, clone);
 		}
 	}
+
+	CommitEntity(clone);
 
 	return clone;
 }

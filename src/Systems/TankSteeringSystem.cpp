@@ -4,84 +4,145 @@
 
 void Systems::TankSteeringSystem::RegisterComponents( ComponentFactory* cf )
 {
-	cf->Register("TankSteering", []() { return new Components::TankSteering(); });
+	cf->Register<Components::TankSteering>([]() { return new Components::TankSteering(); });
+	cf->Register<Components::TowerSteering>([]() { return new Components::TowerSteering(); });
+	cf->Register<Components::BarrelSteering>([]() { return new Components::BarrelSteering(); });
 }
 
 void Systems::TankSteeringSystem::Initialize()
 {
-	m_InputController = std::unique_ptr<TankSteeringInputController>(new TankSteeringInputController(EventBroker));
-	m_InputController->PositionX = 0;
-	m_InputController->PositionY = 0;
-	m_InputController->Handbrake = false;
+	for (int i = 0; i < 4; i++)
+	{
+		m_TankInputControllers[i] = std::shared_ptr<TankSteeringInputController>(new TankSteeringInputController(EventBroker, i + 1));
+	}
 }
 
 void Systems::TankSteeringSystem::Update(double dt)
 {
-
+	for (int i = 0; i < 4; i++)
+	{
+		m_TankInputControllers[i]->Update(dt);
+	}
 }
 
 void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity, "TankSteering");
-	if(tankSteeringComponent)
+	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity);
+	if(!tankSteeringComponent)
+		return;
+
+	auto playerComponent = m_World->GetComponent<Components::Player>(tankSteeringComponent->Player);
+	if (!playerComponent)
+		return;
+
+	if (playerComponent->ID == 0)
+		return;
+
+	auto inputController = m_TankInputControllers[playerComponent->ID - 1];
+
+	Events::TankSteer eSteering;
+	eSteering.Entity = entity;
+	eSteering.PositionX = inputController->PositionX;
+	eSteering.PositionY = inputController->PositionY;
+	eSteering.Handbrake = inputController->Handbrake;
+	EventBroker->Publish(eSteering);
+
+
+	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(tankSteeringComponent->Turret);
+	auto barrelSteeringComponent = m_World->GetComponent<Components::BarrelSteering>(tankSteeringComponent->Barrel);
+
+	if(towerSteeringComponent)
 	{
-		Events::TankSteer e;
-		e.Entity = entity;
-		e.PositionX = m_InputController->PositionX;
-		e.PositionY = m_InputController->PositionY;
-		e.Handbrake = m_InputController->Handbrake;
-		EventBroker->Publish(e);
+		auto transformComponent = m_World->GetComponent<Components::Transform>(tankSteeringComponent->Turret);
+		glm::quat orientation =  glm::angleAxis(towerSteeringComponent->TurnSpeed * inputController->TowerDirection * (float)dt, towerSteeringComponent->Axis);
+		transformComponent->Orientation *= orientation;
 	}
+	
+	if(barrelSteeringComponent)
+	{
+		auto transformComponent = m_World->GetComponent<Components::Transform>(tankSteeringComponent->Barrel);
+		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(tankSteeringComponent->Barrel);
+		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * inputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
+		transformComponent->Orientation *= orientation;
+
+		if(inputController->Shoot && m_TimeSinceLastShot[tankSteeringComponent->Barrel] > 0.5)
+		{
+			EntityID clone = m_World->CloneEntity(barrelSteeringComponent->ShotTemplate);
+			auto templateAbsoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(barrelSteeringComponent->ShotTemplate);
+			auto cloneTransform = m_World->GetComponent<Components::Transform>(clone);
+			cloneTransform->Position = templateAbsoluteTransform.Position;
+			cloneTransform->Orientation = absoluteTransform.Orientation * cloneTransform->Orientation;
+			Events::SetVelocity eSetVelocity;
+			eSetVelocity.Entity = clone;
+			eSetVelocity.Velocity = absoluteTransform.Orientation * (glm::vec3(0.f, 0.f, -1.f) * barrelSteeringComponent->ShotSpeed);
+			EventBroker->Publish(eSetVelocity);
+			m_TimeSinceLastShot[tankSteeringComponent->Barrel] = 0;
+
+
+			auto clonePhysicsComponent = m_World->GetComponent<Components::Physics>(clone);
+			//1,670m/s
+			//25kg
+			Events::ApplyPointImpulse ePointImpulse ;
+			ePointImpulse.Entity = entity;
+			ePointImpulse.Position = absoluteTransform.Position;
+			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 1670.f;
+			EventBroker->Publish(ePointImpulse);
+		}
+
+		m_TimeSinceLastShot[tankSteeringComponent->Barrel] += dt;
+	}
+}
+
+void Systems::TankSteeringSystem::TankSteeringInputController::Update( double dt )
+{
+	PositionX = m_Horizontal;
+	PositionY = m_Vertical;
+
+	TowerDirection = m_TowerDirection;
+	BarrelDirection = m_BarrelDirection;
+	Shoot = m_Shoot;
 }
 
 bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const Events::InputCommand &event)
 {
-	float val = boost::any_cast<float>(event.Value);
-	if (event.Command == "+right")
+	if (event.PlayerID != this->PlayerID)
+		return false;
+
+	float val = event.Value;
+	
+	// Tank
+	if (event.Command == "horizontal")
 	{
-		PositionX += val;
+		m_Horizontal = val;
+		m_Vertical = -0.4f;
 	}
-	else if (event.Command == "-right")
+	else if (event.Command == "vertical")
 	{
-		PositionX -= val;
+		m_Vertical = -val;
 	}
-	else if (event.Command == "+left")
+	
+	else if (event.Command == "handbrake")
 	{
-		PositionX += -val;
-	}
-	else if (event.Command == "-left")
-	{
-		PositionX -= -val;
-	}
-	else if (event.Command == "+forward")
-	{
-		PositionY += -val;
-	}
-	else if (event.Command == "-forward")
-	{
-		PositionY -= -val;
-	}
-	else if (event.Command == "+backward")
-	{
-		PositionY += val;
-	}
-	else if (event.Command == "-backward")
-	{
-		PositionY -= val;
+		Handbrake = val > 0;
 	}
 
-	else if (event.Command == "+handbrake")
+	// Turret
+	if(event.Command == "tower_rotation")
 	{
-		Handbrake = true;
+		m_TowerDirection = -val;
 	}
-	else if (event.Command == "-handbrake")
+	else if(event.Command == "barrel_rotation")
 	{
-		Handbrake = false;
+		m_BarrelDirection = val;
 	}
+
+	else if (event.Command == "shoot")
+	{
+		m_Shoot = val > 0;
+	}
+
 	return true;
 }
 
-bool Systems::TankSteeringSystem::TankSteeringInputController::OnMouseMove( const Events::MouseMove &event )
-{
-	return false;
-}
+
+

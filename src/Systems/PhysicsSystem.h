@@ -1,6 +1,16 @@
 #ifndef PhysicsSystem_h__
 #define PhysicsSystem_h__
 
+#define HKVECTOR4_TO_GLMVEC3(hkvec) \
+	glm::vec3(hkvec(0), hkvec(1), hkvec(2))
+#define GLMVEC3_TO_HKVECTOR4(glmvec) \
+	hkVector4(glmvec.x, glmvec.y, glmvec.z)
+
+#define HKQUATERNION_TO_GLMQUAT(gkquat) \
+	glm::quat(gkquat(3), gkquat(0), gkquat(1), gkquat(2))
+#define GLMQUAT_TO_HKQUATERNION(glmquat) \
+	hkQuaternion(glmquat.x, glmquat.y, glmquat.z, glmquat.w)
+
 #include "System.h"
 #include "Systems/TransformSystem.h"
 #include "Components/Transform.h"
@@ -12,7 +22,11 @@
 #include "Components/MeshShape.h"
 #include "Components/HingeConstraint.h"
 #include "Components/WheelPair.h"
+#include "Components/TowerSteering.h"
 #include "Events/TankSteer.h"
+#include "Events/SetVelocity.h"
+#include "Events/ApplyForce.h"
+#include "Events/ApplyPointImpulse.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -58,9 +72,27 @@
 #include "Physics/VehicleSetup.h"
 
 #include <unordered_map>
+
+#include <Physics2012/Dynamics/Collide/ContactListener/hkpContactListener.h>
+
+class MyCollisionResolution: public hkReferencedObject, public hkpContactListener
+{
+public:
+	std::unordered_map<hkpRigidBody*, EntityID> m_RigidBodies;
+
+	virtual void contactPointCallback( const hkpContactPointEvent& event ) 
+	{
+		
+		EntityID entity1 = m_RigidBodies[event.getBody(0)];
+		EntityID entity2 = m_RigidBodies[event.getBody(1)];
+		//LOG_INFO("Entities colliding: %i, %i ", entity1, entity2);
+
+	}
+};
+
+
 namespace Systems
 {
-
 class PhysicsSystem : public System
 {
 public:
@@ -75,14 +107,20 @@ public:
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
-
+	
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
 
 	// Events
-	EventRelay<Events::TankSteer> m_ETankSteer;
+	EventRelay<PhysicsSystem, Events::TankSteer> m_ETankSteer;
 	bool OnTankSteer(const Events::TankSteer &event);
+	EventRelay<PhysicsSystem, Events::SetVelocity> m_ESetVelocity;
+	bool OnSetVelocity(const Events::SetVelocity &event);
+	EventRelay<PhysicsSystem, Events::ApplyForce> m_EApplyForce;
+	bool OnApplyForce(const Events::ApplyForce &event);
+	EventRelay<PhysicsSystem, Events::ApplyPointImpulse> m_EApplyPointImpulse;
+	bool OnApplyPointImpulse(const Events::ApplyPointImpulse &event);
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);
@@ -93,16 +131,6 @@ private:
 	static void HK_CALL HavokErrorReport(const char* msg, void*);
 	void SetupPhysics(hkpWorld* physicsWorld);
 	
-	// Converterfunctions
-	glm::vec3 ConvertPosition(const hkVector4 &hkPosition);
-	const hkVector4& ConvertPosition(glm::vec3 glmPosition);
-
-	glm::quat ConvertRotation(const hkQuaternion &hkRotation);
-	const hkQuaternion& ConvertRotation(glm::quat glmRotation);
-
-	glm::vec3 ConvertScale(const hkVector4 &hkScale);
-	const hkVector4&ConvertScale(glm::vec3 glmScale);
-
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
 	
 	hkJobThreadPool* m_ThreadPool;
@@ -140,8 +168,9 @@ private:
 		hkpMoppBvTreeShape* MoppShape;
 	};
 	std::unordered_map<EntityID, ExtendedShapeData > m_ExtendedMeshShapes;
+
+	MyCollisionResolution* m_collisionResolution;
 };
 
 }
-
 #endif // PhysicsSystem_h__

@@ -29,7 +29,7 @@ void Systems::SoundSystem::Initialize()
 
 void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("SoundEmitter", []() { return new Components::SoundEmitter(); });
+	cf->Register<Components::SoundEmitter>([]() { return new Components::SoundEmitter(); });
 }
 
 void Systems::SoundSystem::RegisterResourceTypes(ResourceManager* rm)
@@ -44,7 +44,7 @@ void Systems::SoundSystem::Update(double dt)
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (transformComponent == nullptr)
 		return;
 
@@ -68,7 +68,7 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 		alListenerfv(AL_ORIENTATION, listenerOri);
 	}
 
-	auto soundEmitter = m_World->GetComponent<Components::SoundEmitter>(entity, "SoundEmitter");
+	auto soundEmitter = m_World->GetComponent<Components::SoundEmitter>(entity);
 	if(soundEmitter != nullptr)
 	{
 		ALuint source = m_Sources[soundEmitter];

@@ -13,6 +13,7 @@
 //#include "Systems/PlayerSystem.h"
 #include "Systems/FreeSteeringSystem.h"
 #include "Systems/TankSteeringSystem.h"
+#include "Systems/HelicopterSteeringSystem.h"
 #include "Systems/RenderSystem.h"
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
@@ -28,6 +29,7 @@
 #include "Components/Sprite.h"
 #include "Components/Template.h"
 #include "Components/Transform.h"
+#include "Components/Viewport.h"
 
 #include "Components/Physics.h"
 #include "Components/SphereShape.h"
@@ -35,6 +37,10 @@
 #include "Components/Vehicle.h"
 #include "Components/Wheel.h"
 #include "Components/HingeConstraint.h"
+#include "Components/TankSteering.h"
+#include "Components/TowerSteering.h"
+#include "Components/BarrelSteering.h"
+#include "Components/Player.h"
 
 class GameWorld : public World
 {
@@ -53,8 +59,10 @@ public:
 private:
 	std::shared_ptr<Renderer> m_Renderer;
 
-	void BindKey(int keyCode, std::string command);
-	void BindMouseButton(int button, std::string command);
+	void BindKey(int keyCode, std::string command, float value);
+	void BindMouseButton(int button, std::string command, float value);
+	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
+	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
 };
 
 #endif // GameWorld_h__

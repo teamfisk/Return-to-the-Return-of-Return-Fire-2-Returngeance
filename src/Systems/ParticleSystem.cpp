@@ -6,9 +6,9 @@
 
 void Systems::ParticleSystem::Initialize()
 {
-	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>("TransformSystem");
+	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	tempSpawnedExplosions = false;
-	EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &Systems::ParticleSystem::OnKeyUp);
+	EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &ParticleSystem::OnKeyUp);
 }
 
 void Systems::ParticleSystem::Update(double dt)
@@ -20,7 +20,7 @@ void Systems::ParticleSystem::Update(double dt)
 		double spawnTime = it->second;
 		
 		double timeLived = glfwGetTime() - spawnTime;
-		auto eComp = m_World->GetComponent<Components::ParticleEmitter>(explosionID, "ParticleEmitter");
+		auto eComp = m_World->GetComponent<Components::ParticleEmitter>(explosionID);
 
 		if(timeLived > eComp->LifeTime)
 		{
@@ -37,15 +37,15 @@ void Systems::ParticleSystem::Update(double dt)
 
 void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if(!transformComponent)
 		return;
 
-	auto emitterComponent = m_World->GetComponent<Components::ParticleEmitter>(entity, "ParticleEmitter");
+	auto emitterComponent = m_World->GetComponent<Components::ParticleEmitter>(entity);
 	if(emitterComponent)
 	{
 		emitterComponent->TimeSinceLastSpawn += dt;
-		auto emitterTransformComponent = m_World->GetComponent<Components::Transform>(entity, "Transform");
+		auto emitterTransformComponent = m_World->GetComponent<Components::Transform>(entity);
 		if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
 		{
 			SpawnParticles(entity);
@@ -56,8 +56,8 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end();)
 		{
 			EntityID particleID = (it)->ParticleID;
-			auto transformComponent = m_World->GetComponent<Components::Transform>(particleID, "Transform");
-			auto particleComponent = m_World->GetComponent<Components::Particle>(particleID, "Particle");
+			auto transformComponent = m_World->GetComponent<Components::Transform>(particleID);
+			auto particleComponent = m_World->GetComponent<Components::Particle>(particleID);
 
 			double timeLived = glfwGetTime() - it->SpawnTime; 
 			if(timeLived > particleComponent->LifeTime)
@@ -115,24 +115,24 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 
 void Systems::ParticleSystem::RegisterComponents(ComponentFactory* cf)
 {
-	cf->Register("ParticleEmitter", []() { return new Components::ParticleEmitter(); });
-	cf->Register("Particle", []() { return new Components::Particle(); });
+	cf->Register<Components::ParticleEmitter>([]() { return new Components::ParticleEmitter(); });
+	cf->Register<Components::Particle>([]() { return new Components::Particle(); });
 }
 
 
 void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 {
-	auto eComponent = m_World->GetComponent<Components::ParticleEmitter>(emitterID, "ParticleEmitter");
-	auto eTransform = m_World->GetComponent<Components::Transform>(emitterID, "Transform");
+	auto eComponent = m_World->GetComponent<Components::ParticleEmitter>(emitterID);
+	auto eTransform = m_World->GetComponent<Components::Transform>(emitterID);
 	glm::vec3 ePosition = m_TransformSystem->AbsolutePosition(emitterID);
 	glm::quat eOrientation = eTransform->Orientation;
 	glm::vec3 paticleSpeed = glm::vec3(eComponent->Speed);
 
 	for(int i = 0; i < eComponent->SpawnCount; i++)
 	{
-		auto particleEntity = m_World->CloneEntity(eComponent->ParticleTemplate);
+		auto ent = m_World->CloneEntity(eComponent->ParticleTemplate);
 
-		auto particleTransform = m_World->GetComponent<Components::Transform>(particleEntity, "Transform");
+		auto particleTransform = m_World->GetComponent<Components::Transform>(ent);
 		particleTransform->Position = ePosition;
 		
 		particleTransform->Orientation = eOrientation;
@@ -143,16 +143,16 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(0, 1, 0))) *
 			glm::normalize(glm::angleAxis(RandomizeAngle(spreadAngle), glm::vec3(0, 0, 1)));
 
-		auto particleComponent = m_World->AddComponent<Components::Particle>(particleEntity, "Particle");
-		particleComponent->LifeTime = eComponent->LifeTime;
-		particleComponent->ScaleSpectrum = eComponent->ScaleSpectrum; 
-		particleComponent->VelocitySpectrum.push_back(particleTransform->Velocity);
+		auto particle = m_World->AddComponent<Components::Particle>(ent);
+		particle->LifeTime = eComponent->LifeTime;
+		particle->ScaleSpectrum = eComponent->ScaleSpectrum; 
+		particle->VelocitySpectrum.push_back(particleTransform->Velocity);
 		
 		if (eComponent->ScaleSpectrum.size() > 0)
 		{
 			if (eComponent->ScaleSpectrum.size() > 1)
 			{
-				particleComponent->ScaleSpectrum = eComponent->ScaleSpectrum;
+				particle->ScaleSpectrum = eComponent->ScaleSpectrum;
 			}
 			else
 			{
@@ -165,20 +165,20 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 		}
 		
 		if(eComponent->UseGoalVelocity)
-			particleComponent->VelocitySpectrum.push_back(eComponent->GoalVelocity);
-		particleComponent->OrientationSpectrum = eComponent->OrientationSpectrum;
-		if(particleComponent->OrientationSpectrum.size() != 0)
-			particleTransform->Orientation = glm::angleAxis(0.f, particleComponent->OrientationSpectrum[0]);
-		particleComponent->AngularVelocitySpectrum = eComponent->AngularVelocitySpectrum;
+			particle->VelocitySpectrum.push_back(eComponent->GoalVelocity);
+		particle->OrientationSpectrum = eComponent->OrientationSpectrum;
+		if(particle->OrientationSpectrum.size() != 0)
+			particleTransform->Orientation = glm::angleAxis(0.f, particle->OrientationSpectrum[0]);
+		particle->AngularVelocitySpectrum = eComponent->AngularVelocitySpectrum;
 		
 
 		ParticleData data;
-		data.ParticleID = particleEntity;
+		data.ParticleID = ent;
 		data.SpawnTime = glfwGetTime();
-		if (particleComponent->AngularVelocitySpectrum.size() != 0)
-			data.AngularVelocity = particleComponent->AngularVelocitySpectrum[0];
-		if (particleComponent->OrientationSpectrum.size() != 0)
-			data.Orientation = particleComponent->OrientationSpectrum[0];
+		if (particle->AngularVelocitySpectrum.size() != 0)
+			data.AngularVelocity = particle->AngularVelocitySpectrum[0];
+		if (particle->OrientationSpectrum.size() != 0)
+			data.Orientation = particle->OrientationSpectrum[0];
 		else data.Orientation = eOrientation * glm::vec3(0,0,-1);
 		m_ParticleEmitter[emitterID].push_back(data);
 	}
@@ -228,7 +228,7 @@ void Systems::ParticleSystem::ScalarInterpolation(double timeProgress, std::vect
 void Systems::ParticleSystem::CreateExplosion(glm::vec3 _pos, double _lifeTime, int _particlesToSpawn, std::string _spritePath, glm::quat _relativeUpOri, float _speed, float _spreadAngle, float _particleScale)
 {
 	auto explosion = m_World->CreateEntity();
-	auto emitter = m_World->AddComponent<Components::ParticleEmitter>(explosion, "ParticleEmitter");
+	auto emitter = m_World->AddComponent<Components::ParticleEmitter>(explosion);
 	emitter->LifeTime = _lifeTime;
 	emitter->SpawnCount = _particlesToSpawn;
 	emitter->Speed = _speed;
@@ -239,14 +239,14 @@ void Systems::ParticleSystem::CreateExplosion(glm::vec3 _pos, double _lifeTime, 
 	m_World->CommitEntity(explosion);
 
 	auto particleEnt = m_World->CreateEntity();
-	auto TEMP = m_World->AddComponent<Components::Transform>(particleEnt, "Transform");
+	auto TEMP = m_World->AddComponent<Components::Transform>(particleEnt);
 	TEMP->Scale = glm::vec3(0);
-	auto spriteComponent = m_World->AddComponent<Components::Sprite>(particleEnt, "Sprite");
+	auto spriteComponent = m_World->AddComponent<Components::Sprite>(particleEnt);
 	spriteComponent->SpriteFile = _spritePath;
 	m_World->CommitEntity(particleEnt);
 	emitter->ParticleTemplate = particleEnt;
 	
-	auto transform = m_World->AddComponent<Components::Transform>(explosion, "Transform");
+	auto transform = m_World->AddComponent<Components::Transform>(explosion);
 	transform->Position = _pos;
 	transform->Orientation = _relativeUpOri;
 	

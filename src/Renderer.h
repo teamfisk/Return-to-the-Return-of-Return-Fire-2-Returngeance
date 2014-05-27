@@ -12,6 +12,7 @@
 #include "Model.h"
 #include "Components/PointLight.h"
 #include "Skybox.h"
+#include "ResourceManager.h"
 
 class Renderer
 {
@@ -26,14 +27,6 @@ public:
 
 	std::list<std::tuple<Model*, glm::mat4, bool, bool>> ModelsToRender;
 	std::list<std::tuple<Texture*, glm::mat4, glm::mat4>> TexturesToRender;
-	int Lights;
-	std::vector<float> Light_position;
-	std::vector<float> Light_specular;
-	std::vector<float> Light_diffuse;
-	std::vector<float> Light_constantAttenuation;
-	std::vector<float> Light_linearAttenuation;
-	std::vector<float> Light_quadraticAttenuation;
-	std::vector<float> Light_spotExponent;
 	std::list<std::tuple<glm::mat4, bool>> AABBsToRender;
 
 	Renderer();
@@ -42,6 +35,11 @@ public:
 	void Draw(double dt);
 	void DrawText();
 
+	void RegisterViewport(int identifier, float left, float top, float right, float bottom);
+	void RegisterCamera(int identifier, float FOV, float nearClip, float farClip);
+	void UpdateViewport(int viewportIdentifier, int cameraIdentifier);
+	void UpdateCamera(int cameraIdentifier, glm::vec3 position, glm::quat orientation, float FOV, float nearClip, float farClip);
+
 	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
 	void AddTextToDraw();
@@ -49,10 +47,10 @@ public:
 	    glm::vec3 _position,
 	    glm::vec3 _specular,
 	    glm::vec3 _diffuse,
-	    float _constantAttenuation,
-	    float _linearAttenuation,
-	    float _quadraticAttenuation,
-	    float _spotExponent
+	    float _specularExponent,
+		float _ConstantAttenuation, 
+		float _LinearAttenuation, 
+		float _QuadraticAttenuation
 	);
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
@@ -69,8 +67,37 @@ public:
 	void DrawBounds(bool val) { m_DrawBounds = val; }
 	void DrawSkybox();
 
+	void SetSphereModel(Model* _model);
+
 private:
 	int m_Width, m_Height;
+
+	struct Viewport
+	{
+		float Left;
+		float Top;
+		float Right;
+		float Bottom;
+		std::shared_ptr<Camera> Camera;
+	};
+
+	std::unordered_map<int, Viewport> m_Viewports;
+	std::unordered_map<int, std::shared_ptr<Camera>> m_Cameras;
+
+	struct Light
+	{
+		glm::vec3 Position;
+		glm::vec3 Specular;
+		glm::vec3 Diffuse;
+		float SpecularExponent;
+		glm::mat4 SphereModelMatrix;
+		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
+	};
+
+	float Gamma;
+
+	std::list<Light> Lights;
+
 	GLFWwindow* m_Window;
 	GLint m_glVersion[2];
 	GLchar* m_glVendor;
@@ -78,6 +105,7 @@ private:
 	bool m_DrawNormals;
 	bool m_DrawWireframe;
 	bool m_DrawBounds;
+	float CAtt, LAtt, QAtt;
 
 	std::shared_ptr<Skybox> m_Skybox;
 
@@ -87,24 +115,57 @@ private:
 	glm::mat4 m_SunProjection;
 
 	GLuint m_DebugAABB;
-	GLuint m_ScreenQuad;
 	GLuint m_ShadowFrameBuffer;
 	GLuint m_ShadowDepthTexture;
+
+	GLuint m_fbBasePass;
+	GLuint m_fDiffuseTexture;
+	GLuint m_fPositionTexture;
+	GLuint m_fNormalsTexture;
+	GLuint m_fSpecularTexture;
+	GLuint m_fBlendTexture;
+	GLuint m_fbLightingPass;
+	GLuint m_fLightingTexture;
+	GLuint m_fShadowTexture;
+
+	GLuint m_fDepthBuffer;
+	GLenum draw_bufs[2];
+	GLuint m_ScreenQuad;
+	Model* m_sphereModel;
+
+	bool m_QuadView;
 
 	std::shared_ptr<Camera> m_Camera;
 
 	ShaderProgram m_ShaderProgram;
+	ShaderProgram m_FirstPassProgram;
+	ShaderProgram m_SecondPassProgram;
+	ShaderProgram m_SecondPassProgram_Debug;
+	ShaderProgram m_FinalPassProgram;
+
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
 	ShaderProgram m_ShaderProgramShadowsDrawDepth;
 	ShaderProgram m_ShaderProgramDebugAABB;
 	ShaderProgram m_ShaderProgramSkybox;
 
+
+
 	void ClearStuff();
 	void DrawScene();
 	void DrawModels(ShaderProgram &shader);
 	void DrawShadowMap();
 	void CreateShadowMap(int resolution);
+	void FrameBufferTextures();
+	void DrawFBO();
+	void DrawFBOScene(Viewport &viewport);
+	void DrawLightScene(Viewport &viewport);
+	void BindFragDataLocation();
+	glm::mat4 CreateLightMatrix(Light &_light);
+	void UpdateSunProjection();
+	void CreateNormalMapTangent();
+
+	
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();
 	GLuint CreateAABB();
