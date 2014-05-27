@@ -127,6 +127,7 @@ private:
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_FinalPassProgram;
+	ShaderProgram m_SunPassProgram;
 	ShaderProgram m_ForwardRendering;
 
 	ShaderProgram m_ShaderProgramNormals;
@@ -147,6 +148,7 @@ private:
 	void DrawFBO2();
 	void DrawFBOScene();
 	void DrawLightScene();
+	void DrawSunLightScene();
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();

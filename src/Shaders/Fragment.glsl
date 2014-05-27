@@ -30,20 +30,20 @@ out vec4 frag_Position;
 out vec4 frag_Normal;
 out vec4 frag_Specular;
 
-float Shadow(vec4 ShadowCoord)
+float Shadow(vec4 ShadowCoord, vec3 normal)
 {
 	if (Input.ShadowCoord.x < 0.0 || Input.ShadowCoord.x > 1.0 || Input.ShadowCoord.y < 0.0 || Input.ShadowCoord.y > 1.0)
 		return 0.9;
-	
-	//Fixed bias
-	//float bias = 0.00005;
 
 	//Variable bias
-	vec3 n = normalize(Input.Normal);
+	vec3 n = normalize(normal);
 	vec3 l = normalize(SunDirection_cameraspace);
 	float cosTheta = clamp(dot(n, l), 0.0, 1.0);
 	float bias = tan(acos(cosTheta));
-	bias = clamp(bias, 0.0, 0.00005);
+	bias = clamp(bias, 0.0, 0.00003);
+
+	//Fixed bias
+	//float bias = 0.0005;
 
 	if( texture(ShadowTexture, Input.ShadowCoord.xy).z < ShadowCoord.z + bias)
 	{
@@ -60,23 +60,21 @@ void main()
 	//Fixa så den bara gör detta om modellen har en blend map
 	//vvvvvv
 
-	vec4 Blend = texture2D(BlendMap, TextureCoord.st ).rgb;
-	vec4 AsphaltTexel = texture2D(AsphaltTexture, TextureCoord.st * texScale).rgb;
-	vec4 GrassTexel = texture2D(GrassTexture, TextureCoord.st * texScale).rgb;
-	vec4 SandTexel = texture2D(SandTexture, TextureCoord.st * texScale).rgb;
+	vec4 Blend = texture2D(BlendMap, Input.TextureCoord.st );
+	vec4 AsphaltTexel = texture2D(AsphaltTexture, Input.TextureCoord.st * texScale);
+	vec4 GrassTexel = texture2D(GrassTexture, Input.TextureCoord.st * texScale);
+	vec4 SandTexel = texture2D(SandTexture, Input.TextureCoord.st * texScale);
 
 	//Mix the Terrain-textures together
-	AsphaltTexel *= mixmap.r;
-	GrassTexel = mix(AsphaltTexel, GrassTexel, mixmap.g);
-	vec4 tex = mix(GrassTexel, SandTexel, mixmap.b);
+	AsphaltTexel *= Blend.r;
+	GrassTexel = mix(AsphaltTexel, GrassTexel, Blend.g);
+	vec4 tex = mix(GrassTexel, SandTexel, Blend.b);
 
 	//^^^^^^
 	//Fixa så den bara gör detta om modellen har en blend map
 
 
-	// Diffuse Texture
-	frag_Diffuse = tex;
-	//frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord) * Shadow(Input.ShadowCoord);
+	
 
 	// G-buffer Position
 	frag_Position = vec4(Input.Position.xyz, 1.0);
@@ -86,6 +84,10 @@ void main()
 	frag_Normal = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
 	//frag_Diffuse = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
 	//frag_Normal = vec4(Input.Normal, 0.0);
+
+	// Diffuse Texture
+	//frag_Diffuse = tex;
+	frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord) * Shadow(Input.ShadowCoord, vec3(frag_Normal));
 
 	//G-buffer Specular
 	frag_Specular = texture(SpecularMapTexture, Input.TextureCoord);

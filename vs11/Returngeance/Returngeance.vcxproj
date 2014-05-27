@@ -180,6 +180,8 @@
     <None Include="..\..\src\Shaders\ShadowMap.vert.glsl" />
     <None Include="..\..\src\Shaders\Skybox.frag.glsl" />
     <None Include="..\..\src\Shaders\Skybox.vert.glsl" />
+    <None Include="..\..\src\Shaders\SunPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\SunPass.vert.glsl" />
     <None Include="..\..\src\Shaders\Vertex.glsl" />
     <None Include="..\..\src\Shaders\Vertex2.glsl" />
     <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl" />
