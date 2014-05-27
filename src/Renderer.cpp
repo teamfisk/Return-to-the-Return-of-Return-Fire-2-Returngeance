@@ -1,7 +1,8 @@
 #include "PrecompiledHeader.h"
 #include "Renderer.h"
 
-Renderer::Renderer()
+Renderer::Renderer(std::shared_ptr<::ResourceManager> resourceManager)
+	: ResourceManager(resourceManager)
 {
 	m_VSync = false;
 #ifdef DEBUG
@@ -112,6 +113,11 @@ void Renderer::LoadContent()
 	m_ShaderProgramSkybox.Compile();
 	m_ShaderProgramSkybox.Link();*/
 
+	m_SunPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/SunPass.vert.glsl")));
+	m_SunPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/SunPass.frag.glsl")));
+	m_SunPassProgram.Compile();
+	m_SunPassProgram.Link();
+
 	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ForwardRendering.vert.glsl")));
 	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/ForwardRendering.frag.glsl")));
 	m_ForwardRendering.Compile();
@@ -148,6 +154,8 @@ void Renderer::LoadContent()
 	m_ScreenQuad = CreateQuad();
 	CreateShadowMap(m_ShadowMapRes);
 	FrameBufferTextures();
+
+	m_sphereModel = ResourceManager->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj");
 }
 
 void Renderer::Draw(double dt)
@@ -920,6 +928,7 @@ void Renderer::DrawFBO()
 
 	//	glCullFace(GL_FRONT);
 	//	DrawLightScene(viewport);
+	DrawSunLightScene();
 
 	//	/*
 	//	Final pass
@@ -977,6 +986,9 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 	glm::vec3 sunDirection = m_SunTarget - m_SunPosition;
 	glm::vec3 sunDirection_cameraview = glm::vec3(cameraProjection * m_Camera->ViewMatrix() * glm::vec4(sunDirection, 1.0));
 
+	m_FirstPassProgram.Bind();
+	GLuint ShaderProgramHandle = m_FirstPassProgram.GetHandle();
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
 
@@ -989,12 +1001,12 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 
 			MVP = cameraMatrix * modelMatrix;
 			depthMVP = depthCameraMatrix * modelMatrix;
-			glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
-			glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-			glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-			glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
-			//glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+		glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
 
 			glBindVertexArray(modelJob->VAO);
 			glActiveTexture(GL_TEXTURE0);
@@ -1042,8 +1054,6 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 	}
 }
 
-
-
 void Renderer::DrawLightScene(RenderQueue &rq)
 {
 	glEnable(GL_BLEND);
@@ -1057,31 +1067,69 @@ void Renderer::DrawLightScene(RenderQueue &rq)
 	glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
 	glm::mat4 cameraMatrix = cameraProjection * m_Camera->ViewMatrix();
 	glm::mat4 MVP;
+	glm::vec3 sunDirection = m_SunTarget - m_SunPosition;
+
+	m_SecondPassProgram.Bind();
+	GLuint ShaderProgramHandle = m_SecondPassProgram.GetHandle();
 
 	for (auto &light : Lights)
 	{
 		MVP = cameraMatrix * light.SphereModelMatrix;
-		
-		glUniform2fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ViewportSize"), 1,glm::value_ptr(glm::vec2(m_Width, m_Height)));
-		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
-		glUniformMatrix4fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(light.SphereModelMatrix));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ls"), 1, glm::value_ptr(light.Specular));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ld"), 1, glm::value_ptr(light.Diffuse));
-		glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "lp"), 1, glm::value_ptr(light.Position));
-		glUniform3f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "specularExponent"), light.SpecularExponent);
-// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), light.ConstantAttenuation);
-// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), light.LinearAttenuation);
-// 		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), light.QuadraticAttenuation);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "ConstantAttenuation"), CAtt);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LinearAttenuation"), LAtt);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "QuadraticAttenuation"), QAtt);
-		glUniform1f(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "LightRadius"), light.Radius);
+
+		glUniform2fv(glGetUniformLocation(ShaderProgramHandle, "ViewportSize"), 1,glm::value_ptr(glm::vec2(m_Width, m_Height)));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(light.SphereModelMatrix));
+		glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "ls"), 1, glm::value_ptr(light.Specular));
+		glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "ld"), 1, glm::value_ptr(light.Diffuse));
+		glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "lp"), 1, glm::value_ptr(light.Position));
+		glUniform3f(glGetUniformLocation(ShaderProgramHandle, "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
+		glUniform1f(glGetUniformLocation(ShaderProgramHandle, "specularExponent"), light.SpecularExponent);
+		//glUniform1f(glGetUniformLocation(ShaderProgramHandle, "ConstantAttenuation"), CAtt);
+		//glUniform1f(glGetUniformLocation(ShaderProgramHandle, "LinearAttenuation"), LAtt);
+		//glUniform1f(glGetUniformLocation(ShaderProgramHandle, "QuadraticAttenuation"), QAtt);
+		glUniform1f(glGetUniformLocation(ShaderProgramHandle, "LightRadius"), light.Radius);
+		glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "directionToSun"), 1, glm::value_ptr(-sunDirection));
 
 		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
+}
+
+void Renderer::DrawSunLightScene()
+{
+	glCullFace(GL_BACK);
+
+	glEnable(GL_BLEND);
+	glBlendEquation (GL_FUNC_ADD);
+	glBlendFunc(GL_ONE,GL_ONE);
+
+	glDisable (GL_DEPTH_TEST);
+	glDepthMask (GL_FALSE);
+	//glBindVertexArray(m_sphereModel->VAO);
+
+	glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
+	glm::mat4 cameraMatrix = cameraProjection * m_Camera->ViewMatrix();
+	glm::mat4 MVP;
+
+	m_SunPassProgram.Bind();
+	GLuint ShaderProgramHandle = m_SunPassProgram.GetHandle();
+	
+
+	glUniform2fv(glGetUniformLocation(ShaderProgramHandle, "ViewportSize"), 1, glm::value_ptr(glm::vec2(m_Width, m_Height)));
+	glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+	glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+	glUniform3f(glGetUniformLocation(ShaderProgramHandle, "CameraPosition"), m_Camera->Position().x, m_Camera->Position().y, m_Camera->Position().z);
+	glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "directionToSun"), 1, glm::value_ptr(glm::normalize(m_SunPosition)));
+
+	glBindVertexArray(m_ScreenQuad);
+	glEnableVertexAttribArray(0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 	glEnable (GL_DEPTH_TEST);
 	glDepthMask (GL_TRUE);
 	glDisable (GL_BLEND);
@@ -1151,6 +1199,7 @@ void Renderer::ForwardRendering()
 	glm::mat4 MVP;
 
 	m_ForwardRendering.Bind();
+	GLuint ShaderProgramHandle = m_ForwardRendering.GetHandle();
 
 	for (auto tuple : ModelsToRender) //// Todo: Add so it's TransparentModelsToRender
 	{
@@ -1162,10 +1211,10 @@ void Renderer::ForwardRendering()
 			continue;
 
 		MVP = cameraMatrix * modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix((float)m_Width / m_Height)));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(m_Camera->ProjectionMatrix((float)m_Width / m_Height)));
 
 		glBindVertexArray(model->VAO);
 		for (auto texGroup : model->TextureGroups)

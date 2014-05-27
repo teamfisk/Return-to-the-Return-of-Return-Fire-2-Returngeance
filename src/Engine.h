@@ -25,7 +25,7 @@ public:
 		m_ResourceManager->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
 		m_ResourceManager->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 
-		m_Renderer = std::make_shared<Renderer>();
+		m_Renderer = std::make_shared<Renderer>(m_ResourceManager);
 		m_Renderer->Initialize();
 
 		m_InputManager = std::make_shared<InputManager>(m_Renderer->GetWindow(), m_EventBroker);

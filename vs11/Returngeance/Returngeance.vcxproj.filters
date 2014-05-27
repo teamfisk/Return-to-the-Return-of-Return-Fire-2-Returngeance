@@ -468,5 +468,11 @@
     <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\src\Shaders\SunPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\SunPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

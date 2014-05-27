@@ -9,21 +9,17 @@ uniform mat4 MVP;
 uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
-uniform vec3 la;
-uniform vec3 ls;
-uniform vec3 ld;
-uniform vec3 lp;
-uniform float specularExponent;
 uniform vec3 CameraPosition;
-uniform float ConstantAttenuation;
-uniform float LinearAttenuation;
-uniform float QuadraticAttenuation;
-uniform float LightRadius;
+uniform vec3 directionToSun;
 
 const vec3 ks = vec3(1.0, 1.0, 1.0);
 const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
+const vec3 SunDiffuseLight = vec3(0.3, 0.3, 0.3);
+const vec3 SunSpecularLight = vec3(1.0, 1.0, 1.0);
+const vec3 SunPos = directionToSun*vec3(100);
+const float specularExponent = 5;
 
 
 in VertexData
@@ -36,28 +32,21 @@ out vec4 FragColor;
 
 vec4 phong(vec3 position, vec3 normal, vec3 specular)
 {
-	// Diffuse
-	vec3 lightPos = vec3(V * vec4(lp, 1.0));
-	vec3 distanceToLight = lightPos - position;
-	vec3 directionToLight = normalize(distanceToLight);
-	float dotProd = dot(directionToLight, normal);
-	dotProd = max(dotProd, 0.0);
-	vec3 Id = kd * ld * dotProd;
+	
+	//Diffuse Sunlight
+	vec3 directionToLight = normalize(vec3(V * vec4(directionToSun, 0.0)));
+	float dotProdLight = dot(directionToLight, normal);
+	dotProdLight = max(dotProdLight, 0.0);
+	vec3 sId = kd * SunDiffuseLight * dotProdLight;
 
-	// Specular
-	//vec3 reflection = reflect(-directionToLight, normal);
+	//Specular Sunlight
 	vec3 surfaceToViewer = normalize(-position);
 	vec3 halfWay = normalize(surfaceToViewer + directionToLight);
 	float dotSpecular = max(dot(halfWay, normal), 0.0);
-	float specularFactor = pow(dotSpecular, specularExponent);
-	vec3 Is = specular.r * ls * specularFactor;
+	float specularFactorSun = pow(dotSpecular, specularExponent);
+	vec3 sIs = specular.r * SunSpecularLight * specularFactorSun;
 
-	//Attenuation
-	float dist = distance(lightPos, position);
-
-	float attenuation = pow(max(0.0f, 1.0 - (dist / LightRadius)), 2);
-
-	return vec4((Id) * attenuation, Is.r * attenuation);
+	return vec4((sId), sIs.r);
 }
 
 void main()
@@ -67,6 +56,6 @@ void main()
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 	vec4 SpecularTexel = texture(SpecularTexture, TextureCoord);
 
-	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel));
+	FragColor = phong(vec3(PositionTexel), vec3(normalize(NormalTexel)), vec3(SpecularTexel));
 	//FragColor = NormalTexel;
 }

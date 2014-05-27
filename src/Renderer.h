@@ -31,7 +31,7 @@ public:
 	std::list<std::tuple<Texture*, glm::mat4, glm::mat4>> TexturesToRender;
 	std::list<std::tuple<glm::mat4, bool>> AABBsToRender;
 
-	Renderer();
+	Renderer(std::shared_ptr<::ResourceManager> resourceManager);
 
 	void Initialize();
 	void Draw(double dt);
@@ -92,6 +92,8 @@ public:
 	void SetSphereModel(Model* _model);
 
 private:
+	std::shared_ptr<::ResourceManager> ResourceManager;
+
 	int m_Width, m_Height;
 
 	struct Viewport
@@ -169,6 +171,7 @@ private:
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_FinalPassProgram;
+	ShaderProgram m_SunPassProgram;
 	ShaderProgram m_ForwardRendering;
 
 	ShaderProgram m_ShaderProgramNormals;
@@ -189,6 +192,7 @@ private:
 	void DrawFBO2();
 	void DrawFBOScene(RenderQueue &rq);
 	void DrawLightScene(RenderQueue &rq);
+	void DrawSunLightScene();
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();
