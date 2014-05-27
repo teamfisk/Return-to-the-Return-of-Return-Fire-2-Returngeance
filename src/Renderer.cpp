@@ -23,7 +23,7 @@ Renderer::Renderer(std::shared_ptr<::ResourceManager> resourceManager)
 	m_SunTarget = glm::vec3(0, 0, 0);
 	m_SunProjection_height = glm::vec2(-40.f, 40.f);
 	m_SunProjection_width = glm::vec2(-40.f, 40.f);
-	m_SunProjection_length = glm::vec2(500.f, -500.f);
+	m_SunProjection_length = glm::vec2(-500.f, 500.f);
 	m_SunProjection = glm::ortho<float>(m_SunProjection_width.x, m_SunProjection_width.y, m_SunProjection_height.x, m_SunProjection_height.y, m_SunProjection_length.x, m_SunProjection_length.y);
 /*	Lights = 0;*/
 }
@@ -106,12 +106,12 @@ void Renderer::LoadContent()
 	m_ShaderProgramDebugAABB.AddShader(standardVS);
 	m_ShaderProgramDebugAABB.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/AABB.frag.glsl")));
 	m_ShaderProgramDebugAABB.Compile();
-	m_ShaderProgramDebugAABB.Link();
+	m_ShaderProgramDebugAABB.Link();*/
 
 	m_ShaderProgramSkybox.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Skybox.vert.glsl")));
 	m_ShaderProgramSkybox.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Skybox.frag.glsl")));
 	m_ShaderProgramSkybox.Compile();
-	m_ShaderProgramSkybox.Link();*/
+	m_ShaderProgramSkybox.Link();
 
 	m_SunPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/SunPass.vert.glsl")));
 	m_SunPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/SunPass.frag.glsl")));
@@ -156,6 +156,7 @@ void Renderer::LoadContent()
 	FrameBufferTextures();
 
 	m_sphereModel = ResourceManager->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj");
+	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/Sunset", "jpg");
 }
 
 void Renderer::Draw(double dt)
@@ -368,7 +369,7 @@ void Renderer::DrawWorld(RenderQueue &rq)
 	// Clear G-buffer
 	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 	glDrawBuffers(4, windowBuffClear);
-	glClearColor(0.0f, 0.7f, 0.3f, 0.f);
+	glClearColor(115.f / 255, 192.f / 255, 255.f / 255, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
@@ -400,6 +401,7 @@ void Renderer::DrawWorld(RenderQueue &rq)
 
 	glCullFace(GL_FRONT);
 	DrawLightScene(rq);
+	DrawSunLightScene();
 
 	/*
 	Final pass
@@ -436,8 +438,9 @@ void Renderer::Swap()
 
 void Renderer::DrawSkybox()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, m_Width, m_Height);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glViewport(0, 0, m_Width, m_Height);
+	//glScissor(0, 0, m_Width, m_Height);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_ShaderProgramSkybox.Bind();
@@ -483,12 +486,13 @@ void Renderer::DrawShadowMap(RenderQueue &rq)
 	//Binds the FBO and sets the veiwport, witch in effect is how large the shadowmap is and what resolution it has.
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowFrameBuffer);
 	glViewport(0, 0, m_ShadowMapRes, m_ShadowMapRes);
+	glScissor(0, 0, m_ShadowMapRes, m_ShadowMapRes);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//Creates the "camera" for the shadowmap from the direction of the sun.
-	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(-m_Camera->Position() * glm::vec3(1, 1, 1));
+	glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate(m_Camera->Position() * glm::vec3(1, 1, 1));
 	//glm::mat4 depthViewMatrix = glm::lookAt(m_SunPosition, m_SunTarget, glm::vec3(0, 1, 0)) * glm::translate((-m_Camera->Position() + (glm::vec3(40.0) * -m_Camera->Forward())) * glm::vec3(1, 1, 1));
 	glm::mat4 depthCamera = m_SunProjection * depthViewMatrix;
 	glm::mat4 MVP;
@@ -505,7 +509,7 @@ void Renderer::DrawShadowMap(RenderQueue &rq)
 			glm::mat4 modelMatrix = modelJob->ModelMatrix;
 
 			MVP = depthCamera * modelMatrix;
-			glUniformMatrix4fv(glGetUniformLocation(m_FirstPassProgram.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramShadows.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 			//glUniform3fv(glGetUniformLocation(m_SecondPassProgram.GetHandle(), "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
 
 			glBindVertexArray(modelJob->VAO);
@@ -514,25 +518,6 @@ void Renderer::DrawShadowMap(RenderQueue &rq)
 			continue;
 		}
 	}
-	for (auto tuple : ModelsToRender)
-	{
-		Model* model;
-		glm::mat4 modelMatrix;
-		bool shadow;
-		std::tie(model, modelMatrix, std::ignore, shadow) = tuple;
-		if (!shadow)
-			continue;
-
-		MVP = depthCamera * modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramShadows.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-
-		glBindVertexArray(model->VAO);
-		for (auto texGroup : model->TextureGroups)
-		{
-			glDrawArrays(GL_TRIANGLES, texGroup.StartIndex, texGroup.EndIndex - texGroup.StartIndex + 1);
-		}
-	}
-
 }
 
 void Renderer::DrawDebugShadowMap()
@@ -1001,12 +986,12 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 
 			MVP = cameraMatrix * modelMatrix;
 			depthMVP = depthCameraMatrix * modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
-		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
-		glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+			glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
 
 			glBindVertexArray(modelJob->VAO);
 			glActiveTexture(GL_TEXTURE0);

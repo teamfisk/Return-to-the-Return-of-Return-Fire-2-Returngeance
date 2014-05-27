@@ -32,6 +32,8 @@ out vec4 frag_Specular;
 
 float Shadow(vec4 ShadowCoord, vec3 normal)
 {
+	return 1.0;
+
 	if (Input.ShadowCoord.x < 0.0 || Input.ShadowCoord.x > 1.0 || Input.ShadowCoord.y < 0.0 || Input.ShadowCoord.y > 1.0)
 		return 0.9;
 
@@ -43,7 +45,7 @@ float Shadow(vec4 ShadowCoord, vec3 normal)
 	bias = clamp(bias, 0.0, 0.00003);
 
 	//Fixed bias
-	//float bias = 0.0005;
+	bias = 0;
 
 	if( texture(ShadowTexture, Input.ShadowCoord.xy).z < ShadowCoord.z + bias)
 	{

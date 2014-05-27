@@ -45,16 +45,22 @@ void GameWorld::Initialize()
 
 	RegisterComponents();
 
-	//auto camera = CreateEntity();
-	//{
-	//	auto transform = AddComponent<Components::Transform>(camera);
-	//	transform->Position.z = 20.f;
-	//	transform->Position.y = 20.f;
-	//	//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
-	//	auto cameraComp = AddComponent<Components::Camera>(camera);
-	//	cameraComp->FarClip = 2000.f;
-	//	auto freeSteering = AddComponent<Components::FreeSteering>(camera);
-	//}
+	auto camera = CreateEntity();
+	{
+		auto transform = AddComponent<Components::Transform>(camera);
+		transform->Position.z = 20.f;
+		transform->Position.y = 20.f;
+		//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
+		auto cameraComp = AddComponent<Components::Camera>(camera);
+		cameraComp->FarClip = 2000.f;
+		auto freeSteering = AddComponent<Components::FreeSteering>(camera);
+	}
+	{
+		Events::SetViewportCamera e;
+		e.CameraEntity = camera;
+		e.ViewportFrame = "Viewport2";
+		EventBroker->Publish(e);
+	}
 	
 
 	auto player1 = CreateEntity();
@@ -70,32 +76,71 @@ void GameWorld::Initialize()
 	}
 
 	
+	//{
+	//	auto ground = CreateEntity();
+	//	auto transform = AddComponent<Components::Transform>(ground);
+	//	transform->Position = glm::vec3(0, -50, 0);
+	//	//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
+	//	transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+	//	auto model = AddComponent<Components::Model>(ground);
+	//	model->ModelFile = "Models/TestScene3/testScene.obj";
+	//	//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
+	//	
+	//	auto physics = AddComponent<Components::Physics>(ground);
+	//	physics->Mass = 10;
+	//	physics->Static = true;
+
+
+	//	auto groundshape = CreateEntity(ground);
+	//	auto transformshape = AddComponent<Components::Transform>(groundshape);
+	//	auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+	//	//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
+	//	meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+
+	//	
+	//	CommitEntity(groundshape);
+	//	CommitEntity(ground);
+	//}
+
+
 	{
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground);
-		transform->Position = glm::vec3(0, -50, 0);
-		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
+		transform->Position = glm::vec3(0, -5, 0);
+		transform->Scale = glm::vec3(1600.0f, 10.0f, 1600.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground);
-		model->ModelFile = "Models/TestScene3/testScene.obj";
-		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
-		
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
 		physics->Static = true;
 
-
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-		meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+		auto box = AddComponent<Components::BoxShape>(groundshape);
+		box->Width = 800;
+		box->Height = 5;
+		box->Depth = 800;
 
-		
 		CommitEntity(groundshape);
 		CommitEntity(ground);
 	}
 
+	//for (int i = 0; i < 500; i++)
+	//{
+	//	auto Light = CreateEntity();
+	//	auto transform = AddComponent<Components::Transform>(Light);
+	//	transform->Position = glm::vec3((5 + (i*2.f))*cos(i*2.f), 3.f, (5 + (i*2.f))*sin(i*2.f));
+	//	auto light = AddComponent<Components::PointLight>(Light);
+	//	light->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	//	light->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+	//	light->Radius = 15.f;
+	//	light->specularExponent = 100.f;
+	//	CommitEntity(Light);
+	//	//auto model = AddComponent<Components::Model>(Light, "Model");
+	//	//model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	//}
 	
 
 	/*{
@@ -336,17 +381,17 @@ void GameWorld::Initialize()
 			}
 		}
 
-		{
-			auto lightentity = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(lightentity);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto light = AddComponent<Components::PointLight>(lightentity);
-			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
-			//light->Specular = glm::vec3(1.f);
-			/*light->ConstantAttenuation = 0.3f;
-			light->LinearAttenuation = 0.003f;
-			light->QuadraticAttenuation = 0.002f;*/
-		}
+		//{
+		//	auto lightentity = CreateEntity(tank);
+		//	auto transform = AddComponent<Components::Transform>(lightentity);
+		//	transform->Position = glm::vec3(0, 0, 0);
+		//	auto light = AddComponent<Components::PointLight>(lightentity);
+		//	//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+		//	//light->Specular = glm::vec3(1.f);
+		//	/*light->ConstantAttenuation = 0.3f;
+		//	light->LinearAttenuation = 0.003f;
+		//	light->QuadraticAttenuation = 0.002f;*/
+		//}
 
 // 		auto wheelpair = CreateEntity(tank);
 // 		SetProperty(wheelpair, "Name", "WheelPair");
@@ -751,25 +796,19 @@ void GameWorld::Initialize()
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 			}
 			CommitEntity(cameraTower);
-			{
-				Events::SetViewportCamera e;
-				e.CameraEntity = cameraTower;
-				e.ViewportFrame = "Viewport2";
-				EventBroker->Publish(e);
-			}
 		}
 
-		{
-			auto lightentity = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(lightentity);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto light = AddComponent<Components::PointLight>(lightentity);
-			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
-			//light->Specular = glm::vec3(1.f);
-			/*light->ConstantAttenuation = 0.3f;
-			light->LinearAttenuation = 0.003f;
-			light->QuadraticAttenuation = 0.002f;*/
-		}
+		//{
+		//	auto lightentity = CreateEntity(tank);
+		//	auto transform = AddComponent<Components::Transform>(lightentity);
+		//	transform->Position = glm::vec3(0, 0, 0);
+		//	auto light = AddComponent<Components::PointLight>(lightentity);
+		//	//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+		//	//light->Specular = glm::vec3(1.f);
+		//	/*light->ConstantAttenuation = 0.3f;
+		//	light->LinearAttenuation = 0.003f;
+		//	light->QuadraticAttenuation = 0.002f;*/
+		//}
 
 // 		auto wheelpair = CreateEntity(tank);
 // 		SetProperty(wheelpair, "Name", "WheelPair");
