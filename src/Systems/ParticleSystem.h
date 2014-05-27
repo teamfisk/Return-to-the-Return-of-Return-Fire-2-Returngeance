@@ -9,6 +9,7 @@
 #include "Components/Sprite.h"
 #include "EventBroker.h"
 #include "Events/KeyUp.h"
+#include "Events/CreateExplosion.h"
 #include "Color.h"
 #include <GLFW/glfw3.h>
 
@@ -35,7 +36,7 @@ public:
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void Initialize() override;
 
-	void CreateExplosion(glm::vec3 _pos, double _lifeTime, int _particlesToSpawn, std::string _spritePath, glm::quat _relativeUpOri, float _speed, float _spreadAngle, float _particleScale);
+	//void CreateExplosion(glm::vec3 _pos, double _lifeTime, int _particlesToSpawn, std::string _spritePath, glm::quat _relativeUpOri, float _speed, float _spreadAngle, float _particleScale);
 
 	virtual bool OnCommand(const Events::KeyUp &event) { return false; }
 
@@ -54,8 +55,10 @@ private:
 
 	bool tempSpawnedExplosions;
 	
-	EventRelay<ParticleSystem, Events::KeyUp> m_EKeyUp;
-	bool OnKeyUp(const Events::KeyUp &e);
+// 	EventRelay<ParticleSystem, Events::KeyUp> m_EKeyUp;
+// 	bool OnKeyUp(const Events::KeyUp &e);
+	EventRelay<ParticleSystem, Events::CreateExplosion> m_EExplosion;
+	bool CreateExplosion(const Events::CreateExplosion &e);
 
 };
 

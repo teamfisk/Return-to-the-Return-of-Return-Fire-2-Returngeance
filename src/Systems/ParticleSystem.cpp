@@ -8,7 +8,7 @@ void Systems::ParticleSystem::Initialize()
 {
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	tempSpawnedExplosions = false;
-	EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &ParticleSystem::OnKeyUp);
+	EVENT_SUBSCRIBE_MEMBER(m_EExplosion, &ParticleSystem::CreateExplosion);
 }
 
 void Systems::ParticleSystem::Update(double dt)
@@ -225,53 +225,33 @@ void Systems::ParticleSystem::ScalarInterpolation(double timeProgress, std::vect
 	alpha = spectrum[0] + dAlpha * timeProgress; 
 }
 
-void Systems::ParticleSystem::CreateExplosion(glm::vec3 _pos, double _lifeTime, int _particlesToSpawn, std::string _spritePath, glm::quat _relativeUpOri, float _speed, float _spreadAngle, float _particleScale)
+bool Systems::ParticleSystem::CreateExplosion(const Events::CreateExplosion &e)
 {
 	auto explosion = m_World->CreateEntity();
 	auto emitter = m_World->AddComponent<Components::ParticleEmitter>(explosion);
-	emitter->LifeTime = _lifeTime;
-	emitter->SpawnCount = _particlesToSpawn;
-	emitter->Speed = _speed;
-	emitter->SpreadAngle = _spreadAngle; 
-	emitter->SpawnFrequency = _lifeTime + 20; //temp
-// 	emitter->UseGoalVelocity = true;
-// 	emitter->GoalVelocity = glm::vec3(0,-_speed, 0);
+	emitter->LifeTime = e.LifeTime;
+	emitter->SpawnCount = e.ParticlesToSpawn;
+	emitter->Speed = e.Speed;
+	emitter->SpreadAngle = e.SpreadAngle; 
+	emitter->SpawnFrequency = e.LifeTime + 20; //temp
+	// 	emitter->UseGoalVelocity = true;
+	// 	emitter->GoalVelocity = glm::vec3(0,-_speed, 0);
 	m_World->CommitEntity(explosion);
 
 	auto particleEnt = m_World->CreateEntity();
 	auto TEMP = m_World->AddComponent<Components::Transform>(particleEnt);
 	TEMP->Scale = glm::vec3(0);
 	auto spriteComponent = m_World->AddComponent<Components::Sprite>(particleEnt);
-	spriteComponent->SpriteFile = _spritePath;
+	spriteComponent->SpriteFile = e.spritePath;
 	m_World->CommitEntity(particleEnt);
 	emitter->ParticleTemplate = particleEnt;
-	
+
 	auto transform = m_World->AddComponent<Components::Transform>(explosion);
-	transform->Position = _pos;
-	transform->Orientation = _relativeUpOri;
-	
+	transform->Position = e.Position;
+	transform->Orientation = e.RelativeUpOrientation;
+
 	SpawnParticles(explosion);
 	m_ExplosionEmitters[explosion] = glfwGetTime();
-}
 
-bool Systems::ParticleSystem::OnKeyUp(const Events::KeyUp &e)
-{
-	if(!tempSpawnedExplosions)
-	{
-		if (e.KeyCode == GLFW_KEY_B)
-		{
-			tempSpawnedExplosions = true;
-			CreateExplosion(
-				glm::vec3(0, 10, 0),
-				0.5,
-				60,
-				"Textures/Sprites/NewtonTreeDeleteASAPPlease.png",
-				glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0)),
-				40,
-				glm::pi<float>(),
-				0.5f
-				);
-		}
-	}
 	return true;
 }
