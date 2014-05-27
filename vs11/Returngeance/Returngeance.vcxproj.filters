@@ -169,6 +169,10 @@
     </Filter>
     <Filter Include="Gameplay\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
+      </Filter>
+
+    <Filter Include="Rendering\Events">
+      <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Gameplay\Events">
       <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
@@ -391,6 +395,9 @@
     <ClInclude Include="..\..\src\Components\Viewport.h">
       <Filter>Physics\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Health.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\LockMouse.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
@@ -454,6 +461,18 @@
     <ClInclude Include="..\..\src\Components\Flag.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GUI\TextureFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\WorldFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\SetViewportCamera.h">
+      <Filter>Rendering\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\GameFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">
@@ -502,6 +521,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\SunPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\SunPass.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

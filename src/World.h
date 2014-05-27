@@ -22,8 +22,9 @@
 class World
 {
 public:
-	World(std::shared_ptr<::EventBroker> eventBroker)
-		: m_EventBroker(eventBroker)
+	World(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: EventBroker(eventBroker)
+		, ResourceManager(resourceManager)
 		, m_LastEntityID(0) { }
 	~World() { }
 
@@ -95,14 +96,12 @@ public:
 
 	std::unordered_map<EntityID, EntityID>* GetEntities() { return &m_EntityParents; }
 
-	ResourceManager* GetResourceManager() { return &m_ResourceManager; }
-	std::shared_ptr<::EventBroker> EventBroker() { return m_EventBroker; }
-
 protected:
-	std::shared_ptr<::EventBroker> m_EventBroker;
+	std::shared_ptr<::EventBroker> EventBroker;
+	std::shared_ptr<::ResourceManager> ResourceManager;
+
 	SystemFactory m_SystemFactory;
 	ComponentFactory m_ComponentFactory;
-	ResourceManager m_ResourceManager;
 
 	std::unordered_map<std::string, std::shared_ptr<System>> m_Systems;
 

@@ -5,8 +5,8 @@ void GameWorld::Initialize()
 {
 	World::Initialize();
 
-	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
-	m_ResourceManager.Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
+	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
+	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
 	BindKey(GLFW_KEY_W, "vertical", 1.f);
 	BindKey(GLFW_KEY_S, "vertical", -1.f);
@@ -14,9 +14,6 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_D, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftX, "horizontal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftY, "vertical", 1.f);
-
-	BindKey(GLFW_KEY_1, "EnableCollisions", 1.f);
-	BindKey(GLFW_KEY_2, "DisableCollisions", 1.f);
 
 	BindKey(GLFW_KEY_UP, "barrel_rotation", 1.f);
 	BindKey(GLFW_KEY_DOWN, "barrel_rotation", -1.f);
@@ -58,22 +55,13 @@ void GameWorld::Initialize()
 		cameraComp->FarClip = 2000.f;
 		auto freeSteering = AddComponent<Components::FreeSteering>(camera);
 	}
-	CommitEntity(camera);
-
-	auto viewport1 = CreateEntity();
 	{
-		auto viewport = AddComponent<Components::Viewport>(viewport1);
-		viewport->Right = 0.5f;
-		viewport->Camera = camera;
+		Events::SetViewportCamera e;
+		e.CameraEntity = camera;
+		e.ViewportFrame = "Viewport2";
+		EventBroker->Publish(e);
 	}
-	CommitEntity(viewport1);
-
-	auto viewport2 = CreateEntity();
-	{
-		auto viewport = AddComponent<Components::Viewport>(viewport2);
-		viewport->Left = 0.5f;
-	}
-	CommitEntity(viewport2);
+	
 
 	auto player1 = CreateEntity();
 	{
@@ -88,63 +76,72 @@ void GameWorld::Initialize()
 	}
 
 	
+	//{
+	//	auto ground = CreateEntity();
+	//	auto transform = AddComponent<Components::Transform>(ground);
+	//	transform->Position = glm::vec3(0, -50, 0);
+	//	//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
+	//	transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+	//	auto model = AddComponent<Components::Model>(ground);
+	//	model->ModelFile = "Models/TestScene3/testScene.obj";
+	//	//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
+	//	
+	//	auto physics = AddComponent<Components::Physics>(ground);
+	//	physics->Mass = 10;
+	//	physics->Static = true;
+
+
+	//	auto groundshape = CreateEntity(ground);
+	//	auto transformshape = AddComponent<Components::Transform>(groundshape);
+	//	auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+	//	//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
+	//	meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+
+	//	
+	//	CommitEntity(groundshape);
+	//	CommitEntity(ground);
+	//}
+
+
 	{
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground);
-		transform->Position = glm::vec3(0, -50, 0);
-		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
+		transform->Position = glm::vec3(0, -5, 0);
+		transform->Scale = glm::vec3(1600.0f, 10.0f, 1600.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground);
-		model->ModelFile = "Models/TestScene3/testScene.obj";
-		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
-		
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
 		physics->Static = true;
-		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-		meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+		auto box = AddComponent<Components::BoxShape>(groundshape);
+		box->Width = 800;
+		box->Height = 5;
+		box->Depth = 800;
 
-		
 		CommitEntity(groundshape);
 		CommitEntity(ground);
 	}
 
-	{
-		auto flag = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(flag);
-		transform->Position = glm::vec3(0, -50, 100);
-		auto model = AddComponent<Components::Model>(flag);
-		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
-		{
-			auto fish = CreateEntity(flag);
-			auto transform = AddComponent<Components::Transform>(fish);
-			transform->Position = glm::vec3(-1.3f, 1.0, 0);
-			auto model = AddComponent<Components::Model>(fish);
-			model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
-			CommitEntity(fish);
-		}
-
-		auto trigger = AddComponent<Components::Trigger>(flag);
-		{
-			auto shape = CreateEntity(flag);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(-0.9f, 0.9f, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 1.1f;
-			box->Depth = 0.7f;
-			box->Height = 3.9f;
-			CommitEntity(shape);
-		}
-
-		auto flagComponent = AddComponent<Components::Flag>(flag);
-
-		CommitEntity(flag);
-	}
+	//for (int i = 0; i < 500; i++)
+	//{
+	//	auto Light = CreateEntity();
+	//	auto transform = AddComponent<Components::Transform>(Light);
+	//	transform->Position = glm::vec3((5 + (i*2.f))*cos(i*2.f), 3.f, (5 + (i*2.f))*sin(i*2.f));
+	//	auto light = AddComponent<Components::PointLight>(Light);
+	//	light->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	//	light->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+	//	light->Radius = 15.f;
+	//	light->specularExponent = 100.f;
+	//	CommitEntity(Light);
+	//	//auto model = AddComponent<Components::Model>(Light, "Model");
+	//	//model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	//}
+	
 
 	/*{
 		auto jeep = CreateEntity();
@@ -284,8 +281,6 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(tank);
 		physics->Mass = 63000 - 16000;
 		physics->Static = false;
-		physics->CollisionLayer = 2;
-
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
 		vehicle->MaxTorque = 36000.f;
 		vehicle->MaxSteeringAngle = 90.f;
@@ -293,8 +288,7 @@ void GameWorld::Initialize()
 		auto tankSteering = AddComponent<Components::TankSteering>(tank);
 		tankSteering->Player = player1;
 		AddComponent<Components::Input>(tank);
-		auto health = AddComponent<Components::Health>(tank);
-		health->health = 100;
+
 		{
 			auto shape = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -346,13 +340,9 @@ void GameWorld::Initialize()
 					auto physics = AddComponent<Components::Physics>(shot);
 					physics->Mass = 25.f;
 					physics->Static = false;
-					physics->CollisionEvent = true;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
-					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
-					tankShellComponent->Damage = 20.f;
-					tankShellComponent->ExplosionRadius = 30.f;
-					tankShellComponent->ExplosionStrength = 300000.f;
+
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -375,7 +365,7 @@ void GameWorld::Initialize()
 			auto cameraTower = CreateEntity(tower);
 			{
 				auto transform = AddComponent<Components::Transform>(cameraTower);
-				transform->Position.z = 14.f;
+				transform->Position.z = 11.f;
 				transform->Position.y = 4.f;
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
@@ -383,25 +373,30 @@ void GameWorld::Initialize()
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 			}
 			CommitEntity(cameraTower);
-			GetComponent<Components::Viewport>(viewport1)->Camera = cameraTower;
+			{
+				Events::SetViewportCamera e;
+				e.CameraEntity = cameraTower;
+				e.ViewportFrame = "Viewport1";
+				EventBroker->Publish(e);
+			}
 		}
 
-		{
-			auto lightentity = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(lightentity);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto light = AddComponent<Components::PointLight>(lightentity);
-			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
-			//light->Specular = glm::vec3(1.f);
-			/*light->ConstantAttenuation = 0.3f;
-			light->LinearAttenuation = 0.003f;
-			light->QuadraticAttenuation = 0.002f;*/
-		}
+		//{
+		//	auto lightentity = CreateEntity(tank);
+		//	auto transform = AddComponent<Components::Transform>(lightentity);
+		//	transform->Position = glm::vec3(0, 0, 0);
+		//	auto light = AddComponent<Components::PointLight>(lightentity);
+		//	//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+		//	//light->Specular = glm::vec3(1.f);
+		//	/*light->ConstantAttenuation = 0.3f;
+		//	light->LinearAttenuation = 0.003f;
+		//	light->QuadraticAttenuation = 0.002f;*/
+		//}
 
 // 		auto wheelpair = CreateEntity(tank);
 // 		SetProperty(wheelpair, "Name", "WheelPair");
 // 		AddComponent(wheelpair, "WheelPairThingy");
-		#pragma region Wheels
+
 		//Create wheels
 		float wheelOffset = 0.4f;
 		float springLength = 0.3f;
@@ -589,18 +584,17 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			/*auto entity = CreateEntity(tank);
+			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
-			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
+			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
 			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
 			emitterComponent->SpawnCount = 2;
-			emitterComponent->SpawnFrequency = 10;
+			emitterComponent->SpawnFrequency = 0.005;
 			emitterComponent->SpreadAngle = glm::pi<float>();
 			emitterComponent->UseGoalVelocity = false;
 			emitterComponent->LifeTime = 0.5;
-			emitterComponent->Speed = 5;
 			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
@@ -612,7 +606,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);*/
+			CommitEntity(particleEntity);
 		}
 
 		{
@@ -674,9 +668,9 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			/*auto entity = CreateEntity(tank);
+			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
-			transformComponent->Position = glm::vec3(2,-1.7,2.0);
+			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
 			transformComponent->Orientation = glm::angleAxis(glm::pi<float>()/2, glm::vec3(1,0,0));
 			auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
@@ -685,7 +679,6 @@ void GameWorld::Initialize()
 			emitterComponent->SpreadAngle = glm::pi<float>();
 			emitterComponent->UseGoalVelocity = false;
 			emitterComponent->LifeTime = 0.5;
-			emitterComponent->Speed = 5;
 			//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
 			emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 			CommitEntity(entity);
@@ -696,9 +689,9 @@ void GameWorld::Initialize()
 			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
-			CommitEntity(particleEntity);*/
+
+			CommitEntity(particleEntity);
 		}
-#pragma endregion
 
 		CommitEntity(tank);
 	}
@@ -711,7 +704,6 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(tank);
 		physics->Mass = 63000 - 16000;
 		physics->Static = false;
-		physics->CollisionLayer = 3;
 		auto vehicle = AddComponent<Components::Vehicle>(tank);
 		vehicle->MaxTorque = 36000.f;
 		vehicle->MaxSteeringAngle = 90.f;
@@ -719,8 +711,7 @@ void GameWorld::Initialize()
 		auto tankSteering = AddComponent<Components::TankSteering>(tank);
 		tankSteering->Player = player2;
 		AddComponent<Components::Input>(tank);
-		auto health = AddComponent<Components::Health>(tank);
-		health->health = 100;
+
 		{
 			auto shape = CreateEntity(tank);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -772,13 +763,9 @@ void GameWorld::Initialize()
 					auto physics = AddComponent<Components::Physics>(shot);
 					physics->Mass = 25.f;
 					physics->Static = false;
-					physics->CollisionEvent = true;
 					auto modelComponent = AddComponent<Components::Model>(shot);
 					modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
-					auto tankShellComponent = AddComponent<Components::TankShell>(shot);
-					tankShellComponent->Damage = 20.f;
-					tankShellComponent->ExplosionRadius = 30.f;
-					tankShellComponent->ExplosionStrength = 300000.f;
+
 					{
 						auto shape = CreateEntity(shot);
 						auto transform = AddComponent<Components::Transform>(shape);
@@ -801,7 +788,7 @@ void GameWorld::Initialize()
 			auto cameraTower = CreateEntity(tower);
 			{
 				auto transform = AddComponent<Components::Transform>(cameraTower);
-				transform->Position.z = 14.f;
+				transform->Position.z = 11.f;
 				transform->Position.y = 4.f;
 				//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
 				auto cameraComp = AddComponent<Components::Camera>(cameraTower);
@@ -809,25 +796,23 @@ void GameWorld::Initialize()
 				//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
 			}
 			CommitEntity(cameraTower);
-			GetComponent<Components::Viewport>(viewport2)->Camera = cameraTower;
 		}
 
-		{
-			auto lightentity = CreateEntity(tank);
-			auto transform = AddComponent<Components::Transform>(lightentity);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto light = AddComponent<Components::PointLight>(lightentity);
-			//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
-			//light->Specular = glm::vec3(1.f);
-			/*light->ConstantAttenuation = 0.3f;
-			light->LinearAttenuation = 0.003f;
-			light->QuadraticAttenuation = 0.002f;*/
-		}
+		//{
+		//	auto lightentity = CreateEntity(tank);
+		//	auto transform = AddComponent<Components::Transform>(lightentity);
+		//	transform->Position = glm::vec3(0, 0, 0);
+		//	auto light = AddComponent<Components::PointLight>(lightentity);
+		//	//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+		//	//light->Specular = glm::vec3(1.f);
+		//	/*light->ConstantAttenuation = 0.3f;
+		//	light->LinearAttenuation = 0.003f;
+		//	light->QuadraticAttenuation = 0.002f;*/
+		//}
 
 // 		auto wheelpair = CreateEntity(tank);
 // 		SetProperty(wheelpair, "Name", "WheelPair");
 // 		AddComponent(wheelpair, "WheelPairThingy");
-		#pragma region Wheels
 
 		//Create wheels
 		float wheelOffset = 0.4f;
@@ -1016,7 +1001,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			/*auto entity = CreateEntity(tank);
+			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
 			transformComponent->Position = glm::vec3(2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -1038,7 +1023,7 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);*/
+			CommitEntity(particleEntity);
 		}
 
 		{
@@ -1100,7 +1085,7 @@ void GameWorld::Initialize()
 			}
 			CommitEntity(wheel);
 
-			/*auto entity = CreateEntity(tank);
+			auto entity = CreateEntity(tank);
 			auto transformComponent = AddComponent<Components::Transform>(entity);
 			transformComponent->Position = glm::vec3(-2,-1.7,2.0);
 			transformComponent->Scale = glm::vec3(3,3,3);
@@ -1122,9 +1107,9 @@ void GameWorld::Initialize()
 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
 			emitterComponent->ParticleTemplate = particleEntity;
 
-			CommitEntity(particleEntity);*/
+			CommitEntity(particleEntity);
 		}
-#pragma endregion
+
 		CommitEntity(tank);
 	}
 
@@ -1152,12 +1137,44 @@ void GameWorld::Initialize()
 			CommitEntity(entity);
 		}*/
 
+	/*for(int i = 0; i < 1; i++)
+	{
+		for (int y = 0; y < 15; y++)
+		{
+			for (int x = -5; x < 5; x++)
+			{
+				auto brick = CreateEntity();
+				auto transform = AddComponent<Components::Transform>(brick);
+				transform->Position = glm::vec3(x + 0.01f, y * 0.3f + 0.01f, -20);
+				transform->Position.x += (y % 2)*0.5f;
+				transform->Scale = glm::vec3(1, 0.3f, 0.4f);
+				transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+				auto model = AddComponent<Components::Model>(brick);
+				model->ModelFile = "Models/Placeholders/PhysicsTest/Cube2.obj";
 
+				auto physics = AddComponent<Components::Physics>(brick);
+				physics->Mass = 3;
+				
+
+
+				auto shape = CreateEntity(brick);
+				auto transformshape = AddComponent<Components::Transform>(shape);
+				auto box = AddComponent<Components::BoxShape>(shape);
+				box->Width = 0.5f;
+				box->Height = 0.15f;
+				box->Depth = 0.3f;
+				CommitEntity(shape);
+				CommitEntity(brick);
+			}
+		}
+	}*/
+
+	/*for (int x = 0; x < 5; x++)
 		for (int y = 0; y < 5; y++)
 		{
 			auto cube = CreateEntity();
 			auto transform = AddComponent<Components::Transform>(cube);
-			transform->Position = glm::vec3(0, 10*y, 50);
+			transform->Position = glm::vec3(3 * x + 0.1f + -20.f, 3 * y + 0.1f + 1.f, 0);
 			transform->Scale = glm::vec3(3);
 			transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 			auto model = AddComponent<Components::Model>(cube);
@@ -1165,19 +1182,13 @@ void GameWorld::Initialize()
 
 			auto physics = AddComponent<Components::Physics>(cube);
 			physics->Mass = 100;
-
-			{
-				auto shape = CreateEntity(cube);
-				auto transform = AddComponent<Components::Transform>(shape);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 1.5f;
-				box->Height = 1.5f;
-				box->Depth = 1.5f;
-				CommitEntity(shape);
-			}
+			auto box = AddComponent<Components::BoxShape>(cube);
+			box->Width = 1.5f;
+			box->Height = 1.5f;
+			box->Depth = 1.5f;
 			CommitEntity(cube);
 		}
-
+*/
 
 
 	/*{
@@ -1201,33 +1212,27 @@ void GameWorld::RegisterComponents()
 {
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
-	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });		
-	m_ComponentFactory.Register<Components::Flag>([]() { return new Components::Flag(); });		
+	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
 }
 
 void GameWorld::RegisterSystems()
 {
-	m_SystemFactory.Register<Systems::TimerSystem>([this]() { return new Systems::TimerSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::DamageSystem>([this]() { return new Systems::DamageSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::LevelGenerationSystem>([this]() { return new Systems::LevelGenerationSystem(this); });
-	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::DebugSystem>([this]() { return new Systems::DebugSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::DebugSystem>([this]() { return new Systems::DebugSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::CollisionSystem>([this]() { return new Systems::CollisionSystem(this); });
-	m_SystemFactory.Register<Systems::ParticleSystem>([this]() { return new Systems::ParticleSystem(this, m_EventBroker); });
+	m_SystemFactory.Register<Systems::ParticleSystem>([this]() { return new Systems::ParticleSystem(this, EventBroker, ResourceManager); });
 	//m_SystemFactory.Register<Systems::PlayerSystem>([this]() { return new Systems::PlayerSystem(this); });
-	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::TriggerSystem>([this]() { return new Systems::TriggerSystem(this, m_EventBroker); });
-	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, m_EventBroker, m_Renderer); });
+	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
 }
 
 void GameWorld::AddSystems()
 {
-	AddSystem<Systems::TimerSystem>();
-	AddSystem<Systems::DamageSystem>();
 	AddSystem<Systems::TransformSystem>();
 	//AddSystem<Systems::LevelGenerationSystem>();
 	AddSystem<Systems::InputSystem>();
@@ -1239,7 +1244,6 @@ void GameWorld::AddSystems()
 	AddSystem<Systems::TankSteeringSystem>();
 	AddSystem<Systems::SoundSystem>();
 	AddSystem<Systems::PhysicsSystem>();
-	AddSystem<Systems::TriggerSystem>();
 	AddSystem<Systems::RenderSystem>();
 }
 
@@ -1249,7 +1253,7 @@ void GameWorld::BindKey(int keyCode, std::string command, float value)
 	e.KeyCode = keyCode;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }
 
 void GameWorld::BindMouseButton(int button, std::string command, float value)
@@ -1258,7 +1262,7 @@ void GameWorld::BindMouseButton(int button, std::string command, float value)
 	e.Button = button;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }
 
 void GameWorld::BindGamepadAxis(Gamepad::Axis axis, std::string command, float value)
@@ -1267,7 +1271,7 @@ void GameWorld::BindGamepadAxis(Gamepad::Axis axis, std::string command, float v
 	e.Axis = axis;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }
 
 void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, float value)
@@ -1276,5 +1280,5 @@ void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, f
 	e.Button = button;
 	e.Command = command;
 	e.Value = value;
-	m_EventBroker->Publish(e);
+	EventBroker->Publish(e);
 }

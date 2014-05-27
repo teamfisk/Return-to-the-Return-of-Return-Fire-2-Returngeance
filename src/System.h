@@ -12,13 +12,15 @@ class World;
 class System
 {
 public:
-	System(World* world, std::shared_ptr<EventBroker> eventBroker) 
+	System(World* world, std::shared_ptr<EventBroker> eventBroker, std::shared_ptr<ResourceManager> resourceManager)
 		: m_World(world)
-		, EventBroker(eventBroker) { }
+		, EventBroker(eventBroker)
+		, ResourceManager(resourceManager)
+	{ }
 	virtual ~System() { }
 
 	virtual void RegisterComponents(ComponentFactory* cf) { }
-	virtual void RegisterResourceTypes(ResourceManager* rm) { }
+	virtual void RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm) { }
 
 	virtual void Initialize() { }
 
@@ -38,6 +40,7 @@ public:
 protected:
 	World* m_World;
 	std::shared_ptr<EventBroker> EventBroker;
+	std::shared_ptr<ResourceManager> ResourceManager;
 };
 
 class SystemFactory : public Factory<System*> { };
