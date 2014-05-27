@@ -114,7 +114,37 @@ void GameWorld::Initialize()
 		CommitEntity(ground);
 	}
 
-	
+	{
+		auto flag = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(flag);
+		transform->Position = glm::vec3(0, -50, 100);
+		auto model = AddComponent<Components::Model>(flag);
+		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
+		{
+			auto fish = CreateEntity(flag);
+			auto transform = AddComponent<Components::Transform>(fish);
+			transform->Position = glm::vec3(-1.3f, 1.0, 0);
+			auto model = AddComponent<Components::Model>(fish);
+			model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
+			CommitEntity(fish);
+		}
+
+		auto trigger = AddComponent<Components::Trigger>(flag);
+		{
+			auto shape = CreateEntity(flag);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(-0.9f, 0.9f, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 1.1f;
+			box->Depth = 0.7f;
+			box->Height = 3.9f;
+			CommitEntity(shape);
+		}
+
+		auto flagComponent = AddComponent<Components::Flag>(flag);
+
+		CommitEntity(flag);
+	}
 
 	/*{
 		auto jeep = CreateEntity();
@@ -1172,6 +1202,7 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
 	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });		
+	m_ComponentFactory.Register<Components::Flag>([]() { return new Components::Flag(); });		
 }
 
 void GameWorld::RegisterSystems()

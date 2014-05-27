@@ -46,6 +46,7 @@
 #include "Components/Player.h"
 #include "Components/Health.h"
 #include "Components/Trigger.h"
+#include "Components/Flag.h"
 
 class GameWorld : public World
 {

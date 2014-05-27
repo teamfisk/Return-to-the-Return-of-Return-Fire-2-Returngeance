@@ -4,6 +4,7 @@
 
 #include "System.h"
 #include "Components/Transform.h"
+#include "Components/TankSteering.h"
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
@@ -13,6 +14,7 @@
 #include "Components/Trigger.h"
 #include "Components/TriggerExplosion.h"
 #include "Events/EnterTrigger.h"
+#include "Components/Flag.h"
 #include <math.h>
 namespace Systems
 {
@@ -35,6 +37,7 @@ namespace Systems
 		EventRelay<TriggerSystem, Events::EnterTrigger> m_EEnterTrigger;
 		bool OnEnterTrigger(const Events::EnterTrigger &event);
 	private:
+		void Flag(EntityID entity, EntityID phantomEntity);
 		void Explosion(EntityID entity, EntityID phantomEntity);
 
 	};

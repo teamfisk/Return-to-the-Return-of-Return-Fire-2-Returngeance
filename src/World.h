@@ -44,7 +44,6 @@ public:
 
 	EntityID CreateEntity(EntityID parent = 0);
 	EntityID CloneEntity(EntityID entity, EntityID parent = 0);
-
 	void RemoveEntity(EntityID entity);
 
 	bool ValidEntity(EntityID entity);
@@ -52,6 +51,8 @@ public:
 	EntityID GetEntityParent(EntityID entity);
 	EntityID GetEntityBaseParent(EntityID entity);
 	std::list<EntityID> GetEntityChildren(EntityID entity);
+
+	void SetEntityParent(EntityID entity, EntityID newParent);
 
 	template <class T>
 	T GetProperty(EntityID entity, std::string property)

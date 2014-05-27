@@ -45,7 +45,7 @@ void Systems::TriggerSystem::OnEntityRemoved( EntityID entity )
 
 bool Systems::TriggerSystem::OnEnterTrigger( const Events::EnterTrigger &event )
 {
-	auto explosionComponent1 = m_World->GetComponent<Components::TriggerExplosion>(event.Entity1);
+	/*auto explosionComponent1 = m_World->GetComponent<Components::TriggerExplosion>(event.Entity1);
 	auto explosionComponent2 = m_World->GetComponent<Components::TriggerExplosion>(event.Entity2);
 
 	if(explosionComponent1)
@@ -55,14 +55,40 @@ bool Systems::TriggerSystem::OnEnterTrigger( const Events::EnterTrigger &event )
 	else if (explosionComponent2)
 	{
 		Explosion(event.Entity1, event.Entity2);
+	}*/
+
+	auto flagComponent1 = m_World->GetComponent<Components::Flag>(event.Entity1);
+	auto flagComponent2 = m_World->GetComponent<Components::Flag>(event.Entity2);
+
+	if(flagComponent1)
+	{
+		Flag(event.Entity2, event.Entity1);
+	}
+	else if (flagComponent2)
+	{
+		Flag(event.Entity1, event.Entity2);
 	}
 
 	return true;
 }
 
+
+void Systems::TriggerSystem::Flag( EntityID entity, EntityID phantomEntity )
+{
+	auto tankSteering = m_World->GetComponent<Components::TankSteering>(entity);
+	if (!tankSteering)
+		return;
+
+	m_World->RemoveComponent<Components::Trigger>(phantomEntity);
+	m_World->SetEntityParent(phantomEntity, entity);
+	auto phantomTransform = m_World->GetComponent<Components::Transform>(phantomEntity);
+	phantomTransform->Position = glm::vec3(1.f, 0.1f, 2.f);
+}
+
+
 void Systems::TriggerSystem::Explosion( EntityID entity, EntityID phantomEntity )
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
+	/*auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	auto PhantomTransformComponent = m_World->GetComponent<Components::Transform>(phantomEntity);
 	auto explosionComponent = m_World->GetComponent<Components::TriggerExplosion>(phantomEntity);
 
@@ -82,7 +108,7 @@ void Systems::TriggerSystem::Explosion( EntityID entity, EntityID phantomEntity 
 		EventBroker->Publish(e);
 
 		m_World->RemoveEntity(phantomEntity);
-	}
+	}*/
 	
 	
 }

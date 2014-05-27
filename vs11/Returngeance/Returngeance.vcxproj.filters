@@ -451,6 +451,9 @@
     <ClInclude Include="..\..\src\Events\Damage.h">
       <Filter>Gameplay\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Flag.h">
+      <Filter>Gameplay\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

@@ -758,18 +758,17 @@ bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpuls
 
 void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string type, Component* component)
 {
-	if(type == "Trigger")
+	
+	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		if(m_RigidBodies.find(entity) != m_RigidBodies.end())
-		{
-			LOG_INFO("Removed Trigger of entity %i", entity);
-			m_PhysicsWorld->markForWrite();
-			m_RigidBodyEntities.erase(m_RigidBodies[entity]);
-			m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
-			m_RigidBodies.erase(entity);
-			m_PhysicsWorld->unmarkForWrite();
-		}
+		LOG_INFO("Removed Trigger of entity %i", entity);
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+		m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
+		m_RigidBodies.erase(entity);
+		m_PhysicsWorld->unmarkForWrite();
 	}
+	
 }
 
 

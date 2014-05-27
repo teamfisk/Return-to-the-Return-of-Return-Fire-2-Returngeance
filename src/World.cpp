@@ -204,3 +204,11 @@ std::list<EntityID> World::GetEntityChildren(EntityID entity)
 		return it->second;
 	}
 }
+
+void World::SetEntityParent(EntityID entity, EntityID newParent)
+{
+	EntityID currentParent = m_EntityParents[entity];
+	m_EntityChildren[currentParent].remove(entity);
+	m_EntityParents[entity] = newParent;
+	m_EntityChildren[newParent].push_back(entity);
+}

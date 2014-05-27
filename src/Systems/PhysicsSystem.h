@@ -130,11 +130,6 @@ public:
 
 			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
 			{
-				auto trigger = m_PhysicsSystem->m_World->GetComponent<Components::Trigger>(entity1);
-				if(trigger->TriggerOnce)
-				{
-					m_PhysicsSystem->m_World->RemoveComponent<Components::Trigger>(entity1);
-				}
 				Events::EnterTrigger e;
 				e.Entity1 = entity1;
 				e.Entity2 = entity2;
