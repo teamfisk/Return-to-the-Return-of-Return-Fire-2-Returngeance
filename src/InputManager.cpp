@@ -42,14 +42,14 @@ void InputManager::Update(double dt)
 		}
 	}
 
-// 	if(m_CurrentKeyState[GLFW_KEY_Z]) //TEMP
-// 	{
-// 		Events::PlaySound e;
-// 		e.Resource = "Sounds/BGM/WUB.mp3";
-// 		e.Emitter = 66;
-// 		e.Loop = true;
-// 		EventBroker->Publish(e);
-// 	}
+	if(m_CurrentKeyState[GLFW_KEY_Z]) //TEMP
+	{
+		Events::PlaySound e;
+		e.Resource = "Sounds/BGM/WUB.mp3";
+		e.Emitter = 66;
+		e.Loop = true;
+		EventBroker->Publish(e);
+	}
 
 	// Mouse buttons
 	for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; ++i)

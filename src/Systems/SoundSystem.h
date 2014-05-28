@@ -28,7 +28,7 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentRemoved(std::string type, Component* component);
-
+	FMOD_SYSTEM* GetFMODSystem() const { return m_System; }
 private:
 	// Events
 	EventRelay<SoundSystem, Events::ComponentCreated> m_EComponentCreated;

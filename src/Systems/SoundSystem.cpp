@@ -30,7 +30,7 @@ void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::SoundSystem::RegisterResourceTypes(ResourceManager* rm)
 {
-	rm->RegisterType("Sound", [](std::string resourceName) { return new Sound(resourceName); });
+	rm->RegisterType("Sound", [this](std::string resourceName) { return new Sound(resourceName, this->m_System); });
 }
 
 void Systems::SoundSystem::Update(double dt)
@@ -132,12 +132,9 @@ bool Systems::SoundSystem::PlayASound(const Events::PlaySound &event)
 		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
 		return false;
 	}
-
-// 	if(emitter->Path != event.Resource) //Caching sound file
-// 	{
-		LoadSound(m_Sounds[event.Emitter], event.Resource, 1000.f, 1.f);
-// 		emitter->Path = event.Resource;
-// 	}
+	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound", event.Resource);
+	m_Sounds[event.Emitter] = *sound;
+	//LoadSound(m_Sounds[event.Emitter], event.Resource, 1000.f, 1.f);
 
 	PlaySound(&m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
 	FMOD_System_Update(m_System);
