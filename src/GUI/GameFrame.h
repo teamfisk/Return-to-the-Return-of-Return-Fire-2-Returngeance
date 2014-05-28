@@ -18,32 +18,48 @@ public:
 	GameFrame(Frame* parent, std::string name)
 		: Frame(parent, name)
 	{
+		EVENT_SUBSCRIBE_MEMBER(m_EInputCommand, &GameFrame::OnCommand);
+
 		m_World = std::make_shared<GameWorld>(EventBroker, ResourceManager);
 		auto worldFrame = new WorldFrame(this, "GameWorldFrame", m_World);
 		{
 			vp1 = new Viewport(worldFrame, "Viewport1", m_World);
 			vp1->X = 0;
 			vp1->Width = 640;
-			vp1->Height = 720 / 2;
 			new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
 
 			vp2 = new Viewport(worldFrame, "Viewport2", m_World);
 			vp2->X = vp1->Right();
 			vp2->Width = 640;
-			vp2->Height = 720 / 2;
 			new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
 
-			auto vpc = new Viewport(worldFrame, "ViewportFreeCam", m_World);
-			vpc->Y = 720 / 2;
-			vpc->Height = 720 / 2;
+			m_FreeCamViewport = new Viewport(worldFrame, "ViewportFreeCam", m_World);
+			m_FreeCamViewport->Show();
 		}
 		m_World->Initialize();
 	}
 
 private:
+	EventRelay<Frame, Events::InputCommand> m_EInputCommand;
+
 	std::shared_ptr<GameWorld> m_World;
 	Viewport* vp1;
 	Viewport* vp2;
+	Viewport* m_FreeCamViewport;
+
+	bool OnCommand(const Events::InputCommand &event) 
+	{ 
+		if (event.Command == "cam_vertical" || event.Command == "cam_horizontal" || event.Command == "cam_normal" || event.Command == "cam_lock")
+		{
+			m_FreeCamViewport->Show();
+		}
+		else
+		{
+			m_FreeCamViewport->Hide();
+		}
+
+		return true; 
+	}
 };
 
 }
