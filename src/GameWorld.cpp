@@ -379,6 +379,20 @@ EntityID GameWorld::CreateTank(int playerID)
 				}
 				CommitEntity(shot);
 				barrelSteering->ShotTemplate = shot;
+
+
+				auto cameraTower = CreateEntity(barrel);
+				{
+					auto transform = AddComponent<Components::Transform>(cameraTower);
+					transform->Position.z = 16.f;
+					transform->Position.y = 4.f;
+					transform->Orientation = glm::quat(glm::vec3(-glm::radians(5.f), 0.f, 0.f));
+					auto cameraComp = AddComponent<Components::Camera>(cameraTower);
+					cameraComp->FarClip = 2000.f;
+					//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
+				}
+
+				SetProperty(tank, "Camera", cameraTower);
 			}
 			CommitEntity(barrel);
 			tankSteering->Barrel = barrel;
@@ -387,18 +401,7 @@ EntityID GameWorld::CreateTank(int playerID)
 		tankSteering->Turret = tower;
 
 
-		auto cameraTower = CreateEntity(tower);
-		{
-			auto transform = AddComponent<Components::Transform>(cameraTower);
-			transform->Position.z = 16.f;
-			transform->Position.y = 4.f;
-			//transform->Orientation = glm::quat(glm::vec3(glm::pi<float>() / 8.f, 0.f, 0.f));
-			auto cameraComp = AddComponent<Components::Camera>(cameraTower);
-			cameraComp->FarClip = 2000.f;
-			//auto freeSteering = AddComponent<Components::FreeSteering>(cameraTower);
-		}
-
-		SetProperty(tank, "Camera", cameraTower);
+		
 	}
 
 	//{
