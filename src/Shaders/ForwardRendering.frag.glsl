@@ -1,5 +1,7 @@
 #version 430
 
+uniform vec4 Color;
+
 layout(binding=0) uniform sampler2D texture0;
 
 in VertexData {
@@ -14,5 +16,5 @@ void main() {
 	// Texture
 	vec4 texel = texture(texture0, Input.TextureCoord);
 
-	fragmentColor = texel;
+	fragmentColor = texel * Color;
 }

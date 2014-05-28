@@ -259,8 +259,8 @@ void Renderer::Draw(double dt)
 void Renderer::DrawFrame(RenderQueue &rq)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
+	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
@@ -341,6 +341,7 @@ void Renderer::DrawFrame(RenderQueue &rq)
 			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glUniform4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "Color"), 1, glm::value_ptr(spriteJob->Color));
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, spriteJob->Texture);
@@ -362,8 +363,8 @@ void Renderer::DrawWorld(RenderQueue &rq)
 	Base pass
 	*/
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
-	glViewport(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
+	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	//glViewport(0, 0, m_Width, m_Height);
 
 	// Clear G-buffer

@@ -5,8 +5,7 @@
 #include "GUI/WorldFrame.h"
 #include "GUI/Viewport.h"
 #include "GUI/TextureFrame.h"
-
-#include "Events/Damage.h"
+#include "GUI/PlayerHUD.h"
 
 #include "GameWorld.h"
 
@@ -19,42 +18,32 @@ public:
 	GameFrame(Frame* parent, std::string name)
 		: Frame(parent, name)
 	{
-		EVENT_SUBSCRIBE_MEMBER(m_EDamage, &GameFrame::OnDamage);
-
 		m_World = std::make_shared<GameWorld>(EventBroker, ResourceManager);
 		auto worldFrame = new WorldFrame(this, "GameWorldFrame", m_World);
 		{
 			vp1 = new Viewport(worldFrame, "Viewport1", m_World);
 			vp1->X = 0;
 			vp1->Width = 640;
+			vp1->Height = 720 / 2;
+			new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
+
 			vp2 = new Viewport(worldFrame, "Viewport2", m_World);
 			vp2->X = vp1->Right();
 			vp2->Width = 640;
+			vp2->Height = 720 / 2;
+			new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
 
-			tex = new TextureFrame(vp1, "TextureFrameThingy");
-			tex->SetTexture("Textures/GUI/hurt.png");
+			auto vpc = new Viewport(worldFrame, "ViewportFreeCam", m_World);
+			vpc->Y = 720 / 2;
+			vpc->Height = 720 / 2;
 		}
 		m_World->Initialize();
 	}
 
-	void Update(double dt)
-	{
-
-	}
-
-	bool OnDamage(const Events::Damage &event)
-	{
-		//tex->SetTexture("Textures/GUI/hurt.png");
-
-		return false;
-	}
-
 private:
-	EventRelay<Frame, Events::Damage> m_EDamage;
 	std::shared_ptr<GameWorld> m_World;
 	Viewport* vp1;
 	Viewport* vp2;
-	TextureFrame* tex;
 };
 
 }

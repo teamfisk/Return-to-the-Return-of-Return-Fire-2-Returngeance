@@ -169,8 +169,7 @@
     </Filter>
     <Filter Include="Gameplay\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
-      </Filter>
-
+    </Filter>
     <Filter Include="Rendering\Events">
       <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
     </Filter>
@@ -471,6 +470,12 @@
       <Filter>Rendering\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\GameFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\HealthOverlay.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\PlayerHUD.h">
       <Filter>GUI</Filter>
     </ClInclude>
   </ItemGroup>

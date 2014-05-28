@@ -16,7 +16,7 @@ void Systems::DamageSystem::Initialize()
 bool Systems::DamageSystem::OnDamage( const Events::Damage &event )
 {
 	auto health = m_World->GetComponent<Components::Health>(event.Entity);
-	health->health -= event.damage;
-	LOG_INFO("Damaged entity %i, Health left: %f", event.Entity, health->health);
+	health->Amount -= event.Amount;
+	LOG_INFO("Damaged entity %i, Health left: %f", event.Entity, health->Amount);
 	return true;
 }

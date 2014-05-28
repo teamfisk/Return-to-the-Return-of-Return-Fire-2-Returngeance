@@ -30,10 +30,10 @@ struct ModelJob : RenderJob
 	unsigned int ShaderID;
 	unsigned int TextureID;
 
-	GLuint ShaderProgram;
 	GLuint DiffuseTexture;
 	GLuint NormalTexture;
 	GLuint SpecularTexture;
+	glm::vec4 Color;
 	GLuint VAO;
 	unsigned int StartIndex;
 	unsigned int EndIndex;
@@ -50,8 +50,8 @@ struct SpriteJob : RenderJob
 	unsigned int ShaderID;
 	unsigned int TextureID;
 
-	GLuint ShaderProgram;
 	GLuint Texture;
+	glm::vec4 Color;
 	glm::mat4 ModelMatrix;
 
 	void CalculateHash() override
