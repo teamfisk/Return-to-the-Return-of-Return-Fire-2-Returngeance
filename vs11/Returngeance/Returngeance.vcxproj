@@ -130,6 +130,7 @@
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
     <ClInclude Include="..\..\src\Components\BarrelSteering.h" />
+    <ClInclude Include="..\..\src\Components\BlendMap.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
@@ -233,6 +234,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
     <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl" />

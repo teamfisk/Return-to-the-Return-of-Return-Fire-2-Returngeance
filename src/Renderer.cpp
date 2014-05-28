@@ -108,6 +108,11 @@ void Renderer::LoadContent()
 	m_ShaderProgramDebugAABB.Compile();
 	m_ShaderProgramDebugAABB.Link();*/
 
+	m_BlendMapProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/BlendMap.vert.glsl")));
+	m_BlendMapProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/BlendMap.frag.glsl")));
+	m_BlendMapProgram.Compile();
+	m_BlendMapProgram.Link();
+
 	m_ShaderProgramSkybox.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Skybox.vert.glsl")));
 	m_ShaderProgramSkybox.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Skybox.frag.glsl")));
 	m_ShaderProgramSkybox.Compile();
@@ -1036,6 +1041,50 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 
 		//	continue;
 		//}
+
+		m_BlendMapProgram.Bind();
+		GLuint ShaderProgramHandle = m_BlendMapProgram.GetHandle();
+
+		auto blendMapJob = std::dynamic_pointer_cast<BlendMapModelJob>(job);
+		if(blendMapJob)
+		{
+			glm::mat4 modelMatrix = blendMapJob->ModelMatrix;
+
+			MVP = cameraMatrix * modelMatrix;
+			depthMVP = depthCameraMatrix * modelMatrix;
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+			glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
+			glUniform1f(glGetUniformLocation(ShaderProgramHandle, "TextureRepeats"), blendMapJob->TextureRepeat);
+
+			glBindVertexArray(blendMapJob->VAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->DiffuseTexture);
+			if (blendMapJob->NormalTexture != 0)
+			{
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, blendMapJob->NormalTexture);
+			}
+			if (blendMapJob->SpecularTexture)
+			{
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, blendMapJob->SpecularTexture);
+			}
+
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureRed);
+			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreen);
+			glActiveTexture(GL_TEXTURE6);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureBlue);
+
+			glDrawArrays(GL_TRIANGLES, blendMapJob->StartIndex, modelJob->EndIndex - modelJob->StartIndex + 1);
+
+			continue;
+		}
 	}
 }
 

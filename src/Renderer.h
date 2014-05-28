@@ -173,6 +173,7 @@ private:
 	ShaderProgram m_FinalPassProgram;
 	ShaderProgram m_SunPassProgram;
 	ShaderProgram m_ForwardRendering;
+	ShaderProgram m_BlendMapProgram;
 
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;

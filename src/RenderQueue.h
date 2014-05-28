@@ -45,6 +45,14 @@ struct ModelJob : RenderJob
 	}
 };
 
+struct BlendMapModelJob : ModelJob
+{
+	GLuint BlendMapTextureRed;
+	GLuint BlendMapTextureGreen;
+	GLuint BlendMapTextureBlue;
+	float TextureRepeat;
+};
+
 struct SpriteJob : RenderJob
 {
 	unsigned int ShaderID;

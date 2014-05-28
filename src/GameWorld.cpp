@@ -101,11 +101,10 @@ void GameWorld::Initialize()
 		auto ground = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground);
 		transform->Position = glm::vec3(0, -50, 0);
-		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
 		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
 		auto model = AddComponent<Components::Model>(ground);
-		model->ModelFile = "Models/TestScene3/testScene.obj";
-		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
+		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground);
 
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
@@ -115,8 +114,7 @@ void GameWorld::Initialize()
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-		meshShape->ResourceName = "Models/TestScene3/testScene.obj";
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Middle.obj";
 
 
 		CommitEntity(groundshape);
@@ -1256,6 +1254,7 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
 	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
 	m_ComponentFactory.Register<Components::Flag>([]() { return new Components::Flag(); });
+	m_ComponentFactory.Register<Components::BlendMap>([]() { return new Components::BlendMap(); });
 }
 
 void GameWorld::RegisterSystems()

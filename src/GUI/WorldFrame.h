@@ -11,6 +11,8 @@
 #include "Components/Model.h"
 #include "Components/Sprite.h"
 #include "Components/PointLight.h"
+#include "Components/BlendMap.h"
+
 
 namespace GUI
 {
@@ -56,7 +58,20 @@ public:
 					glm::mat4 modelMatrix = glm::translate(glm::mat4(), absoluteTransform.Position)
 										    * glm::toMat4(absoluteTransform.Orientation)
 											* glm::scale(absoluteTransform.Scale);
-					EnqueueModel(modelAsset, modelMatrix);
+					auto blendmapComponent = m_World->GetComponent<Components::BlendMap>(entity);
+					if (blendmapComponent)
+					{
+						auto textureRed = ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureRed);
+						auto textureGreen = ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureGreen);
+						auto textureBlue = ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureBlue);
+						float textureRepeat = blendmapComponent->TextureRepeats;
+						EnqueueBlendMapModel(modelAsset, textureRed, textureGreen, textureBlue, textureRepeat, modelMatrix);
+					}
+					else
+					{
+						EnqueueModel(modelAsset, modelMatrix);
+					}
+
 				}
 			}
 
@@ -130,6 +145,28 @@ private:
 			job.EndIndex = texGroup.EndIndex;
 			job.ModelMatrix = modelMatrix;
 					
+			RenderQueue.Add(job);
+		}
+	}
+
+	void EnqueueBlendMapModel(Model* model, Texture* textureRed, Texture* textureGreen,  Texture* textureBlue, float textureRepeat, glm::mat4 modelMatrix)
+	{
+		for (auto texGroup : model->TextureGroups)
+		{
+			BlendMapModelJob job;
+			job.TextureID = texGroup.Texture->ResourceID;
+			job.DiffuseTexture = *texGroup.Texture;
+			job.NormalTexture = (texGroup.NormalMap) ? *texGroup.NormalMap : 0;
+			job.SpecularTexture = (texGroup.SpecularMap) ? *texGroup.SpecularMap : 0;
+			job.BlendMapTextureRed = (*textureRed);
+			job.BlendMapTextureGreen = (*textureGreen);
+			job.BlendMapTextureBlue = (*textureBlue);
+			job.TextureRepeat = textureRepeat;
+			job.VAO = model->VAO;
+			job.StartIndex = texGroup.StartIndex;
+			job.EndIndex = texGroup.EndIndex;
+			job.ModelMatrix = modelMatrix;
+
 			RenderQueue.Add(job);
 		}
 	}

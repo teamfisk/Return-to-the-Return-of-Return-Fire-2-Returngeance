@@ -169,8 +169,7 @@
     </Filter>
     <Filter Include="Gameplay\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
-      </Filter>
-
+    </Filter>
     <Filter Include="Rendering\Events">
       <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
     </Filter>
@@ -473,6 +472,9 @@
     <ClInclude Include="..\..\src\GUI\GameFrame.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\BlendMap.h">
+      <Filter>Rendering\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">
@@ -533,6 +535,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\SunPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -5,6 +5,12 @@ layout (binding=1) uniform sampler2D ShadowTexture;
 layout (binding=2) uniform sampler2D NormalMapTexture;
 layout (binding=3) uniform sampler2D SpecularMapTexture;
 
+//TerrainTextures
+layout (binding=4) uniform sampler2D TextureRed;
+layout (binding=5) uniform sampler2D TextureGreen;
+layout (binding=6) uniform sampler2D TextureBlue;
+
+uniform float TextureRepeats; //Determines how many times the textures will loop over the terrain
 uniform vec3 SunDirection_cameraspace;
 uniform mat4 V;
 
@@ -52,6 +58,17 @@ float Shadow(vec4 ShadowCoord, vec3 normal)
 
 void main()
 {
+	vec4 BlendMap = texture2D(DiffuseTexture, Input.TextureCoord.st);
+
+	vec4 TextureRedTexel = texture2D(TextureRed, Input.TextureCoord.st * TextureRepeats);
+	vec4 TextureGreenTexel = texture2D(TextureGreen, Input.TextureCoord.st * TextureRepeats);
+	vec4 TextureBlueTexel = texture2D(TextureBlue, Input.TextureCoord.st * TextureRepeats);
+
+	//Mix the Terrain-textures together
+	TextureRedTexel *= BlendMap.r;
+	TextureGreenTexel = mix(TextureRedTexel, TextureGreenTexel, BlendMap.g);
+	vec4 finalBlendTexel = mix(TextureGreenTexel, TextureBlueTexel, BlendMap.b);
+	
 	// G-buffer Position
 	frag_Position = vec4(Input.Position.xyz, 1.0);
 
@@ -62,8 +79,7 @@ void main()
 	//frag_Normal = vec4(Input.Normal, 0.0);
 
 	// Diffuse Texture
-	//frag_Diffuse = tex;
-	frag_Diffuse = texture(DiffuseTexture, Input.TextureCoord) * Shadow(Input.ShadowCoord, vec3(frag_Normal));
+	frag_Diffuse = finalBlendTexel * Shadow(Input.ShadowCoord, vec3(frag_Normal));
 
 	//G-buffer Specular
 	frag_Specular = texture(SpecularMapTexture, Input.TextureCoord);
