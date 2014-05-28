@@ -5,13 +5,13 @@
 
 namespace Events
 {
-
 	struct Damage : Event
 	{
 		EntityID Entity;
-		float damage;
+		float Amount;
 	};
-
 }
+
+
 
 #endif // Events_Damage_h__

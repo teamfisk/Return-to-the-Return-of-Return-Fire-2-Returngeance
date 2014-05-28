@@ -108,10 +108,10 @@ void Renderer::LoadContent()
 	m_ShaderProgramDebugAABB.Compile();
 	m_ShaderProgramDebugAABB.Link();*/
 
-	m_BlendMapProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/BlendMap.vert.glsl")));
-	m_BlendMapProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/BlendMap.frag.glsl")));
-	m_BlendMapProgram.Compile();
-	m_BlendMapProgram.Link();
+ 	m_BlendMapProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/BlendMap.vert.glsl")));
+ 	m_BlendMapProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/BlendMap.frag.glsl")));
+ 	m_BlendMapProgram.Compile();
+ 	m_BlendMapProgram.Link();
 
 	m_ShaderProgramSkybox.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Skybox.vert.glsl")));
 	m_ShaderProgramSkybox.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Skybox.frag.glsl")));
@@ -264,8 +264,8 @@ void Renderer::Draw(double dt)
 void Renderer::DrawFrame(RenderQueue &rq)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
+	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
@@ -346,6 +346,7 @@ void Renderer::DrawFrame(RenderQueue &rq)
 			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
 			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glUniform4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "Color"), 1, glm::value_ptr(spriteJob->Color));
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, spriteJob->Texture);
@@ -367,8 +368,8 @@ void Renderer::DrawWorld(RenderQueue &rq)
 	Base pass
 	*/
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
-	glViewport(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, -m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
+	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	//glViewport(0, 0, m_Width, m_Height);
 
 	// Clear G-buffer
@@ -439,7 +440,6 @@ void Renderer::Swap()
 	glfwSwapBuffers(m_Window);
 }
 
-#pragma region TempRegion
 
 void Renderer::DrawSkybox()
 {
@@ -762,8 +762,6 @@ void Renderer::ClearStuff()
 	Lights.clear();
 }
 
-#pragma endregion
-
 void Renderer::FrameBufferTextures()
 {
 	m_fbBasePass = 0;
@@ -976,17 +974,62 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 	glm::vec3 sunDirection = m_SunTarget - m_SunPosition;
 	glm::vec3 sunDirection_cameraview = glm::vec3(cameraProjection * m_Camera->ViewMatrix() * glm::vec4(sunDirection, 1.0));
 
-	m_FirstPassProgram.Bind();
-	GLuint ShaderProgramHandle = m_FirstPassProgram.GetHandle();
-
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowDepthTexture);
 
 	for (auto &job : rq)
 	{
+
+		auto blendMapJob = std::dynamic_pointer_cast<BlendMapModelJob>(job);
+		if(blendMapJob)
+		{
+			m_BlendMapProgram.Bind();
+			GLuint ShaderProgramHandle = m_BlendMapProgram.GetHandle();
+
+			glm::mat4 modelMatrix = blendMapJob->ModelMatrix;
+
+			MVP = cameraMatrix * modelMatrix;
+			depthMVP = depthCameraMatrix * modelMatrix;
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+			glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
+			glUniform1f(glGetUniformLocation(ShaderProgramHandle, "TextureRepeats"), blendMapJob->TextureRepeat);
+
+			glBindVertexArray(blendMapJob->VAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->DiffuseTexture);
+			if (blendMapJob->NormalTexture != 0)
+			{
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, blendMapJob->NormalTexture);
+			}
+			if (blendMapJob->SpecularTexture)
+			{
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, blendMapJob->SpecularTexture);
+			}
+
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureRed);
+			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreen);
+			glActiveTexture(GL_TEXTURE6);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureBlue);
+
+			glDrawArrays(GL_TRIANGLES, blendMapJob->StartIndex, blendMapJob->EndIndex - blendMapJob->StartIndex + 1);
+
+			continue;
+		}
+
 		auto modelJob = std::dynamic_pointer_cast<ModelJob>(job);
 		if (modelJob)
 		{
+			m_FirstPassProgram.Bind();
+			GLuint ShaderProgramHandle = m_FirstPassProgram.GetHandle();
+
 			glm::mat4 modelMatrix = modelJob->ModelMatrix;
 
 			MVP = cameraMatrix * modelMatrix;
@@ -1041,50 +1084,6 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 
 		//	continue;
 		//}
-
-		m_BlendMapProgram.Bind();
-		GLuint ShaderProgramHandle = m_BlendMapProgram.GetHandle();
-
-		auto blendMapJob = std::dynamic_pointer_cast<BlendMapModelJob>(job);
-		if(blendMapJob)
-		{
-			glm::mat4 modelMatrix = blendMapJob->ModelMatrix;
-
-			MVP = cameraMatrix * modelMatrix;
-			depthMVP = depthCameraMatrix * modelMatrix;
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "DepthMVP"), 1, GL_FALSE, glm::value_ptr(depthMVP));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
-			glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "SunDirection_cameraspace"), 1, glm::value_ptr(sunDirection_cameraview));
-			glUniform1f(glGetUniformLocation(ShaderProgramHandle, "TextureRepeats"), blendMapJob->TextureRepeat);
-
-			glBindVertexArray(blendMapJob->VAO);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, blendMapJob->DiffuseTexture);
-			if (blendMapJob->NormalTexture != 0)
-			{
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, blendMapJob->NormalTexture);
-			}
-			if (blendMapJob->SpecularTexture)
-			{
-				glActiveTexture(GL_TEXTURE3);
-				glBindTexture(GL_TEXTURE_2D, blendMapJob->SpecularTexture);
-			}
-
-			glActiveTexture(GL_TEXTURE4);
-			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureRed);
-			glActiveTexture(GL_TEXTURE5);
-			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreen);
-			glActiveTexture(GL_TEXTURE6);
-			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureBlue);
-
-			glDrawArrays(GL_TRIANGLES, blendMapJob->StartIndex, modelJob->EndIndex - modelJob->StartIndex + 1);
-
-			continue;
-		}
 	}
 }
 

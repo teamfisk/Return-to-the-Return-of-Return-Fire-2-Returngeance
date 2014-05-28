@@ -472,6 +472,12 @@
     <ClInclude Include="..\..\src\GUI\GameFrame.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GUI\HealthOverlay.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\PlayerHUD.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Components\BlendMap.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>

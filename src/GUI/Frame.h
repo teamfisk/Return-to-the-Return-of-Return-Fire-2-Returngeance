@@ -36,8 +36,7 @@ public:
 
 	// Create a frame as a child
 	Frame(Frame* parent, std::string name)
-		: Rectangle(static_cast<Rectangle>(*parent)) // Clone parent rectangle using copy constructor
-		, m_Name(name)
+		: m_Name(name)
 		, m_Layer(0)
 	{ SetParent(std::shared_ptr<Frame>(parent)); }
 
@@ -52,6 +51,8 @@ public:
 			return;
 		}
 
+		Width = parent->Width;
+		Height = parent->Height;
 		m_Layer = parent->Layer() + 1;
 		parent->AddChild(std::shared_ptr<Frame>(this));
 		m_Parent = parent;

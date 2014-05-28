@@ -58,11 +58,11 @@ float Shadow(vec4 ShadowCoord, vec3 normal)
 
 void main()
 {
-	vec4 BlendMap = texture2D(DiffuseTexture, Input.TextureCoord.st);
+	vec4 BlendMap = texture(DiffuseTexture, Input.TextureCoord);
 
-	vec4 TextureRedTexel = texture2D(TextureRed, Input.TextureCoord.st * TextureRepeats);
-	vec4 TextureGreenTexel = texture2D(TextureGreen, Input.TextureCoord.st * TextureRepeats);
-	vec4 TextureBlueTexel = texture2D(TextureBlue, Input.TextureCoord.st * TextureRepeats);
+	vec4 TextureRedTexel = texture(TextureRed, Input.TextureCoord * TextureRepeats);
+	vec4 TextureGreenTexel = texture(TextureGreen, Input.TextureCoord * TextureRepeats);
+	vec4 TextureBlueTexel = texture(TextureBlue, Input.TextureCoord * TextureRepeats);
 
 	//Mix the Terrain-textures together
 	TextureRedTexel *= BlendMap.r;
@@ -79,7 +79,7 @@ void main()
 	//frag_Normal = vec4(Input.Normal, 0.0);
 
 	// Diffuse Texture
-	frag_Diffuse = finalBlendTexel * Shadow(Input.ShadowCoord, vec3(frag_Normal));
+	frag_Diffuse = finalBlendTexel;
 
 	//G-buffer Specular
 	frag_Specular = texture(SpecularMapTexture, Input.TextureCoord);

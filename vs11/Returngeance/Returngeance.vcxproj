@@ -196,6 +196,8 @@
     <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
     <ClInclude Include="..\..\src\GUI\GameFrame.h" />
+    <ClInclude Include="..\..\src\GUI\HealthOverlay.h" />
+    <ClInclude Include="..\..\src\GUI\PlayerHUD.h" />
     <ClInclude Include="..\..\src\GUI\WorldFrame.h" />
     <ClInclude Include="..\..\src\GUI\TextureFrame.h" />
     <ClInclude Include="..\..\src\GUI\Viewport.h" />

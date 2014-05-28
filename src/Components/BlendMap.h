@@ -9,12 +9,14 @@ namespace Components
 	struct BlendMap : Component
 	{
 		BlendMap() 
-			: TextureRed("Textures/Ground/Asphalt")
-			, TextureGreen("Textures/Ground/Grass")
-			, TextureBlue("Textures/Ground/Sand")
+			: TextureRed("Textures/ErrorTextureRed.png")
+			, TextureGreen("Textures/ErrorTextureGreen.png")
+			, TextureBlue("Textures/ErrorTextureBlue.png")
 			, TextureRepeats(100.f) { }
 
-		std::string TextureRed, TextureGreen, TextureBlue;
+		std::string TextureRed;
+		std::string	TextureGreen;
+		std::string	TextureBlue;
 		float TextureRepeats;
 
 		virtual BlendMap* Clone() const override { return new BlendMap(*this); }

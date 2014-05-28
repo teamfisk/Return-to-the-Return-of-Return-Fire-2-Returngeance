@@ -58,6 +58,9 @@ public:
 
 	void Initialize();
 
+	EntityID CreateTank(int playerID);
+	EntityID CreateJeep(int playerID);
+
 	void RegisterSystems() override;
 	void AddSystems() override;
 	void RegisterComponents() override;
