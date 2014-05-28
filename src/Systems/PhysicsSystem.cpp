@@ -156,6 +156,8 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::PhysicsSystem::Update(double dt)
 {	
+
+
 	for (auto pair : *m_World->GetEntities())
 	{
 		EntityID entity = pair.first;
@@ -172,23 +174,36 @@ void Systems::PhysicsSystem::Update(double dt)
 		{
 			hkVector4 position;
 			hkQuaternion rotation;
+			hkVector4 velocity;
 
 			if (parent)
 			{
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
 				rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
+				velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);
 			}
 			else
 			{
 				position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
 				rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
+				velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
 			}
 			m_PhysicsWorld->markForWrite();
 			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+			m_RigidBodies[entity]->setLinearVelocity(velocity);
 			m_PhysicsWorld->unmarkForWrite();
 			
 		}
+/*
+
+		glm::vec3 pos1 = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[m_World->m_Terrain]->getPosition());
+		pos1 += glm::vec3(1, 1, 1)*(float)dt;
+		hkVector4 pos = GLMVEC3_TO_HKVECTOR4(pos1);
+
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[m_World->m_Terrain]->setPositionAndRotation(pos, GLMQUAT_TO_HKQUATERNION(glm::quat()));
+		m_PhysicsWorld->unmarkForWrite();*/
 	}
 
 	static const double timestep = 1 / 60.0;
@@ -241,11 +256,12 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
 		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
-
 		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
 		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
+		transformComponent->Velocity = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
 		// TODO: No support for Scale, MIGHT be possible
 
+		// HACK: WTF IS THIS?
 		if (transformComponentParent)
 		{
 			transformComponent->Position -= transformComponentParent->Position;
@@ -319,7 +335,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				}
 
 			}
-
 
 			// Create a hkpListShape* of all the childEntities collected in m_ShapeArrays
 			hkpListShape* listShape = new hkpListShape(shapeArray.begin(), shapeArray.getSize(), hkpShapeContainer::REFERENCE_POLICY_INCREMENT);
@@ -576,7 +591,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			if(triggerComponent)
 			{
 				auto parentTransformComponent = m_World->GetComponent<Components::Transform >(entityParent);
-
 				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
 				hkpBvShape* phantomShape = new hkpBvShape(boxShape, phantom);
 
@@ -718,8 +732,6 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 		glm::vec3 velocityNormalized = glm::normalize(HKVECTOR4_TO_GLMVEC3(m_RigidBodies[event.Entity]->getLinearVelocity()));
 		glm::vec3 forward = glm::normalize(transformComponent->Orientation * glm::vec3(0, 0, -1));
 		float dotProduct = glm::dot(forward, velocityNormalized);
-
-	
 
 		if(dotProduct < 0)
 		{

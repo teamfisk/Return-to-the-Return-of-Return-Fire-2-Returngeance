@@ -30,6 +30,7 @@
 
 #include "Events/Damage.h"
 #include "Components/Vehicle.h"
+#include "Components/Player.h"
 
 namespace Systems
 {

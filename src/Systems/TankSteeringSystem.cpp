@@ -33,7 +33,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	if(!tankSteeringComponent)
 		return;
 
-	auto playerComponent = m_World->GetComponent<Components::Player>(tankSteeringComponent->Player);
+	auto playerComponent = m_World->GetComponent<Components::Player>(entity);
 	if (!playerComponent)
 		return;
 

@@ -194,6 +194,31 @@ void GameWorld::Initialize()
 	//}
 
 	
+	/*{
+		auto gate = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(gate);
+		transform->Position = glm::vec3(0, -50, 100);
+		auto model = AddComponent<Components::Model>(gate);
+		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
+		
+		
+		{
+			//shape
+		}
+		
+		
+		{
+			auto fish = CreateEntity(flag);
+			auto transform = AddComponent<Components::Transform>(gate);
+			transform->Position = glm::vec3(-1.3f, 1.0, 0);
+			auto model = AddComponent<Components::Model>(gate);
+			model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
+			CommitEntity(fish);
+		}
+
+		CommitEntity(gate);
+	}*/
+
 }
 
 void GameWorld::Update(double dt)
@@ -285,12 +310,6 @@ void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, f
 
 EntityID GameWorld::CreateTank(int playerID)
 {
-	auto playerEnt = CreateEntity();
-	{
-		auto player = AddComponent<Components::Player>(playerEnt);
-		player->ID = playerID;
-	}
-
 	auto tank = CreateEntity();
 	auto transform = AddComponent<Components::Transform>(tank);
 	transform->Position = glm::vec3(0, 5, 0);
@@ -305,7 +324,6 @@ EntityID GameWorld::CreateTank(int playerID)
 	auto player = AddComponent<Components::Player>(tank);
 	player->ID = playerID;
 	auto tankSteering = AddComponent<Components::TankSteering>(tank);
-	tankSteering->Player = playerEnt;
 	AddComponent<Components::Input>(tank);
 	auto health = AddComponent<Components::Health>(tank);
 	health->Amount = 100.f;
