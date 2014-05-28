@@ -9,5 +9,5 @@ Sound::Sound(std::string path, FMOD_SYSTEM* system)
 
 Sound::~Sound()
 {
-	 
+	 FMOD_Sound_Release(m_Sound);
 }

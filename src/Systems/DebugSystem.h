@@ -4,7 +4,7 @@
 #include "System.h"
 #include "Components/Transform.h"
 #include "Events/KeyDown.h"
-#include "Events/PlaySound.h"
+#include "Events/PlaySFX.h"
 
 namespace Systems
 {

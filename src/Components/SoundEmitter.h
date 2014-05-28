@@ -10,6 +10,11 @@ namespace Components
 
 struct SoundEmitter : Component
 {
+	enum SoundType
+	{
+		BGM_SOUND,
+		SFX_SOUND
+	};
 	SoundEmitter() : Gain(1.f), MaxDistance(1.f), MinDistance(1.f), Pitch(1.f), Loop(false) {}
 	float Gain;
 	float MaxDistance;
@@ -17,6 +22,7 @@ struct SoundEmitter : Component
 	float Pitch;
 	bool Loop;
 	std::string Path;
+	SoundType type;
 
 	virtual SoundEmitter* Clone() const override { return new SoundEmitter(*this); }
 };

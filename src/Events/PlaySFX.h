@@ -1,5 +1,5 @@
-#ifndef Event_PlaySound_h__
-#define Event_PlaySound_h__
+#ifndef Event_PlaySFX_h__
+#define Event_PlaySFX_h__
 
 #include "EventBroker.h"
 #include "Entity.h"
@@ -7,7 +7,7 @@
 namespace Events
 {
 
-struct PlaySound : Event
+struct PlaySFX : Event
 {
 	EntityID Emitter;
 	std::string Resource;
@@ -16,4 +16,4 @@ struct PlaySound : Event
 
 }
 
-#endif // Event_PlaySound_h__
+#endif // Event_PlaySFX_h__

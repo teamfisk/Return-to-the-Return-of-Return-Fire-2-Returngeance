@@ -12,7 +12,8 @@
 #include "Events/LockMouse.h"
 #include "Events/GamepadAxis.h"
 #include "Events/GamepadButton.h"
-#include "Events/PlaySound.h" //Temp
+#include "Events/PLaySFX.h" //Temp
+#include "Events/PLayBGM.h" //Temp
 
 class InputManager
 {

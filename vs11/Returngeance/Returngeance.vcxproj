@@ -174,7 +174,8 @@
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
-    <ClInclude Include="..\..\src\Events\PlaySound.h" />
+    <ClInclude Include="..\..\src\Events\PlayBGM.h" />
+    <ClInclude Include="..\..\src\Events\PlaySFX.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Factory.h" />

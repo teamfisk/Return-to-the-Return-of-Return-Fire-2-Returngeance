@@ -1092,7 +1092,7 @@ void GameWorld::Initialize()
 	auto se1 = CreateEntity();
 	std::cout<<se1<<std::endl;
 	auto transform = AddComponent<Components::Transform>(se1);
-	transform->Position = glm::vec3(20,2,-15);
+	transform->Position = glm::vec3(20,2,-100);
 	transform->Scale = glm::vec3(3);
 	auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
 	emitterComponent->Path = "Sounds/WUB.mp3";

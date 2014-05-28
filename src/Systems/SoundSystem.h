@@ -10,7 +10,8 @@
 #include "Components/SoundEmitter.h"
 #include "Components/Listener.h"
 #include "Events/ComponentCreated.h"
-#include "Events/PlaySound.h"
+#include "Events/PlaySFX.h"
+#include "Events/PlayBGM.h"
 #include "Sound.h"
 
 namespace Systems
@@ -33,8 +34,10 @@ private:
 	// Events
 	EventRelay<SoundSystem, Events::ComponentCreated> m_EComponentCreated;
 	bool OnComponentCreated(const Events::ComponentCreated &event);
-	EventRelay<SoundSystem, Events::PlaySound> m_EPlaySound;
-	bool PlayASound(const Events::PlaySound &event);
+	EventRelay<SoundSystem, Events::PlaySFX> m_EPlaySFX;
+	bool PlaySFX(const Events::PlaySFX &event);
+	EventRelay<SoundSystem, Events::PlayBGM> m_EPlayBGM;
+	bool PlayBGM(const Events::PlayBGM &event);
 
 	void LoadSound(FMOD_SOUND*&, std::string, float, float);
 	void PlaySound(FMOD_CHANNEL**, FMOD_SOUND*, float volume, bool loop);
