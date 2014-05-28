@@ -1,25 +1,21 @@
 #include "PrecompiledHeader.h"
 #include "Camera.h"
 
-Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
+Camera::Camera(float yFOV, float nearClip, float farClip)
 {
 	m_FOV = yFOV;
-	m_AspectRatio = aspectRatio;
 	m_NearClip = nearClip;
 	m_FarClip = farClip;
 
 	m_Position = glm::vec3(0.0);
-	/*m_Pitch = 0.f;
-	m_Yaw = 0.f;*/
 
-	UpdateProjectionMatrix();
 	UpdateViewMatrix();
 }
 
-//glm::vec3 Camera::Forward()
-//{
-//	return glm::rotate(glm::vec3(0.f, 0.f, -1.f), -m_Yaw, glm::vec3(0.f, 1.f, 0.f));
-//}
+glm::vec3 Camera::Forward()
+{
+	return m_Orientation * glm::vec3(0, 0, -1);
+}
 //
 //glm::vec3 Camera::Right()
 //{
@@ -34,20 +30,14 @@ Camera::Camera(float yFOV, float aspectRatio, float nearClip, float farClip)
 //	return orientation;
 //}
 
-void Camera::AspectRatio(float val)
-{
-	m_AspectRatio = val;
-	UpdateProjectionMatrix();
-}
-
-void Camera::Position(glm::vec3 val)
+void Camera::SetPosition(glm::vec3 val)
 {
 	m_Position = val;
 	UpdateViewMatrix();
 }
 
 
-void Camera::Orientation(glm::quat val)
+void Camera::SetOrientation(glm::quat val)
 {
 	m_Orientation = val;
 	UpdateViewMatrix();
@@ -65,35 +55,32 @@ void Camera::Orientation(glm::quat val)
 //	UpdateViewMatrix();
 //}
 
-void Camera::UpdateProjectionMatrix()
-{
-	m_ProjectionMatrix = glm::perspective(
-	                         m_FOV,
-	                         m_AspectRatio,
-	                         m_NearClip,
-	                         m_FarClip
-	                     );
-}
-
 void Camera::UpdateViewMatrix()
 {
 	m_ViewMatrix = glm::toMat4(glm::inverse(m_Orientation)) * glm::translate(-m_Position);
 }
 
-void Camera::FOV(float val)
+void Camera::SetFOV(float val)
 {
 	m_FOV = val;
-	UpdateProjectionMatrix();
 }
 
-void Camera::NearClip(float val)
+void Camera::SetNearClip(float val)
 {
 	m_NearClip = val;
-	UpdateProjectionMatrix();
 }
 
-void Camera::FarClip(float val)
+void Camera::SetFarClip(float val)
 {
 	m_FarClip = val;
-	UpdateProjectionMatrix();
+}
+
+glm::mat4 Camera::ProjectionMatrix(float aspectRatio)
+{
+	return glm::perspective(
+		m_FOV,
+		aspectRatio,
+		m_NearClip,
+		m_FarClip
+		);
 }

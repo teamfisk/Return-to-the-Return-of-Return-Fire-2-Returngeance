@@ -12,8 +12,8 @@ namespace Systems
 	{
 	public:
 
-		DamageSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-			: System(world, eventBroker) { }
+		DamageSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+			: System(world, eventBroker, resourceManager) { }
 
 
 		void Initialize() override;

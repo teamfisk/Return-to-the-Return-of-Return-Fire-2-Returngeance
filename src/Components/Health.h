@@ -9,9 +9,9 @@ namespace Components
 	struct Health : Component
 	{
 		Health()
-			: health(1.0f){ }
+			: Amount(1.0f) { }
 
-		float health;
+		float Amount;
 
 		virtual Health* Clone() const override { return new Health(*this); }
 	};

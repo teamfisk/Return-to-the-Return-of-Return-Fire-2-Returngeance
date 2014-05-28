@@ -614,7 +614,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		{
 			std::vector<hkReal>* vertices = new std::vector<hkReal>;
 			std::vector<hkUint16>* vertexIndices = new std::vector<hkUint16>;
-			auto meshShape = m_World->GetResourceManager()->Load<OBJ>("OBJ", meshShapeComponent->ResourceName);
+			auto meshShape = ResourceManager->Load<OBJ>("OBJ", meshShapeComponent->ResourceName);
 
 			for (auto &vertex : meshShape->Vertices)
 			{

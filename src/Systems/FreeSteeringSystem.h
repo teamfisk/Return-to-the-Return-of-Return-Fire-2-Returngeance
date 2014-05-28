@@ -12,8 +12,9 @@ namespace Systems
 class FreeSteeringSystem : public System
 {
 public:
-	FreeSteeringSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-		: System(world, eventBroker) { }
+	FreeSteeringSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: System(world, eventBroker, resourceManager)
+	{ }
 
 	void RegisterComponents(ComponentFactory* cf) override;
 	void Initialize() override;

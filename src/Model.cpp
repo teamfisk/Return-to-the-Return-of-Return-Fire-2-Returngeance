@@ -1,7 +1,7 @@
 #include "PrecompiledHeader.h"
 #include "Model.h"
 
-Model::Model(ResourceManager* rm, OBJ &obj)
+Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
 {
 	OBJ::MaterialInfo* currentMaterial = nullptr;
 	TextureGroup* currentTexGroup = nullptr;
@@ -23,11 +23,23 @@ Model::Model(ResourceManager* rm, OBJ &obj)
 			// TODO: Load normal map
 			std::shared_ptr<Texture> normalMap = nullptr;
 			if (!currentMaterial->NormalMap.FileName.empty())
+			{
 				normalMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->NormalMap.FileName));
+			}
+			else
+			{
+				normalMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", "Textures/NeutralNormalMap.png"));
+			}
 			// Load specular map
 			std::shared_ptr<Texture> specularMap = nullptr;
 			if (!currentMaterial->SpecularMap.FileName.empty())
+			{
 				specularMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", currentMaterial->SpecularMap.FileName));
+			}
+			else
+			{
+				specularMap = std::shared_ptr<Texture>(rm->Load<Texture>("Texture", "Textures/NeutralSpecularMap.png"));
+			}
 
 			// TODO: Load material parameters
 			// Create new texture group (start index of new group is upcoming index)
@@ -35,6 +47,21 @@ Model::Model(ResourceManager* rm, OBJ &obj)
 			TextureGroups.push_back(texGroup);
 			currentTexGroup = &TextureGroups.back();
 		}
+
+		/*std::unordered_map<int, glm::vec3> similarNormals;
+		std::unordered_map<int, int> normalCount;
+		for (auto &faceDef : face.Definitions)
+		{
+			if (faceDef.NormalIndex == 0)
+				continue;
+
+
+			similarNormals[faceDef.VertexIndex - 1] += normal;
+			normalCount[faceDef.VertexIndex - 1]++;
+			int index = pair.first;
+			glm::vec3 averagedNormal = ;
+			Normals[]
+		}*/
 
 		// Face definitions
 		for (auto faceDef : face.Definitions)
@@ -178,7 +205,7 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 
 bool Model::IsNear( float v1, float v2 )
 {
-	return fabs(v1 - v2) < 0.01f;
+	return fabs(v1 - v2) < 0.001f;
 }
 
 void Model::getSimilarVertexIndex()
@@ -190,15 +217,15 @@ void Model::getSimilarVertexIndex()
 			if(i != t)
 			{
 				if(IsNear(Vertices[i].x, Vertices[t].x)
-					& IsNear(Vertices[i].y, Vertices[t].y)
-					& IsNear(Vertices[i].z, Vertices[t].z)
+					&& IsNear(Vertices[i].y, Vertices[t].y)
+					&& IsNear(Vertices[i].z, Vertices[t].z)
 					)
 				{
 					glm::vec3 tempNormal, tempTangent, tempBiTangent;
 
-					tempNormal = glm::normalize(Normals[i] + Normals[t]);
-					tempTangent = glm::normalize(TangentNormals[i] + TangentNormals[t]);
-					tempBiTangent = glm::normalize(BiTangentNormals[i] + BiTangentNormals[t]);
+					tempNormal = Normals[i] + Normals[t];
+					tempTangent = TangentNormals[i] + TangentNormals[t];
+					tempBiTangent = BiTangentNormals[i] + BiTangentNormals[t];
 
 					Normals[i] = tempNormal;
 					Normals[t] = tempNormal;

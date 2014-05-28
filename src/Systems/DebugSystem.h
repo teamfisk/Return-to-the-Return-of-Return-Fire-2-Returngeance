@@ -12,8 +12,9 @@ namespace Systems
 class DebugSystem : public System
 {
 public:
-	DebugSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-		: System(world, eventBroker) { }
+	DebugSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: System(world, eventBroker, resourceManager)
+	{ }
 
 	void Initialize() override;
 

@@ -37,8 +37,9 @@ namespace Systems
 	class TankSteeringSystem : public System
 	{
 	public:
-		TankSteeringSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-			: System(world, eventBroker) { }
+		TankSteeringSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+			: System(world, eventBroker, resourceManager)
+		{ }
 
 		void RegisterComponents(ComponentFactory* cf) override;
 		void Initialize() override;

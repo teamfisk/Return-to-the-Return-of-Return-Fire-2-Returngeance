@@ -40,6 +40,7 @@ void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 		glm::quat mouseOrientationPitch = glm::quat(m_InputController->MouseOrientation * glm::vec3(1, 0, 0));
 		glm::quat mouseOrientationYaw = glm::quat(m_InputController->MouseOrientation * glm::vec3(0, 1, 0));
+		m_InputController->MouseOrientation = glm::vec3(0);
 
 		glm::vec3 controllerOrientationEuler = m_InputController->ControllerOrientation * (float)dt;
 		glm::quat controllerOrientationPitch = glm::quat(controllerOrientationEuler * glm::vec3(1, 0, 0));
@@ -53,8 +54,6 @@ void Systems::FreeSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		//---------------------------------------------------------------------
 		// TOUCHING THIS CODE MIGHT CAUSE THE UNIVERSE TO IMPLODE, ALSO DRAGONS
 	}
-
-	m_InputController->MouseOrientation = glm::vec3(0);
 }
 
 bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const Events::InputCommand &event)
@@ -80,7 +79,7 @@ bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnCommand(const E
 	}
 
 	// Mouse click
-	else if (event.Command == "cam_attack")
+	else if (event.Command == "cam_lock")
 	{
 		OrientationActive = event.Value > 0;
 
@@ -113,6 +112,7 @@ bool Systems::FreeSteeringSystem::FreeSteeringInputController::OnMouseMove(const
 	if (OrientationActive)
 	{
 		MouseOrientation = -glm::vec3(event.DeltaY / 300.f, event.DeltaX / 300.f, 0.f);
+		LOG_DEBUG("Mouse DX: %f", event.DeltaX);
 	}
 
 	return true;

@@ -1,11 +1,16 @@
 #include <string>
 #include <sstream>
 
+#include "ResourceManager.h"
+#include "OBJ.h"
+#include "Model.h"
+#include "Texture.h"
 #include "EventBroker.h"
+#include "RenderQueue.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "GUI/Frame.h"
-#include "GameWorld.h"
+#include "GUI/GameFrame.h"
 
 class Engine
 {
@@ -14,15 +19,24 @@ public:
 	{
 		m_EventBroker = std::make_shared<EventBroker>();
 
-		m_Renderer = std::make_shared<Renderer>();
+		m_ResourceManager = std::make_shared<ResourceManager>();
+		m_ResourceManager->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
+		auto rm = m_ResourceManager;
+		m_ResourceManager->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
+		m_ResourceManager->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
+
+		m_Renderer = std::make_shared<Renderer>(m_ResourceManager);
 		m_Renderer->Initialize();
 
 		m_InputManager = std::make_shared<InputManager>(m_Renderer->GetWindow(), m_EventBroker);
 
-		//m_UIParent = std::make_shared<GUI::Frame>(m_EventBroker);
+		m_FrameStack = new GUI::Frame(m_EventBroker, m_ResourceManager); 
+		m_FrameStack->Width = 1280;
+		m_FrameStack->Height = 720;
+		new GUI::GameFrame(m_FrameStack, "GameFrame");
 
-		m_World = std::make_shared<GameWorld>(m_EventBroker, m_Renderer);
-		m_World->Initialize();
+		//m_World = std::make_shared<GameWorld>(m_EventBroker, m_ResourceManager);
+		//m_World->Initialize();
 
 		m_LastTime = glfwGetTime();
 	}
@@ -32,24 +46,34 @@ public:
 	void Tick()
 	{
 		double currentTime = glfwGetTime();
-		double dt =  currentTime - m_LastTime;
+		double dt = currentTime - m_LastTime;
 		m_LastTime = currentTime;
 
+		// Update input
 		m_InputManager->Update(dt);
-		m_World->Update(dt);
-		m_Renderer->Draw(dt);
+
+		// Update frame stack
+		m_EventBroker->Process<GUI::Frame>();
+		m_FrameStack->UpdateLayered(dt);
+
+		// Render scene
+		m_FrameStack->DrawLayered(m_Renderer);
+		m_Renderer->Swap();
+		
+		// Swap event queues
 		m_EventBroker->Clear();
 
 		glfwPollEvents();
 	}
 
 private:
+	std::shared_ptr<ResourceManager> m_ResourceManager;
 	std::shared_ptr<EventBroker> m_EventBroker;
 	std::shared_ptr<Renderer> m_Renderer;
 	std::shared_ptr<InputManager> m_InputManager;
-	//std::shared_ptr<GUI::Frame> m_UIParent;
+	GUI::Frame* m_FrameStack;
 	// TODO: This should ultimately live in GameFrame
-	std::shared_ptr<GameWorld> m_World;
+	//std::shared_ptr<GameWorld> m_World;
 
 	double m_LastTime;
 };

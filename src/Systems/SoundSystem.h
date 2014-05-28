@@ -16,11 +16,12 @@ namespace Systems
 class SoundSystem : public System
 {
 public:
-	SoundSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-		: System(world, eventBroker) { }
+	SoundSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: System(world, eventBroker, resourceManager)
+	{ }
 
 	void RegisterComponents(ComponentFactory* cf) override;
-	void RegisterResourceTypes(ResourceManager* rm) override;
+	void RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm) override;
 	void Initialize() override;
 
 	void Update(double dt) override;

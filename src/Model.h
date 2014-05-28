@@ -17,7 +17,7 @@
 class Model : public Resource
 {
 public:
-	Model(ResourceManager* rm, OBJ &obj);
+	Model(std::shared_ptr<ResourceManager> resourceManager, OBJ &obj);
 
 	struct TextureGroup
 	{

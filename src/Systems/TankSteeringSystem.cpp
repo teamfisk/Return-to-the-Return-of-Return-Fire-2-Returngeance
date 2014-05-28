@@ -150,7 +150,7 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 				{
 					Events::Damage d;
 					d.Entity = physicsEntity;
-					d.damage =  (1.f - pow(distance / radius, 2)) * shellComponent->Damage;
+					d.Amount =  (1.f - pow(distance / radius, 2)) * shellComponent->Damage;
 					EventBroker->Publish(d);
 				}
 				

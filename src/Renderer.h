@@ -13,6 +13,8 @@
 #include "Components/PointLight.h"
 #include "Skybox.h"
 #include "ResourceManager.h"
+#include "Util/Rectangle.h"
+#include "RenderQueue.h"
 
 class Renderer
 {
@@ -29,7 +31,7 @@ public:
 	std::list<std::tuple<Texture*, glm::mat4, glm::vec3>> TexturesToRender;
 	std::list<std::tuple<glm::mat4, bool>> AABBsToRender;
 
-	Renderer();
+	Renderer(std::shared_ptr<::ResourceManager> resourceManager);
 
 	void Initialize();
 	void Draw(double dt);
@@ -39,6 +41,23 @@ public:
 	void RegisterCamera(int identifier, float FOV, float nearClip, float farClip);
 	void UpdateViewport(int viewportIdentifier, int cameraIdentifier);
 	void UpdateCamera(int cameraIdentifier, glm::vec3 position, glm::quat orientation, float FOV, float nearClip, float farClip);
+
+#pragma region NEWSTUFF
+	void SetViewport(const Rectangle &viewport)
+	{
+		m_Viewport = viewport;
+	}
+
+	void SetCamera(std::shared_ptr<Camera> camera)
+	{
+		m_Camera = camera;
+	}
+
+	void DrawFrame(RenderQueue &rq);
+	void DrawWorld(RenderQueue &rq);
+	void Swap();
+
+#pragma endregion
 
 	void AddModelToDraw(Model* model, glm::vec3 position, glm::quat orientation, glm::vec3 scale, bool visible, bool shadowCaster);
 	void AddTextureToDraw(Texture* texture, glm::vec3 position, glm::quat orientation, glm::vec3 scale);
@@ -50,8 +69,11 @@ public:
 	    float _specularExponent,
 		float _ConstantAttenuation, 
 		float _LinearAttenuation, 
-		float _QuadraticAttenuation
+		float _QuadraticAttenuation,
+		float _radius
 	);
+	void ClearPointLights();
+
 	void AddAABBToDraw(glm::vec3 origin, glm::vec3 volumeVector, bool colliding);
 
 	void LoadContent();
@@ -70,6 +92,8 @@ public:
 	void SetSphereModel(Model* _model);
 
 private:
+	std::shared_ptr<::ResourceManager> ResourceManager;
+
 	int m_Width, m_Height;
 
 	struct Viewport
@@ -84,6 +108,9 @@ private:
 	std::unordered_map<int, Viewport> m_Viewports;
 	std::unordered_map<int, std::shared_ptr<Camera>> m_Cameras;
 
+	Rectangle m_Viewport;
+	std::shared_ptr<Camera> m_Camera;
+
 	struct Light
 	{
 		glm::vec3 Position;
@@ -91,7 +118,7 @@ private:
 		glm::vec3 Diffuse;
 		float SpecularExponent;
 		glm::mat4 SphereModelMatrix;
-		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation;
+		float ConstantAttenuation, LinearAttenuation, QuadraticAttenuation, Radius;
 	};
 
 	float Gamma;
@@ -113,6 +140,10 @@ private:
 	glm::vec3 m_SunPosition;
 	glm::vec3 m_SunTarget;
 	glm::mat4 m_SunProjection;
+	glm::vec2 m_SunProjection_width;
+	glm::vec2 m_SunProjection_height;
+	glm::vec2 m_SunProjection_length;
+
 
 	GLuint m_DebugAABB;
 	GLuint m_ShadowFrameBuffer;
@@ -135,13 +166,13 @@ private:
 
 	bool m_QuadView;
 
-	std::shared_ptr<Camera> m_Camera;
-
 	ShaderProgram m_ShaderProgram;
 	ShaderProgram m_FirstPassProgram;
 	ShaderProgram m_SecondPassProgram;
 	ShaderProgram m_SecondPassProgram_Debug;
 	ShaderProgram m_FinalPassProgram;
+	ShaderProgram m_SunPassProgram;
+	ShaderProgram m_ForwardRendering;
 
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
@@ -154,16 +185,19 @@ private:
 	void ClearStuff();
 	void DrawScene();
 	void DrawModels(ShaderProgram &shader);
-	void DrawShadowMap();
+	void DrawShadowMap(RenderQueue &rq);
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
-	void DrawFBOScene(Viewport &viewport);
-	void DrawLightScene(Viewport &viewport);
+	void DrawFBO2();
+	void DrawFBOScene(RenderQueue &rq);
+	void DrawLightScene(RenderQueue &rq);
+	void DrawSunLightScene();
 	void BindFragDataLocation();
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();
 	void CreateNormalMapTangent();
+	void ForwardRendering();
 
 	
 	GLuint CreateQuad();

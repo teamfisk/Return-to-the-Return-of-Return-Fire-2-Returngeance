@@ -13,8 +13,8 @@ namespace Systems
 	{
 	public:
 
-		TimerSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-			: System(world, eventBroker) { }
+		TimerSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+			: System(world, eventBroker, resourceManager) { }
 
 		void RegisterComponents(ComponentFactory* cf) override;
 		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
