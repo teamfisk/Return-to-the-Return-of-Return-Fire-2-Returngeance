@@ -176,6 +176,9 @@
     <Filter Include="Gameplay\Events">
       <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Base\Events">
+      <UniqueIdentifier>{ffab6cc2-2fbf-400f-9398-a6741b6cc95c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\World.h" />
@@ -477,6 +480,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\PlayerHUD.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TriggerMove.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\Move.h">
+      <Filter>Base\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\LeaveTrigger.h">
+      <Filter>Physics\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

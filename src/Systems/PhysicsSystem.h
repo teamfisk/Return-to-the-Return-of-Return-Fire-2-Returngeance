@@ -28,6 +28,7 @@
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
 #include "Events/Collision.h"
+#include "Events/LeaveTrigger.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -139,7 +140,16 @@ public:
 
 		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
 		{
+			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableA)];
+			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableB)];
 
+			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
+			{
+				Events::LeaveTrigger e;
+				e.Entity1 = entity1;
+				e.Entity2 = entity2;
+				m_PhysicsSystem->EventBroker->Publish(e);
+			}
 		}
 
 	private:
@@ -179,7 +189,6 @@ private:
 	bool OnEnableCollisions(const Events::EnableCollisions &e);
 	EventRelay<PhysicsSystem, Events::DisableCollisions> m_EDisableCollisions;
 	bool OnDisableCollisions(const Events::DisableCollisions &e);
-
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);

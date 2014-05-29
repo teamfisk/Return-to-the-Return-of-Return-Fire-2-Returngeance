@@ -110,7 +110,7 @@ void GameWorld::Initialize()
 		auto physics = AddComponent<Components::Physics>(ground);
 		physics->Mass = 10;
 		physics->Static = true;
-		physics->CollisionLayer = 1;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
 
 		auto groundshape = CreateEntity(ground);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
@@ -200,10 +200,10 @@ void GameWorld::Initialize()
 		transform->Position = glm::vec3(0, -50, 150);
 		auto model = AddComponent<Components::Model>(gateBase);
 		model->ModelFile = "Models/Gate/Lift/Lift.obj";
-		
 		auto physics = AddComponent<Components::Physics>(gateBase);
 		physics->Static = true;
-		physics->CollisionLayer = 1; // Terrain-Layer
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+
 		{
 			auto leftBaseShape = CreateEntity(gateBase);
 			auto transform = AddComponent<Components::Transform>(leftBaseShape);
@@ -257,6 +257,63 @@ void GameWorld::Initialize()
 		CommitEntity(gateBase);
 	}
 
+	{
+		auto gate = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(gate);
+		transform->Position = glm::vec3(0, -50, 150);
+		auto model = AddComponent<Components::Model>(gate);
+		model->ModelFile = "Models/Gate/Gate/Gate.obj";		
+		auto physics = AddComponent<Components::Physics>(gate);
+		physics->Static = true;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+
+		{
+			auto mainShape = CreateEntity(gate);
+			auto transform = AddComponent<Components::Transform>(mainShape);
+			transform->Position = glm::vec3(0.f, 3.09776f, 0.f);
+			auto box = AddComponent<Components::BoxShape>(mainShape);
+			box->Width = 6.963f;
+			box->Height = 2.478f;
+			box->Depth = 0.522f;
+			CommitEntity(mainShape);
+		}
+		{
+			auto lowerShape = CreateEntity(gate);
+			auto transform = AddComponent<Components::Transform>(lowerShape);
+			transform->Position = glm::vec3(0.f, 0.35f, 0.f);
+			auto box = AddComponent<Components::BoxShape>(lowerShape);
+			box->Width = 6.963f;
+			box->Height = 0.308f;
+			box->Depth = 0.222f;
+			CommitEntity(lowerShape);
+		}
+		CommitEntity(gate);
+
+		{
+			auto gateTrigger = CreateEntity();
+			auto transform = AddComponent<Components::Transform>(gateTrigger);
+			transform->Position = glm::vec3(0, -50 + 2.8241, 150);
+			auto trigger = AddComponent<Components::Trigger>(gateTrigger);
+			auto triggerMove = AddComponent<Components::TriggerMove>(gateTrigger);
+			triggerMove->Entity = gate;
+			triggerMove->Time = 3.f;
+			triggerMove->GoalPosition = glm::vec3(0, -50 + 9.02345f, 150);
+			
+
+			{
+				auto shape = CreateEntity(gateTrigger);
+				auto transform = AddComponent<Components::Transform>(shape);
+				transform->Position = glm::vec3(0.f, 2.8241f, 0.f);
+				auto box = AddComponent<Components::BoxShape>(shape);
+				box->Width = 6.963f;
+				box->Height = 3.104f;
+				box->Depth = 10.356f;
+				CommitEntity(shape);
+			}
+			CommitEntity(gateTrigger);
+		}
+
+	}
 }
 
 void GameWorld::Update(double dt)

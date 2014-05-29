@@ -112,20 +112,8 @@ void Systems::PhysicsSystem::Initialize()
 		m_collisionResolution = new MyCollisionResolution(this);
 	}
 	
-	enum
-	{
-		GROUND_LAYER = 1,
-		VEHICLE1_LAYER = 2,
-		VEHICLE2_LAYER = 3,
-		EXPLOSION_LAYER = 4,
-	};
-/*
-	{
-		Events::DisableCollisions e;
-		e.Layer1 = GROUND_LAYER;
-		e.Layer2 = EXPLOSION_LAYER;
-		EventBroker->Publish(e);
-	}*/
+	
+
 	/*{
 		Events::DisableCollisions e;
 		e.Layer1 = VEHICLE1_LAYER;
@@ -170,7 +158,7 @@ void Systems::PhysicsSystem::Update(double dt)
 		if (!transformComponent)
 			continue;
 
-		if(m_RigidBodies[entity]->isActive())
+		if(/*m_RigidBodies[entity]->isActive()*/ true)
 		{
 			hkVector4 position;
 			hkQuaternion rotation;

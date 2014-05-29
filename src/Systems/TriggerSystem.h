@@ -14,7 +14,11 @@
 #include "Components/Trigger.h"
 #include "Components/TriggerExplosion.h"
 #include "Events/EnterTrigger.h"
+#include "Events/LeaveTrigger.h"
 #include "Components/Flag.h"
+#include "Components/TriggerMove.h"
+#include "Components/Player.h"
+#include "Events/Move.h"
 #include <math.h>
 namespace Systems
 {
@@ -36,10 +40,12 @@ namespace Systems
 
 		EventRelay<TriggerSystem, Events::EnterTrigger> m_EEnterTrigger;
 		bool OnEnterTrigger(const Events::EnterTrigger &event);
+		EventRelay<TriggerSystem, Events::LeaveTrigger> m_ELeaveTrigger;
+		bool OnLeaveTrigger(const Events::LeaveTrigger &event);
 	private:
 		void Flag(EntityID entity, EntityID phantomEntity);
 		void Explosion(EntityID entity, EntityID phantomEntity);
-
+		void Move(EntityID entity);
 	};
 
 }

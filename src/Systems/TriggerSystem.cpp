@@ -6,11 +6,13 @@ void Systems::TriggerSystem::RegisterComponents( ComponentFactory* cf )
 {
 	cf->Register<Components::Trigger>([]() { return new Components::Trigger(); });
 	cf->Register<Components::TriggerExplosion>([]() { return new Components::TriggerExplosion(); });
+	cf->Register<Components::TriggerMove>([]() { return new Components::TriggerMove(); });
 }
 
 void Systems::TriggerSystem::Initialize()
 {
 	EVENT_SUBSCRIBE_MEMBER(m_EEnterTrigger, &Systems::TriggerSystem::OnEnterTrigger);
+	EVENT_SUBSCRIBE_MEMBER(m_ELeaveTrigger, &Systems::TriggerSystem::OnLeaveTrigger);
 }
 
 void Systems::TriggerSystem::Update( double dt )
@@ -69,7 +71,61 @@ bool Systems::TriggerSystem::OnEnterTrigger( const Events::EnterTrigger &event )
 		Flag(event.Entity1, event.Entity2);
 	}
 
+
+	auto triggerComponent1 = m_World->GetComponent<Components::TriggerMove>(event.Entity1);
+	auto triggerComponent2 = m_World->GetComponent<Components::TriggerMove>(event.Entity2);
+
+	auto playerComponent1 = m_World->GetComponent<Components::Player>(event.Entity1);
+	auto playerComponent2 = m_World->GetComponent<Components::Player>(event.Entity2);
+
+	if(triggerComponent1 && playerComponent2)
+	{
+		Move(event.Entity1);
+	}
+	else if (triggerComponent2 && playerComponent1)
+	{
+		Move(event.Entity2);
+	}
+
 	return true;
+}
+
+
+bool Systems::TriggerSystem::OnLeaveTrigger( const Events::LeaveTrigger &event )
+{
+	auto triggerComponent1 = m_World->GetComponent<Components::TriggerMove>(event.Entity1);
+	auto triggerComponent2 = m_World->GetComponent<Components::TriggerMove>(event.Entity2);
+
+	auto playerComponent1 = m_World->GetComponent<Components::Player>(event.Entity1);
+	auto playerComponent2 = m_World->GetComponent<Components::Player>(event.Entity2);
+
+	if(triggerComponent1 && playerComponent2)
+	{
+		Move(event.Entity1);
+	}
+	else if (triggerComponent2 && playerComponent1)
+	{
+		Move(event.Entity2);
+	}
+
+	return true;
+}
+
+
+
+void Systems::TriggerSystem::Move( EntityID entity )
+{
+	auto trigger = m_World->GetComponent<Components::TriggerMove>(entity);
+	auto transform = m_World->GetComponent<Components::Transform>(trigger->Entity);
+	
+	Events::Move e;
+	e.Entity = trigger->Entity;
+	e.GoalPosition = trigger->GoalPosition;
+	e.Time = trigger->Time;
+	e.Queue = false;
+	EventBroker->Publish(e);
+
+	trigger->GoalPosition = transform->Position;
 }
 
 

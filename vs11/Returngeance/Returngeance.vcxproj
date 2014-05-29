@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\Flag.h" />
     <ClInclude Include="..\..\src\Components\FrameTimer.h" />
+    <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Timer.h" />
     <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />
     <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
@@ -181,10 +182,12 @@
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\LeaveTrigger.h" />
     <ClInclude Include="..\..\src\Events\LockMouse.h" />
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
+    <ClInclude Include="..\..\src\Events\Move.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
     <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
