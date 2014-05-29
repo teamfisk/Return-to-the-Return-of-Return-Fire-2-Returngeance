@@ -98,7 +98,6 @@ void GameWorld::Initialize()
 	//	CommitEntity(ground);
 	//}
 
-
 	{
 		auto ground_middle = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground_middle);
@@ -109,7 +108,7 @@ void GameWorld::Initialize()
 		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
 		blendmap->TextureRed = "Textures/Ground/Sand.png";
 		blendmap->TextureGreen = "Textures/Ground/Grass.png";
-		blendmap->TextureBlue = "Textures/Ground/Asphalt.png";
+		blendmap->TextureBlue = "Textures/Ground/Rock.png";
 		blendmap->TextureRepeats = 30.f;
 
 		auto physics = AddComponent<Components::Physics>(ground_middle);
@@ -237,6 +236,17 @@ void GameWorld::Initialize()
 
 		CommitEntity(groundshape);
 		CommitEntity(ground_base_mirrored);
+	}
+
+	{
+		auto tree = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(tree);
+		transform->Position = glm::vec3(0, -15, 0);
+		auto model = AddComponent<Components::Model>(tree);
+		model->ModelFile = "Models/Tree/leafs/Leafs.obj";
+		model->Transparent = true;
+
+		CommitEntity(tree);
 	}
 
 	EntityID tank1 = CreateTank(1);

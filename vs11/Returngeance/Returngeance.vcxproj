@@ -238,6 +238,8 @@
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
     <None Include="..\..\src\Shaders\BlendMap.frag.glsl" />
     <None Include="..\..\src\Shaders\BlendMap.vert.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
     <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl" />

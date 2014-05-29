@@ -26,7 +26,7 @@ public:
 		job.TextureID = m_Texture->ResourceID;
 		job.Texture = *m_Texture;
 		job.Color = m_Color;
-		RenderQueue.Add(job);
+		RenderQueue.Forward.Add(job);
 
 		renderer->SetCamera(nullptr);
 		renderer->DrawFrame(RenderQueue);

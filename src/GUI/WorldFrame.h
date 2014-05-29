@@ -69,7 +69,8 @@ public:
 					}
 					else
 					{
-						EnqueueModel(modelAsset, modelMatrix);
+						float transparent = modelComponent->Transparent;
+						EnqueueModel(modelAsset, modelMatrix, transparent);
 					}
 
 				}
@@ -131,7 +132,7 @@ private:
 
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 
-	void EnqueueModel(Model* model, glm::mat4 modelMatrix)
+	void EnqueueModel(Model* model, glm::mat4 modelMatrix, float transparent)
 	{
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -144,8 +145,15 @@ private:
 			job.StartIndex = texGroup.StartIndex;
 			job.EndIndex = texGroup.EndIndex;
 			job.ModelMatrix = modelMatrix;
-					
-			RenderQueue.Add(job);
+			job.Transparent = transparent;
+			if(job.Transparent)
+			{
+				RenderQueue.Forward.Add(job);
+			}
+			else
+			{
+				RenderQueue.Deferred.Add(job);
+			}
 		}
 	}
 
@@ -167,7 +175,7 @@ private:
 			job.EndIndex = texGroup.EndIndex;
 			job.ModelMatrix = modelMatrix;
 
-			RenderQueue.Add(job);
+			RenderQueue.Deferred.Add(job);
 		}
 	}
 
@@ -178,7 +186,7 @@ private:
 		job.Texture = *texture;
 		job.ModelMatrix = modelMatrix;
 
-		RenderQueue.Add(job);
+		RenderQueue.Forward.Add(job);
 	}
 };
 

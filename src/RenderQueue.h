@@ -38,6 +38,7 @@ struct ModelJob : RenderJob
 	unsigned int StartIndex;
 	unsigned int EndIndex;
 	glm::mat4 ModelMatrix;
+	float Transparent;
 
 	void CalculateHash() override
 	{
@@ -96,6 +97,18 @@ public:
 
 private:
 	std::forward_list<std::shared_ptr<RenderJob>> m_Jobs;
+};
+
+struct RenderQueuePair
+{
+	RenderQueue Deferred;
+	RenderQueue Forward;
+
+	void Clear()
+	{
+		Deferred.Clear();
+		Forward.Clear();
+	}
 };
 
 #endif // RenderQueue_h__

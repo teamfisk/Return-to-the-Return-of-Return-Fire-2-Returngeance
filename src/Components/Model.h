@@ -11,11 +11,12 @@ namespace Components
 
 struct Model : Component
 {
-	Model() : Visible(true), ShadowCaster(true) { }
+	Model() : Visible(true), ShadowCaster(true), Transparent(false) { }
 	std::string ModelFile;
 	Color Color;
 	bool Visible;
 	bool ShadowCaster;
+	bool Transparent;
 
 	virtual Model* Clone() const override { return new Model(*this); }
 };

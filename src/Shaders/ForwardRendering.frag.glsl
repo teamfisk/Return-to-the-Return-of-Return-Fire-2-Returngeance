@@ -10,11 +10,11 @@ in VertexData {
 	vec2 TextureCoord;
 } Input;
  
-out vec4 fragmentColor;
+out vec4 frag_Diffuse;
 
 void main() {
 	// Texture
 	vec4 texel = texture(texture0, Input.TextureCoord);
 
-	fragmentColor = texel * Color;
+	frag_Diffuse = texel;
 }

@@ -549,5 +549,11 @@
     <None Include="..\..\src\Shaders\BlendMap.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
