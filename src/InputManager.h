@@ -12,6 +12,7 @@
 #include "Events/LockMouse.h"
 #include "Events/GamepadAxis.h"
 #include "Events/GamepadButton.h"
+#include "Events/CreateExplosion.h"
 
 class InputManager
 {
