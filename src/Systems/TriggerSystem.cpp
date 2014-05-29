@@ -82,7 +82,7 @@ void Systems::TriggerSystem::Flag( EntityID entity, EntityID phantomEntity )
 	m_World->RemoveComponent<Components::Trigger>(phantomEntity);
 	m_World->SetEntityParent(phantomEntity, entity);
 	auto phantomTransform = m_World->GetComponent<Components::Transform>(phantomEntity);
-	phantomTransform->Position = glm::vec3(1.f, 0.1f, 2.f);
+	phantomTransform->Position = glm::vec3(-1.5f, 0.1f, 2.f);
 }
 
 

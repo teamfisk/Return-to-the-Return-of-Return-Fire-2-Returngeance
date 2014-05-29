@@ -771,6 +771,9 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 	{
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
+
+		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+		transformComponent->Velocity = event.Velocity;
 		m_PhysicsWorld->unmarkForWrite();
 	}
 	return true;
