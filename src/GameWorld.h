@@ -20,6 +20,7 @@
 #include "Systems/TriggerSystem.h"
 #include "Systems/TimerSystem.h"
 #include "Systems/DamageSystem.h"
+#include "Systems/WheelPairSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -47,6 +48,7 @@
 #include "Components/Health.h"
 #include "Components/Trigger.h"
 #include "Components/Flag.h"
+#include "Components/WheelPair.h"
 
 class GameWorld : public World
 {
