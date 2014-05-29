@@ -7,14 +7,15 @@
 
 namespace Components
 {
-
+	
 struct SoundEmitter : Component
 {
-	enum SoundType
+	enum class SoundType
 	{
-		BGM_SOUND,
-		SFX_SOUND
+		SOUND_3D,
+		SOUND_2D
 	};
+
 	SoundEmitter() : Gain(1.f), MaxDistance(1.f), MinDistance(1.f), Pitch(1.f), Loop(false) {}
 	float Gain;
 	float MaxDistance;

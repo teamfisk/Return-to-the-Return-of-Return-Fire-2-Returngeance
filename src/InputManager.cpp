@@ -45,7 +45,7 @@ void InputManager::Update(double dt)
 	if(m_CurrentKeyState[GLFW_KEY_Z]) //TEMP
 	{
 		Events::PlayBGM e;
-		e.Resource = "Sounds/BGM/WUB.mp3";
+		e.Resource = "Sounds/BGM/MainMenu.mp3";
 		e.Loop = true;
 		EventBroker->Publish(e);
 	}

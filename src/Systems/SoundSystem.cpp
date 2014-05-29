@@ -32,7 +32,8 @@ void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::SoundSystem::RegisterResourceTypes(ResourceManager* rm)
 {
-	rm->RegisterType("Sound", [this](std::string resourceName) { return new Sound(resourceName, this->m_System); });
+	rm->RegisterType("Sound3D", [this](std::string resourceName) { return new Sound(resourceName, this->m_System, Components::SoundEmitter::SoundType::SOUND_3D); });
+	rm->RegisterType("Sound2D", [this](std::string resourceName) { return new Sound(resourceName, this->m_System, Components::SoundEmitter::SoundType::SOUND_2D); });
 }
 
 void Systems::SoundSystem::Update(double dt)
@@ -88,18 +89,6 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 		FMOD_SOUND* sound = m_Sounds[entity];
 		auto eTransform = m_World->GetComponent<Components::Transform>(entity);
 		
-		
-// 		if(emitter->type == emitter->BGM_SOUND)
-// 		{
-// 			
-// 			EntityID listener =  m_Listeners[0]; // "Pretty" ugly hack... Sets the transform Component for emitter to be same as first listener
-// 			auto lTransform = m_World->GetComponent<Components::Transform>(listener);
-// 			if(lTransform)
-// 			{
-// 				eTransform->Position = m_TransformSystem->AbsolutePosition(listener);
-// 				eTransform->Velocity = lTransform->Velocity;
-// 			}
-// 		}
 		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
 		FMOD_VECTOR ePos = {tPos.x, tPos.y, tPos.z};
 
@@ -145,13 +134,12 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
 		return false;
 	}
-	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound", event.Resource);
+	emitter->type = Components::SoundEmitter::SoundType::SOUND_3D;
+	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound3D", event.Resource);
 	m_Sounds[event.Emitter] = *sound;
 
 	PlaySound(&m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
 	FMOD_System_Update(m_System);
-
-	
 
 	FMOD_BOOL isPlaying = false;
 	FMOD_Channel_IsPlaying(m_Channels[event.Emitter], &isPlaying);
@@ -168,9 +156,8 @@ bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 	auto eTransform = m_World->AddComponent<Components::Transform>(emitter);
 
 	auto eComponent = m_World->AddComponent<Components::SoundEmitter>(emitter);
-	eComponent->type = eComponent->BGM_SOUND;
-
-	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound", event.Resource);
+	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
+	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound2D", event.Resource);
 	m_Sounds[emitter] = *sound;
 
 	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_Channels[emitter]);
