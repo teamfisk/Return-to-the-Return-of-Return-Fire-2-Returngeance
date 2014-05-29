@@ -16,20 +16,18 @@ void Systems::WheelPairSystem::UpdateEntity(double dt, EntityID entity, EntityID
 	auto transform = m_World->GetComponent<Components::Transform>(entity);
 	if (!transform)
 		return;
-	auto transformFake1 = m_World->GetComponent<Components::Transform>(wheelPair->FakeWheel1);
-	if (!transformFake1)
+	auto transformFakeFront = m_World->GetComponent<Components::Transform>(wheelPair->FakeWheelFront);
+	if (!transformFakeFront)
 		return;
-	auto transformFake2 = m_World->GetComponent<Components::Transform>(wheelPair->FakeWheel2);
-	if (!transformFake2)
+	auto transformFakeBack = m_World->GetComponent<Components::Transform>(wheelPair->FakeWheelBack);
+	if (!transformFakeBack)
 		return;
 
-	glm::vec3 thing = transformFake2->Position - transformFake1->Position;
-	glm::vec3 forward = glm::normalize(glm::vec3(thing.x, 0, thing.z));
-	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 thing = transformFakeBack->Position - transformFakeFront->Position;
 
-	float angle = glm::acos(glm::dot(glm::normalize(thing), forward));
-	float height = (thing / 2.f).y;
+	float height = ((transformFakeFront->Position + transformFakeBack->Position) / 2.f).y;
+	float angle = std::atan2f(thing.y, thing.z);
 
 	transform->Position.y = height;
-	//transform->Orientation = glm::quat(glm::vec3())
+	transform->Orientation = glm::quat(glm::eulerAngles(transform->Orientation) * glm::vec3(0, 1, 1) + glm::vec3(-angle, 0, 0));
 }

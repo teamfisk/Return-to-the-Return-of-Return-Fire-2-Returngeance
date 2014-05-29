@@ -59,9 +59,6 @@ public:
 
 	void Initialize();
 
-	EntityID CreateTank(int playerID);
-	EntityID CreateJeep(int playerID);
-
 	void RegisterSystems() override;
 	void AddSystems() override;
 	void RegisterComponents() override;
@@ -73,6 +70,10 @@ private:
 	void BindMouseButton(int button, std::string command, float value);
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
 	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
+
+	EntityID CreateTank(int playerID);
+	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
+	EntityID CreateJeep(int playerID);
 };
 
 #endif // GameWorld_h__

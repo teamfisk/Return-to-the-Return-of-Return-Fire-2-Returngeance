@@ -18,7 +18,7 @@ public:
 	GameFrame(Frame* parent, std::string name)
 		: Frame(parent, name)
 	{
-		EVENT_SUBSCRIBE_MEMBER(m_EInputCommand, &GameFrame::OnCommand);
+		EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &GameFrame::OnKeyUp);
 
 		m_World = std::make_shared<GameWorld>(EventBroker, ResourceManager);
 		auto worldFrame = new WorldFrame(this, "GameWorldFrame", m_World);
@@ -40,22 +40,21 @@ public:
 	}
 
 private:
-	EventRelay<Frame, Events::InputCommand> m_EInputCommand;
+	EventRelay<Frame, Events::KeyUp> m_EKeyUp;
 
 	std::shared_ptr<GameWorld> m_World;
 	Viewport* vp1;
 	Viewport* vp2;
 	Viewport* m_FreeCamViewport;
 
-	bool OnCommand(const Events::InputCommand &event) 
+	bool OnKeyUp(const Events::KeyUp &event)
 	{ 
-		if (event.Command == "cam_vertical" || event.Command == "cam_horizontal" || event.Command == "cam_normal" || event.Command == "cam_lock")
+		if (event.KeyCode == GLFW_KEY_1)
 		{
-			m_FreeCamViewport->Show();
-		}
-		else
-		{
-			m_FreeCamViewport->Hide();
+			if (m_FreeCamViewport->Hidden())
+				m_FreeCamViewport->Show();
+			else
+				m_FreeCamViewport->Hide();
 		}
 
 		return true; 
