@@ -194,30 +194,68 @@ void GameWorld::Initialize()
 	//}
 
 	
-	/*{
-		auto gate = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(gate);
-		transform->Position = glm::vec3(0, -50, 100);
-		auto model = AddComponent<Components::Model>(gate);
-		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
+	{
+		auto gateBase = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(gateBase);
+		transform->Position = glm::vec3(0, -50, 150);
+		auto model = AddComponent<Components::Model>(gateBase);
+		model->ModelFile = "Models/Gate/Lift/Lift.obj";
 		
-		
+		auto physics = AddComponent<Components::Physics>(gateBase);
+		physics->Static = true;
+		physics->CollisionLayer = 1; // Terrain-Layer
 		{
-			//shape
+			auto leftBaseShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(leftBaseShape);
+			transform->Position = glm::vec3(8.5f, 3, 0);
+			auto box = AddComponent<Components::BoxShape>(leftBaseShape);
+			box->Width = 3.f/2;
+			box->Height = 6.094f/2;
+			box->Depth = 4.f/2;
+			CommitEntity(leftBaseShape);
 		}
-		
-		
 		{
-			auto fish = CreateEntity(flag);
-			auto transform = AddComponent<Components::Transform>(gate);
-			transform->Position = glm::vec3(-1.3f, 1.0, 0);
-			auto model = AddComponent<Components::Model>(gate);
-			model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
-			CommitEntity(fish);
+			auto RightBaseShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(RightBaseShape);
+			transform->Position = glm::vec3(-8.5f, 3, 0);
+			auto box = AddComponent<Components::BoxShape>(RightBaseShape);
+			box->Width = 3.f/2;
+			box->Height = 6.094f/2;
+			box->Depth = 4.f/2;
+			CommitEntity(RightBaseShape);
 		}
-
-		CommitEntity(gate);
-	}*/
+		{
+			auto LeftTopShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(LeftTopShape);
+			transform->Position = glm::vec3(7.5485f, 9.385f, 0);
+			auto box = AddComponent<Components::BoxShape>(LeftTopShape);
+			box->Width = 1.747f/2;
+			box->Height = 6.851f/2;
+			box->Depth = 1.767f/2;
+			CommitEntity(LeftTopShape);
+		}
+		{
+			auto RightTopShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(RightTopShape);
+			transform->Position = glm::vec3(-7.5485f, 9.385f, 0);
+			auto box = AddComponent<Components::BoxShape>(RightTopShape);
+			box->Width = 1.747f/2;
+			box->Height = 6.851f/2;
+			box->Depth = 1.767f/2;
+			CommitEntity(RightTopShape);
+		}
+		{
+			auto RampShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(RampShape);
+			transform->Position = glm::vec3(0, 0.24f, 0);
+			auto box = AddComponent<Components::BoxShape>(RampShape);
+			box->Width = 14.9f/2;
+			box->Height = 0.38f/2;
+			box->Depth = 1.484f/2;
+			CommitEntity(RampShape);
+		}
+		CommitEntity(gateBase);
+	}
 
 }
 
