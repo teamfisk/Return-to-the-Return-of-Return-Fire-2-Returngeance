@@ -46,6 +46,7 @@ private:
 	void PlaySound(FMOD_CHANNEL**, FMOD_SOUND*, float volume, bool loop);
 	
 	FMOD_SYSTEM* m_System;
+	FMOD_CHANNEL* m_BGMChannel;
 	std::vector<EntityID> m_Listeners;
 	std::map<EntityID, FMOD_CHANNEL*> m_Channels;
 	std::map<EntityID, FMOD_CHANNEL*> m_DeleteChannels;

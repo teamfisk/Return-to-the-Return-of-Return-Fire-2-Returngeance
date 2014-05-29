@@ -44,17 +44,16 @@ void InputManager::Update(double dt)
 
 	if(m_CurrentKeyState[GLFW_KEY_Z]) //TEMP
 	{
-		Events::PlayBGM e;
-		e.Resource = "Sounds/BGM/MainMenu.mp3";
+		Events::PlaySFX e;
+		e.Resource = "Sounds/BGM/DarkHorse.mp3";
 		e.Loop = true;
+		e.Emitter = 58;
 		EventBroker->Publish(e);
 	}
 	if(m_CurrentKeyState[GLFW_KEY_P]) //TEMP
 	{
 		Events::StopSound e;
-		e.Emitter = 59;
-		EventBroker->Publish(e);
-		e.Emitter = 62;
+		e.Emitter = 58;
 		EventBroker->Publish(e);
 	}
 

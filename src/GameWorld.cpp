@@ -1005,7 +1005,6 @@ void GameWorld::Initialize()
 	transform->Position = glm::vec3(20,2,-100);
 	transform->Scale = glm::vec3(3);
 	auto emitterComponent = AddComponent<Components::SoundEmitter>(se1);
-	emitterComponent->Path = "Sounds/WUB.mp3";
 	emitterComponent->MinDistance = 0.1f;
 	emitterComponent->MaxDistance = 100000.f;
 	emitterComponent->Gain = 1;

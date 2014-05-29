@@ -134,9 +134,11 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
 		return false;
 	}
+	
 	emitter->type = Components::SoundEmitter::SoundType::SOUND_3D;
 	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound3D", event.Resource);
 	m_Sounds[event.Emitter] = *sound;
+	FMOD_Sound_Set3DMinMaxDistance(*sound, emitter->MinDistance, emitter->MaxDistance);
 
 	PlaySound(&m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
 	FMOD_System_Update(m_System);
@@ -154,8 +156,8 @@ bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 {
 	auto emitter = m_World->CreateEntity();
 	auto eTransform = m_World->AddComponent<Components::Transform>(emitter);
-
 	auto eComponent = m_World->AddComponent<Components::SoundEmitter>(emitter);
+	m_Channels[emitter] = m_BGMChannel;
 	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
 	Sound* sound = m_World->GetResourceManager()->Load<Sound>("Sound2D", event.Resource);
 	m_Sounds[emitter] = *sound;
