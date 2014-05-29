@@ -177,6 +177,7 @@
     <ClInclude Include="..\..\src\Events\PlayBGM.h" />
     <ClInclude Include="..\..\src\Events\PlaySFX.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
+    <ClInclude Include="..\..\src\Events\StopSound.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />

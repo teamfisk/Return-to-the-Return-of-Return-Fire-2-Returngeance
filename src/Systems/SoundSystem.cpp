@@ -7,6 +7,7 @@ void Systems::SoundSystem::Initialize()
 	EVENT_SUBSCRIBE_MEMBER(m_EComponentCreated, &SoundSystem::OnComponentCreated);
 	EVENT_SUBSCRIBE_MEMBER(m_EPlaySFX, &SoundSystem::PlaySFX);
 	EVENT_SUBSCRIBE_MEMBER(m_EPlayBGM, &SoundSystem::PlayBGM);
+	EVENT_SUBSCRIBE_MEMBER(m_EStopSound, &SoundSystem::StopSound);
 	
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	FMOD_System_Create(&m_System);
@@ -150,19 +151,19 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 
 	PlaySound(&m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
 	FMOD_System_Update(m_System);
-	FMOD_BOOL* isPlaying = false;
-	if(!FMOD_Channel_IsPlaying(m_Channels[event.Emitter], isPlaying))
+	FMOD_BOOL isPlaying = false;
+	FMOD_Channel_IsPlaying(m_Channels[event.Emitter], &isPlaying);
+	if(!isPlaying)
 		LOG_ERROR("FMOD: File %s is not playing", event.Resource.c_str());
 	else
-	{
 		LOG_INFO("Now playing sound %s", event.Resource.c_str());
-	}
 	return true;
 }
 
 bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 {
 	auto emitter = m_World->CreateEntity();
+	std::cout<<"ASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS:     "<<emitter<<std::endl;
 	auto eTransform = m_World->AddComponent<Components::Transform>(emitter);
 
 	auto eComponent = m_World->AddComponent<Components::SoundEmitter>(emitter);
@@ -172,6 +173,12 @@ bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 	m_Sounds[emitter] = *sound;
 
 	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_Channels[emitter]);
+	return true;
+}
+
+bool Systems::SoundSystem::StopSound(const Events::StopSound &event)
+{
+	FMOD_Channel_Stop(m_Channels[event.Emitter]);
 	return true;
 }
 

@@ -49,6 +49,14 @@ void InputManager::Update(double dt)
 		e.Loop = true;
 		EventBroker->Publish(e);
 	}
+	if(m_CurrentKeyState[GLFW_KEY_P]) //TEMP
+	{
+		Events::StopSound e;
+		e.Emitter = 59;
+		EventBroker->Publish(e);
+		e.Emitter = 62;
+		EventBroker->Publish(e);
+	}
 
 	// Mouse buttons
 	for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; ++i)

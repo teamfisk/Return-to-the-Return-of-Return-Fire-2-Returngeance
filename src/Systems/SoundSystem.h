@@ -12,6 +12,7 @@
 #include "Events/ComponentCreated.h"
 #include "Events/PlaySFX.h"
 #include "Events/PlayBGM.h"
+#include "Events/StopSound.h"
 #include "Sound.h"
 
 namespace Systems
@@ -38,6 +39,8 @@ private:
 	bool PlaySFX(const Events::PlaySFX &event);
 	EventRelay<SoundSystem, Events::PlayBGM> m_EPlayBGM;
 	bool PlayBGM(const Events::PlayBGM &event);
+	EventRelay<SoundSystem, Events::StopSound> m_EStopSound;
+	bool StopSound(const Events::StopSound &event);
 
 	void LoadSound(FMOD_SOUND*&, std::string, float, float);
 	void PlaySound(FMOD_CHANNEL**, FMOD_SOUND*, float volume, bool loop);

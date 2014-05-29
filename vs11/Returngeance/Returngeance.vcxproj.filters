@@ -411,6 +411,9 @@
     <ClInclude Include="..\..\src\Events\PlaySFX.h">
       <Filter>Audio\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\StopSound.h">
+      <Filter>Audio\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">
