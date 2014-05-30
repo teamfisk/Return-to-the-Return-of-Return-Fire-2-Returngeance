@@ -750,14 +750,16 @@ EntityID GameWorld::CreateTank(int playerID)
 		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 		CommitEntity(entity);
 
-		auto particleEntity = CreateEntity(entity);
-		auto TEMP = AddComponent<Components::Transform>(particleEntity);
-		TEMP->Scale = glm::vec3(0);
-		auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
-		spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-		emitterComponent->ParticleTemplate = particleEntity;
-
-		CommitEntity(particleEntity);
+		{
+			auto particleEntity = CreateEntity(entity);
+			auto templateComponent = AddComponent<Components::Template>(particleEntity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity);
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			CommitEntity(particleEntity);
+			emitterComponent->ParticleTemplate = particleEntity;
+		}
 	}
 
 	{
@@ -835,14 +837,16 @@ EntityID GameWorld::CreateTank(int playerID)
 		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
 		CommitEntity(entity);
 
-		auto particleEntity = CreateEntity(entity);
-		auto TEMP = AddComponent<Components::Transform>(particleEntity);
-		TEMP->Scale = glm::vec3(0);
-		auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
-		spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-		emitterComponent->ParticleTemplate = particleEntity;
-
-		CommitEntity(particleEntity);
+		{
+			auto particleEntity = CreateEntity(entity);
+			auto templateComponent = AddComponent<Components::Template>(particleEntity);
+			auto TEMP = AddComponent<Components::Transform>(particleEntity);
+			TEMP->Scale = glm::vec3(0);
+			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
+			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+			CommitEntity(particleEntity);
+			emitterComponent->ParticleTemplate = particleEntity;
+		}
 	}
 
 	CommitEntity(tank);
