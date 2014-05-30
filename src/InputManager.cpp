@@ -85,13 +85,13 @@ void InputManager::Update(double dt)
 		EventBroker->Publish(e);
 	}
 
-	if(m_CurrentKeyState[GLFW_KEY_B])
+	if(m_CurrentKeyState[GLFW_KEY_Z])
 	{
 		Events::CreateExplosion e;
 		e.LifeTime = 1;
 		e.ParticleScale = 6;
-		e.ParticlesToSpawn = 50;
-		e.Position =  glm::vec3(0, -20, 40);
+		e.ParticlesToSpawn = 1;
+		e.Position = glm::vec3(0, -15, 0);
 		e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
 		e.Speed = 3;
 		e.SpreadAngle = glm::pi<float>();

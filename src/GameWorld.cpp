@@ -239,14 +239,24 @@ void GameWorld::Initialize()
 	}
 
 	{
-		auto tree = CreateEntity();
+	/*	auto tree = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(tree);
 		transform->Position = glm::vec3(0, -15, 0);
 		auto model = AddComponent<Components::Model>(tree);
 		model->ModelFile = "Models/Tree/leafs/Leafs.obj";
 		model->Transparent = true;
 
-		CommitEntity(tree);
+		CommitEntity(tree);*/
+
+
+		auto thing = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(thing);
+		transform->Position = glm::vec3(0,15,0);
+		transform->Scale = glm::vec3(3);
+// 		auto model = AddComponent<Components::Model>(thing);
+// 		model->ModelFile = "Models/Barrel/Barrel.obj";
+		auto sprite = AddComponent<Components::Sprite>(thing);
+		sprite->SpriteFile = "Textures/Sprites/SeriousParticle.png";
 	}
 
 	EntityID tank1 = CreateTank(1);
