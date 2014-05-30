@@ -83,6 +83,10 @@ public:
 	{
 		job.CalculateHash();
 		m_Jobs.push_front(std::shared_ptr<T>(new T(job)));
+	}
+
+	void Sort()
+	{
 		m_Jobs.sort();
 	}
 
@@ -114,6 +118,12 @@ struct RenderQueuePair
 	{
 		Deferred.Clear();
 		Forward.Clear();
+	}
+
+	void Sort()
+	{
+		Deferred.Sort();
+		Forward.Sort();
 	}
 };
 

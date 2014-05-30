@@ -44,6 +44,10 @@ public:
 		{
 			EntityID entity = pair.first;
 
+			auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+			if (templateComponent)
+				continue;
+
 			auto transform = m_World->GetComponent<Components::Transform>(entity);
 			if (!transform)
 				continue;
@@ -78,12 +82,11 @@ public:
 
 						float textureRepeat = blendmapComponent->TextureRepeats;
 
-						EnqueueBlendMapModel(modelAsset, RedTexture, GreenTexture, BlueTexture, textureRepeat, modelMatrix);
+						EnqueueBlendMapModel(modelAsset, RedTexture, GreenTexture, BlueTexture, textureRepeat, modelMatrix, modelComponent->Color);
 					}
 					else
 					{
-						float transparent = modelComponent->Transparent;
-						EnqueueModel(modelAsset, modelMatrix, transparent);
+						EnqueueModel(modelAsset, modelMatrix, modelComponent->Transparent, modelComponent->Color);
 					}
 
 				}
@@ -100,7 +103,7 @@ public:
 					glm::mat4 modelMatrix = glm::translate(absoluteTransform.Position)
 										  * glm::toMat4(orientation2D)
 										  * glm::scale(absoluteTransform.Scale);
-					EnqueueSprite(textureAsset, modelMatrix);
+					EnqueueSprite(textureAsset, modelMatrix, spriteComponent->Color);
 				}
 			}
 
@@ -120,6 +123,8 @@ public:
 					);
 			}
 		}
+
+		RenderQueue.Sort();
 	}
 
 protected:
@@ -152,7 +157,7 @@ private:
 
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 
-	void EnqueueModel(Model* model, glm::mat4 modelMatrix, float transparent)
+	void EnqueueModel(Model* model, glm::mat4 modelMatrix, float transparent, glm::vec4 color)
 	{
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -166,6 +171,8 @@ private:
 			job.EndIndex = texGroup.EndIndex;
 			job.ModelMatrix = modelMatrix;
 			job.Transparent = transparent;
+			job.Color = color;
+
 			if(job.Transparent)
 			{
 				RenderQueue.Forward.Add(job);
@@ -177,7 +184,7 @@ private:
 		}
 	}
 
-	void EnqueueBlendMapModel(Model* model, BlendMapTexture textureRed, BlendMapTexture textureGreen,  BlendMapTexture textureBlue, float textureRepeat, glm::mat4 modelMatrix)
+	void EnqueueBlendMapModel(Model* model, BlendMapTexture textureRed, BlendMapTexture textureGreen,  BlendMapTexture textureBlue, float textureRepeat, glm::mat4 modelMatrix, glm::vec4 color)
 	{
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -200,17 +207,19 @@ private:
 			job.StartIndex = texGroup.StartIndex;
 			job.EndIndex = texGroup.EndIndex;
 			job.ModelMatrix = modelMatrix;
+			job.Color = color;
 
 			RenderQueue.Deferred.Add(job);
 		}
 	}
 
-	void EnqueueSprite(Texture* texture, glm::mat4 modelMatrix)
+	void EnqueueSprite(Texture* texture, glm::mat4 modelMatrix, glm::vec4 color)
 	{
 		SpriteJob job;
 		job.TextureID = texture->ResourceID;
 		job.Texture = *texture;
 		job.ModelMatrix = modelMatrix;
+		job.Color = color;
 
 		RenderQueue.Forward.Add(job);
 	}

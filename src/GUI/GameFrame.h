@@ -25,13 +25,13 @@ public:
 			vp1->X = 0;
 			vp1->Width = 640;
 			vp1->Height = 720 / 2;
-			new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
+			//new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
 
 			vp2 = new Viewport(worldFrame, "Viewport2", m_World);
 			vp2->X = vp1->Right();
 			vp2->Width = 640;
 			vp2->Height = 720 / 2;
-			new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
+			//new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
 
 			auto vpc = new Viewport(worldFrame, "ViewportFreeCam", m_World);
 			vpc->Y = 720 / 2;

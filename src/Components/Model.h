@@ -4,16 +4,15 @@
 #include <string>
 
 #include "Component.h"
-#include "Color.h"
 
 namespace Components
 {
 
 struct Model : Component
 {
-	Model() : Visible(true), ShadowCaster(true), Transparent(false) { }
+	Model() : Color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), Visible(true), ShadowCaster(true), Transparent(false) { }
 	std::string ModelFile;
-	Color Color;
+	glm::vec4 Color;
 	bool Visible;
 	bool ShadowCaster;
 	bool Transparent;
