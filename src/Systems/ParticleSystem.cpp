@@ -26,6 +26,7 @@ void Systems::ParticleSystem::Update(double dt)
 		{
 			m_World->RemoveEntity(explosionID);
 			it = m_ExplosionEmitters.erase(it);
+			//LOG_INFO("Deleted explosion emitter successfully");
 			LOG_INFO("Deleted explosion emitter successfully");
 		}
 		else 

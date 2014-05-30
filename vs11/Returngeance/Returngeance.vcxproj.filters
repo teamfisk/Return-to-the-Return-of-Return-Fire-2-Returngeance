@@ -66,6 +66,15 @@
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp">
       <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp">
+      <Filter>Physics\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\TimerSystem.cpp">
+      <Filter>Base\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\DamageSystem.cpp">
+      <Filter>Gameplay\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -160,6 +169,15 @@
     </Filter>
     <Filter Include="Particle System\Events">
       <UniqueIdentifier>{ddd3c442-7c2f-4690-9308-fcef62deee0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Systems">
+      <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Events">
+      <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Events">
+      <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -403,6 +421,72 @@
     <ClInclude Include="..\..\src\Events\CreateExplosion.h">
       <Filter>Particle System\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\Collision.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Health.h">
+      <Filter>Gameplay\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TankShell.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\DisableCollisions.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\EnableCollisions.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Trigger.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\TriggerSystem.h">
+      <Filter>Physics\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TriggerExplosion.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\EnterTrigger.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\TimerSystem.h">
+      <Filter>Base\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Timer.h">
+      <Filter>Base\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\FrameTimer.h">
+      <Filter>Base\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\DamageSystem.h">
+      <Filter>Gameplay\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\Damage.h">
+      <Filter>Gameplay\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Flag.h">
+      <Filter>Gameplay\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\TextureFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\WorldFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\SetViewportCamera.h">
+      <Filter>Rendering\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\GameFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\HealthOverlay.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\PlayerHUD.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\BlendMap.h">
+      <Filter>Rendering\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">
@@ -451,6 +535,30 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\SunPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\SunPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

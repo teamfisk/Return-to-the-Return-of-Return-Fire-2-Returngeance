@@ -27,6 +27,7 @@
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
+#include "Events/Collision.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -75,29 +76,79 @@
 
 #include <Physics2012/Dynamics/Collide/ContactListener/hkpContactListener.h>
 
-class MyCollisionResolution: public hkReferencedObject, public hkpContactListener
-{
-public:
-	std::unordered_map<hkpRigidBody*, EntityID> m_RigidBodies;
+#include <Physics2012/Collide/Agent/CompoundAgent/BvTree/hkpBvTreeAgent.h>
 
-	virtual void contactPointCallback( const hkpContactPointEvent& event ) 
-	{
-		
-		EntityID entity1 = m_RigidBodies[event.getBody(0)];
-		EntityID entity2 = m_RigidBodies[event.getBody(1)];
-		//LOG_INFO("Entities colliding: %i, %i ", entity1, entity2);
+#include "Components/TankShell.h"
+#include <Physics2012/Collide/Shape/Misc/PhantomCallback/hkpPhantomCallbackShape.h>
+#include "Events/EnableCollisions.h"
+#include "Events/DisableCollisions.h"
+#include "Components/Trigger.h"
+#include "Components/Template.h"
 
-	}
-};
-
+#include "Events/EnterTrigger.h"
 
 namespace Systems
 {
 class PhysicsSystem : public System
 {
 public:
-	PhysicsSystem(World* world, std::shared_ptr<::EventBroker> eventBroker)
-		: System(world, eventBroker) { }
+	class MyCollisionResolution: public hkReferencedObject, public hkpContactListener
+	{
+	public:
+
+		MyCollisionResolution(Systems::PhysicsSystem* physicsSystem)
+			: m_PhysicsSystem(physicsSystem) { }
+
+		virtual void contactPointCallback( const hkpContactPointEvent& event ) 
+		{
+			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(0)];
+			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[event.getBody(1)];
+
+			Events::Collision e;
+			e.Entity1 = entity1;
+			e.Entity2 = entity2;
+			m_PhysicsSystem->EventBroker->Publish(e);
+			LOG_INFO("CollisionEvent!");
+		}
+		
+	private:
+		Systems::PhysicsSystem* m_PhysicsSystem;
+	};
+	friend class MyCollisionResolution;
+
+	class PhantomCallbackShape: public hkpPhantomCallbackShape
+	{
+	public:
+
+		PhantomCallbackShape(Systems::PhysicsSystem* physicsSystem)
+			: m_PhysicsSystem(physicsSystem) { }
+
+		virtual void phantomEnterEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB, const hkpCollisionInput& env )
+		{
+			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableA)];
+			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableB)];
+
+			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
+			{
+				Events::EnterTrigger e;
+				e.Entity1 = entity1;
+				e.Entity2 = entity2;
+				m_PhysicsSystem->EventBroker->Publish(e);
+			}
+		}
+
+		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
+		{
+
+		}
+
+	private:
+		Systems::PhysicsSystem* m_PhysicsSystem;
+	};
+	friend class PhantomCallbackShape;
+	
+	PhysicsSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: System(world, eventBroker, resourceManager) { }
 
 	void RegisterComponents(ComponentFactory* cf) override;
 	void Initialize() override;
@@ -105,12 +156,14 @@ public:
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
-	void OnComponentRemoved(std::string type, Component* component) override;
+	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
+	void OnEntityRemoved(EntityID entity) override;
 	
 private:
 	double m_Accumulator;
 	hkpWorld* m_PhysicsWorld;
+	hkpGroupFilter* m_CollisionFilter;
 
 	// Events
 	EventRelay<PhysicsSystem, Events::TankSteer> m_ETankSteer;
@@ -122,6 +175,12 @@ private:
 	EventRelay<PhysicsSystem, Events::ApplyPointImpulse> m_EApplyPointImpulse;
 	bool OnApplyPointImpulse(const Events::ApplyPointImpulse &event);
 
+	EventRelay<PhysicsSystem, Events::EnableCollisions> m_EEnableCollisions;
+	bool OnEnableCollisions(const Events::EnableCollisions &e);
+	EventRelay<PhysicsSystem, Events::DisableCollisions> m_EDisableCollisions;
+	bool OnDisableCollisions(const Events::DisableCollisions &e);
+
+
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);
 
@@ -132,6 +191,7 @@ private:
 	void SetupPhysics(hkpWorld* physicsWorld);
 	
 	std::unordered_map<EntityID, hkpRigidBody*> m_RigidBodies;
+	std::unordered_map<hkpRigidBody*, EntityID> m_RigidBodyEntities;
 	
 	hkJobThreadPool* m_ThreadPool;
 	hkJobQueue* m_JobQueue;
@@ -146,12 +206,14 @@ private:
 
 	struct ShapeArrayData
 	{
-		ShapeArrayData(EntityID entity, hkpShape* shape)
+		ShapeArrayData(EntityID entity, hkpConvexShape* convexShape, hkpShape* shape)
 		{
 			Entity = entity;
+			ConvexShape = convexShape;
 			Shape = shape;
 		}
 		EntityID Entity;
+		hkpConvexShape* ConvexShape;
 		hkpShape* Shape;
 	};
 	std::unordered_map<EntityID, std::list<ShapeArrayData>> m_Shapes;

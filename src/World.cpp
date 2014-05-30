@@ -38,7 +38,7 @@ void World::Update(double dt)
 	{
 		const std::string &type = pair.first;
 		auto system = pair.second;
-		m_EventBroker->Process(type);
+		EventBroker->Process(type);
 		system->Update(dt);
 		RecursiveUpdate(system, dt, 0);
 	}
@@ -72,17 +72,18 @@ EntityID World::GetEntityBaseParent(EntityID entity)
 
 bool World::ValidEntity(EntityID entity)
 {
-	return m_EntityParents.find(entity) != m_EntityParents.end();
+	return m_EntityParents.find(entity) != m_EntityParents.end()
+		&& m_EntitiesToRemove.find(entity) == m_EntitiesToRemove.end();
 }
 
 void World::RemoveEntity(EntityID entity)
 {
-	m_EntitiesToRemove.push_back(entity);
+	m_EntitiesToRemove.insert(entity);
 	for (auto pair : m_EntityParents)
 	{
 		if (pair.second == entity)
 		{
-			m_EntitiesToRemove.push_back(pair.first);
+			m_EntitiesToRemove.insert(pair.first);
 		}
 	}
 }
@@ -102,13 +103,19 @@ void World::ProcessEntityRemovals()
 			for (auto pair : m_Systems)
 			{
 				auto system = pair.second;
-				system->OnComponentRemoved(type, component.get());
+				system->OnComponentRemoved(entity, type, component.get());
 			}
 			m_ComponentsOfType[type].remove(component);
 		}
 		m_EntityComponents.erase(entity);
-
 		RecycleEntityID(entity);
+
+		// Trigger events
+		for (auto pair : m_Systems)
+		{
+			auto system = pair.second;
+			system->OnEntityRemoved(entity);
+		}
 	}
 	m_EntitiesToRemove.clear();
 }
@@ -129,7 +136,7 @@ void World::Initialize()
 	{
 		auto system = pair.second;
 		system->RegisterComponents(&m_ComponentFactory);
-		system->RegisterResourceTypes(&m_ResourceManager);
+		system->RegisterResourceTypes(ResourceManager);
 		system->Initialize();
 	}
 }
@@ -196,4 +203,12 @@ std::list<EntityID> World::GetEntityChildren(EntityID entity)
 	{
 		return it->second;
 	}
+}
+
+void World::SetEntityParent(EntityID entity, EntityID newParent)
+{
+	EntityID currentParent = m_EntityParents[entity];
+	m_EntityChildren[currentParent].remove(entity);
+	m_EntityParents[entity] = newParent;
+	m_EntityChildren[newParent].push_back(entity);
 }

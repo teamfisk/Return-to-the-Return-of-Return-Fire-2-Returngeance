@@ -17,6 +17,9 @@
 #include "Systems/RenderSystem.h"
 #include "Systems/SoundSystem.h"
 #include "Systems/PhysicsSystem.h"
+#include "Systems/TriggerSystem.h"
+#include "Systems/TimerSystem.h"
+#include "Systems/DamageSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -30,6 +33,7 @@
 #include "Components/Template.h"
 #include "Components/Transform.h"
 #include "Components/Viewport.h"
+#include "Components/BlendMap.h"
 
 #include "Components/Physics.h"
 #include "Components/SphereShape.h"
@@ -41,14 +45,21 @@
 #include "Components/TowerSteering.h"
 #include "Components/BarrelSteering.h"
 #include "Components/Player.h"
+#include "Components/Health.h"
+#include "Components/Trigger.h"
+#include "Components/Flag.h"
 
 class GameWorld : public World
 {
 public:
-	GameWorld(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<Renderer> renderer)
-		: World(eventBroker), m_Renderer(renderer) { }
+	GameWorld(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
+		: World(eventBroker, resourceManager)
+	{ }
 
 	void Initialize();
+
+	EntityID CreateTank(int playerID);
+	EntityID CreateJeep(int playerID);
 
 	void RegisterSystems() override;
 	void AddSystems() override;
@@ -57,8 +68,6 @@ public:
 	void Update(double dt);
 
 private:
-	std::shared_ptr<Renderer> m_Renderer;
-
 	void BindKey(int keyCode, std::string command, float value);
 	void BindMouseButton(int button, std::string command, float value);
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);

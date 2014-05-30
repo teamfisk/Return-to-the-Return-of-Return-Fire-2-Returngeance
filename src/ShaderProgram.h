@@ -6,6 +6,11 @@
 #include <fstream>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include "ResourceManager.h"
+
 class Shader
 {
 public:
@@ -57,23 +62,32 @@ public:
 		: ShaderType(fileName) { }
 };
 
-class ShaderProgram
+class ShaderProgram : public Resource
 {
 public:
 	ShaderProgram()
-		: m_ShaderProgramHandle(0) {  }
+		: m_ShaderProgramHandle(0) 
+	{ }
+	ShaderProgram(std::string folderPath)
+		: m_ShaderProgramHandle(0)
+	{ }
+
 	~ShaderProgram();
 
 	void AddShader(std::shared_ptr<Shader> shader);
+	void BindFragDataLocation(int colorNumber, std::string name);
 	void Compile();
 	GLuint Link();
 	GLuint GetHandle();
+	operator GLuint() const { return m_ShaderProgramHandle; }
 	void Bind();
 	void Unbind();
 
 private:
 	GLuint m_ShaderProgramHandle;
 	std::vector<std::shared_ptr<Shader>> m_Shaders;
+
+	void LoadFromFolder(std::string folderPath);
 };
 
 #endif // ShaderProgram_h__

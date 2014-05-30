@@ -109,6 +109,7 @@
     <ClCompile Include="..\..\src\ShaderProgram.cpp" />
     <ClCompile Include="..\..\src\Skybox.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\Systems\DamageSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
@@ -118,7 +119,9 @@
     <ClCompile Include="..\..\src\Systems\RenderSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TimerSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TransformSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\World.cpp" />
   </ItemGroup>
@@ -127,9 +130,14 @@
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
     <ClInclude Include="..\..\src\Components\BarrelSteering.h" />
+    <ClInclude Include="..\..\src\Components\BlendMap.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
+    <ClInclude Include="..\..\src\Components\Flag.h" />
+    <ClInclude Include="..\..\src\Components\FrameTimer.h" />
+    <ClInclude Include="..\..\src\Components\Timer.h" />
+    <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />
     <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
     <ClInclude Include="..\..\src\Components\FreeSteering.h" />
     <ClInclude Include="..\..\src\Components\Health.h" />
@@ -146,10 +154,12 @@
     <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
     <ClInclude Include="..\..\src\Components\SphereShape.h" />
     <ClInclude Include="..\..\src\Components\Sprite.h" />
+    <ClInclude Include="..\..\src\Components\TankShell.h" />
     <ClInclude Include="..\..\src\Components\TankSteering.h" />
     <ClInclude Include="..\..\src\Components\Template.h" />
     <ClInclude Include="..\..\src\Components\TowerSteering.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
+    <ClInclude Include="..\..\src\Components\Trigger.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
     <ClInclude Include="..\..\src\Components\Viewport.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
@@ -163,7 +173,11 @@
     <ClInclude Include="..\..\src\Events\BindGamepadButton.h" />
     <ClInclude Include="..\..\src\Events\BindKey.h" />
     <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
+    <ClInclude Include="..\..\src\Events\Collision.h" />
     <ClInclude Include="..\..\src\Events\CreateExplosion.h" />
+    <ClInclude Include="..\..\src\Events\Damage.h" />
+    <ClInclude Include="..\..\src\Events\DisableCollisions.h" />
+    <ClInclude Include="..\..\src\Events\EnableCollisions.h" />
     <ClInclude Include="..\..\src\Events\GamepadAxis.h" />
     <ClInclude Include="..\..\src\Events\GamepadButton.h" />
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
@@ -175,11 +189,18 @@
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
+    <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
+    <ClInclude Include="..\..\src\Events\EnterTrigger.h" />
     <ClInclude Include="..\..\src\Factory.h" />
     <ClInclude Include="..\..\src\GameWorld.h" />
     <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
+    <ClInclude Include="..\..\src\GUI\GameFrame.h" />
+    <ClInclude Include="..\..\src\GUI\HealthOverlay.h" />
+    <ClInclude Include="..\..\src\GUI\PlayerHUD.h" />
+    <ClInclude Include="..\..\src\GUI\WorldFrame.h" />
+    <ClInclude Include="..\..\src\GUI\TextureFrame.h" />
     <ClInclude Include="..\..\src\GUI\Viewport.h" />
     <ClInclude Include="..\..\src\InputController.h" />
     <ClInclude Include="..\..\src\InputManager.h" />
@@ -194,6 +215,7 @@
     <ClInclude Include="..\..\src\Skybox.h" />
     <ClInclude Include="..\..\src\Sound.h" />
     <ClInclude Include="..\..\src\System.h" />
+    <ClInclude Include="..\..\src\Systems\DamageSystem.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
@@ -203,7 +225,9 @@
     <ClInclude Include="..\..\src\Systems\RenderSystem.h" />
     <ClInclude Include="..\..\src\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TimerSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TriggerSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
     <ClInclude Include="..\..\src\Util\Rectangle.h" />
@@ -213,8 +237,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
+    <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl" />
+    <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl" />
     <None Include="..\..\src\Shaders\Fragment.glsl" />
     <None Include="..\..\src\Shaders\Fragment2-Debug.glsl" />
     <None Include="..\..\src\Shaders\Fragment2.glsl" />
@@ -224,6 +254,8 @@
     <None Include="..\..\src\Shaders\ShadowMap.vert.glsl" />
     <None Include="..\..\src\Shaders\Skybox.frag.glsl" />
     <None Include="..\..\src\Shaders\Skybox.vert.glsl" />
+    <None Include="..\..\src\Shaders\SunPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\SunPass.vert.glsl" />
     <None Include="..\..\src\Shaders\Vertex.glsl" />
     <None Include="..\..\src\Shaders\Vertex2.glsl" />
     <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl" />
