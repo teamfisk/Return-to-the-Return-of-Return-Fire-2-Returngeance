@@ -120,6 +120,8 @@ public:
 					);
 			}
 		}
+
+		RenderQueue.Sort();
 	}
 
 protected:
