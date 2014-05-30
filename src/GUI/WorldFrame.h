@@ -123,6 +123,8 @@ public:
 					);
 			}
 		}
+
+		RenderQueue.Sort();
 	}
 
 protected:

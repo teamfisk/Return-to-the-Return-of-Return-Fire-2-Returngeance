@@ -514,10 +514,13 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 		auto spriteJob = std::dynamic_pointer_cast<SpriteJob>(job);
 		if (spriteJob)
 		{
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
-			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glm::mat4 modelMatrix = spriteJob->ModelMatrix;
+			MVP = cameraMatrix * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(glm::mat4(MVP)));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(modelMatrix)));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4(m_Camera->ViewMatrix())));
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(glm::mat4(cameraProjection)));
 			glUniform4fv(glGetUniformLocation(ShaderProgramHandle, "Color"), 1, glm::value_ptr(spriteJob->Color));
 
 			glActiveTexture(GL_TEXTURE0);
