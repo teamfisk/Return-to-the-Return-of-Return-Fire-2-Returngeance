@@ -10,13 +10,25 @@ namespace Components
 	{
 		BlendMap() 
 			: TextureRed("Textures/ErrorTextureRed.png")
+			, TextureRedNormal("Textures/NeutralNormalMap.png")
+			, TextureRedSpecular("Textures/NeutralSpecularMap.png")
 			, TextureGreen("Textures/ErrorTextureGreen.png")
+			, TextureGreenNormal("Textures/NeutralNormalMap.png")
+			, TextureGreenSpecular("Textures/NeutralSpecularMap.png")
 			, TextureBlue("Textures/ErrorTextureBlue.png")
+			, TextureBlueNormal("Textures/NeutralNormalMap.png")
+			, TextureBlueSpecular("Textures/NeutralSpecularMap.png")
 			, TextureRepeats(100.f) { }
 
 		std::string TextureRed;
+		std::string TextureRedNormal;
+		std::string TextureRedSpecular;
 		std::string	TextureGreen;
+		std::string	TextureGreenNormal;
+		std::string	TextureGreenSpecular;
 		std::string	TextureBlue;
+		std::string	TextureBlueNormal;
+		std::string	TextureBlueSpecular;
 		float TextureRepeats;
 
 		virtual BlendMap* Clone() const override { return new BlendMap(*this); }

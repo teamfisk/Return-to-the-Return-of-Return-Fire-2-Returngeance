@@ -7,8 +7,14 @@ layout (binding=3) uniform sampler2D SpecularMapTexture;
 
 //TerrainTextures
 layout (binding=4) uniform sampler2D TextureRed;
-layout (binding=5) uniform sampler2D TextureGreen;
-layout (binding=6) uniform sampler2D TextureBlue;
+layout (binding=5) uniform sampler2D TextureRedNormal;
+layout (binding=6) uniform sampler2D TextureRedSpecular;
+layout (binding=7) uniform sampler2D TextureGreen;
+layout (binding=8) uniform sampler2D TextureGreenNormal;
+layout (binding=9) uniform sampler2D TextureGreenSpecular;
+layout (binding=10) uniform sampler2D TextureBlue;
+layout (binding=11) uniform sampler2D TextureBlueNormal;
+layout (binding=12) uniform sampler2D TextureBlueSpecular;
 
 uniform float TextureRepeats; //Determines how many times the textures will loop over the terrain
 uniform vec3 SunDirection_cameraspace;
@@ -61,21 +67,37 @@ void main()
 	vec4 BlendMap = texture(DiffuseTexture, Input.TextureCoord);
 
 	vec4 TextureRedTexel = texture(TextureRed, Input.TextureCoord * TextureRepeats);
+	vec4 TextureRedTexelNormal = texture(TextureRedNormal, Input.TextureCoord * TextureRepeats);
+	//vec4 TextureRedTexelSpecular = texture(TextureRedSpecular, Input.TextureCoord * TextureRepeats);
+
 	vec4 TextureGreenTexel = texture(TextureGreen, Input.TextureCoord * TextureRepeats);
+	vec4 TextureGreenTexelNormal = texture(TextureGreenNormal, Input.TextureCoord * TextureRepeats);
+	//vec4 TextureGreenTexelSpecular = texture(TextureGreenSpecular, Input.TextureCoord * TextureRepeats);
+
 	vec4 TextureBlueTexel = texture(TextureBlue, Input.TextureCoord * TextureRepeats);
+	vec4 TextureBlueTexelNormal = texture(TextureBlueNormal, Input.TextureCoord * TextureRepeats);
+	//vec4 TextureBlueTexelSpecular = texture(TextureBlueSpecular, Input.TextureCoord * TextureRepeats);
 
 	//Mix the Terrain-textures together
 	TextureRedTexel *= BlendMap.r;
 	TextureGreenTexel = mix(TextureRedTexel, TextureGreenTexel, BlendMap.g);
 	vec4 finalBlendTexel = mix(TextureGreenTexel, TextureBlueTexel, BlendMap.b);
+
+	TextureRedTexelNormal *= BlendMap.r;
+	TextureGreenTexelNormal = mix(TextureRedTexelNormal, TextureGreenTexelNormal, BlendMap.g);
+	vec4 finalBlendTexelNormal = mix(TextureGreenTexelNormal, TextureBlueTexelNormal, BlendMap.b);
+
+	//TextureRedTexelSpecular *= BlendMap.r;
+	//TextureGreenTexelSpecular = mix(TextureRedTexelSpecular, TextureGreenTexelSpecular, BlendMap.g);
+	//vec4 finalBlendTexelSpecular = mix(TextureGreenTexelSpecular, TextureBlueTexelSpecular, BlendMap.b);
 	
 	// G-buffer Position
 	frag_Position = vec4(Input.Position.xyz, 1.0);
 
 	// G-buffer Normal
 	mat3 TBN = mat3(Input.Tangent, Input.BiTangent, Input.Normal);
-	frag_Normal = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
-	//frag_Diffuse = normalize(vec4(TBN * vec3(texture(NormalMapTexture, Input.TextureCoord)), 0.0));
+	frag_Normal = normalize(vec4(TBN * vec3(finalBlendTexelNormal), 0.0));
+	//frag_Diffuse = normalize(vec4(TBN * vec3(finalBlendTexelNormal), 0.0));
 	//frag_Normal = vec4(Input.Normal, 0.0);
 
 	// Diffuse Texture

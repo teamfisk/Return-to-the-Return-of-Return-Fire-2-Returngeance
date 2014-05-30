@@ -61,11 +61,24 @@ public:
 					auto blendmapComponent = m_World->GetComponent<Components::BlendMap>(entity);
 					if (blendmapComponent)
 					{
-						auto textureRed = ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureRed);
-						auto textureGreen = ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureGreen);
-						auto textureBlue = ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureBlue);
+						BlendMapTexture RedTexture;
+						RedTexture.Diffuse = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureRed);
+						RedTexture.Normal = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureRedNormal);
+						RedTexture.Specular = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureRedSpecular);
+
+						BlendMapTexture GreenTexture;
+						GreenTexture.Diffuse = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureGreen);
+						GreenTexture.Normal = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureGreenNormal);
+						GreenTexture.Specular = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureGreenSpecular);
+
+						BlendMapTexture BlueTexture;
+						BlueTexture.Diffuse = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureBlue);
+						BlueTexture.Normal = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureBlueNormal);
+						BlueTexture.Specular = *ResourceManager->Load<Texture>("Texture", blendmapComponent->TextureBlueSpecular);
+
 						float textureRepeat = blendmapComponent->TextureRepeats;
-						EnqueueBlendMapModel(modelAsset, textureRed, textureGreen, textureBlue, textureRepeat, modelMatrix);
+
+						EnqueueBlendMapModel(modelAsset, RedTexture, GreenTexture, BlueTexture, textureRepeat, modelMatrix);
 					}
 					else
 					{
@@ -113,6 +126,13 @@ protected:
 	std::shared_ptr<World> m_World;
 
 private:
+	struct BlendMapTexture
+	{
+		GLuint Diffuse;
+		GLuint Normal;
+		GLuint Specular;
+	};
+
 	EventRelay<Frame, Events::SetViewportCamera> m_ESetViewportCamera;
 	bool OnSetViewportCamera(const Events::SetViewportCamera &event)
 	{
@@ -157,7 +177,7 @@ private:
 		}
 	}
 
-	void EnqueueBlendMapModel(Model* model, Texture* textureRed, Texture* textureGreen,  Texture* textureBlue, float textureRepeat, glm::mat4 modelMatrix)
+	void EnqueueBlendMapModel(Model* model, BlendMapTexture textureRed, BlendMapTexture textureGreen,  BlendMapTexture textureBlue, float textureRepeat, glm::mat4 modelMatrix)
 	{
 		for (auto texGroup : model->TextureGroups)
 		{
@@ -166,9 +186,15 @@ private:
 			job.DiffuseTexture = *texGroup.Texture;
 			job.NormalTexture = (texGroup.NormalMap) ? *texGroup.NormalMap : 0;
 			job.SpecularTexture = (texGroup.SpecularMap) ? *texGroup.SpecularMap : 0;
-			job.BlendMapTextureRed = (*textureRed);
-			job.BlendMapTextureGreen = (*textureGreen);
-			job.BlendMapTextureBlue = (*textureBlue);
+			job.BlendMapTextureRed = textureRed.Diffuse;
+			job.BlendMapTextureRedNormal = textureRed.Normal;
+			job.BlendMapTextureRedSpecular = textureRed.Specular;
+			job.BlendMapTextureGreen = textureGreen.Diffuse;
+			job.BlendMapTextureGreenNormal = textureGreen.Normal;
+			job.BlendMapTextureGreenSpecular = textureGreen.Specular;
+			job.BlendMapTextureBlue = textureBlue.Diffuse;
+			job.BlendMapTextureBlueNormal = textureBlue.Normal;
+			job.BlendMapTextureBlueSpecular = textureBlue.Specular;
 			job.TextureRepeat = textureRepeat;
 			job.VAO = model->VAO;
 			job.StartIndex = texGroup.StartIndex;
@@ -188,6 +214,7 @@ private:
 
 		RenderQueue.Forward.Add(job);
 	}
+
 };
 
 }
