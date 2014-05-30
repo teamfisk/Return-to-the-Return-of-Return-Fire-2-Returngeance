@@ -248,10 +248,8 @@ void GameWorld::Initialize()
 			auto RampShape = CreateEntity(gateBase);
 			auto transform = AddComponent<Components::Transform>(RampShape);
 			transform->Position = glm::vec3(0, 0.24f, 0);
-			auto box = AddComponent<Components::BoxShape>(RampShape);
-			box->Width = 14.9f/2;
-			box->Height = 0.38f/2;
-			box->Depth = 1.484f/2;
+			auto mesh = AddComponent<Components::MeshShape>(RampShape);
+			mesh->ResourceName = "Models/Gate/Lift/RampCollision.obj";
 			CommitEntity(RampShape);
 		}
 		CommitEntity(gateBase);
@@ -296,7 +294,7 @@ void GameWorld::Initialize()
 			auto trigger = AddComponent<Components::Trigger>(gateTrigger);
 			auto triggerMove = AddComponent<Components::TriggerMove>(gateTrigger);
 			triggerMove->Entity = gate;
-			triggerMove->Time = 3.f;
+			triggerMove->Time = 0.5f;
 			triggerMove->GoalPosition = glm::vec3(0, -50 + 9.02345f, 150);
 			
 

@@ -24,7 +24,7 @@ void Systems::TransformSystem::UpdateEntity( double dt, EntityID entity, EntityI
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity);
 		glm::vec3 move = m_MoveItems[entity].GoalPosition - transform->Position;
-		move *= m_MoveItems[entity].Time;
+		move /= m_MoveItems[entity].Time;
 		m_MoveItems[entity].Time -= dt;
 
 		if(m_MoveItems[entity].Time <= 0)

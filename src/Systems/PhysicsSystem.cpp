@@ -725,18 +725,12 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 		{
 			steeringX = (1 - (glm::clamp(abs(m_Vehicles[event.Entity]->calcKMPH() /vehicleComponent->TopSpeed), 0.f, 0.7f))) * steeringX;
 		}
-
 		
 		if(abs(m_Vehicles[event.Entity]->calcKMPH()) < 2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
 		{
 			deviceStatus->m_positionY = -0.4f;
 			deviceStatus->m_positionX = steeringX;
 		}
-// 		else if(m_Vehicles[event.Entity]->calcKMPH() > -2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
-// 		{
-// 			deviceStatus->m_positionY = 0.4f;;
-// 			deviceStatus->m_positionX = -steeringX;
-// 		}
 		else
 		{
 			deviceStatus->m_positionX = steeringX;
