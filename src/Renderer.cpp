@@ -490,6 +490,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
+			glUniform4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "Color"), 1, glm::value_ptr(modelJob->Color));
 
 			glBindVertexArray(modelJob->VAO);
 
@@ -506,6 +507,23 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 				glBindTexture(GL_TEXTURE_2D, modelJob->SpecularTexture);
 			}
 			glDrawArrays(GL_TRIANGLES, modelJob->StartIndex, modelJob->EndIndex - modelJob->StartIndex + 1);
+
+			continue;
+		}
+
+		auto spriteJob = std::dynamic_pointer_cast<SpriteJob>(job);
+		if (spriteJob)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glUniformMatrix4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(glm::mat4()));
+			glUniform4fv(glGetUniformLocation(m_ForwardRendering.GetHandle(), "Color"), 1, glm::value_ptr(spriteJob->Color));
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, spriteJob->Texture);
+			glBindVertexArray(m_ScreenQuad);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 			continue;
 		}
@@ -1142,9 +1160,21 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 			glActiveTexture(GL_TEXTURE4);
 			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureRed);
 			glActiveTexture(GL_TEXTURE5);
-			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreen);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureRedNormal);
 			glActiveTexture(GL_TEXTURE6);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureRedSpecular);
+			glActiveTexture(GL_TEXTURE7);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreen);
+			glActiveTexture(GL_TEXTURE8);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreenNormal);
+			glActiveTexture(GL_TEXTURE9);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureGreenSpecular);
+			glActiveTexture(GL_TEXTURE10);
 			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureBlue);
+			glActiveTexture(GL_TEXTURE11);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureBlueNormal);
+			glActiveTexture(GL_TEXTURE12);
+			glBindTexture(GL_TEXTURE_2D, blendMapJob->BlendMapTextureBlueSpecular);
 
 			glDrawArrays(GL_TRIANGLES, blendMapJob->StartIndex, blendMapJob->EndIndex - blendMapJob->StartIndex + 1);
 

@@ -106,9 +106,12 @@ void GameWorld::Initialize()
 		auto model = AddComponent<Components::Model>(ground_middle);
 		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
 		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
-		blendmap->TextureRed = "Textures/Ground/Sand.png";
-		blendmap->TextureGreen = "Textures/Ground/Grass.png";
-		blendmap->TextureBlue = "Textures/Ground/Rock.png";
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureBlueNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureBlueNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
 		blendmap->TextureRepeats = 30.f;
 
 		auto physics = AddComponent<Components::Physics>(ground_middle);

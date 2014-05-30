@@ -49,8 +49,14 @@ struct ModelJob : RenderJob
 struct BlendMapModelJob : ModelJob
 {
 	GLuint BlendMapTextureRed;
+	GLuint BlendMapTextureRedNormal;
+	GLuint BlendMapTextureRedSpecular;
 	GLuint BlendMapTextureGreen;
+	GLuint BlendMapTextureGreenNormal;
+	GLuint BlendMapTextureGreenSpecular;
 	GLuint BlendMapTextureBlue;
+	GLuint BlendMapTextureBlueNormal;
+	GLuint BlendMapTextureBlueSpecular;
 	float TextureRepeat;
 };
 

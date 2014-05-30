@@ -16,5 +16,5 @@ void main() {
 	// Texture
 	vec4 texel = texture(texture0, Input.TextureCoord);
 
-	frag_Diffuse = texel;
+	frag_Diffuse = texel * Color;
 }
