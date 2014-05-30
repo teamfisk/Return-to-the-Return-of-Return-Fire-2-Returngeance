@@ -99,6 +99,41 @@ void GameWorld::Initialize()
 	//}
 
 	{
+		auto water = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(water);
+		transform->Position = glm::vec3(0, -35, 0);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		transform->Scale = glm::vec3(5000.f, 10.f, 5000.f);
+		auto model = AddComponent<Components::Model>(water);
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(water);
+		blendmap->TextureRed = "Textures/Ground/WaterPlain0017_6_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/WaterPlain0017_6_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/WaterPlain0017_6_S.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 400.f;
+
+		auto physics = AddComponent<Components::Physics>(water);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+		{
+
+		auto groundshape = CreateEntity(water);
+		auto box = AddComponent<Components::BoxShape>(groundshape);
+		box->Depth = 250.f;
+		box->Height = 5.f;
+		box->Width = 250.f;
+
+
+		CommitEntity(groundshape);
+		}
+		CommitEntity(water);
+	}
+
+	{
 		auto ground_middle = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(ground_middle);
 		transform->Position = glm::vec3(0, -50, 0);
@@ -107,9 +142,9 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
 		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
 		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
-		blendmap->TextureBlueNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
 		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
-		blendmap->TextureBlueNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
 		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
 		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
 		blendmap->TextureRepeats = 30.f;
