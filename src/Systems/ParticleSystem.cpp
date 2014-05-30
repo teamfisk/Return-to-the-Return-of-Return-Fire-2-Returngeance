@@ -52,64 +52,59 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			SpawnParticles(entity);
 			emitterComponent->TimeSinceLastSpawn = 0;
 		}
+	}
 
-		std::list<ParticleData>::iterator it;
-		for(it = m_ParticleEmitter[entity].begin(); it != m_ParticleEmitter[entity].end();)
+	auto particleComponent = m_World->GetComponent<Components::Particle>(entity);
+	if(particleComponent)
+	{
+		EntityID particleID = entity;
+		auto transformComponent = m_World->GetComponent<Components::Transform>(particleID);
+
+		double timeLived = glfwGetTime() - particleComponent->SpawnTime; 
+		if(timeLived > particleComponent->LifeTime)
 		{
-			EntityID particleID = (it)->ParticleID;
-			auto transformComponent = m_World->GetComponent<Components::Transform>(particleID);
-			auto particleComponent = m_World->GetComponent<Components::Particle>(particleID);
+			m_World->RemoveEntity(particleID);
+		}
+		else
+		{
+			// FIX: calculate once
+			float timeProgress = timeLived / particleComponent->LifeTime; 
+			// ColorInterpolation(timeProgress, particleComponent->ColorSpectrum, color);
+			// Scale interpolation
+			if(particleComponent->ScaleSpectrum.size() > 1)
+				VectorInterpolation(timeProgress, particleComponent->ScaleSpectrum, transformComponent->Scale);
+			// Velocity interpolation
+			if(particleComponent->VelocitySpectrum.size() > 1)
+				VectorInterpolation(timeProgress, particleComponent->VelocitySpectrum, transformComponent->Velocity);
+		
 
-			double timeLived = glfwGetTime() - it->SpawnTime; 
-			if(timeLived > particleComponent->LifeTime)
+			/*// Angular velocity interpolation
+			if (particleComponent->AngularVelocitySpectrum.size() != 0)
 			{
-				m_World->RemoveEntity(particleID);
-				it = m_ParticleEmitter[entity].erase(it);
+				if(particleComponent->AngularVelocitySpectrum.size() > 1)
+				{
+					ScalarInterpolation(timeProgress, particleComponent->AngularVelocitySpectrum, it->AngularVelocity);
+					transformComponent->Orientation = glm::angleAxis(it->AngularVelocity, it->Orientation);
+				}
+				else
+				{
+					transformComponent->Orientation *= glm::angleAxis(it->AngularVelocity, it->Orientation);
+					//it->Orientation =  glm::angleAxis(it->AngularVelocity, it->Orientation);
+				}
 			}
-			else
+
+			//Angular velocity interpolation
+			if(particleComponent->OrientationSpectrum.size() > 1)
 			{
-				// FIX: calculate once
-				float timeProgress = timeLived / particleComponent->LifeTime; 
-				// ColorInterpolation(timeProgress, particleComponent->ColorSpectrum, color);
-				// Scale interpolation
-				if(particleComponent->ScaleSpectrum.size() > 1)
-					VectorInterpolation(timeProgress, particleComponent->ScaleSpectrum, transformComponent->Scale);
-				// Velocity interpolation
-				if(particleComponent->VelocitySpectrum.size() > 1)
-					VectorInterpolation(timeProgress, particleComponent->VelocitySpectrum, transformComponent->Velocity);
-				
-				// Angular velocity interpolation
-				if (particleComponent->AngularVelocitySpectrum.size() != 0)
-				{
-					if(particleComponent->AngularVelocitySpectrum.size() > 1)
-					{
-						ScalarInterpolation(timeProgress, particleComponent->AngularVelocitySpectrum, it->AngularVelocity);
-						transformComponent->Orientation = glm::angleAxis(it->AngularVelocity, it->Orientation);
-					}
-					else
-					{
-						transformComponent->Orientation *= glm::angleAxis(it->AngularVelocity, it->Orientation);
-						//it->Orientation =  glm::angleAxis(it->AngularVelocity, it->Orientation);
-					}
-				}
-				
-				//Angular velocity interpolation
-				if(particleComponent->OrientationSpectrum.size() > 1)
-				{
-					VectorInterpolation(timeProgress, particleComponent->OrientationSpectrum, it->Orientation);
-					glm::vec3 v1 = (particleComponent->OrientationSpectrum[0]);
-					glm::vec3 v2 = (it->Orientation);
-					glm::vec3 v3 = glm::normalize(glm::cross(v1,v2));
-					float angle = glm::acos(glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2)));
+				VectorInterpolation(timeProgress, particleComponent->OrientationSpectrum, it->Orientation);
+				glm::vec3 v1 = (particleComponent->OrientationSpectrum[0]);
+				glm::vec3 v2 = (it->Orientation);
+				glm::vec3 v3 = glm::normalize(glm::cross(v1,v2));
+				float angle = glm::acos(glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2)));
 
-					transformComponent->Orientation = glm::angleAxis(angle, v3);
-				}
-				
-				
-				transformComponent->Position += transformComponent->Velocity * (float)dt;
-
-				it++;
-			}
+				transformComponent->Orientation = glm::angleAxis(angle, v3);
+			}*/
+			transformComponent->Position += transformComponent->Velocity * (float)dt;
 		}
 	}
 }
@@ -173,15 +168,13 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 		particle->AngularVelocitySpectrum = eComponent->AngularVelocitySpectrum;
 		
 
-		ParticleData data;
-		data.ParticleID = ent;
-		data.SpawnTime = glfwGetTime();
-		if (particle->AngularVelocitySpectrum.size() != 0)
-			data.AngularVelocity = particle->AngularVelocitySpectrum[0];
-		if (particle->OrientationSpectrum.size() != 0)
-			data.Orientation = particle->OrientationSpectrum[0];
-		else data.Orientation = eOrientation * glm::vec3(0,0,-1);
-		m_ParticleEmitter[emitterID].push_back(data);
+		particle->SpawnTime = glfwGetTime();
+// 		if (particle->AngularVelocitySpectrum.size() != 0)
+// 			data.AngularVelocity = particle->AngularVelocitySpectrum[0];
+// 		if (particle->OrientationSpectrum.size() != 0)
+// 			data.Orientation = particle->OrientationSpectrum[0];
+// 		else data.Orientation = eOrientation * glm::vec3(0,0,-1);
+		//m_ParticleEmitter[emitterID].push_back(data);
 	}
 }
 

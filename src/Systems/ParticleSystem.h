@@ -16,15 +16,6 @@
 namespace Systems
 {
 
-	struct ParticleData
-	{
-		EntityID ParticleID;
-		double SpawnTime;
-		float AngularVelocity;
-		glm::vec3 Orientation;
-		Color color;
-	};
-
 class ParticleSystem : public System
 {
 public:
@@ -49,7 +40,7 @@ private:
 	//void ColorInterpolation(double timeProgress, std::vector<Color> spectrum, Color &color);
 	void ScalarInterpolation(double timeProgress, std::vector<float> spectrum, float &alpha);
 	void Billboard();
-	std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
+	//std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
 	std::map<EntityID, double> m_TimeSinceLastSpawn;
 	std::map<EntityID, double> m_ExplosionEmitters;
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
