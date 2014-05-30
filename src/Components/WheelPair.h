@@ -8,7 +8,8 @@ namespace Components
 
 	struct WheelPair : Component
 	{
-		// Flag for pair wheels
+		EntityID FakeWheelFront;
+		EntityID FakeWheelBack;
 
 		virtual WheelPair* Clone() const override { return new WheelPair(*this); }
 	};
