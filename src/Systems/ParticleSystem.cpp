@@ -69,7 +69,6 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 			m_World->RemoveEntity(particleID);
 			m_ParticlesToEmitter.erase(particleID);
 			
-			LOG_INFO("Removed a particle: %i", particleID);
 			return;
 		}
 		else
@@ -144,7 +143,6 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 	for(int i = 0; i < eComponent->SpawnCount; i++)
 	{
 		auto ent = m_World->CloneEntity(eComponent->ParticleTemplate);
-		LOG_INFO("Spawned a particle: %i", ent);
 		m_ParticlesToEmitter.insert(std::make_pair(ent, emitterID));
 		auto particleTransform = m_World->GetComponent<Components::Transform>(ent);
 		particleTransform->Position = ePosition;
@@ -255,7 +253,6 @@ bool Systems::ParticleSystem::CreateExplosion(const Events::CreateExplosion &e)
 	transform->Position = e.Position;
 	transform->Orientation = e.RelativeUpOrientation;
 
-	LOG_INFO("Now we should spawn 1 particle!!!!!! not 2 :(");
 	SpawnParticles(explosion);
 	m_ExplosionEmitters[explosion] = glfwGetTime();
 
