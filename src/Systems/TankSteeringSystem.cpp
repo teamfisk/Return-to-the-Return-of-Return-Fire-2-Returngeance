@@ -126,6 +126,29 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 		auto physicsComponents = m_World->GetComponentsOfType<Components::Physics>();
 		auto shellTransform = m_World->GetComponent<Components::Transform>(shellEntity);
 		//auto otherTransform = m_World->GetComponent<Components::Transform>(otherEntity);
+
+		{
+			Events::CreateExplosion e;
+			e.LifeTime = 2;
+			e.ParticleScale = 8;
+			e.ParticlesToSpawn = 10;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 3;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Smoke1.png";
+			EventBroker->Publish(e);
+			e.LifeTime = 1;
+			e.ParticleScale = 12;
+			e.ParticlesToSpawn = 10;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 6;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Fire.png";
+			EventBroker->Publish(e);
+		}
+
 		for (auto &physComponent : *physicsComponents)
 		{
 			EntityID physicsEntity = std::dynamic_pointer_cast<Components::Physics>(physComponent)->Entity;

@@ -5,6 +5,7 @@
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
+#include "Events/CreateExplosion.h"
 #include "Events/Collision.h"
 #include "Components/Transform.h"
 #include "Components/TankSteering.h"
