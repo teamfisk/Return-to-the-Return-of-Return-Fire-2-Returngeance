@@ -48,6 +48,11 @@ public:
 		m_Viewport = viewport;
 	}
 
+	void SetScissor(const Rectangle &scissor)
+	{
+		m_Scissor = scissor;
+	}
+
 	void SetCamera(std::shared_ptr<Camera> camera)
 	{
 		m_Camera = camera;
@@ -109,6 +114,7 @@ private:
 	std::unordered_map<int, std::shared_ptr<Camera>> m_Cameras;
 
 	Rectangle m_Viewport;
+	Rectangle m_Scissor;
 	std::shared_ptr<Camera> m_Camera;
 
 	struct Light

@@ -482,6 +482,9 @@
     <ClInclude Include="..\..\src\Systems\WheelPairSystem.h">
       <Filter>Physics\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

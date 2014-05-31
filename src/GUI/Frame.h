@@ -33,14 +33,14 @@ public:
 		, m_Name("UIParent")
 		, m_Layer(0)
 		, m_Hidden(false)
-	{ }
+	{ Initialize(); }
 
 	// Create a frame as a child
 	Frame(Frame* parent, std::string name)
 		: m_Name(name)
 		, m_Layer(0)
 		, m_Hidden(false)
-	{ SetParent(std::shared_ptr<Frame>(parent)); }
+	{ SetParent(std::shared_ptr<Frame>(parent)); Initialize(); }
 
 	::RenderQueue RenderQueue;
 
@@ -89,7 +89,10 @@ public:
 	}
 	int Right() const override
 	{ 
-		return Left() + Width;
+		if (m_Parent)
+			return std::min(m_Parent->Right(), Left() + Width);
+		else
+			return Left() + Width;
 	}
 	int Top() const override
 	{ 
@@ -100,13 +103,25 @@ public:
 	}
 	int Bottom() const override 
 	{
-		return Top() + Height;
+		if (m_Parent)
+			return std::min(m_Parent->Bottom(), Top() + Height);
+		else
+			return Top() + Height;
 	}
 
 	Rectangle AbsoluteRectangle()
 	{
-		return Rectangle(Left(), Top(), Width, Height);
+		int left = Left();
+		int top = Top();
+		int width = Right() - left;
+		int height = Bottom() - top;
+		return Rectangle(left, top, width, height);
 	}
+
+	virtual bool OnKeyDown(const Events::KeyDown &event) { return false; }
+	virtual bool OnKeyUp(const Events::KeyUp &event) { return false; }
+	//virtual bool OnMouseDown(const Events::KeyDown &event) { }
+	//virtual bool OnMouseUp(const Events::KeyDown &event) { }
 
 	void UpdateLayered(double dt)
 	{
@@ -137,7 +152,7 @@ public:
 			return;
 
 		// Draw ourselves
-		renderer->SetViewport(AbsoluteRectangle());
+		renderer->SetScissor(AbsoluteRectangle());
 		this->Draw(renderer);
 
 		// Draw children
@@ -150,7 +165,7 @@ public:
 				if (child->Hidden())
 					continue;
 				Rectangle rect = child->AbsoluteRectangle();
-				renderer->SetViewport(rect);
+				renderer->SetScissor(rect);
 				child->Draw(renderer);
 			}
 		}
@@ -170,6 +185,15 @@ protected:
 	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame
 	std::map<int, Children_t> m_Children; // layer -> Children_t
 
+private:
+	EventRelay<Frame, Events::KeyDown> m_EKeyDown;
+	EventRelay<Frame, Events::KeyUp> m_EKeyUp;
+
+	void Initialize()
+	{
+		EVENT_SUBSCRIBE_MEMBER(m_EKeyDown, &Frame::OnKeyDown);
+		EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &Frame::OnKeyUp);
+	}
 };
 
 }
