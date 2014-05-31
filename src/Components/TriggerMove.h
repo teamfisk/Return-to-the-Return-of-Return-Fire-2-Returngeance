@@ -9,7 +9,8 @@ namespace Components
 	struct TriggerMove : Component
 	{
 		EntityID Entity;
-		float Time;
+		float Speed;
+		glm::vec3 StartPosition;
 		glm::vec3 GoalPosition;
 		virtual TriggerMove* Clone() const override { return new TriggerMove(*this); }
 	};

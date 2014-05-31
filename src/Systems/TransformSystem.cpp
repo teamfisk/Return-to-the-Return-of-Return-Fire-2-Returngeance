@@ -16,6 +16,7 @@
 void Systems::TransformSystem::Initialize()
 {
 	EVENT_SUBSCRIBE_MEMBER(m_EMove, &Systems::TransformSystem::OnMove);
+	EVENT_SUBSCRIBE_MEMBER(m_ERotate, &Systems::TransformSystem::OnRotate);
 }
 
 void Systems::TransformSystem::UpdateEntity( double dt, EntityID entity, EntityID parent )
@@ -23,14 +24,16 @@ void Systems::TransformSystem::UpdateEntity( double dt, EntityID entity, EntityI
 	if(m_MoveItems.find(entity) != m_MoveItems.end())
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity);
-		glm::vec3 move = m_MoveItems[entity].GoalPosition - transform->Position;
-		move /= m_MoveItems[entity].Time;
-		m_MoveItems[entity].Time -= dt;
 
-		if(m_MoveItems[entity].Time <= 0)
+		glm::vec3 direction = glm::normalize(m_MoveItems[entity].GoalPosition - transform->Position);
+		glm::vec3 movement = direction * m_MoveItems[entity].Speed * (float)dt;
+
+		glm::vec3 v1 = m_MoveItems[entity].GoalPosition - transform->Position;
+		glm::vec3 v2 = movement;
+
+		if(glm::length(v2) >= glm::length(v1))
 		{
-			float movetime = dt + m_MoveItems[entity].Time;
-			transform->Position += move * movetime;
+			transform->Position = m_MoveItems[entity].GoalPosition;
 
 			m_MoveItems.erase(entity);
 
@@ -43,23 +46,80 @@ void Systems::TransformSystem::UpdateEntity( double dt, EntityID entity, EntityI
 		}
 		else
 		{
-			transform->Position += move * (float)dt;
+			transform->Position += movement;
+		}
+		
+	}
+
+	if(m_RotationItems.find(entity) != m_RotationItems.end())
+	{
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
+
+		float percentage = dt/m_RotationItems[entity].Time;
+		m_RotationItems[entity].Time -= dt;
+		glm::clamp(percentage, 0.f, 1.0f);
+		transform->Orientation = glm::slerp(transform->Orientation, m_RotationItems[entity].GoalRotation, percentage);
+
+		if(m_RotationItems[entity].Time <= 0)
+		{
+			m_RotationItems.erase(entity);
+
+			if(m_QueuedRotationItems.find(entity) != m_QueuedRotationItems.end())
+			{
+				auto it = m_QueuedRotationItems.find(entity);
+				m_RotationItems[entity] = it->second;
+				m_QueuedRotationItems.erase(it->first);
+			}
 		}
 	}
 }
 
+bool Systems::TransformSystem::OnRotate( const Events::Rotate &event )
+{
+	RotationItems item;
+	item.Entity = event.Entity;
+	item.GoalRotation = event.GoalRotation;
+	item.Time = event.Time;
+	
+	if(event.Queue)
+	{
+		if(m_RotationItems.find(event.Entity) != m_RotationItems.end())
+		{
+			m_QueuedRotationItems.insert(std::make_pair(event.Entity, item));
+		}
+		else
+		{
+			m_RotationItems[event.Entity] = item;
+		}
+	}
+	else
+	{
+		m_RotationItems[event.Entity] = item;
+	}
+	return true;
+}
 
 bool Systems::TransformSystem::OnMove( const Events::Move &event )
 {
 	MoveItems item;
 	item.Entity = event.Entity;
 	item.GoalPosition = event.GoalPosition;
-	item.Time = event.Time;
-	m_MoveItems[event.Entity] = item;
-
+	item.Speed = event.Speed;
+	
 	if(event.Queue)
 	{
-		m_QueuedMoveItems.insert(std::make_pair(event.Entity, item));
+		if(m_MoveItems.find(event.Entity) != m_MoveItems.end())
+		{
+			m_QueuedMoveItems.insert(std::make_pair(event.Entity, item));
+		}
+		else
+		{
+			m_MoveItems[event.Entity] = item;
+		}
+	}
+	else
+	{
+		m_MoveItems[event.Entity] = item;
 	}
 	return true;
 }

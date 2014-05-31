@@ -64,7 +64,7 @@
       <Filter>Physics\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp">
-      <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
+      <Filter>Game\Vehicles\Helicopter\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp">
       <Filter>Physics\Systems</Filter>
@@ -73,9 +73,12 @@
       <Filter>Base\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Systems\DamageSystem.cpp">
-      <Filter>Gameplay\Systems</Filter>
+      <Filter>Game\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\FollowSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -150,35 +153,35 @@
     <Filter Include="Physics\Events">
       <UniqueIdentifier>{42ae084f-ade8-402c-87ba-f03f6b846bc8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gameplay">
-      <UniqueIdentifier>{5b992473-73e6-485e-8f13-17e0801fb2ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gameplay\Vehicles">
-      <UniqueIdentifier>{8a78be3a-a3c5-4054-a2f1-1456f3fcbab0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gameplay\Vehicles\Helicopter">
-      <UniqueIdentifier>{8ccc0abe-5bdd-4656-ab11-5708a39c71ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gameplay\Vehicles\Helicopter\Components">
-      <UniqueIdentifier>{b2416d05-a49e-4fef-a5c4-cd03d8cc2efd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gameplay\Vehicles\Helicopter\Systems">
-      <UniqueIdentifier>{b34c0c95-a887-4cf4-af24-cf7c1f459aa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gameplay\Components">
-      <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gameplay\Systems">
-      <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Events">
       <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gameplay\Events">
-      <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base\Events">
       <UniqueIdentifier>{ffab6cc2-2fbf-400f-9398-a6741b6cc95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{5b992473-73e6-485e-8f13-17e0801fb2ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Vehicles">
+      <UniqueIdentifier>{8a78be3a-a3c5-4054-a2f1-1456f3fcbab0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Vehicles\Helicopter">
+      <UniqueIdentifier>{8ccc0abe-5bdd-4656-ab11-5708a39c71ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Vehicles\Helicopter\Components">
+      <UniqueIdentifier>{b2416d05-a49e-4fef-a5c4-cd03d8cc2efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Vehicles\Helicopter\Systems">
+      <UniqueIdentifier>{b34c0c95-a887-4cf4-af24-cf7c1f459aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Components">
+      <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Systems">
+      <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Events">
+      <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -405,10 +408,10 @@
       <Filter>Input\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\HelicopterSteering.h">
-      <Filter>Gameplay\Vehicles\Helicopter\Components</Filter>
+      <Filter>Game\Vehicles\Helicopter\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h">
-      <Filter>Gameplay\Vehicles\Helicopter\Systems</Filter>
+      <Filter>Game\Vehicles\Helicopter\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\ApplyForce.h">
       <Filter>Physics\Events</Filter>
@@ -417,7 +420,7 @@
       <Filter>Physics\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Player.h">
-      <Filter>Gameplay\Components</Filter>
+      <Filter>Game\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\Collision.h">
       <Filter>Physics\Events</Filter>
@@ -456,13 +459,13 @@
       <Filter>Base\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\DamageSystem.h">
-      <Filter>Gameplay\Systems</Filter>
+      <Filter>Game\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\Damage.h">
-      <Filter>Gameplay\Events</Filter>
+      <Filter>Game\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Flag.h">
-      <Filter>Gameplay\Components</Filter>
+      <Filter>Game\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\TextureFrame.h">
       <Filter>GUI</Filter>
@@ -490,6 +493,16 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Events\LeaveTrigger.h">
       <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TriggerMove.h" />
+    <ClInclude Include="..\..\src\Components\Follow.h">
+      <Filter>Game\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\FollowSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\Rotate.h">
+      <Filter>Base\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

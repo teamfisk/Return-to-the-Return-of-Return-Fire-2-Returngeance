@@ -158,31 +158,34 @@ void Systems::PhysicsSystem::Update(double dt)
 		if (!transformComponent)
 			continue;
 
-		if(/*m_RigidBodies[entity]->isActive()*/ true)
-		{
-			hkVector4 position;
-			hkQuaternion rotation;
-			hkVector4 velocity;
+		
+		hkVector4 position;
+		hkQuaternion rotation;
+		hkVector4 velocity;
 
-			if (parent)
-			{
-				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
-				position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
-				rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
-				velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);
-			}
-			else
-			{
-				position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
-				rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
-				velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
-			}
-			m_PhysicsWorld->markForWrite();
-			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
-			m_RigidBodies[entity]->setLinearVelocity(velocity);
-			m_PhysicsWorld->unmarkForWrite();
-			
+		if (parent)
+		{
+			auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
+			position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
+			rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
+			velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);
 		}
+		else
+		{
+			position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
+			rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
+			velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
+		}
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+
+		if(m_RigidBodies[entity]->getMotionType() != hkpMotion::MOTION_FIXED)
+		{
+			m_RigidBodies[entity]->setLinearVelocity(velocity);
+		}
+		m_PhysicsWorld->unmarkForWrite();
+
+		
 /*
 
 		glm::vec3 pos1 = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[m_World->m_Terrain]->getPosition());
@@ -751,9 +754,9 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 {
 	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
+
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
-
 		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
 		transformComponent->Velocity = event.Velocity;
 		m_PhysicsWorld->unmarkForWrite();

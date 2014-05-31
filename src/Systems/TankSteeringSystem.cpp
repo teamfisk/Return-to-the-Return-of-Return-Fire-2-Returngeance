@@ -68,6 +68,20 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * inputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 
+		glm::vec3 angles = glm::eulerAngles(transformComponent->Orientation);
+		if(angles.x > barrelSteeringComponent->UpperRotationLimit)
+		{
+			angles.x  = barrelSteeringComponent->UpperRotationLimit;
+			transformComponent->Orientation = glm::quat(angles);
+		}
+		else if(angles.x < barrelSteeringComponent->LowerRotationLimit)
+		{
+			angles.x  = barrelSteeringComponent->LowerRotationLimit;
+			transformComponent->Orientation = glm::quat(angles);
+		}
+
+		
+
 		if(inputController->Shoot && m_TimeSinceLastShot[tankSteeringComponent->Barrel] > 0.5)
 		{
 			EntityID clone = m_World->CloneEntity(barrelSteeringComponent->ShotTemplate);

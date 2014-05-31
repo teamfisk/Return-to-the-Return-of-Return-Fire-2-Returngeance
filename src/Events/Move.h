@@ -10,7 +10,7 @@ namespace Events
 	{
 		EntityID Entity;
 		glm::vec3 GoalPosition;
-		double Time;
+		float Speed;
 		bool Queue;
 	};
 

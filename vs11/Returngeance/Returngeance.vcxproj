@@ -111,6 +111,7 @@
     <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\Systems\DamageSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\FollowSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\Flag.h" />
+    <ClInclude Include="..\..\src\Components\Follow.h" />
     <ClInclude Include="..\..\src\Components\FrameTimer.h" />
     <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Timer.h" />
@@ -190,6 +192,7 @@
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
     <ClInclude Include="..\..\src\Events\Move.h" />
     <ClInclude Include="..\..\src\Events\PlaySound.h" />
+    <ClInclude Include="..\..\src\Events\Rotate.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
     <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
@@ -219,6 +222,7 @@
     <ClInclude Include="..\..\src\System.h" />
     <ClInclude Include="..\..\src\Systems\DamageSystem.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
+    <ClInclude Include="..\..\src\Systems\FollowSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />

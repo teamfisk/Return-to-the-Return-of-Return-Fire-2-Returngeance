@@ -121,11 +121,13 @@ void Systems::TriggerSystem::Move( EntityID entity )
 	Events::Move e;
 	e.Entity = trigger->Entity;
 	e.GoalPosition = trigger->GoalPosition;
-	e.Time = trigger->Time;
+	e.Speed = trigger->Speed;
 	e.Queue = false;
 	EventBroker->Publish(e);
 
-	trigger->GoalPosition = transform->Position;
+	glm::vec3 temp = trigger->GoalPosition;
+	trigger->GoalPosition = trigger->StartPosition;
+	trigger->StartPosition = temp;
 }
 
 

@@ -4,6 +4,7 @@
 #include "System.h"
 #include "Components/Transform.h"
 #include "Events/Move.h"
+#include "Events/Rotate.h"
 #include <unordered_map>
 
 
@@ -29,16 +30,25 @@ public:
 	// Events
 	EventRelay<TransformSystem, Events::Move> m_EMove;
 	bool OnMove(const Events::Move &event);
+	EventRelay<TransformSystem, Events::Rotate> m_ERotate;
+	bool OnRotate(const Events::Rotate &event);
 private:
 	struct MoveItems
 	{
 		EntityID Entity;
 		glm::vec3 GoalPosition;
-		double Time;
+		float Speed;
 	};
 	std::unordered_map<EntityID, MoveItems> m_MoveItems;
 	std::multimap<EntityID, MoveItems> m_QueuedMoveItems;
-
+	struct RotationItems
+	{
+		EntityID Entity;
+		glm::quat GoalRotation;
+		double Time;
+	};
+	std::unordered_map<EntityID, RotationItems> m_RotationItems;
+	std::multimap<EntityID, RotationItems> m_QueuedRotationItems;
 };
 
 }

@@ -19,6 +19,7 @@
 #include "Components/TriggerMove.h"
 #include "Components/Player.h"
 #include "Events/Move.h"
+#include "Events/Rotate.h"
 #include <math.h>
 namespace Systems
 {
