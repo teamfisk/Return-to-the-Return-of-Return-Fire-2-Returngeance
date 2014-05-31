@@ -16,6 +16,13 @@ namespace GUI
 			, m_PlayerID(playerID)
 		{
 			m_HealthOverlay = new HealthOverlay(this, "HealthOverlay", m_World, m_PlayerID);
+			m_Crosshair = new TextureFrame(this, "Crosshair");
+			m_Crosshair->Width = 45;
+			m_Crosshair->Height = 45;
+			m_Crosshair->X = this->Width / 2.f - m_Crosshair->Width / 2.f;
+			m_Crosshair->Y = this->Height / 2.f - m_Crosshair->Height / 2.f;
+			m_Crosshair->SetTexture("Textures/GUI/crosshair.png");
+			m_Crosshair->SetColor(glm::vec4(1.f, 1.f, 1.f, 0.75f));
 		}
 
 	protected:
@@ -23,6 +30,7 @@ namespace GUI
 		int m_PlayerID;
 
 		HealthOverlay* m_HealthOverlay;
+		TextureFrame* m_Crosshair;
 	};
 
 }

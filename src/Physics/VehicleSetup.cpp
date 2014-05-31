@@ -183,7 +183,6 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultE
 	engine.m_maxRPM = vehicleComponent.MaxRPM;
 
 
-
 	engine.m_torqueFactorAtMinRPM = 0.8f;
 	engine.m_torqueFactorAtMaxRPM = 0.8f;
 	engine.m_resistanceFactorAtMinRPM = 0.05f;
@@ -200,7 +199,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_downshiftRPM = 3500.0f; //HACK: Should be in VehicleComponent
 	transmission.m_upshiftRPM = 7000.0f;
 
-	transmission.m_clutchDelayTime = 0.0f;
+	transmission.m_clutchDelayTime = 1.5f;
 	transmission.m_reverseGearRatio = 1.0f;
 	transmission.m_gearsRatio[0] = 3.0f;
 	transmission.m_gearsRatio[1] = 2.25f;

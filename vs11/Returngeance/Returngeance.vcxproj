@@ -122,6 +122,7 @@
     <ClCompile Include="..\..\src\Systems\TimerSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\World.cpp" />
   </ItemGroup>
@@ -227,6 +228,7 @@
     <ClInclude Include="..\..\src\Systems\TimerSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Systems\TriggerSystem.h" />
+    <ClInclude Include="..\..\src\Systems\WheelPairSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
     <ClInclude Include="..\..\src\Util\Rectangle.h" />
