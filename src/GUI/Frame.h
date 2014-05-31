@@ -32,12 +32,14 @@ public:
 		, Rectangle()
 		, m_Name("UIParent")
 		, m_Layer(0)
+		, m_Hidden(false)
 	{ }
 
 	// Create a frame as a child
 	Frame(Frame* parent, std::string name)
 		: m_Name(name)
 		, m_Layer(0)
+		, m_Hidden(false)
 	{ SetParent(std::shared_ptr<Frame>(parent)); }
 
 	::RenderQueuePair RenderQueue;
@@ -74,6 +76,9 @@ public:
 	std::string Name() const { return m_Name; }
 	void SetName(std::string val) { m_Name = val; }
 	int Layer() const { return m_Layer; }
+	bool Hidden() const { return m_Hidden; }
+	void Hide() { m_Hidden = true; }
+	void Show() { m_Hidden = false; }
 
 	int Left() const override
 	{ 
@@ -105,6 +110,9 @@ public:
 
 	void UpdateLayered(double dt)
 	{
+		if (this->Hidden())
+			return;
+
 		// Update ourselves
 		this->Update(dt);
 
@@ -115,6 +123,8 @@ public:
 			for (auto &pairChild : children)
 			{
 				auto child = pairChild.second;
+				if (child->Hidden())
+					continue;
 				child->Update(dt);
 			}
 		}
@@ -123,6 +133,9 @@ public:
 
 	void DrawLayered(std::shared_ptr<Renderer> renderer)
 	{
+		if (this->Hidden())
+			return;
+
 		// Draw ourselves
 		renderer->SetViewport(AbsoluteRectangle());
 		this->Draw(renderer);
@@ -134,6 +147,8 @@ public:
 			for (auto &pairChild : children)
 			{
 				auto child = pairChild.second;
+				if (child->Hidden())
+					continue;
 				Rectangle rect = child->AbsoluteRectangle();
 				renderer->SetViewport(rect);
 				child->Draw(renderer);
@@ -149,7 +164,8 @@ protected:
 
 	std::string m_Name;
 	int m_Layer;
-	
+	bool m_Hidden;
+
 	std::shared_ptr<Frame> m_Parent;
 	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame
 	std::map<int, Children_t> m_Children; // layer -> Children_t

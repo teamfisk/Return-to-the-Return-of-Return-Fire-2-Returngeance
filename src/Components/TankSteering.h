@@ -7,7 +7,6 @@ namespace Components
 {
 	struct TankSteering : Component
 	{
-		EntityID Player;
 		EntityID Turret;
 		EntityID Barrel;
 		TankSteering* Clone() const override { return new TankSteering(*this); }

@@ -20,6 +20,7 @@
 #include "Systems/TriggerSystem.h"
 #include "Systems/TimerSystem.h"
 #include "Systems/DamageSystem.h"
+#include "Systems/WheelPairSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -33,7 +34,6 @@
 #include "Components/Template.h"
 #include "Components/Transform.h"
 #include "Components/Viewport.h"
-#include "Components/BlendMap.h"
 
 #include "Components/Physics.h"
 #include "Components/SphereShape.h"
@@ -48,6 +48,7 @@
 #include "Components/Health.h"
 #include "Components/Trigger.h"
 #include "Components/Flag.h"
+#include "Components/WheelPair.h"
 
 class GameWorld : public World
 {
@@ -57,9 +58,6 @@ public:
 	{ }
 
 	void Initialize();
-
-	EntityID CreateTank(int playerID);
-	EntityID CreateJeep(int playerID);
 
 	void RegisterSystems() override;
 	void AddSystems() override;
@@ -72,6 +70,10 @@ private:
 	void BindMouseButton(int button, std::string command, float value);
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
 	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
+
+	EntityID CreateTank(int playerID);
+	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
+	EntityID CreateJeep(int playerID);
 };
 
 #endif // GameWorld_h__

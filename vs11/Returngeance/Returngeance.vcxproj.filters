@@ -75,6 +75,7 @@
     <ClCompile Include="..\..\src\Systems\DamageSystem.cpp">
       <Filter>Gameplay\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -483,6 +484,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\PlayerHUD.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\WheelPairSystem.h">
+      <Filter>Physics\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\BlendMap.h">
       <Filter>Rendering\Components</Filter>
