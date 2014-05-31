@@ -11,7 +11,6 @@ namespace Components
 
 	struct Particle : Component
 	{
-		std::vector<Color> ColorSpectrum;
 		std::vector<glm::vec3> ScaleSpectrum;
 		double LifeTime;
 		double SpawnTime;

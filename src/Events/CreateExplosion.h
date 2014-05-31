@@ -9,14 +9,17 @@ namespace Events
 {
 	struct CreateExplosion : Event
 	{
+		CreateExplosion() 
+			: Color(glm::vec4(0)) {}
 		glm::vec3 Position;
+		glm::vec4 Color;
 		double LifeTime;
 		int ParticlesToSpawn;
 		std::string spritePath;
 		glm::quat RelativeUpOrientation;
 		float Speed;
 		float SpreadAngle;
-		float ParticleScale;
+		std::vector<float> ParticleScale;
 	};
 
 }

@@ -19,13 +19,14 @@ struct ParticleEmitter : Component
 		, SpawnCount(0)
 		, SpreadAngle(0)
 		, LifeTime(0)
-		, TimeSinceLastSpawn(100) { } // TEMP fulhack så att partiklarna spawnar direkt
+		, TimeSinceLastSpawn(100)
+		, Color(glm::vec4(0)) { } 
 
 	EntityID ParticleTemplate;
 	float SpawnFrequency;
 	float Speed;
 	int SpawnCount;
-	std::vector<Color> ColorSpectrum;
+	glm::vec4 Color;
 	std::vector<glm::vec3> ScaleSpectrum;
 	float SpreadAngle;
 	double LifeTime;

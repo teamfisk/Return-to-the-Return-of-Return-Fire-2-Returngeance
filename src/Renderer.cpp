@@ -163,7 +163,7 @@ void Renderer::LoadContent()
 	FrameBufferTextures();
 
 	m_sphereModel = ResourceManager->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj");
-	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/sky36", "jpg");
+	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/sunset", "jpg");
 }
 
 void Renderer::Draw(double dt)

@@ -95,6 +95,9 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 				ScalarInterpolation(timeProgress, spectrum, alpha);
 				sprite->Color.w = alpha;
 			}
+
+
+
 			/*// Angular velocity interpolation
 			if (particleComponent->AngularVelocitySpectrum.size() != 0)
 			{
@@ -160,6 +163,10 @@ void Systems::ParticleSystem::SpawnParticles(EntityID emitterID)
 		particle->ScaleSpectrum = eComponent->ScaleSpectrum; 
 		particle->VelocitySpectrum.push_back(particleTransform->Velocity);
 		particle->Fade = eComponent->Fade;
+		
+		auto sprite = m_World->GetComponent<Components::Sprite>(ent);
+		if(eComponent->Color != glm::vec4(0))
+			sprite->Color = eComponent->Color;
 		
 		if (eComponent->ScaleSpectrum.size() > 0)
 		{
@@ -235,9 +242,15 @@ bool Systems::ParticleSystem::CreateExplosion(const Events::CreateExplosion &e)
 	emitter->SpawnCount = e.ParticlesToSpawn;
 	emitter->Speed = e.Speed;
 	emitter->SpreadAngle = e.SpreadAngle; 
-	emitter->ScaleSpectrum.push_back(glm::vec3(e.ParticleScale));
+	//emitter->ScaleSpectrum.push_back(glm::vec3(e.ParticleScale));
 	emitter->SpawnFrequency = e.LifeTime + 20; //temp
 	emitter->Fade = true;
+	emitter->Color = e.Color;
+	std::vector<glm::vec3> scale;
+	scale.push_back(glm::vec3(e.ParticleScale[0]));
+	if(e.ParticleScale.size() >= 2)
+		scale.push_back(glm::vec3(e.ParticleScale[1]));
+	emitter->ScaleSpectrum = scale;
 	// 	emitter->GoalVelocity = glm::vec3(0,-_speed, 0);
 	m_World->CommitEntity(explosion);
 
