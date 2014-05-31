@@ -15,6 +15,7 @@ namespace Components
 		std::vector<glm::vec3> ScaleSpectrum;
 		double LifeTime;
 		double SpawnTime;
+		bool Fade;
 		std::vector<glm::vec3> VelocitySpectrum;
 		std::vector<float> AngularVelocitySpectrum;
 		std::vector<glm::vec3> OrientationSpectrum; //Keep?

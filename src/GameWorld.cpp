@@ -252,14 +252,14 @@ void GameWorld::Initialize()
 		CommitEntity(tree);*/
 
 
-		auto thing = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(thing);
-		transform->Position = glm::vec3(0,15,0);
-		transform->Scale = glm::vec3(3);
-// 		auto model = AddComponent<Components::Model>(thing);
-// 		model->ModelFile = "Models/Barrel/Barrel.obj";
-		auto sprite = AddComponent<Components::Sprite>(thing);
-		sprite->SpriteFile = "Textures/Sprites/SeriousParticle.png";
+// 		auto thing = CreateEntity();
+// 		auto transform = AddComponent<Components::Transform>(thing);
+// 		transform->Position = glm::vec3(0,15,0);
+// 		transform->Scale = glm::vec3(3);
+// // 		auto model = AddComponent<Components::Model>(thing);
+// // 		model->ModelFile = "Models/Barrel/Barrel.obj";
+// 		auto sprite = AddComponent<Components::Sprite>(thing);
+// 		sprite->SpriteFile = "Textures/Sprites/SeriousParticle.png";
 	}
 
 	EntityID tank1 = CreateTank(1);
@@ -745,31 +745,31 @@ EntityID GameWorld::CreateTank(int playerID)
 		}
 		CommitEntity(wheel);
 
-		auto entity = CreateEntity(tank);
-		auto transformComponent = AddComponent<Components::Transform>(entity);
-		transformComponent->Position = glm::vec3(2, -1.7, 2.0);
-		transformComponent->Scale = glm::vec3(3, 3, 3);
-		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
-		auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
-		emitterComponent->SpawnCount = 2;
-			emitterComponent->SpawnFrequency = 0.005;
-		emitterComponent->SpreadAngle = glm::pi<float>();
-		emitterComponent->UseGoalVelocity = false;
-		emitterComponent->LifeTime = 0.5;
-		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
-		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
-		CommitEntity(entity);
-
-		{
-			auto particleEntity = CreateEntity(entity);
-			auto templateComponent = AddComponent<Components::Template>(particleEntity);
-			auto TEMP = AddComponent<Components::Transform>(particleEntity);
-			TEMP->Scale = glm::vec3(0);
-			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
-			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-			CommitEntity(particleEntity);
-			emitterComponent->ParticleTemplate = particleEntity;
-		}
+// 		auto entity = CreateEntity(tank);
+// 		auto transformComponent = AddComponent<Components::Transform>(entity);
+// 		transformComponent->Position = glm::vec3(2, -1.7, 2.0);
+// 		transformComponent->Scale = glm::vec3(3, 3, 3);
+// 		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
+// 		auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
+// 		emitterComponent->SpawnCount = 2;
+// 			emitterComponent->SpawnFrequency = 0.005;
+// 		emitterComponent->SpreadAngle = glm::pi<float>();
+// 		emitterComponent->UseGoalVelocity = false;
+// 		emitterComponent->LifeTime = 0.5;
+// 		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+// 		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+// 		CommitEntity(entity);
+// 
+// 		{
+// 			auto particleEntity = CreateEntity(entity);
+// 			auto templateComponent = AddComponent<Components::Template>(particleEntity);
+// 			auto TEMP = AddComponent<Components::Transform>(particleEntity);
+// 			TEMP->Scale = glm::vec3(0);
+// 			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
+// 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+// 			CommitEntity(particleEntity);
+// 			emitterComponent->ParticleTemplate = particleEntity;
+// 		}
 	}
 
 	{
@@ -832,31 +832,7 @@ EntityID GameWorld::CreateTank(int playerID)
 		CommitEntity(wheel);
 #pragma endregion
 
-		auto entity = CreateEntity(tank);
-		auto transformComponent = AddComponent<Components::Transform>(entity);
-		transformComponent->Position = glm::vec3(-2, -1.7, 2.0);
-		transformComponent->Scale = glm::vec3(3, 3, 3);
-		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
-		auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
-		emitterComponent->SpawnCount = 2;
-		emitterComponent->SpawnFrequency = 0.005;
-		emitterComponent->SpreadAngle = glm::pi<float>();
-		emitterComponent->UseGoalVelocity = false;
-		emitterComponent->LifeTime = 0.5;
-		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
-		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
-		CommitEntity(entity);
-
-		{
-			auto particleEntity = CreateEntity(entity);
-			auto templateComponent = AddComponent<Components::Template>(particleEntity);
-			auto TEMP = AddComponent<Components::Transform>(particleEntity);
-			TEMP->Scale = glm::vec3(0);
-			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
-			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-			CommitEntity(particleEntity);
-			emitterComponent->ParticleTemplate = particleEntity;
-		}
+		
 	}
 
 	CommitEntity(tank);

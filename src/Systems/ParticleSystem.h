@@ -37,12 +37,10 @@ private:
 	float RandomizeAngle(float spreadAngle);
 	//void ScaleInterpolation(double timeProgress, std::vector<float> spectrum, glm::vec3 &scale);
 	void VectorInterpolation(double timeProgress, std::vector<glm::vec3> spectrum, glm::vec3 &velocity);
-	//void ColorInterpolation(double timeProgress, std::vector<Color> spectrum, Color &color);
 	void ScalarInterpolation(double timeProgress, std::vector<float> spectrum, float &alpha);
 	void Billboard();
 	//std::map<EntityID, std::list<ParticleData>> m_ParticleEmitter;
-	std::map<EntityID, double> m_TimeSinceLastSpawn;
-	std::map<EntityID, double> m_ExplosionEmitters;
+	
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 
 	bool tempSpawnedExplosions;
@@ -51,7 +49,9 @@ private:
 // 	bool OnKeyUp(const Events::KeyUp &e);
 	EventRelay<ParticleSystem, Events::CreateExplosion> m_EExplosion;
 	bool CreateExplosion(const Events::CreateExplosion &e);
-
+	
+	std::map<EntityID, double> m_ExplosionEmitters;
+	std::map<EntityID, EntityID> m_ParticlesToEmitter;
 };
 
 }

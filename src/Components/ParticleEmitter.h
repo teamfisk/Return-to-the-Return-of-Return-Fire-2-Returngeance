@@ -30,9 +30,10 @@ struct ParticleEmitter : Component
 	float SpreadAngle;
 	double LifeTime;
 	bool UseGoalVelocity;
+	bool Fade;
 	glm::vec3 GoalVelocity;
 	std::vector<float> AngularVelocitySpectrum;
-	std::vector<glm::vec3> OrientationSpectrum; //Keep?
+	std::vector<glm::vec3> OrientationSpectrum; //Keep? noo..
 
 private:
 	double TimeSinceLastSpawn;
