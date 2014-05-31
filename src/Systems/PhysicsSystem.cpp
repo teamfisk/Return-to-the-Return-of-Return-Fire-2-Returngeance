@@ -138,6 +138,7 @@ void Systems::PhysicsSystem::Initialize()
 		e.Layer2 = EXPLOSION_LAYER;
 		EventBroker->Publish(e);
 	}*/
+
 }
 
 void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
@@ -155,6 +156,8 @@ void Systems::PhysicsSystem::RegisterComponents(ComponentFactory* cf)
 
 void Systems::PhysicsSystem::Update(double dt)
 {	
+
+
 	for (auto pair : *m_World->GetEntities())
 	{
 		EntityID entity = pair.first;
@@ -171,23 +174,36 @@ void Systems::PhysicsSystem::Update(double dt)
 		{
 			hkVector4 position;
 			hkQuaternion rotation;
+			hkVector4 velocity;
 
 			if (parent)
 			{
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
 				rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
+				velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);
 			}
 			else
 			{
 				position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
 				rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
+				velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
 			}
 			m_PhysicsWorld->markForWrite();
 			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+			m_RigidBodies[entity]->setLinearVelocity(velocity);
 			m_PhysicsWorld->unmarkForWrite();
 			
 		}
+/*
+
+		glm::vec3 pos1 = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[m_World->m_Terrain]->getPosition());
+		pos1 += glm::vec3(1, 1, 1)*(float)dt;
+		hkVector4 pos = GLMVEC3_TO_HKVECTOR4(pos1);
+
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[m_World->m_Terrain]->setPositionAndRotation(pos, GLMQUAT_TO_HKQUATERNION(glm::quat()));
+		m_PhysicsWorld->unmarkForWrite();*/
 	}
 
 	static const double timestep = 1 / 60.0;
@@ -240,11 +256,12 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
 		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
-
 		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
 		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
+		transformComponent->Velocity = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
 		// TODO: No support for Scale, MIGHT be possible
 
+		// HACK: WTF IS THIS?
 		if (transformComponentParent)
 		{
 			transformComponent->Position -= transformComponentParent->Position;
@@ -319,7 +336,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 			}
 
-
 			// Create a hkpListShape* of all the childEntities collected in m_ShapeArrays
 			hkpListShape* listShape = new hkpListShape(shapeArray.begin(), shapeArray.getSize(), hkpShapeContainer::REFERENCE_POLICY_INCREMENT);
 			// Save the listShape for further use
@@ -377,6 +393,8 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
+			m_RigidBodies[entity] = rigidBody;
+			m_RigidBodyEntities[rigidBody] = entity;
 
 			auto vehicleComponent = m_World->GetComponent<Components::Vehicle >(entity);
 			if (vehicleComponent && m_Vehicles.find(entity) == m_Vehicles.end())
@@ -393,7 +411,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 
 				VehicleSetup vehicleSetup;
 				// Create the basic vehicle.
-				m_Vehicles[entity] = new hkpVehicleInstance(rigidBody);
+				m_Vehicles[entity] = new hkpVehicleInstance(m_RigidBodies[entity]);
 				m_PhysicsWorld->markForWrite();
 				vehicleSetup.buildVehicle(m_World, m_PhysicsWorld, *m_Vehicles[entity], entity, m_Wheels);
 				// Add the vehicle's entities and phantoms to the world
@@ -402,8 +420,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 					rigidBody->addContactListener( m_collisionResolution );
 				}
 				m_Vehicles[entity]->addToWorld(m_PhysicsWorld);
-				m_RigidBodies[entity] = rigidBody;
-				m_RigidBodyEntities[rigidBody] = entity;
 
 
 				// The vehicle is an action
@@ -423,8 +439,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 					rigidBody->addContactListener( m_collisionResolution );
 				}
 				m_PhysicsWorld->addEntity(rigidBody);
-				m_RigidBodies[entity] = rigidBody;
-				m_RigidBodyEntities[rigidBody] = entity;
+				
 				m_PhysicsWorld->unmarkForWrite();
 
 				shape->removeReference();
@@ -576,7 +591,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			if(triggerComponent)
 			{
 				auto parentTransformComponent = m_World->GetComponent<Components::Transform >(entityParent);
-
 				PhantomCallbackShape* phantom = new PhantomCallbackShape(this);
 				hkpBvShape* phantomShape = new hkpBvShape(boxShape, phantom);
 
@@ -707,11 +721,40 @@ void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 {
 	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
+	
 	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
 		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
-		deviceStatus->m_positionX = event.PositionX;
-		deviceStatus->m_positionY = event.PositionY;
+		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+		
+		float steeringX = event.PositionX;
+
+		glm::vec3 velocityNormalized = glm::normalize(HKVECTOR4_TO_GLMVEC3(m_RigidBodies[event.Entity]->getLinearVelocity()));
+		glm::vec3 forward = glm::normalize(transformComponent->Orientation * glm::vec3(0, 0, -1));
+		float dotProduct = glm::dot(forward, velocityNormalized);
+
+		if(dotProduct < 0)
+		{
+			steeringX = (1 - (glm::clamp(abs(m_Vehicles[event.Entity]->calcKMPH() /vehicleComponent->TopSpeed), 0.f, 0.7f))) * steeringX;
+		}
+
+		
+		if(abs(m_Vehicles[event.Entity]->calcKMPH()) < 2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
+		{
+			deviceStatus->m_positionY = -0.4f;
+			deviceStatus->m_positionX = steeringX;
+		}
+// 		else if(m_Vehicles[event.Entity]->calcKMPH() > -2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
+// 		{
+// 			deviceStatus->m_positionY = 0.4f;;
+// 			deviceStatus->m_positionX = -steeringX;
+// 		}
+		else
+		{
+			deviceStatus->m_positionX = steeringX;
+			deviceStatus->m_positionY = event.PositionY;
+		}
+		
 		if(event.PositionY > 0)
 		{
 			deviceStatus->m_reverseButtonPressed = true;
@@ -728,6 +771,9 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 	{
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
+
+		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+		transformComponent->Velocity = event.Velocity;
 		m_PhysicsWorld->unmarkForWrite();
 	}
 	return true;

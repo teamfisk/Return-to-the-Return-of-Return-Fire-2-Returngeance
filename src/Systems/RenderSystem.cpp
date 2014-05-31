@@ -15,6 +15,7 @@ void Systems::RenderSystem::RegisterComponents(ComponentFactory* cf)
 	cf->Register<Components::PointLight>([]() { return new Components::PointLight(); });
 	cf->Register<Components::DirectionalLight>([]() { return new Components::DirectionalLight(); });
 	cf->Register<Components::Viewport>([]() { return new Components::Viewport(); });
+	cf->Register<Components::BlendMap>([]() { return new Components::BlendMap(); });
 }
 
 void Systems::RenderSystem::OnEntityCommit(EntityID entity)

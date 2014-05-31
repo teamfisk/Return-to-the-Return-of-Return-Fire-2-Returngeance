@@ -33,7 +33,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	if(!tankSteeringComponent)
 		return;
 
-	auto playerComponent = m_World->GetComponent<Components::Player>(tankSteeringComponent->Player);
+	auto playerComponent = m_World->GetComponent<Components::Player>(entity);
 	if (!playerComponent)
 		return;
 
@@ -62,6 +62,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	
 	if(barrelSteeringComponent)
 	{
+		auto tankTransform = m_World->GetComponent<Components::Transform>(entity);
 		auto transformComponent = m_World->GetComponent<Components::Transform>(tankSteeringComponent->Barrel);
 		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(tankSteeringComponent->Barrel);
 		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * inputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
@@ -76,7 +77,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			cloneTransform->Orientation = absoluteTransform.Orientation * cloneTransform->Orientation;
 			Events::SetVelocity eSetVelocity;
 			eSetVelocity.Entity = clone;
-			eSetVelocity.Velocity = absoluteTransform.Orientation * (glm::vec3(0.f, 0.f, -1.f) * barrelSteeringComponent->ShotSpeed);
+			eSetVelocity.Velocity = tankTransform->Velocity + absoluteTransform.Orientation * (glm::vec3(0.f, 0.f, -1.f) * barrelSteeringComponent->ShotSpeed);
 			EventBroker->Publish(eSetVelocity);
 			m_TimeSinceLastShot[tankSteeringComponent->Barrel] = 0;
 
@@ -257,13 +258,12 @@ bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const E
 	if (event.Command == "horizontal")
 	{
 		m_Horizontal = val;
-		m_Vertical = -0.4f;
 	}
 	else if (event.Command == "vertical")
 	{
 		m_Vertical = -val;
 	}
-	
+
 	else if (event.Command == "handbrake")
 	{
 		Handbrake = val > 0;

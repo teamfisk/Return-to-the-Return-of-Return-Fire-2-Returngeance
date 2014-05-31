@@ -12,5 +12,4 @@ out vec4 FragColor;
 void main()
 {
 	FragColor = texture(CubemapTexture, Input.TextureCoord);
-	//FragColor = vec4(1.0, 1.0, 1.0, 0.0);
 }
