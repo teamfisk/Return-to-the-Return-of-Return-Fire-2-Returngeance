@@ -163,7 +163,7 @@ void Renderer::LoadContent()
 	FrameBufferTextures();
 
 	m_sphereModel = ResourceManager->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj");
-	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/Sunset", "jpg");
+	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/Sky34", "jpg");
 }
 
 void Renderer::Draw(double dt)
@@ -392,7 +392,7 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
-	DrawSkybox();
+	//DrawSkybox();
 	DrawFBOScene(rq.Deferred);
 
 	/*
