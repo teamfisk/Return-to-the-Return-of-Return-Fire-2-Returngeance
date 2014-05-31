@@ -18,7 +18,7 @@ Renderer::Renderer(std::shared_ptr<::ResourceManager> resourceManager)
 	CAtt = 1.0f;
 	LAtt = 0.0f;
 	QAtt = 3.0f;
-	m_ShadowMapRes = 2048*2;
+	m_ShadowMapRes = 1;
 	m_SunPosition = glm::vec3(0.f, 1.0f, 0.5f);
 	m_SunTarget = glm::vec3(0, 0, 0);
 	m_SunProjection_height = glm::vec2(-40.f, 40.f);
@@ -163,7 +163,7 @@ void Renderer::LoadContent()
 	FrameBufferTextures();
 
 	m_sphereModel = ResourceManager->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj");
-	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/Sky34", "jpg");
+	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/sky36", "jpg");
 }
 
 void Renderer::Draw(double dt)
@@ -369,6 +369,17 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	glDepthMask(GL_TRUE);
 	glEnable(GL_SCISSOR_TEST);
 
+	//Sort forward rendering items by z value.
+	for(auto job : rq.Forward)
+	{
+		glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
+		glm::mat4 cameraMatrix = cameraProjection * m_Camera->ViewMatrix();
+
+		glm::vec3 spritePos = glm::vec3(cameraMatrix * job->ModelMatrix * glm::vec4(1, 1, 1, 0));
+		job->Depth = spritePos.z;
+	}
+	rq.Forward.Jobs.sort(Renderer::DepthSort);
+
 	//DrawShadowMap(rq.Deferred);
 
 	/*
@@ -392,7 +403,7 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
-	//DrawSkybox();
+	DrawSkybox();
 	DrawFBOScene(rq.Deferred);
 
 	/*
@@ -511,6 +522,8 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 
 			continue;
 		}
+
+
 
 		auto spriteJob = std::dynamic_pointer_cast<SpriteJob>(job);
 		if (spriteJob)

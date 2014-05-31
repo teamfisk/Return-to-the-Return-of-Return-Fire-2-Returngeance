@@ -88,7 +88,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			Events::ApplyPointImpulse ePointImpulse ;
 			ePointImpulse.Entity = entity;
 			ePointImpulse.Position = absoluteTransform.Position;
-			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 1670.f;
+			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 6.f * 1670.f;
 			EventBroker->Publish(ePointImpulse);
 		}
 

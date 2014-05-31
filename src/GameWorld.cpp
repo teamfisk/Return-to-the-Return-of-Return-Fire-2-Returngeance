@@ -70,26 +70,26 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
-	{
-		auto road_base = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(road_base);
-		transform->Position = glm::vec3(0, -50, 0);
-		auto model = AddComponent<Components::Model>(road_base);
-		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
-		auto physics = AddComponent<Components::Physics>(road_base);
-		physics->Mass = 10;
-		physics->Static = true;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(road_base);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(road_base);
-	}
+ 	{
+ 		auto road_base = CreateEntity();
+ 		auto transform = AddComponent<Components::Transform>(road_base);
+ 		transform->Position = glm::vec3(0, -50, 0);
+ 		auto model = AddComponent<Components::Model>(road_base);
+ 		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
+ 		auto physics = AddComponent<Components::Physics>(road_base);
+ 		physics->Mass = 10;
+ 		physics->Static = true;
+ 		physics->CollisionLayer = 1;
+ 
+ 		auto groundshape = CreateEntity(road_base);
+ 		auto transformshape = AddComponent<Components::Transform>(groundshape);
+ 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+ 		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
+ 
+ 
+ 		CommitEntity(groundshape);
+ 		CommitEntity(road_base);
+ 	}
 
 	{
 		auto road_middle = CreateEntity();
@@ -143,13 +143,10 @@ void GameWorld::Initialize()
 		auto model = AddComponent<Components::Model>(water);
 		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
 		auto blendmap = AddComponent<Components::BlendMap>(water);
-		blendmap->TextureRed = "Textures/Ground/WaterPlain0017_6_S.png";
-		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
-		blendmap->TextureGreen = "Textures/Ground/WaterPlain0017_6_S.jpg";
-		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
-		blendmap->TextureBlue = "Textures/Ground/WaterPlain0017_6_S.png";
-		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
-		blendmap->TextureRepeats = 400.f;
+		blendmap->TextureRed = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureGreen = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureBlue = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureRepeats = 1.f;
 
 		auto physics = AddComponent<Components::Physics>(water);
 		physics->Mass = 10;
@@ -327,11 +324,33 @@ void GameWorld::Initialize()
 	{
 		auto tree = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(tree);
-		transform->Position = glm::vec3(0, -15, 0);
+		transform->Position = glm::vec3(0, -10, 0);
 		auto model = AddComponent<Components::Model>(tree);
-		model->ModelFile = "Models/Tree/leafs/Leafs.obj";
+		model->ModelFile = "Models/Tree/Stem/Stem.obj";
+		auto physics = AddComponent<Components::Physics>(tree);
+		physics->Mass = 100.f;
+		physics->Static = false;
+		physics->CalculateCenterOfMass = true;
+		{
+		auto leafs = CreateEntity(tree);
+		auto transform = AddComponent<Components::Transform>(leafs);
+		auto model = AddComponent<Components::Model>(leafs);
+		model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
 		model->Transparent = true;
+		CommitEntity(leafs);
+		}
 
+		{
+			auto shape = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			transform->Position = glm::vec3(0.f, 0.f, 2.29552f);
+			box->Width = 0.296f;
+			box->Height = 2.511f;
+			box->Depth = 0.296f;
+			
+			CommitEntity(shape);
+		}
 		CommitEntity(tree);
 	}
 
