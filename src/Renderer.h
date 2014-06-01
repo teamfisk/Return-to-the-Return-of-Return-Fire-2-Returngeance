@@ -43,6 +43,17 @@ public:
 	void UpdateCamera(int cameraIdentifier, glm::vec3 position, glm::quat orientation, float FOV, float nearClip, float farClip);
 
 #pragma region NEWSTUFF
+	void SetResolution(const Rectangle &resolution)
+	{
+		m_Width = resolution.Width;
+		m_Height = resolution.Height;
+	}
+
+	void SetFullscreen(bool fullscreen)
+	{
+		m_Fullscreen = fullscreen;
+	}
+
 	void SetViewport(const Rectangle &viewport)
 	{
 		m_Viewport = viewport;
@@ -99,6 +110,7 @@ public:
 private:
 	std::shared_ptr<::ResourceManager> ResourceManager;
 
+	bool m_Fullscreen;
 	int m_Width, m_Height;
 
 	struct Viewport

@@ -5,6 +5,9 @@ Renderer::Renderer(std::shared_ptr<::ResourceManager> resourceManager)
 	: ResourceManager(resourceManager)
 {
 	m_VSync = false;
+	m_Fullscreen = false;
+	m_Width = 1280;
+	m_Height = 720;
 #ifdef DEBUG
 	m_DrawNormals = false;
 	m_DrawWireframe = false;
@@ -38,11 +41,12 @@ void Renderer::Initialize()
 	}
 
 	// Create a window
-	m_Width = 1280;
-	m_Height = 720;
-	// Antialiasing
-	//glfwWindowHint(GLFW_SAMPLES, 16);
-	m_Window = glfwCreateWindow(m_Width, m_Height, "OpenGL", nullptr, nullptr);
+	GLFWmonitor* monitor = nullptr;
+	if (m_Fullscreen)
+	{
+		monitor = glfwGetPrimaryMonitor();
+	}
+	m_Window = glfwCreateWindow(m_Width, m_Height, "OpenGL", monitor, nullptr);
 	if (!m_Window)
 	{
 		LOG_ERROR("GLFW: Failed to create window");

@@ -25,16 +25,18 @@ public:
 		m_ResourceManager->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
 		m_ResourceManager->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 
+		m_FrameStack = new GUI::Frame(m_EventBroker, m_ResourceManager); 
+		m_FrameStack->Width = 1920;
+		m_FrameStack->Height = 1080;
+		
 		m_Renderer = std::make_shared<Renderer>(m_ResourceManager);
+		m_Renderer->SetFullscreen(true);
+		m_Renderer->SetResolution(*static_cast<Rectangle*>(m_FrameStack));
 		m_Renderer->Initialize();
 
 		m_InputManager = std::make_shared<InputManager>(m_Renderer->GetWindow(), m_EventBroker);
 
-		m_FrameStack = new GUI::Frame(m_EventBroker, m_ResourceManager); 
-		m_FrameStack->Width = 1280;
-		m_FrameStack->Height = 720;
 		new GUI::GameFrame(m_FrameStack, "GameFrame");
-
 		//m_World = std::make_shared<GameWorld>(m_EventBroker, m_ResourceManager);
 		//m_World->Initialize();
 

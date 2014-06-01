@@ -25,6 +25,9 @@ public:
 		Bottom
 	};
 
+	static const float BaseWidth = 1280.f;
+	static const float BaseHeight = 720.f;
+
 	// Set up a base frame with an event broker
 	Frame(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
 		: EventBroker(eventBroker)
@@ -180,6 +183,7 @@ protected:
 	std::string m_Name;
 	int m_Layer;
 	bool m_Hidden;
+	glm::vec2 Scale;
 
 	std::shared_ptr<Frame> m_Parent;
 	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame
