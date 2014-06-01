@@ -17,6 +17,9 @@
 #include "Events/LeaveTrigger.h"
 #include "Components/Flag.h"
 #include "Components/TriggerMove.h"
+#include "Components/TriggerRotate.h"
+#include "Components/Move.h"
+#include "Components/Rotate.h"
 #include "Components/Player.h"
 #include "Events/Move.h"
 #include "Events/Rotate.h"
@@ -46,7 +49,8 @@ namespace Systems
 	private:
 		void Flag(EntityID entity, EntityID phantomEntity);
 		void Explosion(EntityID entity, EntityID phantomEntity);
-		void Move(EntityID entity);
+		void Move(EntityID entity, bool queue, bool swap);
+		void Rotate(EntityID entity, bool queue, bool swap);
 	};
 
 }

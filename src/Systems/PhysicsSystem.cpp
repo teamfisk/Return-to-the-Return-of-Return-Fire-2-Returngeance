@@ -282,26 +282,27 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		m_Wheels.push_back(entity);
 	}
 
-	EntityID entityParent = m_World->GetEntityBaseParent(entity);
+	EntityID entityParent = m_World->GetEntityParent(entity);
 
 	auto sphereComponent = m_World->GetComponent<Components::SphereShape>(entity);
 	auto boxComponent = m_World->GetComponent<Components::BoxShape>(entity);
 	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape >(entity);
 	
-	if(entityParent == entity && (sphereComponent || boxComponent || meshShapeComponent))
+	if(entityParent == 0 && (sphereComponent || boxComponent || meshShapeComponent))
 	{
-		LOG_ERROR("Entity: %i , Only the children can have a shapeComponent", entity);
+		LOG_ERROR("Entity: %i, Only the children can have a shapeComponent", entity);
 		return;
 	}
 
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity);
 	if (physicsComponent && m_Shapes[entity].size() > 0)
 	{
-		if(entityParent != entity)
+		if(entityParent != 0 && !physicsComponent->Static)
 		{
-			LOG_ERROR("Entity: %i , Only the baseparent can have a PhysicsComponent", entity);
+			LOG_ERROR("Entity: %i, Only the baseparent can have a dynamic PhysicsComponent", entity);
 			return;
 		}
+
 		hkpShape* shape;	
 		if(! physicsComponent->Static) // Not static
 		{
@@ -489,7 +490,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
 				rigidBodyInfo.m_shape = shape;
-				rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+				rigidBodyInfo.m_motionType = hkpMotion::MOTION_KEYFRAMED;
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				hkVector4 position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
 				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);

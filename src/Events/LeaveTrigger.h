@@ -8,8 +8,8 @@
 
 	struct LeaveTrigger : Event
 	{
-		EntityID Entity1;
-		EntityID Entity2;
+		EntityID Trigger;
+		EntityID Entity;
 	};
 
 }

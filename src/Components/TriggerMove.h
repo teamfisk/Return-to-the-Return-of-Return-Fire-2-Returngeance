@@ -8,10 +8,14 @@ namespace Components
 
 	struct TriggerMove : Component
 	{
+		TriggerMove()
+			: Queue(false)
+			, Swap(true)
+		{ }
+
 		EntityID Entity;
-		float Speed;
-		glm::vec3 StartPosition;
-		glm::vec3 GoalPosition;
+		bool Queue;
+		bool Swap;
 		virtual TriggerMove* Clone() const override { return new TriggerMove(*this); }
 	};
 

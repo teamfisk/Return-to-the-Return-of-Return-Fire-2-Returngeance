@@ -22,6 +22,7 @@
 #include "Systems/DamageSystem.h"
 #include "Systems/WheelPairSystem.h"
 #include "Systems/FollowSystem.h"
+#include "Systems/GarageSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -51,6 +52,9 @@
 #include "Components/Flag.h"
 #include "Components/WheelPair.h"
 #include "Components/Follow.h"
+#include "Components/TriggerRotate.h"
+#include "Components/Move.h"
+#include "Components/Rotate.h"
 
 class GameWorld : public World
 {

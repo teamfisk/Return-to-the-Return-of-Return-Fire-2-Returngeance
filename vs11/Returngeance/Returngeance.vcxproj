@@ -113,6 +113,7 @@
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\GarageSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
@@ -138,6 +139,9 @@
     <ClInclude Include="..\..\src\Components\Flag.h" />
     <ClInclude Include="..\..\src\Components\Follow.h" />
     <ClInclude Include="..\..\src\Components\FrameTimer.h" />
+    <ClInclude Include="..\..\src\Components\Garage.h" />
+    <ClInclude Include="..\..\src\Components\Move.h" />
+    <ClInclude Include="..\..\src\Components\Rotate.h" />
     <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Timer.h" />
     <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />
@@ -163,6 +167,7 @@
     <ClInclude Include="..\..\src\Components\TowerSteering.h" />
     <ClInclude Include="..\..\src\Components\Transform.h" />
     <ClInclude Include="..\..\src\Components\Trigger.h" />
+    <ClInclude Include="..\..\src\Components\TriggerRotate.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
     <ClInclude Include="..\..\src\Components\Viewport.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
@@ -224,6 +229,7 @@
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FollowSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\GarageSystem.h" />
     <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
     <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />

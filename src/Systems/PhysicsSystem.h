@@ -132,8 +132,8 @@ public:
 			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
 			{
 				Events::EnterTrigger e;
-				e.Entity1 = entity1;
-				e.Entity2 = entity2;
+				e.Trigger = entity1;
+				e.Entity = entity2;
 				m_PhysicsSystem->EventBroker->Publish(e);
 			}
 		}
@@ -146,8 +146,8 @@ public:
 			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
 			{
 				Events::LeaveTrigger e;
-				e.Entity1 = entity1;
-				e.Entity2 = entity2;
+				e.Trigger = entity1;
+				e.Entity = entity2;
 				m_PhysicsSystem->EventBroker->Publish(e);
 			}
 		}

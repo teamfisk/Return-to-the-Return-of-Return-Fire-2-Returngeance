@@ -79,6 +79,9 @@
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\GarageSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -494,7 +497,6 @@
     <ClInclude Include="..\..\src\Events\LeaveTrigger.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Follow.h">
       <Filter>Game\Components</Filter>
     </ClInclude>
@@ -503,6 +505,24 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Events\Rotate.h">
       <Filter>Base\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TriggerMove.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TriggerRotate.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\GarageSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Garage.h">
+      <Filter>Game\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Move.h">
+      <Filter>Base\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Rotate.h">
+      <Filter>Base\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
