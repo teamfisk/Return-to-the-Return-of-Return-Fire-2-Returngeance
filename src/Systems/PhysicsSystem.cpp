@@ -80,7 +80,7 @@ void Systems::PhysicsSystem::Initialize()
 		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY;
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
-		worldInfo.setBroadPhaseWorldSize(1500.0f);
+		worldInfo.setBroadPhaseWorldSize(500.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
 
 		// When the simulation type is SIMULATION_TYPE_MULTITHREADED, in the debug build, the sdk performs checks
@@ -376,6 +376,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
 				if(physicsComponent->CalculateCenterOfMass)
 					physicsComponent->CenterOfMass = HKVECTOR4_TO_GLMVEC3(massProperties.m_centerOfMass);
+
 				rigidBodyInfo.m_centerOfMass = GLMVEC3_TO_HKVECTOR4(physicsComponent->CenterOfMass);
 				rigidBodyInfo.m_mass = massProperties.m_mass;
 				rigidBodyInfo.m_linearVelocity = GLMVEC3_TO_HKVECTOR4(physicsComponent->InitialLinearVelocity);
@@ -389,7 +390,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
-				rigidBodyInfo.m_enableDeactivation = false;
+				rigidBodyInfo.m_enableDeactivation = true;;
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -521,7 +522,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
-				rigidBodyInfo.m_enableDeactivation = false;
+				rigidBodyInfo.m_enableDeactivation = true;
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -770,6 +771,7 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
 		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[event.Entity]->activate();
 		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
 
 		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);

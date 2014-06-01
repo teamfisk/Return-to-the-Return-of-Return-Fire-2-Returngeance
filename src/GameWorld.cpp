@@ -324,33 +324,64 @@ void GameWorld::Initialize()
 	{
 		auto tree = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(tree);
-		transform->Position = glm::vec3(0, -10, 0);
-		auto model = AddComponent<Components::Model>(tree);
-		model->ModelFile = "Models/Tree/Stem/Stem.obj";
+		transform->Position = glm::vec3(0, 10, 0);
+		
 		auto physics = AddComponent<Components::Physics>(tree);
 		physics->Mass = 100.f;
 		physics->Static = false;
+		//physics->LinearDamping = 3.f;
 		physics->CalculateCenterOfMass = true;
+		
 		{
-		auto leafs = CreateEntity(tree);
-		auto transform = AddComponent<Components::Transform>(leafs);
-		auto model = AddComponent<Components::Model>(leafs);
-		model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
-		model->Transparent = true;
-		CommitEntity(leafs);
+			auto stem = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(stem);
+			transform->Position = glm::vec3(0, -2.40906f, 0);
+			auto model = AddComponent<Components::Model>(stem);
+			model->ModelFile = "Models/Tree/Stem/Stem.obj";
+		}
+		
+		{
+			auto leafs = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(leafs);
+			transform->Position = glm::vec3(0, -2.45511f, 0);
+			auto model = AddComponent<Components::Model>(leafs);
+			model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
+			model->Transparent = true;
+			CommitEntity(leafs);
 		}
 
 		{
 			auto shape = CreateEntity(tree);
 			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(0.f, 0.f, 0.f);
+			auto mesh = AddComponent<Components::MeshShape>(shape);
+			mesh->ResourceName = "Models/Tree/Collision/Collision.obj";
+			
+			CommitEntity(shape);
+		}	
+
+		/*{
+			auto shape = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(shape);
 			auto box = AddComponent<Components::BoxShape>(shape);
-			transform->Position = glm::vec3(0.f, 0.f, 2.29552f);
+			transform->Position = glm::vec3(0.f, 0, 0.f);
 			box->Width = 0.296f;
 			box->Height = 2.511f;
 			box->Depth = 0.296f;
 			
 			CommitEntity(shape);
-		}
+		}		
+		
+		{
+			auto shape = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto sphere = AddComponent<Components::SphereShape>(shape);
+			transform->Position = glm::vec3(0, 2.04506f, 0.f);
+			sphere->Radius = 1.389f;
+
+			CommitEntity(shape);
+		}*/
+
 		CommitEntity(tree);
 	}
 
