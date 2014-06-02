@@ -78,7 +78,7 @@ void GameWorld::Initialize()
  		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
  		auto physics = AddComponent<Components::Physics>(road_base);
  		physics->Mass = 10;
- 		physics->Static = true;
+ 		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
  		physics->CollisionLayer = 1;
  
  		auto groundshape = CreateEntity(road_base);
@@ -99,7 +99,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
 		auto physics = AddComponent<Components::Physics>(road_middle);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(road_middle);
@@ -120,7 +120,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
 		auto physics = AddComponent<Components::Physics>(road_small);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(road_small);
@@ -150,7 +150,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(water);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 		{
 
@@ -184,7 +184,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground_middle);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground_middle);
@@ -215,7 +215,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground_small);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground_small);
@@ -246,7 +246,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground_small_mirrored);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground_small_mirrored);
@@ -277,7 +277,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground_base);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground_base);
@@ -308,7 +308,7 @@ void GameWorld::Initialize()
 
 		auto physics = AddComponent<Components::Physics>(ground_base_mirrored);
 		physics->Mass = 10;
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
 		auto groundshape = CreateEntity(ground_base_mirrored);
@@ -328,7 +328,8 @@ void GameWorld::Initialize()
 		
 		auto physics = AddComponent<Components::Physics>(tree);
 		physics->Mass = 100.f;
-		physics->Static = false;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->CollisionEvent = false;
 		//physics->LinearDamping = 3.f;
 		physics->CalculateCenterOfMass = true;
 		
@@ -360,6 +361,7 @@ void GameWorld::Initialize()
 			CommitEntity(shape);
 		}	
 
+
 		/*{
 			auto shape = CreateEntity(tree);
 			auto transform = AddComponent<Components::Transform>(shape);
@@ -383,6 +385,362 @@ void GameWorld::Initialize()
 		}*/
 
 		CommitEntity(tree);
+	}
+
+#pragma region Wall_Debris_Template
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(3.43f, 2.287f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris1.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+	
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris1.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(-3.744f, 1.508f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris2.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris2.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(-3.592f, 4.664f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris2.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris2.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(-2.535f, 2.879f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris3.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris3.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(0.333f, 3.618f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris4.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris4.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(2.586f, 4.333f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris5.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris5.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(0.537f, 1.344f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris6.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris6.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(0.f, 0.f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDestroyed.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+		physics->Mass = 200.f;
+		physics->Restitution = .004f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyed.obj";
+
+		m_WallDebrisTemplates.push_back(debri);
+	}
+#pragma endregion Region for wall debris
+
+#pragma region Walls
+
+#pragma region Wall1
+	{
+		auto wall = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall);
+		transform->Position = glm::vec3(0, -16, 0);
+
+		auto physics = AddComponent<Components::Physics>(wall);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		auto walldebris = AddComponent<Components::Wall>(wall);
+		walldebris->Walldebris = m_WallDebrisTemplates;
+		
+		auto model = AddComponent<Components::Model>(wall);
+		model->ModelFile = "Models/Wall/WallWhole/Wall.obj";
+
+		auto health = AddComponent<Components::Health>(wall);
+		health->Amount = 50.f;
+
+		auto shape = CreateEntity(wall);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallCollision/Collision.obj";
+
+	CommitEntity(shape);
+	CommitEntity(wall);
+	}
+#pragma endregion Region for wall1
+
+#pragma endregion Region for all walls
+
+	{
+		auto wall = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall);
+		transform->Position = glm::vec3(20, 10, 30);
+
+		auto physics = AddComponent<Components::Physics>(wall);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		auto model = AddComponent<Components::Model>(wall);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDestroyed.obj";
+
+		auto shape = CreateEntity(wall);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyed.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall);
+	}
+
+	{
+		auto wall_trash = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall_trash);
+		transform->Position = glm::vec3(20, 12, 30);
+
+		auto physics = AddComponent<Components::Physics>(wall_trash);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		auto model = AddComponent<Components::Model>(wall_trash);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris1.obj";
+
+		auto shape = CreateEntity(wall_trash);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris1.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall_trash);
+	}
+
+	{
+		auto wall_trash = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall_trash);
+		transform->Position = glm::vec3(20, 10, 45);
+
+		auto physics = AddComponent<Components::Physics>(wall_trash);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+
+		auto model = AddComponent<Components::Model>(wall_trash);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris2.obj";
+
+		auto shape = CreateEntity(wall_trash);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris2.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall_trash);
+	}
+
+	{
+		auto wall_trash = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall_trash);
+		transform->Position = glm::vec3(23, 10, 45);
+
+		auto physics = AddComponent<Components::Physics>(wall_trash);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+
+		auto model = AddComponent<Components::Model>(wall_trash);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris3.obj";
+
+		auto shape = CreateEntity(wall_trash);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris3.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall_trash);
+	}
+
+	{
+		auto wall_trash = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall_trash);
+		transform->Position = glm::vec3(20, 12, 30);
+
+		auto physics = AddComponent<Components::Physics>(wall_trash);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		auto model = AddComponent<Components::Model>(wall_trash);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris4.obj";
+
+		auto shape = CreateEntity(wall_trash);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris4.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall_trash);
+	}
+
+	{
+		auto wall_trash = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall_trash);
+		transform->Position = glm::vec3(29, 10, 45);
+
+		auto physics = AddComponent<Components::Physics>(wall_trash);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		auto model = AddComponent<Components::Model>(wall_trash);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris5.obj";
+
+		auto shape = CreateEntity(wall_trash);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris5.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall_trash);
+	}
+
+	{
+		auto wall_trash = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(wall_trash);
+		transform->Position = glm::vec3(32, 10, 45);
+
+		auto physics = AddComponent<Components::Physics>(wall_trash);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		auto model = AddComponent<Components::Model>(wall_trash);
+		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris6.obj";
+
+		auto shape = CreateEntity(wall_trash);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris6.obj";
+
+		CommitEntity(shape);
+		CommitEntity(wall_trash);
 	}
 
 	EntityID tank1 = CreateTank(1);
@@ -464,7 +822,7 @@ void GameWorld::Initialize()
 		model->ModelFile = "Models/Gate/Lift/Lift.obj";
 		
 		auto physics = AddComponent<Components::Physics>(gateBase);
-		physics->Static = true;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1; // Terrain-Layer
 		{
 			auto leftBaseShape = CreateEntity(gateBase);
@@ -534,46 +892,6 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register<Components::Flag>([]() { return new Components::Flag(); });
 }
 
-void GameWorld::RegisterSystems()
-{
-	m_SystemFactory.Register<Systems::TimerSystem>([this]() { return new Systems::TimerSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::DamageSystem>([this]() { return new Systems::DamageSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, EventBroker, ResourceManager); });
-	//m_SystemFactory.Register<Systems::LevelGenerationSystem>([this]() { return new Systems::LevelGenerationSystem(this); });
-	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::DebugSystem>([this]() { return new Systems::DebugSystem(this, EventBroker, ResourceManager); });
-	//m_SystemFactory.Register<Systems::CollisionSystem>([this]() { return new Systems::CollisionSystem(this); });
-	m_SystemFactory.Register<Systems::ParticleSystem>([this]() { return new Systems::ParticleSystem(this, EventBroker, ResourceManager); });
-	//m_SystemFactory.Register<Systems::PlayerSystem>([this]() { return new Systems::PlayerSystem(this); });
-	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::WheelPairSystem>([this]() { return new Systems::WheelPairSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::TriggerSystem>([this]() { return new Systems::TriggerSystem(this, EventBroker, ResourceManager); });
-	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
-}
-
-void GameWorld::AddSystems()
-{
-	AddSystem<Systems::TimerSystem>();
-	AddSystem<Systems::DamageSystem>();
-	AddSystem<Systems::TransformSystem>();
-	//AddSystem<Systems::LevelGenerationSystem>();
-	AddSystem<Systems::InputSystem>();
-	AddSystem<Systems::DebugSystem>();
-	//AddSystem<Systems::CollisionSystem>();
-	AddSystem<Systems::ParticleSystem>();
-	//AddSystem<Systems::PlayerSystem>();
-	AddSystem<Systems::FreeSteeringSystem>();
-	AddSystem<Systems::TankSteeringSystem>();
-	AddSystem<Systems::WheelPairSystem>();
-	AddSystem<Systems::SoundSystem>();
-	AddSystem<Systems::PhysicsSystem>();
-	AddSystem<Systems::TriggerSystem>();
-	AddSystem<Systems::RenderSystem>();
-}
-
 void GameWorld::BindKey(int keyCode, std::string command, float value)
 {
 	Events::BindKey e;
@@ -618,7 +936,7 @@ EntityID GameWorld::CreateTank(int playerID)
 	//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
 	auto physics = AddComponent<Components::Physics>(tank);
 	physics->Mass = 63000 - 16000;
-	physics->Static = false;
+	physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
 	auto vehicle = AddComponent<Components::Vehicle>(tank);
 	vehicle->MaxTorque = 36000.f;
 	vehicle->MaxSteeringAngle = 90.f;
@@ -680,7 +998,7 @@ EntityID GameWorld::CreateTank(int playerID)
 				AddComponent<Components::Template>(shot);
 				auto physics = AddComponent<Components::Physics>(shot);
 				physics->Mass = 25.f;
-				physics->Static = false;
+				physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
 				physics->CollisionEvent = true;
 				auto modelComponent = AddComponent<Components::Model>(shot);
 				modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
@@ -900,7 +1218,7 @@ EntityID GameWorld::CreateJeep(int playerID)
 	transform->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(0, 1, 0));
 	auto physics = AddComponent<Components::Physics>(jeep);
 	physics->Mass = 1800;
-	physics->Static = false;
+	physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
 	auto vehicle = AddComponent<Components::Vehicle>(jeep);
 	AddComponent<Components::Input>(jeep);
 
@@ -1019,4 +1337,46 @@ EntityID GameWorld::CreateJeep(int playerID)
 	CommitEntity(jeep);
 
 	return jeep;	
+}
+
+void GameWorld::RegisterSystems()
+{
+	m_SystemFactory.Register<Systems::TimerSystem>([this]() { return new Systems::TimerSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::DamageSystem>([this]() { return new Systems::DamageSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TransformSystem>([this]() { return new Systems::TransformSystem(this, EventBroker, ResourceManager); });
+	//m_SystemFactory.Register<Systems::LevelGenerationSystem>([this]() { return new Systems::LevelGenerationSystem(this); });
+	m_SystemFactory.Register<Systems::InputSystem>([this]() { return new Systems::InputSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::DebugSystem>([this]() { return new Systems::DebugSystem(this, EventBroker, ResourceManager); });
+	//m_SystemFactory.Register<Systems::CollisionSystem>([this]() { return new Systems::CollisionSystem(this); });
+	m_SystemFactory.Register<Systems::ParticleSystem>([this]() { return new Systems::ParticleSystem(this, EventBroker, ResourceManager); });
+	//m_SystemFactory.Register<Systems::PlayerSystem>([this]() { return new Systems::PlayerSystem(this); });
+	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::WheelPairSystem>([this]() { return new Systems::WheelPairSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TriggerSystem>([this]() { return new Systems::TriggerSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::WallSystem>([this]() { return new Systems::WallSystem(this, EventBroker, ResourceManager); });
+}
+
+void GameWorld::AddSystems()
+{
+	AddSystem<Systems::TimerSystem>();
+	AddSystem<Systems::DamageSystem>();
+	AddSystem<Systems::TransformSystem>();
+	//AddSystem<Systems::LevelGenerationSystem>();
+	AddSystem<Systems::InputSystem>();
+	AddSystem<Systems::DebugSystem>();
+	//AddSystem<Systems::CollisionSystem>();
+	AddSystem<Systems::ParticleSystem>();
+	//AddSystem<Systems::PlayerSystem>();
+	AddSystem<Systems::FreeSteeringSystem>();
+	AddSystem<Systems::TankSteeringSystem>();
+	AddSystem<Systems::WheelPairSystem>();
+	AddSystem<Systems::SoundSystem>();
+	AddSystem<Systems::PhysicsSystem>();
+	AddSystem<Systems::TriggerSystem>();
+	AddSystem<Systems::RenderSystem>();
+	AddSystem<Systems::WallSystem>();
 }

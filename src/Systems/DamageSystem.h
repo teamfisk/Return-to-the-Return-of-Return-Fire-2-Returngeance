@@ -5,6 +5,7 @@
 #include "System.h"
 #include "Components/Health.h"
 #include "Events/Damage.h"
+#include "Events/OnDead.h"
 
 namespace Systems
 {

@@ -163,6 +163,10 @@ void Systems::PhysicsSystem::Update(double dt)
 		EntityID entity = pair.first;
 		EntityID parent = pair.second;
 
+		auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+		if(templateComponent)
+			continue;
+
 		if (m_RigidBodies.find(entity) == m_RigidBodies.end())
 			continue;
 
@@ -227,6 +231,10 @@ void Systems::PhysicsSystem::Update(double dt)
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {	
+	auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+	if(templateComponent)
+		return;
+
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (!transformComponent)
 		return;
@@ -312,7 +320,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			return;
 		}
 		hkpShape* shape;	
-		if(! physicsComponent->Static) // Not static
+		if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Dynamic)
 		{
 			hkArray<hkpShape*> shapeArray;
 			for (auto &shapeData : m_Shapes[entity])
@@ -447,7 +455,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBody->removeReference();
 			}
 		}
-		else // Static
+		else if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Fixed || physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Keyframed)
 		{
 			// Create the hkpStaticCompoundShape and add the instances.
 			// "meshShape" should not be modified by the user in any way after adding it as an instance.
@@ -499,7 +507,15 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
 				rigidBodyInfo.m_shape = shape;
-				rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+				if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Fixed)
+				{
+					rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+				}
+				else if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Keyframed)
+				{
+					rigidBodyInfo.m_motionType = hkpMotion::MOTION_KEYFRAMED;
+				}
+				
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				hkVector4 position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
 				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
@@ -816,7 +832,6 @@ void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string typ
 		m_RigidBodies.erase(entity);
 		m_PhysicsWorld->unmarkForWrite();
 	}
-	
 }
 
 

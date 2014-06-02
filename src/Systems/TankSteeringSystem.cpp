@@ -124,6 +124,9 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 			return false;
 		}
 
+		if(m_World->GetComponent<Components::Template>(shellEntity))
+			return false;
+
 		auto physicsComponents = m_World->GetComponentsOfType<Components::Physics>();
 		auto shellTransform = m_World->GetComponent<Components::Transform>(shellEntity);
 		//auto otherTransform = m_World->GetComponent<Components::Transform>(otherEntity);
@@ -155,8 +158,6 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 					EventBroker->Publish(d);
 				}
 				
-				
-
 				m_World->RemoveEntity(shellEntity);
 			}
 		}

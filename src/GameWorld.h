@@ -21,6 +21,7 @@
 #include "Systems/TimerSystem.h"
 #include "Systems/DamageSystem.h"
 #include "Systems/WheelPairSystem.h"
+#include "Systems/WallSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -74,6 +75,8 @@ private:
 	EntityID CreateTank(int playerID);
 	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
 	EntityID CreateJeep(int playerID);
+
+	std::vector<EntityID> m_WallDebrisTemplates;
 };
 
 #endif // GameWorld_h__
