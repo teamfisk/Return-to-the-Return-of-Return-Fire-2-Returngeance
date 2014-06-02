@@ -25,8 +25,8 @@ public:
 		Bottom
 	};
 
-	static const float BaseWidth = 1280.f;
-	static const float BaseHeight = 720.f;
+	static const int BaseWidth = 1280;
+	static const int BaseHeight = 720;
 
 	// Set up a base frame with an event broker
 	Frame(std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
@@ -112,6 +112,14 @@ public:
 			return Top() + Height;
 	}
 
+	glm::vec2 Scale()
+	{
+		if (m_Parent)
+			return m_Parent->Scale();
+		else
+			return glm::vec2(Width, Height) / glm::vec2(BaseWidth, BaseHeight);
+	}
+
 	Rectangle AbsoluteRectangle()
 	{
 		int left = Left();
@@ -183,7 +191,6 @@ protected:
 	std::string m_Name;
 	int m_Layer;
 	bool m_Hidden;
-	glm::vec2 Scale;
 
 	std::shared_ptr<Frame> m_Parent;
 	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame

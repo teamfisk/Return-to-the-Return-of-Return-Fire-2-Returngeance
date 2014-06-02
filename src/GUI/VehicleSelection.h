@@ -15,11 +15,17 @@ namespace GUI
 			, m_World(world)
 			, m_PlayerID(playerID)
 		{
+			ResourceManager->Preload("Texture", "Textures/GUI/VehicleSelection/1.png");
+			ResourceManager->Preload("Texture", "Textures/GUI/VehicleSelection/2.png");
+			ResourceManager->Preload("Texture", "Textures/GUI/VehicleSelection/3.png");
+			ResourceManager->Preload("Texture", "Textures/GUI/VehicleSelection/4.png");
+
 			m_CurrentSelection = 0;
 
-			m_CurrentCoordinate = -m_SelectionCoordinates[0] + glm::vec2(Width / 2.f, Height / 2.f);
+			glm::vec2 scale = Scale();
+			m_CurrentCoordinate = -m_SelectionCoordinates[0] * scale + glm::vec2(Width / 2.f, Height / 2.f);
 			m_TargetCoordinate = m_CurrentCoordinate;
-			m_CurrentSize = m_SelectionSizes[0];
+			m_CurrentSize = m_SelectionSizes[0] * scale;
 			m_TargetSize = m_CurrentSize;
 			m_CurrentAlpha = 0.f;
 
@@ -46,17 +52,20 @@ namespace GUI
 			std::stringstream ss;
 			ss << "Textures/GUI/VehicleSelection/" << m_CurrentSelection + 1 << ".png";
 			m_Background->FadeToTexture(ss.str(), 1.f);
-			glm::vec2 coord = -m_SelectionCoordinates[m_CurrentSelection];
-			m_TargetCoordinate = coord + glm::vec2(Width / 2.f, Height / 2.f);
 
+			glm::vec2 scale = Scale();
+			glm::vec2 coord = -m_SelectionCoordinates[m_CurrentSelection];
+			m_TargetCoordinate = coord * scale + glm::vec2(Width / 2.f, Height / 2.f);
 			glm::vec2 size = m_SelectionSizes[m_CurrentSelection];
-			m_TargetSize = size;
+			m_TargetSize = size * scale;
 
 			return true;
 		}
 
 		void Update(double dt) override
 		{
+			
+
 			glm::vec2 posDiff = m_TargetCoordinate - m_CurrentCoordinate;
 			m_CurrentCoordinate += posDiff * 2.f * (float)dt;
 
