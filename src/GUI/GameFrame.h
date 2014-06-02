@@ -25,8 +25,8 @@ public:
 			vp1 = new Viewport(worldFrame, "Viewport1", m_World);
 			vp1->X = 0;
 			vp1->Width = this->Width / 2.f;
-			//new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
-			new VehicleSelection(vp1, "VehicleSelection", m_World, 1);
+			new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
+			//new VehicleSelection(vp1, "VehicleSelection", m_World, 1);
 
 			vp2 = new Viewport(worldFrame, "Viewport2", m_World);
 			vp2->X = vp1->Right();

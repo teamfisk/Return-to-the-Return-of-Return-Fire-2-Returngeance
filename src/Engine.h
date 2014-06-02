@@ -30,7 +30,7 @@ public:
 		m_FrameStack->Height = 1080;
 		
 		m_Renderer = std::make_shared<Renderer>(m_ResourceManager);
-		m_Renderer->SetFullscreen(true);
+		m_Renderer->SetFullscreen(false);
 		m_Renderer->SetResolution(*static_cast<Rectangle*>(m_FrameStack));
 		m_Renderer->Initialize();
 
