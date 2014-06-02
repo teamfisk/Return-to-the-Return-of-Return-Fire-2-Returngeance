@@ -40,10 +40,10 @@ private:
 	std::unordered_map<std::string, std::unordered_map<Gamepad::Axis, float>> m_CommandGamepadAxisValues; // command string -> gamepad axis value for command
 	std::unordered_map<std::string, std::unordered_map<Gamepad::Button, float>> m_CommandGamepadButtonValues; // command string -> gamepad button value for command
 	// Input binding tables
-	std::unordered_map<int, std::tuple<std::string, float>> m_KeyBindings; // GLFW_KEY... -> command string & value
-	std::unordered_map<int, std::tuple<std::string, float>> m_MouseButtonBindings; // GLFW_MOUSE_BUTTON... -> command string
-	std::unordered_map<Gamepad::Axis, std::tuple<std::string, float>> m_GamepadAxisBindings; // Gamepad::Axis -> command string & value
-	std::unordered_map<Gamepad::Button, std::tuple<std::string, float>> m_GamepadButtonBindings; // Gamepad::Button -> command string
+	std::unordered_multimap<int, std::tuple<std::string, float>> m_KeyBindings; // GLFW_KEY... -> command string & value
+	std::unordered_multimap<int, std::tuple<std::string, float>> m_MouseButtonBindings; // GLFW_MOUSE_BUTTON... -> command string
+	std::unordered_multimap<Gamepad::Axis, std::tuple<std::string, float>> m_GamepadAxisBindings; // Gamepad::Axis -> command string & value
+	std::unordered_multimap<Gamepad::Button, std::tuple<std::string, float>> m_GamepadButtonBindings; // Gamepad::Button -> command string
 
 	// Input events
 	EventRelay<InputSystem, Events::KeyDown> m_EKeyDown;
