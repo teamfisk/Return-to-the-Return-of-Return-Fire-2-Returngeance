@@ -491,6 +491,9 @@
     <ClInclude Include="..\..\src\Components\BlendMap.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">
