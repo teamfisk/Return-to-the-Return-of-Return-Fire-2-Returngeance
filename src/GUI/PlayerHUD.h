@@ -1,8 +1,8 @@
-#include "GUI/Frame.h"
-#include "GUI/HealthOverlay.h"
-
 #ifndef GUI_PlayerHUD_h__
 #define GUI_PlayerHUD_h__
+
+#include "GUI/Frame.h"
+#include "GUI/HealthOverlay.h"
 
 namespace GUI
 {

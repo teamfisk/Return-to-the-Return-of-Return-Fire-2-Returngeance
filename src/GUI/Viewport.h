@@ -65,6 +65,7 @@ public:
 			return;
 
 		renderer->SetCamera(m_Camera);
+		renderer->SetViewport(AbsoluteRectangle());
 		renderer->DrawWorld(m_Parent->RenderQueue);
 	}
 

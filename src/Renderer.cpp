@@ -5,6 +5,9 @@ Renderer::Renderer(std::shared_ptr<::ResourceManager> resourceManager)
 	: ResourceManager(resourceManager)
 {
 	m_VSync = false;
+	m_Fullscreen = false;
+	m_Width = 1280;
+	m_Height = 720;
 #ifdef DEBUG
 	m_DrawNormals = false;
 	m_DrawWireframe = false;
@@ -38,11 +41,12 @@ void Renderer::Initialize()
 	}
 
 	// Create a window
-	m_Width = 1280;
-	m_Height = 720;
-	// Antialiasing
-	//glfwWindowHint(GLFW_SAMPLES, 16);
-	m_Window = glfwCreateWindow(m_Width, m_Height, "OpenGL", nullptr, nullptr);
+	GLFWmonitor* monitor = nullptr;
+	if (m_Fullscreen)
+	{
+		monitor = glfwGetPrimaryMonitor();
+	}
+	m_Window = glfwCreateWindow(m_Width, m_Height, "OpenGL", monitor, nullptr);
 	if (!m_Window)
 	{
 		LOG_ERROR("GLFW: Failed to create window");
@@ -260,7 +264,7 @@ void Renderer::DrawFrame(RenderQueue &rq)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
@@ -364,7 +368,7 @@ void Renderer::DrawWorld(RenderQueue &rq)
 	*/
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 	//glViewport(0, 0, m_Width, m_Height);
 
 	// Clear G-buffer
