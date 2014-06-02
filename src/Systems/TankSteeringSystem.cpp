@@ -281,8 +281,6 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 		else if (event.PlayerID == 2)
 			e.ViewportFrame = "Viewport2";
 		EventBroker->Publish(e);
-		e.ViewportFrame = "Viewport2";
-		EventBroker->Publish(e);
 	}
 
 	return true;

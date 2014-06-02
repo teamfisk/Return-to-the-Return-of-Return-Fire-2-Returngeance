@@ -82,7 +82,13 @@ public:
 	std::string Name() const { return m_Name; }
 	void SetName(std::string val) { m_Name = val; }
 	int Layer() const { return m_Layer; }
-	bool Hidden() const { return m_Hidden; }
+	bool Hidden() const 
+	{ 
+		if (m_Parent)
+			return m_Parent->Hidden() || m_Hidden;
+		else
+			return m_Hidden; 
+	}
 	void Hide() { m_Hidden = true; }
 	void Show() { m_Hidden = false; }
 
