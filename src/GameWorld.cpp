@@ -71,33 +71,6 @@ void GameWorld::Initialize()
 		e.ViewportFrame = "ViewportFreeCam";
 		EventBroker->Publish(e);
 	}
-	
-	//{
-	//	auto ground = CreateEntity();
-	//	auto transform = AddComponent<Components::Transform>(ground);
-	//	transform->Position = glm::vec3(0, -50, 0);
-	//	//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
-	//	transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-	//	auto model = AddComponent<Components::Model>(ground);
-	//	model->ModelFile = "Models/TestScene3/testScene.obj";
-	//	//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
-	//	
-	//	auto physics = AddComponent<Components::Physics>(ground);
-	//	physics->Mass = 10;
-	//	physics->Static = true;
-
-
-	//	auto groundshape = CreateEntity(ground);
-	//	auto transformshape = AddComponent<Components::Transform>(groundshape);
-	//	auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-	//	//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-	//	meshShape->ResourceName = "Models/TestScene3/testScene.obj";
-
-	//	
-	//	CommitEntity(groundshape);
-	//	CommitEntity(ground);
-	//}
-
 
 	{
 		auto ground = CreateEntity();
@@ -575,7 +548,6 @@ void GameWorld::CreateGate(glm::vec3 Position)
 	}
 }
 
-
 EntityID GameWorld::CreateTank(int playerID)
 {
 	auto tank = CreateEntity();
@@ -586,7 +558,7 @@ EntityID GameWorld::CreateTank(int playerID)
 	physics->Mass = 63000 - 16000;
 	physics->Static = false;
 	auto vehicle = AddComponent<Components::Vehicle>(tank);
-	vehicle->MaxTorque = 36000.f;
+	vehicle->MaxTorque = 8000.f;
 	vehicle->MaxSteeringAngle = 90.f;
 	vehicle->MaxSpeedFullSteeringAngle = 4.f;
 	auto player = AddComponent<Components::Player>(tank);
@@ -784,7 +756,7 @@ void GameWorld::AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int ax
 		Wheel->Radius = 0.6f;
 		Wheel->Steering = steering;
 		Wheel->SuspensionStrength = suspensionStrength;
-		Wheel->Friction = 3.f;
+		Wheel->Friction = 4.f;
 		Wheel->ConnectedToHandbrake = true;
 		Wheel->TorqueRatio = 0.125f;
 		Wheel->Width = 0.6f;
@@ -807,7 +779,7 @@ void GameWorld::AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int ax
 		Wheel->Radius = 0.6f;
 		Wheel->Steering = steering;
 		Wheel->SuspensionStrength = suspensionStrength;
-		Wheel->Friction = 3.f;
+		Wheel->Friction = 4.f;
 		Wheel->ConnectedToHandbrake = true;
 		Wheel->TorqueRatio = 0.125f;
 		Wheel->Width = 0.6f;
@@ -859,7 +831,14 @@ EntityID GameWorld::CreateJeep(int playerID)
 	physics->Mass = 1800;
 	physics->Static = false;
 	auto vehicle = AddComponent<Components::Vehicle>(jeep);
+	vehicle->DownshiftRPM = 3500.f;
+	vehicle->UpshiftRPM = 6000.f;
+	
 	AddComponent<Components::Input>(jeep);
+	auto player = AddComponent<Components::Player>(jeep);
+	player->ID = playerID;
+	auto health = AddComponent<Components::Health>(jeep);
+	health->Amount = 100.f;
 
 	{
 		auto shape = CreateEntity(jeep);
@@ -867,12 +846,6 @@ EntityID GameWorld::CreateJeep(int playerID)
 		auto meshShape = AddComponent<Components::MeshShape>(shape);
 		meshShape->ResourceName = "Models/Jeep/Chassi/ChassiCollision.obj";
 		CommitEntity(shape);
-
-		// 		auto box = AddComponent<Components::Box>(jeep);
-		// 		box->Width = 1.487f;
-		// 		box->Height = 0.727f;
-		// 		box->Depth = 2.594f;
-
 	}
 
 	{
@@ -882,16 +855,6 @@ EntityID GameWorld::CreateJeep(int playerID)
 		auto model = AddComponent<Components::Model>(chassis);
 		model->ModelFile = "Models/Jeep/Chassi/chassi.obj";
 	}
-
-	{
-		auto lightentity = CreateEntity(jeep);
-		auto transform = AddComponent<Components::Transform>(lightentity);
-		transform->Position = glm::vec3(0, 15, 0);
-		auto light = AddComponent<Components::PointLight>(lightentity);
-		light->Diffuse = glm::vec3(128.f / 255.f, 172.f / 255.f, 242.f / 255.f);
-		light->Specular = glm::vec3(1.f);
-	}
-
 
 	//Create wheels
 	float wheelOffset = 0.4f;

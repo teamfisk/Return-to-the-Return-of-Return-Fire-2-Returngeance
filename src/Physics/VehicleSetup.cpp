@@ -8,7 +8,8 @@
 void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpVehicleInstance& vehicle, EntityID vehicleEntity, std::vector<EntityID> wheelEntities)
 {
 	auto vehicleComponent = world->GetComponent<Components::Vehicle>(vehicleEntity);
-	
+	auto tankSteeringComponent = world->GetComponent<Components::TankSteering>(vehicleEntity);
+
 	WheelData wheelData;
 	for (int i = 0; i < wheelEntities.size(); i++)
 	{
@@ -22,7 +23,14 @@ void VehicleSetup::buildVehicle(World *world, const hkpWorld* physicsWorld, hkpV
 	//
 	vehicle.m_data = new hkpVehicleData;
 	vehicle.m_driverInput = new hkpVehicleDefaultAnalogDriverInput;
-	vehicle.m_steering = new TankSteering;
+	if(tankSteeringComponent)
+	{
+		vehicle.m_steering = new TankSteering;
+	}
+	else
+	{
+		vehicle.m_steering = new hkpVehicleDefaultSteering;
+	}
 	vehicle.m_engine = new hkpVehicleDefaultEngine;
 	vehicle.m_transmission = new hkpVehicleDefaultTransmission;
 	vehicle.m_brake = new hkpVehicleDefaultBrake;
@@ -196,15 +204,15 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 	transmission.m_gearsRatio.setSize(numberOfGears);
 	transmission.m_wheelsTorqueRatio.setSize(data.m_numWheels);
 
-	transmission.m_downshiftRPM = 3500.0f; //HACK: Should be in VehicleComponent
-	transmission.m_upshiftRPM = 7000.0f;
+	transmission.m_downshiftRPM = vehicleComponent.DownshiftRPM; //HACK: Should be in VehicleComponent
+	transmission.m_upshiftRPM = vehicleComponent.UpshiftRPM;
 
-	transmission.m_clutchDelayTime = 1.5f;
+	transmission.m_clutchDelayTime = 0.0f;
 	transmission.m_reverseGearRatio = 1.0f;
-	transmission.m_gearsRatio[0] = 3.0f;
-	transmission.m_gearsRatio[1] = 2.25f;
-	transmission.m_gearsRatio[2] = 1.5f;
-	transmission.m_gearsRatio[3] = 1.0f;
+	transmission.m_gearsRatio[0] = vehicleComponent.gearsRatio0;
+	transmission.m_gearsRatio[1] = vehicleComponent.gearsRatio1;
+	transmission.m_gearsRatio[2] = vehicleComponent.gearsRatio2;
+	transmission.m_gearsRatio[3] = vehicleComponent.gearsRatio3;
 	
 	for(int i = 0; i < m_Wheels.size(); i++)
 	{
@@ -212,7 +220,7 @@ void VehicleSetup::setupComponent(const hkpVehicleData& data, hkpVehicleDefaultT
 		transmission.m_wheelsTorqueRatio[i] = m_Wheels[i].WheelComponent->TorqueRatio;
 	}
 
-	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatio(
+	transmission.m_primaryTransmissionRatio = hkpVehicleDefaultTransmission::calculatePrimaryTransmissionRatioKPH(
 		vehicleComponent.TopSpeed,
 		m_Wheels[0].WheelComponent->Radius, // HACK: All wheels are the same size right?
 		vehicleComponent.MaxRPM,

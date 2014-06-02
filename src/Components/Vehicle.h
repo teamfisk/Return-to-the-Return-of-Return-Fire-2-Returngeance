@@ -10,9 +10,10 @@ namespace Components
 struct Vehicle : Component
 {
 	Vehicle()
-		: MaxTorque(1000.0f), MinRPM(1000.0f), OptimalRPM(3000.0f), MaxRPM(4000.0f), MaxSteeringAngle(35), TopSpeed(130.0f),
-	MaxSpeedFullSteeringAngle(40.0f), SpringDamping(1.f){ }
-
+		: MaxTorque(1000.0f), MinRPM(0.0f), OptimalRPM(2000.0f), MaxRPM(3000.0f), MaxSteeringAngle(35), TopSpeed(70.0f),
+	MaxSpeedFullSteeringAngle(40.0f), SpringDamping(1.f), UpshiftRPM(2500.0f), DownshiftRPM(500.0f),
+	gearsRatio0(4.5f), gearsRatio1(2.5f), gearsRatio2(1.0f), gearsRatio3(0.5f){ }
+	//gearsRatio0(3.0f), gearsRatio1(2.25f), gearsRatio2(1.5f), gearsRatio3(1.0f)
 	float MaxTorque;
 	float MinRPM;
 	float OptimalRPM;
@@ -23,7 +24,13 @@ struct Vehicle : Component
 	float TopSpeed;
 	float MaxSpeedFullSteeringAngle;
 	float SpringDamping;
-	
+	float DownshiftRPM;
+	float UpshiftRPM;
+	float gearsRatio0;
+	float gearsRatio1;
+	float gearsRatio2;
+	float gearsRatio3;
+
 	Vehicle* Clone() const override { return new Vehicle(*this); }
 };
 
