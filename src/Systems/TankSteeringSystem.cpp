@@ -102,7 +102,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			Events::ApplyPointImpulse ePointImpulse ;
 			ePointImpulse.Entity = entity;
 			ePointImpulse.Position = absoluteTransform.Position;
-			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 1670.f;
+			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 6.f * 1670.f;
 			EventBroker->Publish(ePointImpulse);
 		}
 
@@ -141,6 +141,41 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 		auto physicsComponents = m_World->GetComponentsOfType<Components::Physics>();
 		auto shellTransform = m_World->GetComponent<Components::Transform>(shellEntity);
 		//auto otherTransform = m_World->GetComponent<Components::Transform>(otherEntity);
+
+		{
+			Events::CreateExplosion e;
+			e.LifeTime = 3;
+			e.ParticleScale.push_back(8);
+			e.ParticlesToSpawn = 20;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 3;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Smoke1.png";
+			e.Color = glm::vec4(0.6,0.6,0.6,1);
+			EventBroker->Publish(e);
+			e.LifeTime = 0.7;
+			e.ParticleScale.push_back(12);
+			e.ParticlesToSpawn = 10;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 17;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Fire.png";
+			EventBroker->Publish(e);
+			e.LifeTime = 0.2;
+			e.ParticleScale.push_back(1);
+			e.ParticleScale.push_back(15);
+			e.ParticlesToSpawn = 5;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 6;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Blast1.png";
+			e.Color = glm::vec4(2, 2, 2, 0.2);
+			EventBroker->Publish(e);
+		}
+
 		for (auto &physComponent : *physicsComponents)
 		{
 			EntityID physicsEntity = std::dynamic_pointer_cast<Components::Physics>(physComponent)->Entity;

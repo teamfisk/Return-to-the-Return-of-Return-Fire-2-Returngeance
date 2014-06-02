@@ -182,12 +182,18 @@
     <Filter Include="Game\Components">
       <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Systems">
+    <Filter Include="Particle System\Events">
+      <UniqueIdentifier>{ddd3c442-7c2f-4690-9308-fcef62deee0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
       </Filter>
 
     <Filter Include="Base\Events">
       <UniqueIdentifier>{3cbe68d9-2446-45ee-8637-ffb805997dcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Events">
+      <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game\Events">
       <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
@@ -428,6 +434,9 @@
     <ClInclude Include="..\..\src\Components\Player.h">
       <Filter>Game\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\CreateExplosion.h">
+      <Filter>Particle System\Events</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\Collision.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
@@ -542,6 +551,9 @@
     <ClInclude Include="..\..\src\Components\Rotate.h">
       <Filter>Base\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\BlendMap.h">
+      <Filter>Rendering\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -605,6 +617,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\src\Shaders\SunPass.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

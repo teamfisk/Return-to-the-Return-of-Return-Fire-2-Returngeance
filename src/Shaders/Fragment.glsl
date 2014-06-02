@@ -5,13 +5,6 @@ layout (binding=1) uniform sampler2D ShadowTexture;
 layout (binding=2) uniform sampler2D NormalMapTexture;
 layout (binding=3) uniform sampler2D SpecularMapTexture;
 
-//TerrainTextures
-layout (binding=4) uniform sampler2D AsphaltTexture;
-layout (binding=5) uniform sampler2D GrassTexture;
-layout (binding=6) uniform sampler2D SandTexture;
-layout (binding=7) uniform sampler2D BlendMap;
-
-uniform float texScale; //Determines how many times the textures will loop over the terrain
 uniform vec3 SunDirection_cameraspace;
 uniform mat4 V;
 
@@ -59,25 +52,6 @@ float Shadow(vec4 ShadowCoord, vec3 normal)
 
 void main()
 {
-	//Fixa så den bara gör detta om modellen har en blend map
-	//vvvvvv
-
-	vec4 Blend = texture2D(BlendMap, Input.TextureCoord.st );
-	vec4 AsphaltTexel = texture2D(AsphaltTexture, Input.TextureCoord.st * texScale);
-	vec4 GrassTexel = texture2D(GrassTexture, Input.TextureCoord.st * texScale);
-	vec4 SandTexel = texture2D(SandTexture, Input.TextureCoord.st * texScale);
-
-	//Mix the Terrain-textures together
-	AsphaltTexel *= Blend.r;
-	GrassTexel = mix(AsphaltTexel, GrassTexel, Blend.g);
-	vec4 tex = mix(GrassTexel, SandTexel, Blend.b);
-
-	//^^^^^^
-	//Fixa så den bara gör detta om modellen har en blend map
-
-
-	
-
 	// G-buffer Position
 	frag_Position = vec4(Input.Position.xyz, 1.0);
 

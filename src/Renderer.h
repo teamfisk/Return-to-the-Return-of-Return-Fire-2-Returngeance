@@ -69,8 +69,8 @@ public:
 		m_Camera = camera;
 	}
 
-	void DrawFrame(RenderQueue &rq);
-	void DrawWorld(RenderQueue &rq);
+	void DrawFrame(RenderQueuePair &rq);
+	void DrawWorld(RenderQueuePair &rq);
 	void Swap();
 
 #pragma endregion
@@ -191,6 +191,8 @@ private:
 	ShaderProgram m_FinalPassProgram;
 	ShaderProgram m_SunPassProgram;
 	ShaderProgram m_ForwardRendering;
+	ShaderProgram m_BlendMapProgram;
+	ShaderProgram m_FinalForwardPassProgram;
 
 	ShaderProgram m_ShaderProgramNormals;
 	ShaderProgram m_ShaderProgramShadows;
@@ -207,7 +209,7 @@ private:
 	void CreateShadowMap(int resolution);
 	void FrameBufferTextures();
 	void DrawFBO();
-	void DrawFBO2();
+	void DrawFBO2(RenderQueue &rq);
 	void DrawFBOScene(RenderQueue &rq);
 	void DrawLightScene(RenderQueue &rq);
 	void DrawSunLightScene();
@@ -215,9 +217,10 @@ private:
 	glm::mat4 CreateLightMatrix(Light &_light);
 	void UpdateSunProjection();
 	void CreateNormalMapTangent();
-	void ForwardRendering();
+	void ForwardRendering(RenderQueue &rq);
 
-	
+	static bool DepthSort(const std::shared_ptr<RenderJob> &i, const std::shared_ptr<RenderJob> &j) { return (i->Depth > j->Depth); }
+
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();
 	GLuint CreateAABB();

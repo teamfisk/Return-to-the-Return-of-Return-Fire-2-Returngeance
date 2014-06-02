@@ -20,6 +20,7 @@
 #include "Renderer.h"
 #include "RenderQueue.h"
 #include "Events/SetViewportCamera.h"
+#include "Components/BlendMap.h"
 
 namespace Systems
 {

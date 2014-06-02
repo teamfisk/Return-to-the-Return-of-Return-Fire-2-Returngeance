@@ -32,7 +32,7 @@ public:
 			job.TextureID = m_Texture->ResourceID;
 			job.Texture = *m_Texture;
 			job.Color = glm::vec4(m_Color.r, m_Color.g, m_Color.b, m_Color.a * m_CurrentFade);
-			RenderQueue.Add(job);
+			RenderQueue.Forward.Add(job);
 		}
 
 		// Texture while fading
@@ -42,7 +42,7 @@ public:
 			job.TextureID = m_FadeTexture->ResourceID;
 			job.Texture = *m_FadeTexture;
 			job.Color = glm::vec4(m_Color.r, m_Color.g, m_Color.b, m_Color.a);
-			RenderQueue.Add(job);
+			RenderQueue.Forward.Add(job);
 		}
 
 		renderer->SetCamera(nullptr);

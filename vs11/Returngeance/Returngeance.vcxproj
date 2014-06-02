@@ -133,6 +133,7 @@
     <ClInclude Include="..\..\src\Color.h" />
     <ClInclude Include="..\..\src\Component.h" />
     <ClInclude Include="..\..\src\Components\BarrelSteering.h" />
+    <ClInclude Include="..\..\src\Components\BlendMap.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
     <ClInclude Include="..\..\src\Events\Collision.h" />
     <ClInclude Include="..\..\src\Events\ComponentCreated.h" />
+    <ClInclude Include="..\..\src\Events\CreateExplosion.h" />
     <ClInclude Include="..\..\src\Events\Damage.h" />
     <ClInclude Include="..\..\src\Events\DisableCollisions.h" />
     <ClInclude Include="..\..\src\Events\EnableCollisions.h" />
@@ -255,6 +257,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\AABB.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
     <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
     <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl" />

@@ -268,7 +268,7 @@ void OBJ::ParseMaterial()
 			continue;
 		}
 		// Normal map (bump map)
-		if (prefix == "bump")
+		if (prefix == "bump" || prefix == "map_Bump" )
 		{
 			MaterialInfo::BumpMap bumpMap;
 

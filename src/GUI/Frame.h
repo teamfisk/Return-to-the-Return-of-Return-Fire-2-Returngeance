@@ -45,7 +45,7 @@ public:
 		, m_Hidden(false)
 	{ SetParent(std::shared_ptr<Frame>(parent)); Initialize(); }
 
-	::RenderQueue RenderQueue;
+	::RenderQueuePair RenderQueue;
 
 	std::shared_ptr<Frame> Parent() const { return m_Parent; }
 	void SetParent(std::shared_ptr<Frame> parent) 

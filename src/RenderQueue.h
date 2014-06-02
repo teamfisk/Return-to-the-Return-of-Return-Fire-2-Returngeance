@@ -14,6 +14,9 @@ struct RenderJob
 {
 	friend class RenderQueue;
 
+	glm::mat4 ModelMatrix;
+	float Depth;
+
 protected:
 	uint64_t Hash;
 
@@ -37,12 +40,26 @@ struct ModelJob : RenderJob
 	GLuint VAO;
 	unsigned int StartIndex;
 	unsigned int EndIndex;
-	glm::mat4 ModelMatrix;
+	float Transparent;
 
 	void CalculateHash() override
 	{
 		Hash = TextureID;
 	}
+};
+
+struct BlendMapModelJob : ModelJob
+{
+	GLuint BlendMapTextureRed;
+	GLuint BlendMapTextureRedNormal;
+	GLuint BlendMapTextureRedSpecular;
+	GLuint BlendMapTextureGreen;
+	GLuint BlendMapTextureGreenNormal;
+	GLuint BlendMapTextureGreenSpecular;
+	GLuint BlendMapTextureBlue;
+	GLuint BlendMapTextureBlueNormal;
+	GLuint BlendMapTextureBlueSpecular;
+	float TextureRepeat;
 };
 
 struct SpriteJob : RenderJob
@@ -52,7 +69,6 @@ struct SpriteJob : RenderJob
 
 	GLuint Texture;
 	glm::vec4 Color;
-	glm::mat4 ModelMatrix;
 
 	void CalculateHash() override
 	{
@@ -67,27 +83,48 @@ public:
 	void Add(T &job)
 	{
 		job.CalculateHash();
-		m_Jobs.push_front(std::shared_ptr<T>(new T(job)));
-		m_Jobs.sort();
+		Jobs.push_front(std::shared_ptr<T>(new T(job)));
+	}
+
+	void Sort()
+	{
+		Jobs.sort();
 	}
 
 	void Clear()
 	{
-		m_Jobs.clear();
+		Jobs.clear();
 	}
 
 	std::forward_list<std::shared_ptr<RenderJob>>::const_iterator begin()
 	{
-		return m_Jobs.begin();
+		return Jobs.begin();
 	}
 
 	std::forward_list<std::shared_ptr<RenderJob>>::const_iterator end()
 	{
-		return m_Jobs.end();
+		return Jobs.end();
 	}
 
-private:
-	std::forward_list<std::shared_ptr<RenderJob>> m_Jobs;
+	std::forward_list<std::shared_ptr<RenderJob>> Jobs;
+};
+
+struct RenderQueuePair
+{
+	RenderQueue Deferred;
+	RenderQueue Forward;
+
+	void Clear()
+	{
+		Deferred.Clear();
+		Forward.Clear();
+	}
+
+	void Sort()
+	{
+		Deferred.Sort();
+		Forward.Sort();
+	}
 };
 
 #endif // RenderQueue_h__

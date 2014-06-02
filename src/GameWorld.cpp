@@ -72,38 +72,294 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
-	{
-		auto ground = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground);
-		transform->Position = glm::vec3(0, -50, 0);
-		//transform->Scale = glm::vec3(400.0f, 10.0f, 400.0f);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(ground);
-		model->ModelFile = "Models/TestScene3/testScene2.obj";
-		//model->ModelFile = "Models/Placeholders/Terrain/Terrain2.obj";
+ 	{
+ 		auto road_base = CreateEntity();
+ 		auto transform = AddComponent<Components::Transform>(road_base);
+ 		transform->Position = glm::vec3(0, -50, 0);
+ 		auto model = AddComponent<Components::Model>(road_base);
+ 		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
+ 		auto physics = AddComponent<Components::Physics>(road_base);
+ 		physics->Mass = 10;
+ 		physics->Static = true;
+ 		physics->CollisionLayer = 1;
+ 
+ 		auto groundshape = CreateEntity(road_base);
+ 		auto transformshape = AddComponent<Components::Transform>(groundshape);
+ 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+ 		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
+ 
+ 
+ 		CommitEntity(groundshape);
+ 		CommitEntity(road_base);
+ 	}
 
-		auto physics = AddComponent<Components::Physics>(ground);
+	{
+		auto road_middle = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(road_middle);
+		transform->Position = glm::vec3(0, -50, 0);
+		auto model = AddComponent<Components::Model>(road_middle);
+		model->ModelFile = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
+		auto physics = AddComponent<Components::Physics>(road_middle);
 		physics->Mass = 10;
 		physics->Static = true;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+		physics->CollisionLayer = 1;
 
-		auto groundshape = CreateEntity(ground);
+		auto groundshape = CreateEntity(road_middle);
 		auto transformshape = AddComponent<Components::Transform>(groundshape);
 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		//meshShape->ResourceName = "Models/Placeholders/Terrain/Terrain2.obj";
-		meshShape->ResourceName = "Models/TestScene3/testScene2.obj";
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
+		CommitEntity(groundshape);
+		CommitEntity(road_middle);
+	}
+
+	{
+		auto road_small = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(road_small);
+		transform->Position = glm::vec3(0, -50, 0);
+		auto model = AddComponent<Components::Model>(road_small);
+		model->ModelFile = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
+		auto physics = AddComponent<Components::Physics>(road_small);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(road_small);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
 
 
 		CommitEntity(groundshape);
-		CommitEntity(ground);
+		CommitEntity(road_small);
+	}
+
+	
+	{
+		auto water = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(water);
+		transform->Position = glm::vec3(0, -35, 0);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		transform->Scale = glm::vec3(5000.f, 10.f, 5000.f);
+		auto model = AddComponent<Components::Model>(water);
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(water);
+		blendmap->TextureRed = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureGreen = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureBlue = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureRepeats = 1.f;
+
+		auto physics = AddComponent<Components::Physics>(water);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+		{
+
+			auto groundshape = CreateEntity(water);
+			auto box = AddComponent<Components::BoxShape>(groundshape);
+			box->Depth = 250.f;
+			box->Height = 5.f;
+			box->Width = 250.f;
+
+
+			CommitEntity(groundshape);
+		}
+		CommitEntity(water);
+	}
+
+	{
+		auto ground_middle = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_middle);
+		transform->Position = glm::vec3(0, -50, 0);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(ground_middle);
+		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_middle);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_middle);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Middle.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_middle);
+	}
+
+	{
+		auto ground_small = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_small);
+		transform->Position = glm::vec3(0, -50, 0);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(ground_small);
+		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_small);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_small);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_small);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Small.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_small);
+	}
+
+	{
+		auto ground_small_mirrored = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_small_mirrored);
+		transform->Position = glm::vec3(0, -50, 0);
+		transform->Orientation = glm::angleAxis(glm::radians(180.f), glm::vec3(0, 1, 0));
+		auto model = AddComponent<Components::Model>(ground_small_mirrored);
+		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_small_mirrored);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_small_mirrored);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_small_mirrored);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Small.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_small_mirrored);
+	}
+
+	{
+		auto ground_base = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_base);
+		transform->Position = glm::vec3(0, -50, 0);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		auto model = AddComponent<Components::Model>(ground_base);
+		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_base);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_base);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_base);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_base);
+	}
+
+	{
+		auto ground_base_mirrored = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_base_mirrored);
+		transform->Position = glm::vec3(0, -50, 0);
+		transform->Orientation = glm::angleAxis(glm::radians(180.f), glm::vec3(0, 1, 0));
+		auto model = AddComponent<Components::Model>(ground_base_mirrored);
+		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_base_mirrored);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_base_mirrored);
+		physics->Mass = 10;
+		physics->Static = true;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_base_mirrored);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_base_mirrored);
+	}
+
+	{
+	/*	auto tree = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(tree);
+		transform->Position = glm::vec3(0, -10, 0);
+		auto model = AddComponent<Components::Model>(tree);
+		model->ModelFile = "Models/Tree/Stem/Stem.obj";
+		auto physics = AddComponent<Components::Physics>(tree);
+		physics->Mass = 100.f;
+		physics->Static = false;
+		physics->CalculateCenterOfMass = true;
+		{
+		auto leafs = CreateEntity(tree);
+		auto transform = AddComponent<Components::Transform>(leafs);
+		auto model = AddComponent<Components::Model>(leafs);
+		model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
+		model->Transparent = true;
+		CommitEntity(leafs);
+		}
+
+		{
+			auto shape = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			transform->Position = glm::vec3(0.f, 0.f, 2.29552f);
+			box->Width = 0.296f;
+			box->Height = 2.511f;
+			box->Depth = 0.296f;
+		}
+			
+		CommitEntity(tree);*/
+
 	}
 
 	EntityID tank1 = CreateTank(1);
 	{
 		auto transform = GetComponent<Components::Transform>(tank1);
-		transform->Position.z = -125.f;
-		transform->Position.y = -20.f;
-		transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+		transform->Position.z = 50;
+		transform->Position.z = 50.f;
+
 		Events::SetViewportCamera e;
 		e.CameraEntity = GetProperty<EntityID>(tank1, "Camera");
 		e.ViewportFrame = "Viewport1";
@@ -154,166 +410,6 @@ void GameWorld::Initialize()
 		CommitEntity(flag);
 	}
 
-	CreateGate(glm::vec3(0, -50, 150));
-	glm::vec3 Position = glm::vec3(-3.93076, -49, 0);
-	{
-		auto garage = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(garage);
-		transform->Position = Position;
-
-		auto ElevatorBase = CreateEntity(garage);
-		{	
-			auto transform = AddComponent<Components::Transform>(ElevatorBase);
-			auto model = AddComponent<Components::Model>(ElevatorBase);
-			model->ModelFile = "Models/SpawnRamp/Main/Main.obj";
-			auto physics = AddComponent<Components::Physics>(ElevatorBase);
-			physics->Static = true;
-			physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-
-			{
-				auto mainShape = CreateEntity(ElevatorBase);
-				auto transform = AddComponent<Components::Transform>(mainShape);
-				transform->Position = glm::vec3(0.f, 0, 0.f);
-				auto mesh = AddComponent<Components::MeshShape>(mainShape);
-				mesh->ResourceName =  "Models/SpawnRamp/Main/CollisionShape.obj";
-				CommitEntity(mainShape);
-			}
-			{
-				auto StairsShape = CreateEntity(ElevatorBase);
-				auto transform = AddComponent<Components::Transform>(StairsShape);
-				transform->Position = glm::vec3(-7.48639f, 0.4809f, 3.79166f);
-				auto box = AddComponent<Components::BoxShape>(StairsShape);
-				box->Width = 1.211f;
-				box->Height = 1.798f;
-				box->Depth = 3.229f;
-				CommitEntity(StairsShape);
-			}
-		}
-		CommitEntity(ElevatorBase);
-
-		auto leftHatch = CreateEntity(garage);
-		{
-			auto transform = AddComponent<Components::Transform>(leftHatch);
-			transform->Position = glm::vec3(5.83103f, 1.3553f, -2.40268f);
-			auto model = AddComponent<Components::Model>(leftHatch);
-			model->ModelFile = "Models/SpawnRamp/LeftHatch/LeftHatch.obj";
-			auto physics = AddComponent<Components::Physics>(leftHatch);
-			physics->Static = true;
-			physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-			auto rotate = AddComponent<Components::Rotate>(leftHatch);
-			rotate->StartRotation = transform->Orientation;
-			rotate->GoalRotation = transform->Orientation * glm::angleAxis(-glm::radians(110.f),glm::vec3(0, 0, 1)); 
-			rotate->Time = 5.f;
-			{
-				auto shape = CreateEntity(leftHatch);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(-2.79331, 0, 0);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 2.317f;
-				box->Height = 0.183f;
-				box->Depth = 6.987f;
-				CommitEntity(shape);
-			}
-			CommitEntity(leftHatch);
-		}
-
-		auto rightHatch = CreateEntity(garage);
-		{
-			auto transform = AddComponent<Components::Transform>(rightHatch);
-			transform->Position = glm::vec3(-4.52423f, 1.3553f, -2.40268f);
-			auto model = AddComponent<Components::Model>(rightHatch);
-			model->ModelFile = "Models/SpawnRamp/RightHatch/RightHatch.obj";
-			auto physics = AddComponent<Components::Physics>(rightHatch);
-			physics->Static = true;
-			physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-			auto rotate = AddComponent<Components::Rotate>(rightHatch);
-			rotate->StartRotation = transform->Orientation;
-			rotate->GoalRotation = transform->Orientation * glm::angleAxis(glm::radians(110.f),glm::vec3(0, 0, 1)); 
-			rotate->Time = 5.f;
-			{
-				auto shape = CreateEntity(rightHatch);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(2.79331, 0, 0);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 2.317f;
-				box->Height = 0.183f;
-				box->Depth = 6.987f;
-				CommitEntity(shape);
-			}
-			CommitEntity(rightHatch);
-		}
-
-		auto elevator = CreateEntity(garage);
-		{
-			auto transform = AddComponent<Components::Transform>(elevator);
-			transform->Position = glm::vec3(0.69385f, 1.25222f, -2.39938f) + glm::vec3(0, -9.5f, 0);
-			auto model = AddComponent<Components::Model>(elevator);
-			model->ModelFile = "Models/SpawnRamp/Elevator/Elevator.obj";
-			auto physics = AddComponent<Components::Physics>(elevator);
-			physics->Static = true;
-			physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-			auto move = AddComponent<Components::Move>(elevator);
-			move->StartPosition = transform->Position;
-			move->GoalPosition = transform->Position + glm::vec3(0, 9.5f, 0);
-			move->Speed = 1.5f;
-			{
-				auto shape = CreateEntity(elevator);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(0, 0, 0);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 4.754f;
-				box->Height = 0.141f;
-				box->Depth = 6.86f;
-				CommitEntity(shape);
-			}
-		}
-		CommitEntity(elevator);
-
-		auto garageComponent = AddComponent<Components::Garage>(garage);
-		garageComponent->DoorLeft = leftHatch;
-		garageComponent->DoorRight = rightHatch;
-		garageComponent->Elevator = elevator;
-		CommitEntity(garage);
-		
-		{
-			auto trigger = CreateEntity(garage);
-			SetProperty(trigger, "Name", "BoundsTrigger");
-			auto transform = AddComponent<Components::Transform>(trigger);
-			transform->Position = glm::vec3(0, 44.87521f, 0);
-			auto triggerComponent = AddComponent<Components::Trigger>(trigger);
-			{
-				auto shape = CreateEntity(trigger);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(0, 0, 0);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 72.98f;
-				box->Height = 54.53f;
-				box->Depth = 72.98f;
-				CommitEntity(shape);
-			}
-			CommitEntity(trigger);
-		}
-
-		{
-			auto trigger = CreateEntity(garage);
-			SetProperty(trigger, "Name", "ElevatorShaftTrigger");
-			auto transform = AddComponent<Components::Transform>(trigger);
-			transform->Position = glm::vec3(0.69385f, -6.7997f, 2.39938f);
-			auto triggerComponent = AddComponent<Components::Trigger>(trigger);
-			{
-				auto shape = CreateEntity(trigger);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(0, 0, 0);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 1.0f;
-				box->Height = 10.f;
-				box->Depth = 1.0f;
-				CommitEntity(shape);
-			}
-			CommitEntity(trigger);
-		}
-	}
-
 	//for (int i = 0; i < 500; i++)
 	//{
 	//	auto Light = CreateEntity();
@@ -328,6 +424,71 @@ void GameWorld::Initialize()
 	//	//auto model = AddComponent<Components::Model>(Light, "Model");
 	//	//model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
 	//}
+
+	
+	{
+		auto gateBase = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(gateBase);
+		transform->Position = glm::vec3(0, -50, 150);
+		auto model = AddComponent<Components::Model>(gateBase);
+		model->ModelFile = "Models/Gate/Lift/Lift.obj";
+		
+		auto physics = AddComponent<Components::Physics>(gateBase);
+		physics->Static = true;
+		physics->CollisionLayer = 1; // Terrain-Layer
+		{
+			auto leftBaseShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(leftBaseShape);
+			transform->Position = glm::vec3(8.5f, 3, 0);
+			auto box = AddComponent<Components::BoxShape>(leftBaseShape);
+			box->Width = 3.f/2;
+			box->Height = 6.094f/2;
+			box->Depth = 4.f/2;
+			CommitEntity(leftBaseShape);
+		}
+		{
+			auto RightBaseShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(RightBaseShape);
+			transform->Position = glm::vec3(-8.5f, 3, 0);
+			auto box = AddComponent<Components::BoxShape>(RightBaseShape);
+			box->Width = 3.f/2;
+			box->Height = 6.094f/2;
+			box->Depth = 4.f/2;
+			CommitEntity(RightBaseShape);
+		}
+		{
+			auto LeftTopShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(LeftTopShape);
+			transform->Position = glm::vec3(7.5485f, 9.385f, 0);
+			auto box = AddComponent<Components::BoxShape>(LeftTopShape);
+			box->Width = 1.747f/2;
+			box->Height = 6.851f/2;
+			box->Depth = 1.767f/2;
+			CommitEntity(LeftTopShape);
+		}
+		{
+			auto RightTopShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(RightTopShape);
+			transform->Position = glm::vec3(-7.5485f, 9.385f, 0);
+			auto box = AddComponent<Components::BoxShape>(RightTopShape);
+			box->Width = 1.747f/2;
+			box->Height = 6.851f/2;
+			box->Depth = 1.767f/2;
+			CommitEntity(RightTopShape);
+		}
+		{
+			auto RampShape = CreateEntity(gateBase);
+			auto transform = AddComponent<Components::Transform>(RampShape);
+			transform->Position = glm::vec3(0, 0.24f, 0);
+			auto box = AddComponent<Components::BoxShape>(RampShape);
+			box->Width = 14.9f/2;
+			box->Height = 0.38f/2;
+			box->Depth = 1.484f/2;
+			CommitEntity(RampShape);
+		}
+		CommitEntity(gateBase);
+	}
+
 }
 
 void GameWorld::Update(double dt)
@@ -425,129 +586,6 @@ void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, f
 	EventBroker->Publish(e);
 }
 
-void GameWorld::CreateGate(glm::vec3 Position)
-{
-	{
-		auto gateBase = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(gateBase);
-		transform->Position = Position;
-		auto model = AddComponent<Components::Model>(gateBase);
-		model->ModelFile = "Models/Gate/Lift/Lift.obj";
-		auto physics = AddComponent<Components::Physics>(gateBase);
-		physics->Static = true;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-
-		{
-			auto leftBaseShape = CreateEntity(gateBase);
-			auto transform = AddComponent<Components::Transform>(leftBaseShape);
-			transform->Position = glm::vec3(8.5f, 3, 0);
-			auto box = AddComponent<Components::BoxShape>(leftBaseShape);
-			box->Width = 3.f/2;
-			box->Height = 6.094f/2;
-			box->Depth = 4.f/2;
-			CommitEntity(leftBaseShape);
-		}
-		{
-			auto RightBaseShape = CreateEntity(gateBase);
-			auto transform = AddComponent<Components::Transform>(RightBaseShape);
-			transform->Position = glm::vec3(-8.5f, 3, 0);
-			auto box = AddComponent<Components::BoxShape>(RightBaseShape);
-			box->Width = 3.f/2;
-			box->Height = 6.094f/2;
-			box->Depth = 4.f/2;
-			CommitEntity(RightBaseShape);
-		}
-		{
-			auto LeftTopShape = CreateEntity(gateBase);
-			auto transform = AddComponent<Components::Transform>(LeftTopShape);
-			transform->Position = glm::vec3(7.5485f, 9.385f, 0);
-			auto box = AddComponent<Components::BoxShape>(LeftTopShape);
-			box->Width = 1.747f/2;
-			box->Height = 6.851f/2;
-			box->Depth = 1.767f/2;
-			CommitEntity(LeftTopShape);
-		}
-		{
-			auto RightTopShape = CreateEntity(gateBase);
-			auto transform = AddComponent<Components::Transform>(RightTopShape);
-			transform->Position = glm::vec3(-7.5485f, 9.385f, 0);
-			auto box = AddComponent<Components::BoxShape>(RightTopShape);
-			box->Width = 1.747f/2;
-			box->Height = 6.851f/2;
-			box->Depth = 1.767f/2;
-			CommitEntity(RightTopShape);
-		}
-		{
-			auto RampShape = CreateEntity(gateBase);
-			auto transform = AddComponent<Components::Transform>(RampShape);
-			transform->Position = glm::vec3(0, 0.24f, 0);
-			auto mesh = AddComponent<Components::MeshShape>(RampShape);
-			mesh->ResourceName = "Models/Gate/Lift/RampCollision.obj";
-			CommitEntity(RampShape);
-		}
-		CommitEntity(gateBase);
-	}
-
-	{
-		auto gate = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(gate);
-		transform->Position = Position;
-		auto model = AddComponent<Components::Model>(gate);
-		model->ModelFile = "Models/Gate/Gate/Gate.obj";		
-		auto physics = AddComponent<Components::Physics>(gate);
-		physics->Static = true;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-		auto move = AddComponent<Components::Move>(gate);
-		move->Speed = 5.f;
-		move->GoalPosition = glm::vec3(Position.x, Position.y + 9.02345f, Position.z);
-		move->StartPosition = glm::vec3(Position.x, Position.y, Position.z);
-		{
-			auto mainShape = CreateEntity(gate);
-			auto transform = AddComponent<Components::Transform>(mainShape);
-			transform->Position = glm::vec3(0.f, 3.09776f, 0.f);
-			auto box = AddComponent<Components::BoxShape>(mainShape);
-			box->Width = 6.963f;
-			box->Height = 2.478f;
-			box->Depth = 0.522f;
-			CommitEntity(mainShape);
-		}
-		{
-			auto lowerShape = CreateEntity(gate);
-			auto transform = AddComponent<Components::Transform>(lowerShape);
-			transform->Position = glm::vec3(0.f, 0.35f, 0.f);
-			auto box = AddComponent<Components::BoxShape>(lowerShape);
-			box->Width = 6.963f;
-			box->Height = 0.308f;
-			box->Depth = 0.222f;
-			CommitEntity(lowerShape);
-		}
-		CommitEntity(gate);
-
-		{
-			auto gateTrigger = CreateEntity();
-			auto transform = AddComponent<Components::Transform>(gateTrigger);
-			transform->Position = glm::vec3(Position.x, Position.y + 2.8241, Position.z);
-			auto trigger = AddComponent<Components::Trigger>(gateTrigger);
-			auto triggerMove = AddComponent<Components::TriggerMove>(gateTrigger);
-			triggerMove->Entity = gate;
-
-
-			{
-				auto shape = CreateEntity(gateTrigger);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(0.f, 2.8241f, 0.f);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 6.963f;
-				box->Height = 3.104f;
-				box->Depth = 10.356f;
-				CommitEntity(shape);
-			}
-			CommitEntity(gateTrigger);
-		}
-
-	}
-}
-
 EntityID GameWorld::CreateTank(int playerID)
 {
 	auto tank = CreateEntity();
@@ -558,7 +596,7 @@ EntityID GameWorld::CreateTank(int playerID)
 	physics->Mass = 63000 - 16000;
 	physics->Static = false;
 	auto vehicle = AddComponent<Components::Vehicle>(tank);
-	vehicle->MaxTorque = 8000.f;
+	vehicle->MaxTorque = 36000.f;
 	vehicle->MaxSteeringAngle = 90.f;
 	vehicle->MaxSpeedFullSteeringAngle = 4.f;
 	auto player = AddComponent<Components::Player>(tank);
@@ -572,7 +610,7 @@ EntityID GameWorld::CreateTank(int playerID)
 		auto shape = CreateEntity(tank);
 		auto transform = AddComponent<Components::Transform>(shape);
 		auto meshShape = AddComponent<Components::MeshShape>(shape);
-		meshShape->ResourceName = "Models/Tank/TankCollisionShape.obj";
+		meshShape->ResourceName = "Models/Tank/Fix/ChassiCollision.obj";
 		CommitEntity(shape);
 	}
 	{
@@ -606,7 +644,7 @@ EntityID GameWorld::CreateTank(int playerID)
 		{
 			auto barrel = CreateEntity(tower);
 			auto transform = AddComponent<Components::Transform>(barrel);
-			transform->Position = glm::vec3(-0.012f, 0.3f, -0.95);
+			transform->Position = glm::vec3(-0.012f, 0.4f, -0.75);
 			auto model = AddComponent<Components::Model>(barrel);
 			model->ModelFile = "Models/Tank/tankBarrel.obj";
 			auto barrelSteering = AddComponent<Components::BarrelSteering>(barrel);
@@ -701,31 +739,32 @@ EntityID GameWorld::CreateTank(int playerID)
 	AddTankWheelPair(tank, glm::vec3(-1.68f, wheelOffset, 2.375), 1, false);
 #pragma endregion
 
-	{
-		auto entity = CreateEntity(tank);
-		auto transformComponent = AddComponent<Components::Transform>(entity);
-		transformComponent->Position = glm::vec3(-2, -1.7, 2.0);
-		transformComponent->Scale = glm::vec3(3, 3, 3);
-		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
-		auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
-		emitterComponent->SpawnCount = 2;
-		emitterComponent->SpawnFrequency = 0.005;
-		emitterComponent->SpreadAngle = glm::pi<float>();
-		emitterComponent->UseGoalVelocity = false;
-		emitterComponent->LifeTime = 0.5;
-		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
-		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
-		CommitEntity(entity);
-
-		auto particleEntity = CreateEntity(entity);
-		auto TEMP = AddComponent<Components::Transform>(particleEntity);
-		TEMP->Scale = glm::vec3(0);
-		auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
-		spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-		emitterComponent->ParticleTemplate = particleEntity;
-
-		CommitEntity(particleEntity);
-	}
+	
+// 		auto entity = CreateEntity(tank);
+// 		auto transformComponent = AddComponent<Components::Transform>(entity);
+// 		transformComponent->Position = glm::vec3(2, -1.7, 2.0);
+// 		transformComponent->Scale = glm::vec3(3, 3, 3);
+// 		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
+// 		auto emitterComponent = AddComponent<Components::ParticleEmitter>(entity);
+// 		emitterComponent->SpawnCount = 2;
+// 			emitterComponent->SpawnFrequency = 0.005;
+// 		emitterComponent->SpreadAngle = glm::pi<float>();
+// 		emitterComponent->UseGoalVelocity = false;
+// 		emitterComponent->LifeTime = 0.5;
+// 		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+// 		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+// 		CommitEntity(entity);
+// 
+// 		{
+// 			auto particleEntity = CreateEntity(entity);
+// 			auto templateComponent = AddComponent<Components::Template>(particleEntity);
+// 			auto TEMP = AddComponent<Components::Transform>(particleEntity);
+// 			TEMP->Scale = glm::vec3(0);
+// 			auto spriteComponent = AddComponent<Components::Sprite>(particleEntity);
+// 			spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+// 			CommitEntity(particleEntity);
+// 			emitterComponent->ParticleTemplate = particleEntity;
+// 		}
 
 	CommitEntity(tank);
 
@@ -756,10 +795,20 @@ void GameWorld::AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int ax
 		Wheel->Radius = 0.6f;
 		Wheel->Steering = steering;
 		Wheel->SuspensionStrength = suspensionStrength;
-		Wheel->Friction = 4.f;
+		Wheel->Friction = 3.f;
 		Wheel->ConnectedToHandbrake = true;
 		Wheel->TorqueRatio = 0.125f;
 		Wheel->Width = 0.6f;
+		{
+			auto shape = CreateEntity(wheelFront);
+			auto shapetransform = AddComponent<Components::Transform>(shape);
+			shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+			auto boxShape = AddComponent<Components::BoxShape>(shape);
+			boxShape->Width = 0.7f;
+			boxShape->Height = 0.34f;
+			boxShape->Depth = 0.7f;
+			CommitEntity(shape);
+		}
 		CommitEntity(wheelFront);
 	}
 
@@ -779,10 +828,20 @@ void GameWorld::AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int ax
 		Wheel->Radius = 0.6f;
 		Wheel->Steering = steering;
 		Wheel->SuspensionStrength = suspensionStrength;
-		Wheel->Friction = 4.f;
+		Wheel->Friction = 3.f;
 		Wheel->ConnectedToHandbrake = true;
 		Wheel->TorqueRatio = 0.125f;
 		Wheel->Width = 0.6f;
+		{
+			auto shape = CreateEntity(wheelBack);
+			auto shapetransform = AddComponent<Components::Transform>(shape);
+			shapetransform->Position = glm::vec3(0.f, 0.32f, 0.f) + transform->Position;
+			auto boxShape = AddComponent<Components::BoxShape>(shape);
+			boxShape->Width = 0.7f;
+			boxShape->Height = 0.34f;
+			boxShape->Depth = 0.7f;
+			CommitEntity(shape);
+		}
 		CommitEntity(wheelBack);
 	}
 
@@ -855,6 +914,16 @@ EntityID GameWorld::CreateJeep(int playerID)
 		auto model = AddComponent<Components::Model>(chassis);
 		model->ModelFile = "Models/Jeep/Chassi/chassi.obj";
 	}
+
+	{
+		auto lightentity = CreateEntity(jeep);
+		auto transform = AddComponent<Components::Transform>(lightentity);
+		transform->Position = glm::vec3(0, 15, 0);
+		auto light = AddComponent<Components::PointLight>(lightentity);
+		light->Diffuse = glm::vec3(128.f / 255.f, 172.f / 255.f, 242.f / 255.f);
+		light->Specular = glm::vec3(1.f);
+	}
+
 
 	//Create wheels
 	float wheelOffset = 0.4f;
