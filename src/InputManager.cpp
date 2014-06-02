@@ -85,6 +85,7 @@ void InputManager::Update(double dt)
 		EventBroker->Publish(e);
 	}
 
+
 	// // Lock mouse while holding LMB
 	// if (m_CurrentMouseState[GLFW_MOUSE_BUTTON_LEFT])
 	// {

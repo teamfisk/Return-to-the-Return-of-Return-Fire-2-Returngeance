@@ -171,6 +171,9 @@
     <Filter Include="Gameplay\Components">
       <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Particle System\Events">
+      <UniqueIdentifier>{ddd3c442-7c2f-4690-9308-fcef62deee0b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Gameplay\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
     </Filter>
@@ -419,6 +422,9 @@
     <ClInclude Include="..\..\src\Components\Player.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\CreateExplosion.h">
+      <Filter>Particle System\Events</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\Collision.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
@@ -490,6 +496,10 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\WallSystem.h">
       <Filter>Gameplay\Systems</Filter>
+      </ClInclude>
+
+    <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
+      <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\OnDead.h">
       <Filter>Gameplay\Events</Filter>

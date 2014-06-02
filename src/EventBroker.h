@@ -139,11 +139,7 @@ template <typename ContextType>
 void EventBroker::UnsubscribeAll()
 {
 	const std::string contextTypeName = typeid(ContextType).name();
-	auto contextIt = m_ContextRelays.find(contextTypeName);
-	if (contextIt != m_ContextRelays.end())
-	{
-		m_ContextRelays.erase(contextIt);
-	}
+	m_ContextRelays.erase(contextTypeName);
 }
 
 #endif // MessageRelay_h__

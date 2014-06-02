@@ -8,13 +8,14 @@ Texture::Texture(std::string path)
 
 void Texture::Load(std::string path)
 {
-	auto cachedTexture = m_TextureCache.find(path);
-	if (cachedTexture == m_TextureCache.end())
+	m_Texture = SOIL_load_OGL_texture(path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
+
+	if (m_Texture == 0)
 	{
-		m_TextureCache[path] = SOIL_load_OGL_texture(path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
+		LOG_ERROR("SOIL: Failed to load texture \"%s\"", path.c_str());
+		return;
 	}
 
-	m_Texture = m_TextureCache[path];
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
