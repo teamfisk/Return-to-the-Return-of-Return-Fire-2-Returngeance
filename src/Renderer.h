@@ -219,7 +219,7 @@ private:
 	void CreateNormalMapTangent();
 	void ForwardRendering(RenderQueue &rq);
 
-	static bool DepthSort(const std::shared_ptr<RenderJob> &i, const std::shared_ptr<RenderJob> &j) { return (i->Depth > j->Depth); }
+	static bool DepthSort(const std::shared_ptr<RenderJob> &i, const std::shared_ptr<RenderJob> &j) { return (i->Depth < j->Depth); }
 
 	GLuint CreateQuad();
 	void DrawDebugShadowMap();

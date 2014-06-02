@@ -324,11 +324,11 @@ void GameWorld::Initialize()
 	{
 		auto tree = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(tree);
-		transform->Position = glm::vec3(0, 10, 0);
+		transform->Position = glm::vec3(0, -10, 0);
 		
 		auto physics = AddComponent<Components::Physics>(tree);
 		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
 		physics->CollisionEvent = false;
 		//physics->LinearDamping = 3.f;
 		physics->CalculateCenterOfMass = true;
@@ -565,7 +565,7 @@ void GameWorld::Initialize()
 
 #pragma region Wall_Regin
 
- 	for(int i = 0; i < 5; i++)
+ 	for(int i = 10; i < 0; i++)
  	{
 	EntityID Wall = CreateWall(glm::vec3(i*10.f, -15.f, 0.f), glm::quat());
 	}
