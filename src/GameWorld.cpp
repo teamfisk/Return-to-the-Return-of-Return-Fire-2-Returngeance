@@ -557,191 +557,20 @@ void GameWorld::Initialize()
 		auto shape = CreateEntity(debri);
 		auto shapetransform = AddComponent<Components::Transform>(shape);
 		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyed.obj";
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyed.obj"; //Lägg in ny collision modell
 
 		m_WallDebrisTemplates.push_back(debri);
 	}
 #pragma endregion Region for wall debris
 
-#pragma region Walls
+#pragma region Wall_Regin
 
-#pragma region Wall1
-	{
-		auto wall = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall);
-		transform->Position = glm::vec3(0, -16, 0);
-
-		auto physics = AddComponent<Components::Physics>(wall);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-
-		auto walldebris = AddComponent<Components::Wall>(wall);
-		walldebris->Walldebris = m_WallDebrisTemplates;
-		
-		auto model = AddComponent<Components::Model>(wall);
-		model->ModelFile = "Models/Wall/WallWhole/Wall.obj";
-
-		auto health = AddComponent<Components::Health>(wall);
-		health->Amount = 50.f;
-
-		auto shape = CreateEntity(wall);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallCollision/Collision.obj";
-
-	CommitEntity(shape);
-	CommitEntity(wall);
-	}
-#pragma endregion Region for wall1
-
-#pragma endregion Region for all walls
-
-	{
-		auto wall = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall);
-		transform->Position = glm::vec3(20, 10, 30);
-
-		auto physics = AddComponent<Components::Physics>(wall);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-
-		auto model = AddComponent<Components::Model>(wall);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDestroyed.obj";
-
-		auto shape = CreateEntity(wall);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyed.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall);
+ 	for(int i = 0; i < 5; i++)
+ 	{
+	EntityID Wall = CreateWall(glm::vec3(i*10.f, -15.f, 0.f), glm::quat());
 	}
 
-	{
-		auto wall_trash = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall_trash);
-		transform->Position = glm::vec3(20, 12, 30);
-
-		auto physics = AddComponent<Components::Physics>(wall_trash);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-
-		auto model = AddComponent<Components::Model>(wall_trash);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris1.obj";
-
-		auto shape = CreateEntity(wall_trash);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris1.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall_trash);
-	}
-
-	{
-		auto wall_trash = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall_trash);
-		transform->Position = glm::vec3(20, 10, 45);
-
-		auto physics = AddComponent<Components::Physics>(wall_trash);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-
-		auto model = AddComponent<Components::Model>(wall_trash);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris2.obj";
-
-		auto shape = CreateEntity(wall_trash);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris2.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall_trash);
-	}
-
-	{
-		auto wall_trash = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall_trash);
-		transform->Position = glm::vec3(23, 10, 45);
-
-		auto physics = AddComponent<Components::Physics>(wall_trash);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-
-		auto model = AddComponent<Components::Model>(wall_trash);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris3.obj";
-
-		auto shape = CreateEntity(wall_trash);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris3.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall_trash);
-	}
-
-	{
-		auto wall_trash = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall_trash);
-		transform->Position = glm::vec3(20, 12, 30);
-
-		auto physics = AddComponent<Components::Physics>(wall_trash);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-
-		auto model = AddComponent<Components::Model>(wall_trash);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris4.obj";
-
-		auto shape = CreateEntity(wall_trash);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris4.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall_trash);
-	}
-
-	{
-		auto wall_trash = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall_trash);
-		transform->Position = glm::vec3(29, 10, 45);
-
-		auto physics = AddComponent<Components::Physics>(wall_trash);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-
-		auto model = AddComponent<Components::Model>(wall_trash);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris5.obj";
-
-		auto shape = CreateEntity(wall_trash);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris5.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall_trash);
-	}
-
-	{
-		auto wall_trash = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(wall_trash);
-		transform->Position = glm::vec3(32, 10, 45);
-
-		auto physics = AddComponent<Components::Physics>(wall_trash);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-
-		auto model = AddComponent<Components::Model>(wall_trash);
-		model->ModelFile = "Models/Wall/WallDestroyed/WallDebris6.obj";
-
-		auto shape = CreateEntity(wall_trash);
-		auto shapetransform = AddComponent<Components::Transform>(shape);
-		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDebris6.obj";
-
-		CommitEntity(shape);
-		CommitEntity(wall_trash);
-	}
+#pragma endregion Region for all wall creations
 
 	EntityID tank1 = CreateTank(1);
 	{
@@ -1004,7 +833,7 @@ EntityID GameWorld::CreateTank(int playerID)
 				modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 				auto tankShellComponent = AddComponent<Components::TankShell>(shot);
 				tankShellComponent->Damage = 20.f;
-				tankShellComponent->ExplosionRadius = 30.f;
+				tankShellComponent->ExplosionRadius = 5.f;
 				tankShellComponent->ExplosionStrength = 300000.f;
 				{
 					auto shape = CreateEntity(shot);
@@ -1099,6 +928,38 @@ EntityID GameWorld::CreateTank(int playerID)
 	CommitEntity(tank);
 
 	return tank;
+}
+
+EntityID GameWorld::CreateWall(glm::vec3 pos, glm::quat orientation)
+{
+	auto wall = CreateEntity();
+	auto transform = AddComponent<Components::Transform>(wall);
+	transform->Position = pos;
+	transform->Orientation = orientation;
+
+	auto physics = AddComponent<Components::Physics>(wall);
+	physics->Mass = 100.f;
+	physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+	auto walldebris = AddComponent<Components::Wall>(wall);
+	walldebris->Walldebris = m_WallDebrisTemplates;
+
+	auto model = AddComponent<Components::Model>(wall);
+	model->ModelFile = "Models/Wall/WallWhole/Wall.obj";
+
+	auto health = AddComponent<Components::Health>(wall);
+	health->Amount = 50.f;
+
+	auto shape = CreateEntity(wall);
+	auto shapetransform = AddComponent<Components::Transform>(shape);
+	auto shapemesh = AddComponent<Components::MeshShape>(shape);
+	shapemesh->ResourceName = "Models/Wall/WallCollision/Collision.obj";
+
+	CommitEntity(shape);
+	CommitEntity(wall);
+
+	return wall;
+	
 }
 
 void GameWorld::AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool front)

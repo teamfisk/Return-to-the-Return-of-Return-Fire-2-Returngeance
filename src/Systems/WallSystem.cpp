@@ -40,7 +40,7 @@ bool Systems::WallSystem::Damage( const Events::Damage &event )
 			// DO STUFF! :D
 			float distance = glm::distance(transform->Position, transformComponent->Position);
 			float radius = 5.f;
-			float strength = (1.f - pow(distance / radius, 2)) * 400.f;
+			float strength = (1.f - pow(distance / radius, 2)) * 500.f;
 			glm::vec3 direction = glm::normalize(transformComponent->Position - transform->Position);
 
 			Events::ApplyPointImpulse e;
