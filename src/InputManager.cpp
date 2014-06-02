@@ -42,21 +42,6 @@ void InputManager::Update(double dt)
 		}
 	}
 
-	if(m_CurrentKeyState[GLFW_KEY_Z]) //TEMP
-	{
-		Events::PlaySFX e;
-		e.Resource = "Sounds/BGM/DarkHorse.mp3";
-		e.Loop = true;
-		e.Emitter = 58;
-		EventBroker->Publish(e);
-	}
-	if(m_CurrentKeyState[GLFW_KEY_P]) //TEMP
-	{
-		Events::StopSound e;
-		e.Emitter = 58;
-		EventBroker->Publish(e);
-	}
-
 	// Mouse buttons
 	for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; ++i)
 	{
