@@ -19,8 +19,6 @@ public:
 	GameFrame(Frame* parent, std::string name)
 		: Frame(parent, name)
 	{
-		EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &GameFrame::OnKeyUp);
-
 		m_World = std::make_shared<GameWorld>(EventBroker, ResourceManager);
 		auto worldFrame = new WorldFrame(this, "GameWorldFrame", m_World);
 		{
@@ -36,7 +34,7 @@ public:
 			new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
 
 			m_FreeCamViewport = new Viewport(worldFrame, "ViewportFreeCam", m_World);
-			m_FreeCamViewport->Show();
+			m_FreeCamViewport->Hide();
 		}
 		m_World->Initialize();
 	}
@@ -49,7 +47,7 @@ private:
 	Viewport* vp2;
 	Viewport* m_FreeCamViewport;
 
-	bool OnKeyUp(const Events::KeyUp &event)
+	bool OnKeyUp(const Events::KeyUp &event) override
 	{ 
 		if (event.KeyCode == GLFW_KEY_1)
 		{
