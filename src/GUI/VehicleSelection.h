@@ -37,30 +37,9 @@ namespace GUI
 			m_Background->SetTexture("Textures/GUI/VehicleSelection/1.png");
 		}
 
-		bool OnKeyUp(const Events::KeyUp &event) override
-		{
-			if (event.KeyCode == GLFW_KEY_LEFT)
-			{
-				m_CurrentSelection--;
-			}
-			else if (event.KeyCode == GLFW_KEY_RIGHT)
-			{
-				m_CurrentSelection++;
-			}
-			m_CurrentSelection = (m_CurrentSelection < 0) ? 0 : ((m_CurrentSelection > 3) ? 3 : m_CurrentSelection);
+		
 
-			std::stringstream ss;
-			ss << "Textures/GUI/VehicleSelection/" << m_CurrentSelection + 1 << ".png";
-			m_Background->FadeToTexture(ss.str(), 1.f);
-
-			glm::vec2 scale = Scale();
-			glm::vec2 coord = -m_SelectionCoordinates[m_CurrentSelection];
-			m_TargetCoordinate = coord * scale + glm::vec2(Width / 2.f, Height / 2.f);
-			glm::vec2 size = m_SelectionSizes[m_CurrentSelection];
-			m_TargetSize = size * scale;
-
-			return true;
-		}
+		
 
 		void Update(double dt) override
 		{
@@ -94,6 +73,54 @@ namespace GUI
 		float m_CurrentAlpha;
 
 		TextureFrame* m_Background;
+
+		bool OnCommand(const Events::InputCommand &event) override
+		{
+			// Menu movement
+			if (event.Command == "interface_horizontal" || event.Command == "interface_vertical")
+			{
+				// Horizontal scrolling
+				if (event.Command == "interface_horizontal")
+				{
+					if (event.Value > 0)
+						m_CurrentSelection++;
+					else if (event.Value < 0)
+						m_CurrentSelection--;
+				}
+				// Vertical scrolling to switch between "rows" in an intuitive way
+				else if (event.Command == "interface_vertical")
+				{
+					if (event.Value > 0)
+					{
+						if (m_CurrentSelection == 0)
+							m_CurrentSelection++;
+						else if (m_CurrentSelection == 3)
+							m_CurrentSelection--;
+					}
+					else if (event.Value < 0)
+					{
+						if (m_CurrentSelection == 1)
+							m_CurrentSelection--;
+						else if (m_CurrentSelection == 2)
+							m_CurrentSelection++;
+					}
+				}
+
+				m_CurrentSelection = (m_CurrentSelection < 0) ? 0 : ((m_CurrentSelection > 3) ? 3 : m_CurrentSelection);
+
+				std::stringstream ss;
+				ss << "Textures/GUI/VehicleSelection/" << m_CurrentSelection + 1 << ".png";
+				m_Background->FadeToTexture(ss.str(), 1.f);
+
+				glm::vec2 scale = Scale();
+				glm::vec2 coord = -m_SelectionCoordinates[m_CurrentSelection];
+				m_TargetCoordinate = coord * scale + glm::vec2(Width / 2.f, Height / 2.f);
+				glm::vec2 size = m_SelectionSizes[m_CurrentSelection];
+				m_TargetSize = size * scale;
+			}
+
+			return true;
+		}
 	};
 
 	glm::vec2 VehicleSelection::m_SelectionCoordinates[4] = {

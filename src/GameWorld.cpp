@@ -8,6 +8,22 @@ void GameWorld::Initialize()
 	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
+	// Interface
+	BindKey(GLFW_KEY_A, "interface_horizontal", -1.f);
+	BindKey(GLFW_KEY_D, "interface_horizontal", 1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftX, "interface_horizontal", 1.f);
+	BindGamepadButton(Gamepad::Button::Left, "interface_horizontal", -1.f);
+	BindGamepadButton(Gamepad::Button::Right, "interface_horizontal", 1.f);
+	BindKey(GLFW_KEY_W, "interface_vertical", 1.f);
+	BindKey(GLFW_KEY_S, "interface_vertical", -1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftY, "interface_vertical", 1.f);
+	BindGamepadButton(Gamepad::Button::Up, "interface_vertical", 1.f);
+	BindGamepadButton(Gamepad::Button::Down, "interface_vertical", -1.f);
+	BindKey(GLFW_KEY_SPACE, "interface_accept", 1.f);
+	BindGamepadButton(Gamepad::Button::A, "interface_accept", 1.f);
+	
+	
+
 	BindKey(GLFW_KEY_W, "vertical", 1.f);
 	BindKey(GLFW_KEY_S, "vertical", -1.f);
 	BindKey(GLFW_KEY_A, "horizontal", -1.f);

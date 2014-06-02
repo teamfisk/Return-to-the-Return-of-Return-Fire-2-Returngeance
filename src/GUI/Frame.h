@@ -6,6 +6,9 @@
 
 #include "Util/Rectangle.h"
 #include "EventBroker.h"
+#include "Events/KeyDown.h"
+#include "Events/KeyUp.h"
+#include "Events/InputCommand.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "RenderQueue.h"
@@ -129,11 +132,6 @@ public:
 		return Rectangle(left, top, width, height);
 	}
 
-	virtual bool OnKeyDown(const Events::KeyDown &event) { return false; }
-	virtual bool OnKeyUp(const Events::KeyUp &event) { return false; }
-	//virtual bool OnMouseDown(const Events::KeyDown &event) { }
-	//virtual bool OnMouseUp(const Events::KeyDown &event) { }
-
 	void UpdateLayered(double dt)
 	{
 		if (this->Hidden())
@@ -196,14 +194,22 @@ protected:
 	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame
 	std::map<int, Children_t> m_Children; // layer -> Children_t
 
+	virtual bool OnKeyDown(const Events::KeyDown &event) { return false; }
+	virtual bool OnKeyUp(const Events::KeyUp &event) { return false; }
+	//virtual bool OnMouseDown(const Events::KeyDown &event) { }
+	//virtual bool OnMouseUp(const Events::KeyDown &event) { }
+	virtual bool OnCommand(const Events::InputCommand &event) { return false; }
+
 private:
 	EventRelay<Frame, Events::KeyDown> m_EKeyDown;
 	EventRelay<Frame, Events::KeyUp> m_EKeyUp;
+	EventRelay<Frame, Events::InputCommand> m_EInputCommand;
 
 	void Initialize()
 	{
 		EVENT_SUBSCRIBE_MEMBER(m_EKeyDown, &Frame::OnKeyDown);
 		EVENT_SUBSCRIBE_MEMBER(m_EKeyUp, &Frame::OnKeyUp);
+		EVENT_SUBSCRIBE_MEMBER(m_EInputCommand, &Frame::OnCommand);
 	}
 };
 
