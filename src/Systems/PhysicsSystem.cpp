@@ -673,11 +673,6 @@ void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID pare
 
 }
 
-void Systems::PhysicsSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
-{
-
-}
-
 void Systems::PhysicsSystem::SetupVisualDebugger(hkpPhysicsContext* worlds)
 {
 	// Setup the visual debugger

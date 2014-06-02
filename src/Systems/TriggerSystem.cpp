@@ -26,10 +26,6 @@ void Systems::TriggerSystem::UpdateEntity( double dt, EntityID entity, EntityID 
 
 }
 
-void Systems::TriggerSystem::OnComponentCreated( std::string type, std::shared_ptr<Component> component )
-{
-
-}
 
 void Systems::TriggerSystem::OnComponentRemoved(EntityID entity, std::string type, Component* component )
 {

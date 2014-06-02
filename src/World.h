@@ -17,6 +17,7 @@
 #include "Components/Template.h"
 #include "System.h"
 #include "EventBroker.h"
+#include "Events/ComponentCreated.h"
 #include "ResourceManager.h"
 
 class World

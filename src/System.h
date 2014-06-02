@@ -29,8 +29,6 @@ public:
 	// Called once for every entity in the world every tick
 	virtual void UpdateEntity(double dt, EntityID entity, EntityID parent) { }
 
-	// Called when a component is created
-	virtual void OnComponentCreated(std::string type, std::shared_ptr<Component> component) { }
 	// Called when a component is removed
 	virtual void OnComponentRemoved(EntityID entity, std::string type, Component* component) { }
 	// Called when components are committed to an entity

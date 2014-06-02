@@ -49,7 +49,6 @@
       <Filter>Input\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ResourceManager.cpp" />
-    <ClCompile Include="..\..\src\Sound.cpp" />
     <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp">
       <Filter>Particle System\Systems</Filter>
     </ClCompile>
@@ -81,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Systems\GarageSystem.cpp">
       <Filter>Game\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Sound.cpp">
+      <Filter>Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +184,10 @@
     </Filter>
     <Filter Include="Game\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
+      </Filter>
+
+    <Filter Include="Base\Events">
+      <UniqueIdentifier>{3cbe68d9-2446-45ee-8637-ffb805997dcd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game\Events">
       <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
@@ -329,9 +335,6 @@
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\EventBroker.h" />
-    <ClInclude Include="..\..\src\Events\PlaySound.h">
-      <Filter>Audio\Events</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Events\KeyDown.h">
       <Filter>Input\Events</Filter>
     </ClInclude>
@@ -430,6 +433,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Health.h">
       <Filter>Gameplay\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Listener.h">
+      <Filter>Audio\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\ComponentCreated.h">
+      <Filter>Base\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\PlayBGM.h">
+      <Filter>Audio\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\PlaySFX.h">
+      <Filter>Audio\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\StopSound.h">
+      <Filter>Audio\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\TankShell.h">
       <Filter>Physics\Components</Filter>

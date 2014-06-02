@@ -159,7 +159,7 @@ bool Systems::InputSystem::OnBindKey(const Events::BindKey &event)
 	else
 	{
 		m_KeyBindings[event.KeyCode] = std::make_tuple(event.Command, event.Value);
-		LOG_DEBUG("Input: Bound key %c to %s", (char)event.KeyCode, event.Command.c_str());
+		LOG_DEBUG("Input: Bound key %i:%c to %s", event.KeyCode, (char)event.KeyCode, event.Command.c_str());
 	}
 
 	return true;

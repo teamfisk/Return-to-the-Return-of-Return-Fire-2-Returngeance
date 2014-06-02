@@ -165,7 +165,6 @@ public:
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
 	void OnEntityRemoved(EntityID entity) override;

@@ -1,22 +1,21 @@
 #ifndef Sound_h__
 #define Sound_h__
 
-#include <AL/al.h>
-#include <AL/alc.h>
-
 #include "ResourceManager.h"
+#include <fmod.h>
+#include <fmod_errors.h>
+#include <Components/SoundEmitter.h>
 
 class Sound : public Resource
 {
 public:
-	Sound(std::string path);
+	Sound(std::string path, FMOD_SYSTEM* system, Components::SoundEmitter::SoundType type);
+	~Sound();
 
-	ALuint LoadFile(std::string path);
-
-	operator ALuint() const { return m_Buffer; }
+	operator FMOD_SOUND*() const { return m_Sound; }
 
 private:
-	ALuint m_Buffer;
+	FMOD_SOUND* m_Sound;
 };
 
 #endif // Sound_h__

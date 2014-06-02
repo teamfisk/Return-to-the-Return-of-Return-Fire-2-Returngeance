@@ -1,13 +1,18 @@
 #ifndef SoundEmitter_h__
 #define SoundEmitter_h__
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <fmod.hpp>
+#include <fmod_errors.h>
 #include <vector>
 
 #include "System.h"
+#include "Systems/TransformSystem.h"
 #include "Components/Transform.h"
 #include "Components/SoundEmitter.h"
-#include "Events/PlaySound.h"
+#include "Components/Listener.h"
+#include "Events/ComponentCreated.h"
+#include "Events/PlaySFX.h"
+#include "Events/PlayBGM.h"
+#include "Events/StopSound.h"
 #include "Sound.h"
 
 namespace Systems
@@ -23,33 +28,34 @@ public:
 	void RegisterComponents(ComponentFactory* cf) override;
 	void RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm) override;
 	void Initialize() override;
-
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
+	//void OnComponentRemoved(std::string type, Component* component);
 	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
-	void PlaySound(Components::SoundEmitter* emitter, std::string path); // Use if you want to play a temporary .wav file not from component
-	void PlaySound(std::shared_ptr<Components::SoundEmitter> emitter); // Use if you want to play .wav file from component // imon no hate plx T.T
-	void StopSound(std::shared_ptr<Components::SoundEmitter> emitter);
-
+	FMOD_SYSTEM* GetFMODSystem() const { return m_System; }
 private:
-	ALuint LoadFile(std::string fileName);
-	ALuint CreateSource();
-
-	//File-info
-	//char type[4];
-	//unsigned long size, chunkSize;
-	//short formatType, channels;
-	//unsigned long sampleRate, avgBytesPerSec;
-	//short bytesPerSample, bitsPerSample;
-	//unsigned long dataSize;
-
 	// Events
-	EventRelay<SoundSystem, Events::PlaySound> m_EPlaySound;
-	bool OnPlaySound(const Events::PlaySound &event);
+	EventRelay<SoundSystem, Events::ComponentCreated> m_EComponentCreated;
+	bool OnComponentCreated(const Events::ComponentCreated &event);
+	EventRelay<SoundSystem, Events::PlaySFX> m_EPlaySFX;
+	bool PlaySFX(const Events::PlaySFX &event);
+	EventRelay<SoundSystem, Events::PlayBGM> m_EPlayBGM;
+	bool PlayBGM(const Events::PlayBGM &event);
+	EventRelay<SoundSystem, Events::StopSound> m_EStopSound;
+	bool StopSound(const Events::StopSound &event);
 
-	std::map<Component*, ALuint> m_Sources;
-	std::map<std::string, ALuint> m_BufferCache; // string = fileName
+	void LoadSound(FMOD_SOUND*&, std::string, float, float);
+	void PlaySound(FMOD_CHANNEL**, FMOD_SOUND*, float volume, bool loop);
+	
+	FMOD_SYSTEM* m_System;
+	FMOD_CHANNEL* m_BGMChannel;
+	std::vector<EntityID> m_Listeners;
+	std::map<EntityID, FMOD_CHANNEL*> m_Channels;
+	std::map<EntityID, FMOD_CHANNEL*> m_DeleteChannels;
+	std::map<EntityID, FMOD_SOUND*> m_Sounds;	
+	std::map<EntityID, FMOD_SOUND*> m_DeleteSounds;	
+	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
+	
 };
 
 }
