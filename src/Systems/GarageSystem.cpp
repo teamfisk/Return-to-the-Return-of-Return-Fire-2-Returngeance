@@ -5,12 +5,14 @@
 void Systems::GarageSystem::RegisterComponents( ComponentFactory* cf )
 {
 	cf->Register<Components::Garage>([]() { return new Components::Garage(); });
+	cf->Register<Components::SpawnPoint>([]() { return new Components::SpawnPoint(); });
 }
 
 void Systems::GarageSystem::Initialize()
 {
 	EVENT_SUBSCRIBE_MEMBER(m_EEnterTrigger, &Systems::GarageSystem::OnEnterTrigger);
 	EVENT_SUBSCRIBE_MEMBER(m_ELeaveTrigger, &Systems::GarageSystem::OnLeaveTrigger);
+	EVENT_SUBSCRIBE_MEMBER(m_ECommand, &Systems::GarageSystem::OnCommand);
 }
 
 void Systems::GarageSystem::Update(double dt)
@@ -34,10 +36,12 @@ bool Systems::GarageSystem::OnEnterTrigger(const Events::EnterTrigger &event)
 
 	std::string name = m_World->GetProperty<std::string>(event.Trigger, "Name");
 
-	if (name == "BoundsTrigger" || name == "ElevatorShaftTrigger")
+	if (name == "BoundsTrigger")
 	{
 		ToggleGarage(garageComponent);
 	}
+
+	m_EntitiesInTrigger[event.Trigger].insert(event.Entity);
 
 	return true;
 }
@@ -57,6 +61,40 @@ bool Systems::GarageSystem::OnLeaveTrigger(const Events::LeaveTrigger &event)
 	if (name == "BoundsTrigger")
 	{
 		ToggleGarage(garageComponent);
+	}
+
+	m_EntitiesInTrigger[event.Trigger].erase(event.Entity);
+
+	return true;
+}
+
+bool Systems::GarageSystem::OnCommand(const Events::InputCommand &event)
+{
+	if (event.Command == "use" && event.Value > 0)
+	{
+		for (auto &pair : m_EntitiesInTrigger)
+		{
+			EntityID trigger = pair.first;
+			auto entities = pair.second;
+
+			std::string name = m_World->GetProperty<std::string>(trigger, "Name");
+			if (name != "ElevatorShaftTrigger")
+				continue;
+
+			auto triggerBaseParent = m_World->GetEntityBaseParent(trigger);
+			auto triggerPlayerComponent = m_World->GetComponent<Components::Player>(triggerBaseParent);
+
+			for (EntityID entity : entities)
+			{
+				auto entityPlayerComponent = m_World->GetComponent<Components::Player>(triggerBaseParent);
+				if (triggerPlayerComponent == entityPlayerComponent)
+				{
+					EntityID garage = m_World->GetEntityParent(trigger);
+					auto garageComponent = m_World->GetComponent<Components::Garage>(garage);
+					ToggleGarage(garageComponent);
+				}
+			}
+		}
 	}
 
 	return true;

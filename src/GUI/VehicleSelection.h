@@ -3,6 +3,7 @@
 
 #include "GUI/Frame.h"
 #include "GUI/HealthOverlay.h"
+#include "Events/SpawnVehicle.h"
 
 namespace GUI
 {
@@ -37,14 +38,8 @@ namespace GUI
 			m_Background->SetTexture("Textures/GUI/VehicleSelection/1.png");
 		}
 
-		
-
-		
-
 		void Update(double dt) override
 		{
-			
-
 			glm::vec2 posDiff = m_TargetCoordinate - m_CurrentCoordinate;
 			m_CurrentCoordinate += posDiff * 2.f * (float)dt;
 
@@ -76,6 +71,12 @@ namespace GUI
 
 		bool OnCommand(const Events::InputCommand &event) override
 		{
+			if (Hidden())
+				return false;
+
+			if (event.PlayerID != m_PlayerID)
+				return false;
+
 			// Menu movement
 			if (event.Command == "interface_horizontal" || event.Command == "interface_vertical")
 			{
@@ -117,6 +118,23 @@ namespace GUI
 				m_TargetCoordinate = coord * scale + glm::vec2(Width / 2.f, Height / 2.f);
 				glm::vec2 size = m_SelectionSizes[m_CurrentSelection];
 				m_TargetSize = size * scale;
+			}
+
+			// Vehicle select
+			if (event.Command == "interface_confirm" && event.Value > 0)
+			{
+				Events::SpawnVehicle e;
+				e.PlayerID = m_PlayerID;
+				if (m_CurrentSelection == 0)
+					e.VehicleType = "Tank"; // HACK: Base on selected vehicle ID
+				else if (m_CurrentSelection == 1)
+					e.VehicleType = "Helicopter";
+				else if (m_CurrentSelection == 2)
+					e.VehicleType = "HRSV";
+				else if (m_CurrentSelection == 3)
+					e.VehicleType = "Jeep";
+				EventBroker->Publish(e);
+				Hide();
 			}
 
 			return true;

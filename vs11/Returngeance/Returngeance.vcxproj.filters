@@ -184,8 +184,7 @@
     </Filter>
     <Filter Include="Game\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
-      </Filter>
-
+    </Filter>
     <Filter Include="Base\Events">
       <UniqueIdentifier>{3cbe68d9-2446-45ee-8637-ffb805997dcd}</UniqueIdentifier>
     </Filter>
@@ -544,6 +543,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\SpawnVehicle.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\SpawnPoint.h">
+      <Filter>Game\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

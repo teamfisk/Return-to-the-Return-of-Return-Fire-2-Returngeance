@@ -1,13 +1,17 @@
 #ifndef GarageSystem_h__
 #define GarageSystem_h__
 
+#include <set>
 
 #include "System.h"
 #include "Components/Transform.h"
 #include "Components/Trigger.h"
 #include "Components/Garage.h"
+#include "Components/SpawnPoint.h"
 #include "Events/EnterTrigger.h"
 #include "Events/LeaveTrigger.h"
+#include "Events/SpawnVehicle.h"
+#include "Events/InputCommand.h"
 
 #include "Components/Player.h"
 #include "Events/Move.h"
@@ -30,12 +34,17 @@ namespace Systems
 		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 	private:
+		std::map<EntityID, std::set<EntityID>> m_EntitiesInTrigger;
+		
 		EventRelay<GarageSystem, Events::EnterTrigger> m_EEnterTrigger;
 		bool OnEnterTrigger(const Events::EnterTrigger &event);
 		EventRelay<GarageSystem, Events::LeaveTrigger> m_ELeaveTrigger;
 		bool OnLeaveTrigger(const Events::LeaveTrigger &event);
+		EventRelay<GarageSystem, Events::InputCommand> m_ECommand;
+		bool OnCommand(const Events::InputCommand &event);
 
 		void ToggleGarage(Components::Garage* garageComponent);
+	
 	};
 
 }

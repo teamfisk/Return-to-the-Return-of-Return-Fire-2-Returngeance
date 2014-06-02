@@ -8,16 +8,8 @@ namespace Events
 {
 	struct SpawnVehicle : Event
 	{
-		enum class VehicleType
-		{
-			Tank = 0,
-			Helicopter,
-			HRSV,
-			Jeep
-		};
-
 		int PlayerID;
-		VehicleType Vehicle;
+		std::string VehicleType;
 	};
 }
 

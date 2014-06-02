@@ -32,6 +32,18 @@
 #include "Components/Vehicle.h"
 #include "Components/Player.h"
 
+#include "Events/SpawnVehicle.h"
+#include "Components/SpawnPoint.h"
+
+#include "Components/Wheel.h"
+#include "Components/MeshShape.h"
+#include "Components/Camera.h"
+#include "Components/BoxShape.h"
+#include "Components/WheelPair.h"
+#include "Components/Input.h"
+
+#include "Events/SetViewportCamera.h"
+
 namespace Systems
 {
 
@@ -49,13 +61,18 @@ namespace Systems
 		void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
 
 	private:
+		std::map<EntityID, double> m_TimeSinceLastShot;
+
 		EventRelay<TankSteeringSystem, Events::Collision> m_ECollision;
 		bool OnCollision(const Events::Collision &e);
+		EventRelay<TankSteeringSystem, Events::SpawnVehicle> m_ESpawnVehicle;
+		bool OnSpawnVehicle(const Events::SpawnVehicle &e);
 
 		class TankSteeringInputController;
 		std::array<std::shared_ptr<TankSteeringInputController>, 4> m_TankInputControllers;
 
-		std::map<EntityID, double> m_TimeSinceLastShot;
+		EntityID CreateTank(int playerID);
+		void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool front);
 	};
 
 	class TankSteeringSystem::TankSteeringInputController : InputController<TankSteeringSystem>

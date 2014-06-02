@@ -170,6 +170,7 @@
     <ClInclude Include="..\..\src\Components\Trigger.h" />
     <ClInclude Include="..\..\src\Components\TriggerRotate.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\SpawnPoint.h" />
     <ClInclude Include="..\..\src\Components\Viewport.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\Components\WheelPair.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="..\..\src\Events\Rotate.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
     <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
+    <ClInclude Include="..\..\src\Events\SpawnVehicle.h" />
     <ClInclude Include="..\..\src\Events\StopSound.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Events\EnterTrigger.h" />

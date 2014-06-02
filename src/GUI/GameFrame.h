@@ -27,11 +27,12 @@ public:
 			vp1->Width = this->Width / 2.f;
 			//new PlayerHUD(vp1, "PlayerHUD", m_World, 1);
 			new VehicleSelection(vp1, "VehicleSelection", m_World, 1);
+			
 
 			vp2 = new Viewport(worldFrame, "Viewport2", m_World);
 			vp2->X = vp1->Right();
 			vp2->Width = this->Width / 2.f;
-			new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
+			//new PlayerHUD(vp2, "PlayerHUD", m_World, 2);
 
 			m_FreeCamViewport = new Viewport(worldFrame, "ViewportFreeCam", m_World);
 			m_FreeCamViewport->Hide();
