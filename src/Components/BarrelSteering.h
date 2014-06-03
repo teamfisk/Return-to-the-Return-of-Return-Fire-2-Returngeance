@@ -15,6 +15,9 @@ namespace Components
 		EntityID ShotTemplate;
 		float ShotSpeed;
 
+		float LowerRotationLimit;
+		float UpperRotationLimit;
+
 		virtual BarrelSteering* Clone() const override { return new BarrelSteering(*this); }
 	};
 

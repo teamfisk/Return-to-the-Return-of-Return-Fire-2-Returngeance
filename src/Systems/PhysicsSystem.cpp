@@ -112,20 +112,8 @@ void Systems::PhysicsSystem::Initialize()
 		m_collisionResolution = new MyCollisionResolution(this);
 	}
 	
-	enum
-	{
-		GROUND_LAYER = 1,
-		VEHICLE1_LAYER = 2,
-		VEHICLE2_LAYER = 3,
-		EXPLOSION_LAYER = 4,
-	};
-/*
-	{
-		Events::DisableCollisions e;
-		e.Layer1 = GROUND_LAYER;
-		e.Layer2 = EXPLOSION_LAYER;
-		EventBroker->Publish(e);
-	}*/
+	
+
 	/*{
 		Events::DisableCollisions e;
 		e.Layer1 = VEHICLE1_LAYER;
@@ -170,31 +158,34 @@ void Systems::PhysicsSystem::Update(double dt)
 		if (!transformComponent)
 			continue;
 
-		if(m_RigidBodies[entity]->isActive())
-		{
-			hkVector4 position;
-			hkQuaternion rotation;
-			hkVector4 velocity;
+		
+		hkVector4 position;
+		hkQuaternion rotation;
+		hkVector4 velocity;
 
-			if (parent)
-			{
-				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
-				position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
-				rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
-				velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);
-			}
-			else
-			{
-				position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
-				rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
-				velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
-			}
-			m_PhysicsWorld->markForWrite();
-			m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
-			m_RigidBodies[entity]->setLinearVelocity(velocity);
-			m_PhysicsWorld->unmarkForWrite();
-			
+		if (parent)
+		{
+			auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
+			position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
+			rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
+			velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);
 		}
+		else
+		{
+			position = GLMVEC3_TO_HKVECTOR4(transformComponent->Position);
+			rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
+			velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
+		}
+		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
+
+		if(m_RigidBodies[entity]->getMotionType() != hkpMotion::MOTION_FIXED)
+		{
+			m_RigidBodies[entity]->setLinearVelocity(velocity);
+		}
+		m_PhysicsWorld->unmarkForWrite();
+
+		
 /*
 
 		glm::vec3 pos1 = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[m_World->m_Terrain]->getPosition());
@@ -291,26 +282,27 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 		m_Wheels.push_back(entity);
 	}
 
-	EntityID entityParent = m_World->GetEntityBaseParent(entity);
+	EntityID entityParent = m_World->GetEntityParent(entity);
 
 	auto sphereComponent = m_World->GetComponent<Components::SphereShape>(entity);
 	auto boxComponent = m_World->GetComponent<Components::BoxShape>(entity);
 	auto meshShapeComponent = m_World->GetComponent<Components::MeshShape >(entity);
 	
-	if(entityParent == entity && (sphereComponent || boxComponent || meshShapeComponent))
+	if(entityParent == 0 && (sphereComponent || boxComponent || meshShapeComponent))
 	{
-		LOG_ERROR("Entity: %i , Only the children can have a shapeComponent", entity);
+		LOG_ERROR("Entity: %i, Only the children can have a shapeComponent", entity);
 		return;
 	}
 
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity);
 	if (physicsComponent && m_Shapes[entity].size() > 0)
 	{
-		if(entityParent != entity)
+		if(entityParent != 0 && !physicsComponent->Static)
 		{
-			LOG_ERROR("Entity: %i , Only the baseparent can have a PhysicsComponent", entity);
+			LOG_ERROR("Entity: %i, Only the baseparent can have a dynamic PhysicsComponent", entity);
 			return;
 		}
+
 		hkpShape* shape;	
 		if(! physicsComponent->Static) // Not static
 		{
@@ -498,7 +490,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
 				rigidBodyInfo.m_shape = shape;
-				rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+				rigidBodyInfo.m_motionType = hkpMotion::MOTION_KEYFRAMED;
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				hkVector4 position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
 				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
@@ -681,11 +673,6 @@ void Systems::PhysicsSystem::TearDownPhysicsState(EntityID entity, EntityID pare
 
 }
 
-void Systems::PhysicsSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
-{
-
-}
-
 void Systems::PhysicsSystem::SetupVisualDebugger(hkpPhysicsContext* worlds)
 {
 	// Setup the visual debugger
@@ -737,18 +724,12 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 		{
 			steeringX = (1 - (glm::clamp(abs(m_Vehicles[event.Entity]->calcKMPH() /vehicleComponent->TopSpeed), 0.f, 0.7f))) * steeringX;
 		}
-
 		
 		if(abs(m_Vehicles[event.Entity]->calcKMPH()) < 2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
 		{
 			deviceStatus->m_positionY = -0.4f;
 			deviceStatus->m_positionX = steeringX;
 		}
-// 		else if(m_Vehicles[event.Entity]->calcKMPH() > -2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
-// 		{
-// 			deviceStatus->m_positionY = 0.4f;;
-// 			deviceStatus->m_positionX = -steeringX;
-// 		}
 		else
 		{
 			deviceStatus->m_positionX = steeringX;
@@ -769,9 +750,9 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 {
 	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
 	{
+
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
-
 		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
 		transformComponent->Velocity = event.Velocity;
 		m_PhysicsWorld->unmarkForWrite();

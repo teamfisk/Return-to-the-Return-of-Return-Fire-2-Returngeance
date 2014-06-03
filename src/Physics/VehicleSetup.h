@@ -32,6 +32,7 @@
 #include "Components/Vehicle.h"
 #include "Components/Wheel.h"
 #include "Components/Transform.h"
+#include "Components/TankSteering.h"
 
 
 /// Tank specific steering implementation. Rear wheels steer in opposite direction

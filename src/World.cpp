@@ -155,11 +155,11 @@ void World::AddComponent(EntityID entity, std::string componentType, std::shared
 	component->Entity = entity;
 	m_ComponentsOfType[componentType].push_back(component);
 	m_EntityComponents[entity][componentType] = component;
-	for (auto pair : m_Systems)
-	{
-		auto system = pair.second;
-		system->OnComponentCreated(componentType, component);
-	}
+
+	Events::ComponentCreated e;
+	e.Entity = entity;
+	e.Component = component;
+	EventBroker->Publish(e);
 }
 
 EntityID World::CloneEntity(EntityID entity, EntityID parent /* = 0 */)

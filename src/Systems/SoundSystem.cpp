@@ -4,157 +4,203 @@
 
 void Systems::SoundSystem::Initialize()
 {
-	//initialize OpenAL
-	ALCdevice* Device = alcOpenDevice(NULL);
-	ALCcontext* context;
-	if(Device)
+	EVENT_SUBSCRIBE_MEMBER(m_EComponentCreated, &SoundSystem::OnComponentCreated);
+	EVENT_SUBSCRIBE_MEMBER(m_EPlaySFX, &SoundSystem::PlaySFX);
+	EVENT_SUBSCRIBE_MEMBER(m_EPlayBGM, &SoundSystem::PlayBGM);
+	EVENT_SUBSCRIBE_MEMBER(m_EStopSound, &SoundSystem::StopSound);
+	
+	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
+	FMOD_System_Create(&m_System);
+	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_3D_RIGHTHANDED, 0);
+	if(result != FMOD_OK)
 	{
-		context = alcCreateContext(Device, NULL);
-		alcMakeContextCurrent(context);
+		LOG_ERROR("Did initialized load FMOD correctly");
 	}
 	else
 	{
-		LOG_ERROR("OMG OPEN AL FAIL");
+		LOG_INFO("FMOD initialized successfully");
 	}
-
-	alGetError();
-
-	alSpeedOfSound(340.29f); // Speed of sound
-	alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
-
-	// Subscribe to events
-	m_EPlaySound = decltype(m_EPlaySound)(std::bind(&Systems::SoundSystem::OnPlaySound, this, std::placeholders::_1));
-	EventBroker->Subscribe(m_EPlaySound);
+	FMOD_System_Set3DSettings(m_System, 1.f, 1.f, 1.f); //dopplerScale, distancefactor, rolloffscale
+	
 }
 
 void Systems::SoundSystem::RegisterComponents(ComponentFactory* cf)
 {
 	cf->Register<Components::SoundEmitter>([]() { return new Components::SoundEmitter(); });
+	cf->Register<Components::Listener>([]() { return new Components::Listener(); });
 }
 
 void Systems::SoundSystem::RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm)
 {
-	rm->RegisterType("Sound", [](std::string resourceName) { return new Sound(resourceName); });
+	rm->RegisterType("Sound3D", [this](std::string resourceName) { return new Sound(resourceName, this->m_System, Components::SoundEmitter::SoundType::SOUND_3D); });
+	rm->RegisterType("Sound2D", [this](std::string resourceName) { return new Sound(resourceName, this->m_System, Components::SoundEmitter::SoundType::SOUND_2D); });
 }
 
 void Systems::SoundSystem::Update(double dt)
 {
+	FMOD_System_Update(m_System);
+	
+	//Delete sounds. Not until it's done playing
+	std::map<EntityID, FMOD_CHANNEL*>::iterator it;
+	for(it = m_DeleteChannels.begin(); it != m_DeleteChannels.end();)
+	{
+		FMOD_BOOL *isPlaying = false;
+		FMOD_Channel_IsPlaying(it->second, isPlaying);
+		if(isPlaying)
+		{
+			it++;
+		}
+		else
+		{
+			FMOD_Sound_Release(m_DeleteSounds[it->first]);
+			m_DeleteSounds.erase(it->first);
+			it = m_DeleteChannels.erase(it);
+		}
 
+	}
 }
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
-	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
-	if (transformComponent == nullptr)
-		return;
-
-	auto entityName = m_World->GetProperty<std::string>(entity, "Name");
-	if (entityName == "Camera")
+	auto listener = m_World->GetComponent<Components::Listener>(entity);
+	if(listener)
 	{
-		glm::vec3 playerPos = transformComponent->Position;
-		ALfloat listenerPos[3] = { playerPos.x, playerPos.y, -playerPos.z };
+		int lID = std::find(m_Listeners.begin(), m_Listeners.end(), entity) - m_Listeners.begin();
+		auto lTransform = m_World->GetComponent<Components::Transform>(entity);
+		
+		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
+		FMOD_VECTOR lPos = {tPos.x, tPos.y, tPos.z}; 
 
-		glm::vec3 playerVel = transformComponent->Velocity;
-		ALfloat listenerVel[3] = { playerVel.x, playerVel.y, -playerVel.z };
+		glm::vec3 tVel = (lTransform->Velocity * 1000.f) / (float)dt;
+		FMOD_VECTOR lVel = {tVel.x, tVel.y, tVel.z};
 
-		glm::fquat playerQuatOri = transformComponent->Orientation;
-		glm::vec3 playerOriFW = glm::rotate(playerQuatOri, glm::vec3(0, 0, -1));
-		glm::vec3 playerOriUP = glm::rotate(playerQuatOri, glm::vec3(0, 1, 0));
-		ALfloat listenerOri[6] = { playerOriFW.x, playerOriFW.y, playerOriFW.z, playerOriUP.x, playerOriUP.y, playerOriUP.z };
+		glm::vec3 tUp = glm::normalize(lTransform->Orientation * glm::vec3(0,1,0));
+		FMOD_VECTOR lUp = {tUp.x, tUp.y, tUp.z}; 
+		glm::vec3 tForward = glm::normalize(lTransform->Orientation * glm::vec3(0,0,-1));
+		FMOD_VECTOR lForward = {tForward.x, tForward.y, tForward.z};
 
-		//Listener
-		alListenerfv(AL_POSITION, listenerPos);
-		alListenerfv(AL_VELOCITY, listenerVel);
-		alListenerfv(AL_ORIENTATION, listenerOri);
+		FMOD_System_Set3DListenerAttributes(m_System, lID, (const FMOD_VECTOR*)&lPos, (const FMOD_VECTOR*)&lVel, (const FMOD_VECTOR*)&lForward, (const FMOD_VECTOR*)&lUp);
 	}
 
-	auto soundEmitter = m_World->GetComponent<Components::SoundEmitter>(entity);
-	if(soundEmitter != nullptr)
+	auto emitter = m_World->GetComponent<Components::SoundEmitter>(entity);
+	if(emitter)
 	{
-		ALuint source = m_Sources[soundEmitter];
-		alSourcef(source, AL_GAIN, soundEmitter->Gain);
-		//alSourcef(source, AL_MAX_DISTANCE, soundEmitter->MaxDistance);
-		alSourcef(source, AL_REFERENCE_DISTANCE, soundEmitter->ReferenceDistance);
-		alSourcef(source, AL_PITCH, soundEmitter->Pitch);
-		alSourcei(source, AL_LOOPING, soundEmitter->Loop);
+		FMOD_CHANNEL* channel = m_Channels[entity];
+		FMOD_SOUND* sound = m_Sounds[entity];
+		auto eTransform = m_World->GetComponent<Components::Transform>(entity);
+		
+		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
+		FMOD_VECTOR ePos = {tPos.x, tPos.y, tPos.z};
 
-		glm::vec3 emitterPos = transformComponent->Position;
-		ALfloat sourcePos[3] = { emitterPos.x, emitterPos.y, -emitterPos.z };
-
-		glm::vec3 emitterVel= transformComponent->Velocity;
-		ALfloat sourceVel[3] = { emitterVel.x, emitterVel.y, -emitterVel.z };
-
-		alSourcefv(source, AL_POSITION, sourcePos);
-		alSourcefv(source, AL_VELOCITY, sourceVel);
+		glm::vec3 tVel = (eTransform->Velocity * 1000.f) / float(dt);
+		FMOD_VECTOR eVel = {tVel.x, tVel.y, tVel.z};
+		
+		FMOD_Channel_Set3DAttributes(channel, &ePos, &eVel);
 	}
 }
 
-void Systems::SoundSystem::PlaySound(Components::SoundEmitter* emitter, std::string fileName)
+bool Systems::SoundSystem::OnComponentCreated(const Events::ComponentCreated &event)
 {
-	if (m_Sources.find(emitter) == m_Sources.end())
-		return;
-
-	ALuint buffer = *ResourceManager->Load<Sound>("Sound", fileName);
-	if (buffer == 0)
-		return;
-	ALuint source = m_Sources[emitter];
-	alSourcei(source, AL_BUFFER, buffer);
-	alSourcePlay(m_Sources[emitter]);
-}
-
-void Systems::SoundSystem::PlaySound(std::shared_ptr<Components::SoundEmitter> emitter)
-{
-	ALuint buffer = *ResourceManager->Load<Sound>("Sound", emitter->Path);
-	ALuint source = m_Sources[emitter.get()];
-	alSourcei(source, AL_BUFFER, buffer);
-	alSourcePlay(m_Sources[emitter.get()]);
-}
-
-void Systems::SoundSystem::StopSound(std::shared_ptr<Components::SoundEmitter> emitter)
-{
-	alSourceStop(m_Sources[emitter.get()]);
-}
-
-void Systems::SoundSystem::OnComponentCreated(std::string type, std::shared_ptr<Component> component)
-{
-	if(type == "SoundEmitter")
+	auto listener = std::dynamic_pointer_cast<Components::Listener>(event.Component);
+	if(listener)
 	{
-		ALuint source = CreateSource();
-		m_Sources[component.get()] = source;
+		m_Listeners.push_back(listener->Entity);
+	}
+
+	auto emitter = std::dynamic_pointer_cast<Components::SoundEmitter>(event.Component);
+	if(emitter)
+	{
+		FMOD_CHANNEL* channel;
+		FMOD_SOUND* sound;
+
+		std::string path = emitter->Path;
+		float volume = emitter->Gain;
+		bool loop = emitter->Loop;
+		float maxDist = emitter->MaxDistance;
+		float minDist = emitter->MinDistance;
+		float pitch = emitter->Pitch;
+		//LoadSound(sound, path, maxDist, minDist);
+		m_Channels.insert(std::make_pair(emitter->Entity, channel));
+		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
+	}
+	return true;
+}
+
+bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
+{
+	auto emitter = m_World->GetComponent<Components::SoundEmitter>(event.Emitter);
+	if(!emitter)
+	{
+		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
+		return false;
+	}
+	
+	emitter->type = Components::SoundEmitter::SoundType::SOUND_3D;
+	Sound* sound = ResourceManager->Load<Sound>("Sound3D", event.Resource);
+	m_Sounds[event.Emitter] = *sound;
+	FMOD_Sound_Set3DMinMaxDistance(*sound, emitter->MinDistance, emitter->MaxDistance);
+
+	PlaySound(&m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
+	FMOD_System_Update(m_System);
+
+	FMOD_BOOL isPlaying = false;
+	FMOD_Channel_IsPlaying(m_Channels[event.Emitter], &isPlaying);
+	if(!isPlaying)
+		LOG_ERROR("FMOD: File %s is not playing", event.Resource.c_str());
+	else
+		LOG_INFO("Now playing sound %s", event.Resource.c_str());
+	return true;
+}
+
+bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
+{
+	auto emitter = m_World->CreateEntity();
+	auto eTransform = m_World->AddComponent<Components::Transform>(emitter);
+	auto eComponent = m_World->AddComponent<Components::SoundEmitter>(emitter);
+	m_Channels[emitter] = m_BGMChannel;
+	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
+	Sound* sound = ResourceManager->Load<Sound>("Sound2D", event.Resource);
+	m_Sounds[emitter] = *sound;
+
+	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_Channels[emitter]);
+	return true;
+}
+
+bool Systems::SoundSystem::StopSound(const Events::StopSound &event)
+{
+	FMOD_Channel_Stop(m_Channels[event.Emitter]);
+	return true;
+}
+
+void Systems::SoundSystem::LoadSound(FMOD_SOUND* &sound, std::string filePath, float maxDist, float minDist)
+{
+	FMOD_RESULT result = FMOD_System_CreateSound(m_System, filePath.c_str(), FMOD_3D | FMOD_HARDWARE , 0, &sound);
+	if (result != FMOD_OK)
+	{
+		LOG_ERROR("FMOD did not load file: %s", filePath.c_str());
+	}
+	FMOD_Sound_Set3DMinMaxDistance(sound, minDist, maxDist);
+}
+
+void Systems::SoundSystem::PlaySound(FMOD_CHANNEL** channel, FMOD_SOUND* sound, float volume, bool loop)
+{
+	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, sound, false, channel);
+	FMOD_Channel_SetVolume(*channel, volume);
+	if(loop)
+	{
+		FMOD_Channel_SetMode(*channel, FMOD_LOOP_NORMAL);
+		FMOD_Sound_SetLoopCount(sound, -1);
 	}
 }
 
 void Systems::SoundSystem::OnComponentRemoved(EntityID entity, std::string type, Component* component)
 {
-	if(type == "SoundEmitter")
+	auto emitter = dynamic_cast<Components::SoundEmitter*>(component);
+	if(emitter)
 	{
-		if (m_Sources.find(component) != m_Sources.end())
-		{
-			ALuint source = m_Sources[component];
-			alDeleteSources(1, &source);
-		}
+		m_DeleteChannels.insert(std::make_pair(entity, m_Channels[entity]));
+		m_DeleteSounds.insert(std::make_pair(entity, m_Sounds[entity]));
+		m_Channels.erase(entity);
+		m_Sounds.erase(entity);
 	}
-}
-
-ALuint Systems::SoundSystem::CreateSource()
-{
-	ALuint source;
-	alGenSources((ALuint)1, &source);
-
-	alDopplerFactor(1); // Numbers greater than 1 will increase Doppler effect, numbers lower than 1 will decrease the Doppler effect
-	alDopplerVelocity(350.f); // Defines the velocity of the sound
-
-	return source;
-}
-
-bool Systems::SoundSystem::OnPlaySound(const Events::PlaySound &event)
-{
-	LOG_DEBUG("Events::PlaySound.Resource = %s", event.Resource.c_str());
-
-	ALuint buffer = *ResourceManager->Load<Sound>("Sound", event.Resource);
-	ALuint source = m_Sources.begin()->second;
-	alSourcei(source, AL_BUFFER, buffer);
-	alSourcePlay(source);
-
-	return true;
 }

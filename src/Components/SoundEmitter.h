@@ -7,16 +7,23 @@
 
 namespace Components
 {
-
+	
 struct SoundEmitter : Component
 {
-	SoundEmitter() : Gain(1.f), MaxDistance(1.f), ReferenceDistance(1.f), Pitch(1.f), Loop(false) {}
+	enum class SoundType
+	{
+		SOUND_3D,
+		SOUND_2D
+	};
+
+	SoundEmitter() : Gain(1.f), MaxDistance(1.f), MinDistance(1.f), Pitch(1.f), Loop(false) {}
 	float Gain;
 	float MaxDistance;
-	float ReferenceDistance;
+	float MinDistance;
 	float Pitch;
 	bool Loop;
 	std::string Path;
+	SoundType type;
 
 	virtual SoundEmitter* Clone() const override { return new SoundEmitter(*this); }
 };

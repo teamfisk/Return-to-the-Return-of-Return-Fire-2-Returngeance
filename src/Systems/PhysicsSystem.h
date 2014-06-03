@@ -28,6 +28,7 @@
 #include "Events/ApplyForce.h"
 #include "Events/ApplyPointImpulse.h"
 #include "Events/Collision.h"
+#include "Events/LeaveTrigger.h"
 #include "OBJ.h"
 
 // Math and base include
@@ -131,15 +132,24 @@ public:
 			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
 			{
 				Events::EnterTrigger e;
-				e.Entity1 = entity1;
-				e.Entity2 = entity2;
+				e.Trigger = entity1;
+				e.Entity = entity2;
 				m_PhysicsSystem->EventBroker->Publish(e);
 			}
 		}
 
 		virtual void phantomLeaveEvent( const hkpCollidable* collidableA, const hkpCollidable* collidableB )
 		{
+			EntityID entity1 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableA)];
+			EntityID entity2 = m_PhysicsSystem->m_RigidBodyEntities[hkpGetRigidBody(collidableB)];
 
+			if(m_PhysicsSystem->m_World->ValidEntity(entity1) && m_PhysicsSystem->m_World->ValidEntity(entity2))
+			{
+				Events::LeaveTrigger e;
+				e.Trigger = entity1;
+				e.Entity = entity2;
+				m_PhysicsSystem->EventBroker->Publish(e);
+			}
 		}
 
 	private:
@@ -155,7 +165,6 @@ public:
 
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	void OnComponentCreated(std::string type, std::shared_ptr<Component> component) override;
 	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
 	void OnEntityCommit(EntityID entity) override;
 	void OnEntityRemoved(EntityID entity) override;
@@ -179,7 +188,6 @@ private:
 	bool OnEnableCollisions(const Events::EnableCollisions &e);
 	EventRelay<PhysicsSystem, Events::DisableCollisions> m_EDisableCollisions;
 	bool OnDisableCollisions(const Events::DisableCollisions &e);
-
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);

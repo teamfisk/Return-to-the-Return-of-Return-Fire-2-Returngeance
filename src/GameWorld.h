@@ -21,6 +21,8 @@
 #include "Systems/TimerSystem.h"
 #include "Systems/DamageSystem.h"
 #include "Systems/WheelPairSystem.h"
+#include "Systems/FollowSystem.h"
+#include "Systems/GarageSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -49,6 +51,10 @@
 #include "Components/Trigger.h"
 #include "Components/Flag.h"
 #include "Components/WheelPair.h"
+#include "Components/Follow.h"
+#include "Components/TriggerRotate.h"
+#include "Components/Move.h"
+#include "Components/Rotate.h"
 
 class GameWorld : public World
 {
@@ -72,6 +78,7 @@ private:
 	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
 
 	EntityID CreateTank(int playerID);
+	void CreateGate(glm::vec3 Position);
 	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
 	EntityID CreateJeep(int playerID);
 };

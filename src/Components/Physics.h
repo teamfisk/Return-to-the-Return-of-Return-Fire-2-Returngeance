@@ -8,6 +8,14 @@ namespace Components
 
 struct Physics : Component
 {
+	enum class CollisionLayer
+	{
+		STATIC = 1,
+		VEHICLE1_ = 2,
+		VEHICLE2 = 3,
+		EXPLOSION = 4,
+	};
+
 	Physics()
 		: Mass(1.f), Static(false), Phantom(false), CalculateCenterOfMass(true), CenterOfMass(glm::vec3(0)), InitialLinearVelocity(glm::vec3(0)), InitialAngularVelocity(glm::vec3(0)),
 	LinearDamping(0.f), AngularDamping(0.05f), GravityFactor(1.f), Friction(0.5f), Restitution(0.4f), MaxLinearVelocity(200.f), MaxAngularVelocity(200.f), 

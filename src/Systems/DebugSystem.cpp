@@ -19,10 +19,10 @@ bool Systems::DebugSystem::OnKeyDown(const Events::KeyDown &event)
 {
 	if (event.KeyCode == GLFW_KEY_ENTER)
 	{
-		Events::PlaySound e;
+		Events::PlaySFX e;
 		e.Emitter = 0;
 		e.Resource = "Sounds/korvring.wav";
-		EventBroker->Publish<Events::PlaySound>(e);
+		EventBroker->Publish<Events::PlaySFX>(e);
 
 		return true;
 	}
