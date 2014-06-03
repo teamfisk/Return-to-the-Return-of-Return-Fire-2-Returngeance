@@ -91,322 +91,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
- 	{
- 		auto road_base = CreateEntity();
- 		auto transform = AddComponent<Components::Transform>(road_base);
- 		transform->Position = glm::vec3(0, -50, 0);
- 		auto model = AddComponent<Components::Model>(road_base);
- 		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
- 		auto physics = AddComponent<Components::Physics>(road_base);
- 		physics->Mass = 10;
- 		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
- 		physics->CollisionLayer = 1;
- 
- 		auto groundshape = CreateEntity(road_base);
- 		auto transformshape = AddComponent<Components::Transform>(groundshape);
- 		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
- 		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
- 
- 
- 		CommitEntity(groundshape);
- 		CommitEntity(road_base);
- 	}
-
-	{
-		auto road_middle = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(road_middle);
-		transform->Position = glm::vec3(0, -50, 0);
-		auto model = AddComponent<Components::Model>(road_middle);
-		model->ModelFile = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
-		auto physics = AddComponent<Components::Physics>(road_middle);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(road_middle);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(road_middle);
-	}
-
-	{
-		auto road_small = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(road_small);
-		transform->Position = glm::vec3(0, -50, 0);
-		auto model = AddComponent<Components::Model>(road_small);
-		model->ModelFile = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
-		auto physics = AddComponent<Components::Physics>(road_small);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(road_small);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(road_small);
-	}
-
-	
-	{
-		auto water = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(water);
-		transform->Position = glm::vec3(0, -35, 0);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		transform->Scale = glm::vec3(5000.f, 10.f, 5000.f);
-		auto model = AddComponent<Components::Model>(water);
-		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(water);
-		blendmap->TextureRed = "Textures/Skybox/Sky34/bottom.jpg";
-		blendmap->TextureGreen = "Textures/Skybox/Sky34/bottom.jpg";
-		blendmap->TextureBlue = "Textures/Skybox/Sky34/bottom.jpg";
-		blendmap->TextureRepeats = 1.f;
-
-		auto physics = AddComponent<Components::Physics>(water);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-		{
-
-			auto groundshape = CreateEntity(water);
-			auto box = AddComponent<Components::BoxShape>(groundshape);
-			box->Depth = 250.f;
-			box->Height = 5.f;
-			box->Width = 250.f;
-
-
-			CommitEntity(groundshape);
-		}
-		CommitEntity(water);
-	}
-
-	{
-		auto ground_middle = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground_middle);
-		transform->Position = glm::vec3(0, -50, 0);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(ground_middle);
-		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
-		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
-		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
-		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
-		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
-		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
-		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
-		blendmap->TextureRepeats = 30.f;
-
-		auto physics = AddComponent<Components::Physics>(ground_middle);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(ground_middle);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Middle.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(ground_middle);
-	}
-
-	{
-		auto ground_small = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground_small);
-		transform->Position = glm::vec3(0, -50, 0);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(ground_small);
-		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(ground_small);
-		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
-		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
-		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
-		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
-		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
-		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
-		blendmap->TextureRepeats = 30.f;
-
-		auto physics = AddComponent<Components::Physics>(ground_small);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(ground_small);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Small.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(ground_small);
-	}
-
-	{
-		auto ground_small_mirrored = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground_small_mirrored);
-		transform->Position = glm::vec3(0, -50, 0);
-		transform->Orientation = glm::angleAxis(glm::radians(180.f), glm::vec3(0, 1, 0));
-		auto model = AddComponent<Components::Model>(ground_small_mirrored);
-		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(ground_small_mirrored);
-		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
-		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
-		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
-		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
-		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
-		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
-		blendmap->TextureRepeats = 30.f;
-
-		auto physics = AddComponent<Components::Physics>(ground_small_mirrored);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(ground_small_mirrored);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Small.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(ground_small_mirrored);
-	}
-
-	{
-		auto ground_base = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground_base);
-		transform->Position = glm::vec3(0, -50, 0);
-		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-		auto model = AddComponent<Components::Model>(ground_base);
-		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(ground_base);
-		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
-		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
-		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
-		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
-		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
-		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
-		blendmap->TextureRepeats = 30.f;
-
-		auto physics = AddComponent<Components::Physics>(ground_base);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(ground_base);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(ground_base);
-	}
-
-	{
-		auto ground_base_mirrored = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground_base_mirrored);
-		transform->Position = glm::vec3(0, -50, 0);
-		transform->Orientation = glm::angleAxis(glm::radians(180.f), glm::vec3(0, 1, 0));
-		auto model = AddComponent<Components::Model>(ground_base_mirrored);
-		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(ground_base_mirrored);
-		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
-		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
-		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
-		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
-		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
-		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
-		blendmap->TextureRepeats = 30.f;
-
-		auto physics = AddComponent<Components::Physics>(ground_base_mirrored);
-		physics->Mass = 10;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
-		physics->CollisionLayer = 1;
-
-		auto groundshape = CreateEntity(ground_base_mirrored);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(ground_base_mirrored);
-	}
-
-	{
-		auto tree = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(tree);
-		transform->Position = glm::vec3(0, -10, 0);
-		
-		auto physics = AddComponent<Components::Physics>(tree);
-		physics->Mass = 100.f;
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-		physics->CollisionEvent = false;
-		//physics->LinearDamping = 3.f;
-		physics->CalculateCenterOfMass = true;
-		
-		{
-			auto stem = CreateEntity(tree);
-			auto transform = AddComponent<Components::Transform>(stem);
-			transform->Position = glm::vec3(0, -2.40906f, 0);
-			auto model = AddComponent<Components::Model>(stem);
-			model->ModelFile = "Models/Tree/Stem/Stem.obj";
-		}
-		
-		{
-			auto leafs = CreateEntity(tree);
-			auto transform = AddComponent<Components::Transform>(leafs);
-			transform->Position = glm::vec3(0, -2.45511f, 0);
-			auto model = AddComponent<Components::Model>(leafs);
-			model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
-			model->Transparent = true;
-			CommitEntity(leafs);
-		}
-
-		{
-			auto shape = CreateEntity(tree);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(0.f, 0.f, 0.f);
-			auto mesh = AddComponent<Components::MeshShape>(shape);
-			mesh->ResourceName = "Models/Tree/Collision/Collision.obj";
-			
-			CommitEntity(shape);
-		}	
-
-
-		/*{
-			auto shape = CreateEntity(tree);
-			auto transform = AddComponent<Components::Transform>(shape);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			transform->Position = glm::vec3(0.f, 0, 0.f);
-			box->Width = 0.296f;
-			box->Height = 2.511f;
-			box->Depth = 0.296f;
-			
-			CommitEntity(shape);
-		}		
-		
-		{
-			auto shape = CreateEntity(tree);
-			auto transform = AddComponent<Components::Transform>(shape);
-			auto sphere = AddComponent<Components::SphereShape>(shape);
-			transform->Position = glm::vec3(0, 2.04506f, 0.f);
-			sphere->Radius = 1.389f;
-
-			CommitEntity(shape);
-		}*/
-
-		CommitEntity(tree);
-	}
+	//CreateTerrain();
 
 #pragma region Wall_Debris_Template
 
@@ -616,7 +301,8 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}*/
 
-	CreateGarage(glm::vec3(-3.93076, 0, 0), 1);
+	CreateGarage(glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(), 1); // glm::vec3(0, glm::pi<float>()/2.f, 0)
+	CreateGarage(glm::vec3(-323.2f, 41.4f, -10.2f), glm::quat(), 2); // glm::vec3(0, -glm::pi<float>()/2.f, 0)
 
 	{
 		auto flag = CreateEntity();
@@ -1104,11 +790,12 @@ EntityID GameWorld::CreateJeep(int playerID)
 	return jeep;	
 }
 
-EntityID GameWorld::CreateGarage(glm::vec3 Position, int playerID)
+EntityID GameWorld::CreateGarage(glm::vec3 position, glm::quat orientation, int playerID)
 {
 	auto garage = CreateEntity();
 	auto transform = AddComponent<Components::Transform>(garage);
-	transform->Position = Position;
+	transform->Position = position;
+	transform->Orientation = orientation;
 	auto player = AddComponent<Components::Player>(garage);
 	player->ID = playerID;
 
@@ -1273,4 +960,263 @@ EntityID GameWorld::CreateGarage(glm::vec3 Position, int playerID)
 	}
 	
 	return garage;
+}
+
+void GameWorld::CreateTerrain()
+{
+	{
+		auto road_middle = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(road_middle);
+		auto model = AddComponent<Components::Model>(road_middle);
+		model->ModelFile = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
+		auto physics = AddComponent<Components::Physics>(road_middle);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(road_middle);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/MiddleRoad.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(road_middle);
+	}
+
+	
+
+	{
+		/*auto water = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(water);
+		transform->Position = glm::vec3(0, -35, 0);
+		transform->Orientation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+		transform->Scale = glm::vec3(5000.f, 10.f, 5000.f);
+		auto model = AddComponent<Components::Model>(water);
+		model->ModelFile = "Models/Placeholders/PhysicsTest/Cube.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(water);
+		blendmap->TextureRed = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureGreen = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureBlue = "Textures/Skybox/Sky34/bottom.jpg";
+		blendmap->TextureRepeats = 1.f;
+
+		auto physics = AddComponent<Components::Physics>(water);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+		{
+
+		auto groundshape = CreateEntity(water);
+		auto box = AddComponent<Components::BoxShape>(groundshape);
+		box->Depth = 250.f;
+		box->Height = 5.f;
+		box->Width = 250.f;
+
+
+		CommitEntity(groundshape);
+		}
+		CommitEntity(water);*/
+	}
+
+	{
+		auto ground_middle = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_middle);
+		auto model = AddComponent<Components::Model>(ground_middle);
+		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_middle);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_middle);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Middle.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_middle);
+	}
+
+	CreateBase(glm::quat());
+	CreateBase(glm::quat(glm::vec3(0, glm::pi<float>()/2.f, 0)));
+
+	{
+		auto tree = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(tree);
+		transform->Position = glm::vec3(0, -10, 0);
+
+		auto physics = AddComponent<Components::Physics>(tree);
+		physics->Mass = 100.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+		physics->CollisionEvent = false;
+		//physics->LinearDamping = 3.f;
+		physics->CalculateCenterOfMass = true;
+
+		{
+			auto stem = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(stem);
+			transform->Position = glm::vec3(0, -2.40906f, 0);
+			auto model = AddComponent<Components::Model>(stem);
+			model->ModelFile = "Models/Tree/Stem/Stem.obj";
+		}
+
+		{
+			auto leafs = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(leafs);
+			transform->Position = glm::vec3(0, -2.45511f, 0);
+			auto model = AddComponent<Components::Model>(leafs);
+			model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
+			model->Transparent = true;
+			CommitEntity(leafs);
+		}
+
+		{
+			auto shape = CreateEntity(tree);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(0.f, 0.f, 0.f);
+			auto mesh = AddComponent<Components::MeshShape>(shape);
+			mesh->ResourceName = "Models/Tree/Collision/Collision.obj";
+
+			CommitEntity(shape);
+		}
+
+
+		/*{
+		auto shape = CreateEntity(tree);
+		auto transform = AddComponent<Components::Transform>(shape);
+		auto box = AddComponent<Components::BoxShape>(shape);
+		transform->Position = glm::vec3(0.f, 0, 0.f);
+		box->Width = 0.296f;
+		box->Height = 2.511f;
+		box->Depth = 0.296f;
+
+		CommitEntity(shape);
+		}
+
+		{
+		auto shape = CreateEntity(tree);
+		auto transform = AddComponent<Components::Transform>(shape);
+		auto sphere = AddComponent<Components::SphereShape>(shape);
+		transform->Position = glm::vec3(0, 2.04506f, 0.f);
+		sphere->Radius = 1.389f;
+
+		CommitEntity(shape);
+		}*/
+
+		CommitEntity(tree);
+	}
+}
+
+void GameWorld::CreateBase(glm::quat orientation)
+{
+	{
+		auto ground_small = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_small);
+		transform->Orientation = orientation;
+		auto model = AddComponent<Components::Model>(ground_small);
+		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_small);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_small);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_small);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Small.obj";
+		CommitEntity(groundshape);
+
+		CommitEntity(ground_small);
+	}
+
+	{
+		auto ground_base = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(ground_base);
+		transform->Orientation = orientation;
+		auto model = AddComponent<Components::Model>(ground_base);
+		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
+		auto blendmap = AddComponent<Components::BlendMap>(ground_base);
+		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
+		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
+		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
+		blendmap->TextureGreenNormal = "Textures/Ground/Grass0126_2_SNM.png";
+		blendmap->TextureBlue = "Textures/Ground/Cliffs2.png";
+		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
+		blendmap->TextureRepeats = 30.f;
+
+		auto physics = AddComponent<Components::Physics>(ground_base);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(ground_base);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(ground_base);
+	}
+
+	{
+		auto road_base = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(road_base);
+		transform->Orientation = orientation;
+		auto model = AddComponent<Components::Model>(road_base);
+		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
+		auto physics = AddComponent<Components::Physics>(road_base);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(road_base);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(road_base);
+	}
+
+	{
+		auto road_small = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(road_small);
+		transform->Orientation = orientation;
+		auto model = AddComponent<Components::Model>(road_small);
+		model->ModelFile = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
+		auto physics = AddComponent<Components::Physics>(road_small);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(road_small);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(road_small);
+	}
 }
