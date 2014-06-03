@@ -128,27 +128,28 @@ bool Systems::SoundSystem::OnComponentCreated(const Events::ComponentCreated &ev
 
 bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 {
-	auto emitter = m_World->GetComponent<Components::SoundEmitter>(event.Emitter);
-	if(!emitter)
-	{
-		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
-		return false;
-	}
+// 	auto emitter = m_World->GetComponent<Components::SoundEmitter>(event.Emitter);
+// 	if(!emitter)
+// 	{
+// 		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
+// 		return false;
+// 	}
+
+	auto eEntity = m_World->CreateEntity();
+	auto eTransform = m_World->AddComponent<Components::Transform>(eEntity);
+	eTransform->Position = event.Position;
+	auto eComponent = m_World->AddComponent<Components::SoundEmitter>(eEntity);
+	eComponent->MinDistance = event.MinDistance;
+	eComponent->MaxDistance= event.MaxDistance;
+	eComponent->Loop = event.Loop;
+	eComponent->Gain = event.Volume;
 	
-	emitter->type = Components::SoundEmitter::SoundType::SOUND_3D;
+	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
 	Sound* sound = ResourceManager->Load<Sound>("Sound3D", event.Resource);
-	m_Sounds[event.Emitter] = *sound;
-	FMOD_Sound_Set3DMinMaxDistance(*sound, emitter->MinDistance, emitter->MaxDistance);
+	m_Sounds[eEntity] = *sound;
+	FMOD_Sound_Set3DMinMaxDistance(*sound, eComponent->MinDistance, eComponent->MaxDistance);
 
-	PlaySound(&m_Channels[event.Emitter], m_Sounds[event.Emitter], 1.0, event.Loop);
-	FMOD_System_Update(m_System);
-
-	FMOD_BOOL isPlaying = false;
-	FMOD_Channel_IsPlaying(m_Channels[event.Emitter], &isPlaying);
-	if(!isPlaying)
-		LOG_ERROR("FMOD: File %s is not playing", event.Resource.c_str());
-	else
-		LOG_INFO("Now playing sound %s", event.Resource.c_str());
+	PlaySound(&m_Channels[eEntity], m_Sounds[eEntity], 1.0, eComponent->Loop);
 	return true;
 }
 

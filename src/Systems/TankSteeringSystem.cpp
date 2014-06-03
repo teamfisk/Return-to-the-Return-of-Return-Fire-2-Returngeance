@@ -98,7 +98,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 			Events::PlaySFX e;
 			e.Resource = "Sounds/SFX/LongBoom.wav";
-			e.Emitter = entity;
+			e.Position = absoluteTransform.Position;
 			e.Loop = false;
 			EventBroker->Publish(e);
 
