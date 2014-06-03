@@ -661,7 +661,7 @@ EntityID GameWorld::CreateTank(int playerID)
 				transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
 				transform->Scale = glm::vec3(3.f);
 				AddComponent<Components::Template>(shot);
-				auto soundEmitter = AddComponent<Components::SoundEmitter>(shot);
+				auto soundEmitter = AddComponent<Components::SoundEmitter>(tank);
 				soundEmitter->MinDistance = 1000;
 				soundEmitter->Gain = 1;
 				soundEmitter->Loop = false;

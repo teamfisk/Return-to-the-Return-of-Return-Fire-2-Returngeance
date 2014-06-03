@@ -20,7 +20,7 @@ void Systems::SoundSystem::Initialize()
 	{
 		LOG_INFO("FMOD initialized successfully");
 	}
-	FMOD_System_Set3DSettings(m_System, 1.f, 1.f, 1.f); //dopplerScale, distancefactor, rolloffscale
+	FMOD_System_Set3DSettings(m_System, 0.f, 1.f, 1.f); //dopplerScale, distancefactor, rolloffscale
 	
 }
 

@@ -30,6 +30,7 @@
 #include "Components/FrameTimer.h"
 
 #include "Events/PlaySFX.h"
+#include "Events/PlayBGM.h"
 
 #include "Events/Damage.h"
 #include "Components/Vehicle.h"
