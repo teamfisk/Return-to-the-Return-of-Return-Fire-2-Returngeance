@@ -237,6 +237,19 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 		if(m_Vehicles.find(car) != m_Vehicles.end())
 		{
 			m_PhysicsWorld->markForWrite();
+			
+			/*auto player = m_World->GetComponent<Components::Player>(car);
+			if(player)
+			{
+				if(player->ID == 1)
+				{
+					LOG_INFO("Speed: %f, Gear: %i, RPM: %f", m_Vehicles[car]->calcKMPH(), m_Vehicles[car]->m_currentGear,  m_Vehicles[car]->m_rpm);
+					
+				}
+			}*/
+			
+			
+			
 			m_Vehicles[car]->getChassis()->activate();
 
 			hkVector4 hardPoint = m_Vehicles[car]->m_suspension->m_wheelParams[wheelComponent->ID].m_hardpointChassisSpace;
@@ -408,7 +421,6 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 						i--;
 					}
 				}
-
 
 				VehicleSetup vehicleSetup;
 				// Create the basic vehicle.
@@ -638,6 +650,8 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			std::vector<hkReal>* vertices = new std::vector<hkReal>;
 			std::vector<hkUint16>* vertexIndices = new std::vector<hkUint16>;
 			auto meshShape = ResourceManager->Load<OBJ>("OBJ", meshShapeComponent->ResourceName);
+			if(!meshShape)
+				return;
 
 			for (auto &vertex : meshShape->Vertices)
 			{
@@ -749,7 +763,7 @@ bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
 		}
 		else
 		{
-			deviceStatus->m_positionX = steeringX;
+			deviceStatus->m_positionX = event.PositionX;
 			deviceStatus->m_positionY = event.PositionY;
 		}
 		
