@@ -78,6 +78,9 @@
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\WallSystem.cpp">
+      <Filter>Gameplay\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\Systems\GarageSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
@@ -185,10 +188,9 @@
     <Filter Include="Particle System\Events">
       <UniqueIdentifier>{ddd3c442-7c2f-4690-9308-fcef62deee0b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gameplay\Systems">
+    <Filter Include="Game\Systems">
       <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
-      </Filter>
-
+    </Filter>
     <Filter Include="Base\Events">
       <UniqueIdentifier>{3cbe68d9-2446-45ee-8637-ffb805997dcd}</UniqueIdentifier>
     </Filter>
@@ -521,6 +523,12 @@
     <ClInclude Include="..\..\src\Events\Move.h">
       <Filter>Base\Events</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\BlendMap.h">
+      <Filter>Rendering\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\WallSystem.h">
+      <Filter>Gameplay\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\LeaveTrigger.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
@@ -556,6 +564,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\OnDead.h">
+      <Filter>Gameplay\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\SpawnVehicle.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Wall.h">
+      <Filter>Game\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\SpawnPoint.h">
+      <Filter>Game\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

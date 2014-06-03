@@ -2,7 +2,7 @@
 #include "TankSteeringSystem.h"
 #include "World.h"
 
-void Systems::TankSteeringSystem::RegisterComponents( ComponentFactory* cf )
+void Systems::TankSteeringSystem::RegisterComponents(ComponentFactory* cf)
 {
 	cf->Register<Components::TankSteering>([]() { return new Components::TankSteering(); });
 	cf->Register<Components::TowerSteering>([]() { return new Components::TowerSteering(); });
@@ -12,6 +12,7 @@ void Systems::TankSteeringSystem::RegisterComponents( ComponentFactory* cf )
 void Systems::TankSteeringSystem::Initialize()
 {
 	EVENT_SUBSCRIBE_MEMBER(m_ECollision, &Systems::TankSteeringSystem::OnCollision);
+	EVENT_SUBSCRIBE_MEMBER(m_ESpawnVehicle, &Systems::TankSteeringSystem::OnSpawnVehicle);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -124,7 +125,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 // 	}
 }
 
-bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
+bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 {
 	if(m_World->ValidEntity(e.Entity1) && m_World->ValidEntity(e.Entity2))
 	{
@@ -151,6 +152,9 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 		{
 			return false;
 		}
+
+		if(m_World->GetComponent<Components::Template>(shellEntity))
+			return false;
 
 		auto physicsComponents = m_World->GetComponentsOfType<Components::Physics>();
 		auto shellTransform = m_World->GetComponent<Components::Transform>(shellEntity);
@@ -218,8 +222,6 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 					EventBroker->Publish(d);
 				}
 				
-				
-
 				m_World->RemoveEntity(shellEntity);
 			}
 		}
@@ -300,6 +302,319 @@ bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
 	return true;
 }
 
+bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &event)
+{
+	if (event.VehicleType != "Tank")
+		return false;
+
+	auto spawnPointComponents = m_World->GetComponentsOfType<Components::SpawnPoint>();
+	if (!spawnPointComponents)
+	{
+		LOG_ERROR("Found no spawn points!");
+		return false;
+	}
+
+	for (auto &spawnPointComponent : *spawnPointComponents)
+	{
+		auto spawnPoint = spawnPointComponent->Entity;
+		auto spawnPointBaseParent = m_World->GetEntityBaseParent(spawnPoint);
+		auto playerComponent = m_World->GetComponent<Components::Player>(spawnPointBaseParent);
+		if (!playerComponent || playerComponent->ID != event.PlayerID)
+			continue;
+		
+		Components::Transform absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(spawnPoint);
+
+		// Create a tank
+		EntityID tank = CreateTank(event.PlayerID);
+		auto tankTransform = m_World->GetComponent<Components::Transform>(tank);
+		tankTransform->Position = absoluteTransform.Position;
+		tankTransform->Orientation = absoluteTransform.Orientation;
+		// Set the viewport correctly
+		Events::SetViewportCamera e;
+		e.CameraEntity = m_World->GetProperty<EntityID>(tank, "Camera");
+		if (event.PlayerID == 1)
+			e.ViewportFrame = "Viewport1";
+		else if (event.PlayerID == 2)
+			e.ViewportFrame = "Viewport2";
+		EventBroker->Publish(e);
+	}
+
+	return true;
+}
+
+EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
+{
+	auto tank = m_World->CreateEntity();
+	auto transform = m_World->AddComponent<Components::Transform>(tank);
+	transform->Position = glm::vec3(0, 5, 0);
+	//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
+	auto physics = m_World->AddComponent<Components::Physics>(tank);
+	physics->Mass = 63000 - 16000;
+	physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+	auto vehicle = m_World->AddComponent<Components::Vehicle>(tank);
+	vehicle->MaxTorque = 8000.f;
+	vehicle->MaxSteeringAngle = 90.f;
+	vehicle->MaxSpeedFullSteeringAngle = 4.f;
+	auto player = m_World->AddComponent<Components::Player>(tank);
+	player->ID = playerID;
+	auto tankSteering = m_World->AddComponent<Components::TankSteering>(tank);
+	m_World->AddComponent<Components::Input>(tank);
+	auto health = m_World->AddComponent<Components::Health>(tank);
+	health->Amount = 100.f;
+
+	{
+		auto shape = m_World->CreateEntity(tank);
+		auto transform = m_World->AddComponent<Components::Transform>(shape);
+		auto meshShape = m_World->AddComponent<Components::MeshShape>(shape);
+		meshShape->ResourceName = "Models/Tank/TankCollisionShape.obj";
+		m_World->CommitEntity(shape);
+	}
+	{
+		auto shapeTower = m_World->CreateEntity(tank);
+		auto transform = m_World->AddComponent<Components::Transform>(shapeTower);
+		transform->Position = glm::vec3(0, 1.10633f, 1.03024f);
+		auto box = m_World->AddComponent<Components::BoxShape>(shapeTower);
+		box->Width = 1.298f;
+		box->Height = 0.502f;
+		box->Depth = 1.211f;
+		m_World->CommitEntity(shapeTower);
+	}
+
+	{
+		auto chassis = m_World->CreateEntity(tank);
+		auto transform = m_World->AddComponent<Components::Transform>(chassis);
+		transform->Position = glm::vec3(0, 0, 0);
+		auto model = m_World->AddComponent<Components::Model>(chassis);
+		model->ModelFile = "Models/Tank/tankBody.obj";
+	}
+	{
+		auto tower = m_World->CreateEntity(tank);
+		m_World->SetProperty(tower, "Name", "tower");
+		auto transform = m_World->AddComponent<Components::Transform>(tower);
+		transform->Position = glm::vec3(0.f, 0.68f, 0.9f);
+		auto model = m_World->AddComponent<Components::Model>(tower);
+		model->ModelFile = "Models/Tank/tankTop.obj";
+		auto towerSteering = m_World->AddComponent<Components::TowerSteering>(tower);
+		towerSteering->Axis = glm::vec3(0.f, 1.f, 0.f);
+		towerSteering->TurnSpeed = glm::pi<float>() / 4.f;
+		{
+			auto barrel = m_World->CreateEntity(tower);
+			auto transform = m_World->AddComponent<Components::Transform>(barrel);
+			transform->Position = glm::vec3(-0.012f, 0.3f, -0.95);
+			auto model = m_World->AddComponent<Components::Model>(barrel);
+			model->ModelFile = "Models/Tank/tankBarrel.obj";
+			auto barrelSteering = m_World->AddComponent<Components::BarrelSteering>(barrel);
+			barrelSteering->Axis = glm::vec3(1.f, 0.f, 0.f);
+			barrelSteering->TurnSpeed = glm::pi<float>() / 4.f;
+			barrelSteering->ShotSpeed = 70.f;
+			barrelSteering->LowerRotationLimit = glm::radians(-10.f);
+			barrelSteering->UpperRotationLimit = glm::radians(40.f);
+			{
+				auto shot = m_World->CreateEntity(barrel);
+				auto transform = m_World->AddComponent<Components::Transform>(shot);
+				transform->Position = glm::vec3(0.35f, 0.f, -2.f);
+				transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
+				transform->Scale = glm::vec3(3.f);
+				m_World->AddComponent<Components::Template>(shot);
+				auto physics = m_World->AddComponent<Components::Physics>(shot);
+				physics->Mass = 25.f;
+				physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+				physics->CollisionEvent = true;
+				auto modelComponent = m_World->AddComponent<Components::Model>(shot);
+				modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
+				auto tankShellComponent = m_World->AddComponent<Components::TankShell>(shot);
+				tankShellComponent->Damage = 20.f;
+				tankShellComponent->ExplosionRadius = 30.f;
+				tankShellComponent->ExplosionStrength = 300000.f;
+				{
+					auto shape = m_World->CreateEntity(shot);
+					auto transform = m_World->AddComponent<Components::Transform>(shape);
+					auto boxShape = m_World->AddComponent<Components::BoxShape>(shape);
+					boxShape->Width = 0.5f;
+					boxShape->Height = 0.5f;
+					boxShape->Depth = 0.5f;
+					m_World->CommitEntity(shape);
+				}
+				m_World->CommitEntity(shot);
+				barrelSteering->ShotTemplate = shot;
+
+
+				auto cameraTower = m_World->CreateEntity(barrel);
+				{
+					auto transform = m_World->AddComponent<Components::Transform>(cameraTower);
+					transform->Position.z = 16.f;
+					transform->Position.y = 4.f;
+					transform->Orientation = glm::quat(glm::vec3(-glm::radians(5.f), 0.f, 0.f));
+					auto cameraComp = m_World->AddComponent<Components::Camera>(cameraTower);
+					cameraComp->FarClip = 2000.f;
+					/*auto follow = m_World->AddComponent<Components::Follow>(cameraTower);
+					follow->Entity = barrel;
+					follow->Distance = 15.f;
+					follow->FollowAxis = glm::vec3(1, 1, 1);*/
+				}
+
+				m_World->SetProperty(tank, "Camera", cameraTower);
+			}
+			m_World->CommitEntity(barrel);
+			tankSteering->Barrel = barrel;
+		}
+		m_World->CommitEntity(tower);
+		tankSteering->Turret = tower;
+
+
+
+	}
+
+
+
+	//{
+	//	auto lightentity = m_World->CreateEntity(tank);
+	//	auto transform = m_World->AddComponent<Components::Transform>(lightentity);
+	//	transform->Position = glm::vec3(0, 0, 0);
+	//	auto light = m_World->AddComponent<Components::PointLight>(lightentity);
+	//	//light->Diffuse = glm::vec3(128.f/255.f, 172.f/255.f, 242.f/255.f);
+	//	//light->Specular = glm::vec3(1.f);
+	//	/*light->ConstantAttenuation = 0.3f;
+	//	light->LinearAttenuation = 0.003f;
+	//	light->QuadraticAttenuation = 0.002f;*/
+	//}
+
+	// 		auto wheelpair = m_World->CreateEntity(tank);
+	// 		SetProperty(wheelpair, "Name", "WheelPair");
+	// 		AddComponent(wheelpair, "WheelPairThingy");
+
+#pragma region Wheels
+	//Create wheels
+	float wheelOffset = -0.83f;
+	const float suspensionStrength = 15.f;
+	const float springLength = 0.3f;
+
+	AddTankWheelPair(tank, glm::vec3(1.68f, wheelOffset, -1.715f), 0, true);
+	AddTankWheelPair(tank, glm::vec3(-1.68f, wheelOffset, -1.715f), 0, true);
+	AddTankWheelPair(tank, glm::vec3(1.68f, wheelOffset, 2.375), 1, false);
+	AddTankWheelPair(tank, glm::vec3(-1.68f, wheelOffset, 2.375), 1, false);
+#pragma endregion
+
+	{
+		auto entity = m_World->CreateEntity(tank);
+		auto transformComponent = m_World->AddComponent<Components::Transform>(entity);
+		transformComponent->Position = glm::vec3(-2, -1.7, 2.0);
+		transformComponent->Scale = glm::vec3(3, 3, 3);
+		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
+		auto emitterComponent = m_World->AddComponent<Components::ParticleEmitter>(entity);
+		emitterComponent->SpawnCount = 2;
+		emitterComponent->SpawnFrequency = 0.005;
+		emitterComponent->SpreadAngle = glm::pi<float>();
+		emitterComponent->UseGoalVelocity = false;
+		emitterComponent->LifeTime = 0.5;
+		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
+		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
+		m_World->CommitEntity(entity);
+
+		auto particleEntity = m_World->CreateEntity(entity);
+		auto TEMP = m_World->AddComponent<Components::Transform>(particleEntity);
+		TEMP->Scale = glm::vec3(0);
+		auto spriteComponent = m_World->AddComponent<Components::Sprite>(particleEntity);
+		spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
+		emitterComponent->ParticleTemplate = particleEntity;
+
+		m_World->CommitEntity(particleEntity);
+	}
+
+	m_World->CommitEntity(tank);
+
+	return tank;
+}
+
+void Systems::TankSteeringSystem::AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool front)
+{
+	const float separation = 1.77f;
+	const float suspensionStrength = 15.f;
+	const float springLength = 0.3f;
+
+	bool steering = front;
+
+	auto wheelFront = m_World->CreateEntity(tankEntity);
+	{
+		auto transform = m_World->AddComponent<Components::Transform>(wheelFront);
+		transform->Position = position - glm::vec3(0, 0, separation / 2.f);  // glm::vec3(1.68f, -0.83f - wheelOffset, -0.83f);
+		//transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+#ifdef DEBUG
+		auto model = m_World->AddComponent<Components::Model>(wheelFront);
+		model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+#endif
+		auto Wheel = m_World->AddComponent<Components::Wheel>(wheelFront);
+		Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+		Wheel->AxleID = axleID;
+		Wheel->Mass = 2000;
+		Wheel->Radius = 0.6f;
+		Wheel->Steering = steering;
+		Wheel->SuspensionStrength = suspensionStrength;
+		Wheel->Friction = 4.f;
+		Wheel->ConnectedToHandbrake = true;
+		Wheel->TorqueRatio = 0.125f;
+		Wheel->Width = 0.6f;
+		m_World->CommitEntity(wheelFront);
+	}
+
+	auto wheelBack = m_World->CreateEntity(tankEntity);
+	{
+		auto transform = m_World->AddComponent<Components::Transform>(wheelBack);
+		transform->Position = position + glm::vec3(0, 0, separation / 2.f); // glm::vec3(1.68f, -0.83f - wheelOffset, -2.6f);
+		//transform->Orientation = glm::angleAxis(glm::pi<float>(), glm::vec3(0, 1, 0));
+#ifdef DEBUG
+		auto model = m_World->AddComponent<Components::Model>(wheelBack);
+		model->ModelFile = "Models/Tank/Fix/WheelPhysics.obj";
+#endif
+		auto Wheel = m_World->AddComponent<Components::Wheel>(wheelBack);
+		Wheel->Hardpoint = transform->Position + glm::vec3(0.f, springLength, 0.f);
+		Wheel->AxleID = axleID;
+		Wheel->Mass = 2000;
+		Wheel->Radius = 0.6f;
+		Wheel->Steering = steering;
+		Wheel->SuspensionStrength = suspensionStrength;
+		Wheel->Friction = 4.f;
+		Wheel->ConnectedToHandbrake = true;
+		Wheel->TorqueRatio = 0.125f;
+		Wheel->Width = 0.6f;
+		m_World->CommitEntity(wheelBack);
+	}
+
+	auto wheelPair = m_World->CreateEntity(tankEntity);
+	{
+		{
+			auto transform = m_World->AddComponent<Components::Transform>(wheelPair);
+			transform->Position = position;
+			//transform->Orientation = glm::quat(glm::vec3(0, glm::pi<float>() / 4.f, 0));
+
+			auto pair = m_World->AddComponent<Components::WheelPair>(wheelPair);
+			pair->FakeWheelFront = wheelFront;
+			pair->FakeWheelBack = wheelBack;
+		}
+
+		auto modelEntity = m_World->CreateEntity(wheelPair);
+		{
+			auto transform = m_World->AddComponent<Components::Transform>(modelEntity);
+			//transform->Position = glm::vec3(0.f, 0.35f, 0.f);
+			if (front)
+			{
+				transform->Position = glm::vec3(0.f, 0.03f, 0.f);
+				transform->Orientation = glm::quat(glm::vec3(0, glm::pi<float>(), 0));
+			}
+			else
+			{
+				transform->Position = glm::vec3(0.f, 0.17f, 0.f);
+				transform->Scale = glm::vec3(1.f, 1.2f, 1.2f);
+			}
+
+			auto model = m_World->AddComponent<Components::Model>(modelEntity);
+			model->ModelFile = "Models/Tank/tankWheel.obj";
+		}
+		m_World->CommitEntity(modelEntity);
+	}
+	m_World->CommitEntity(wheelPair);
+}
+
 void Systems::TankSteeringSystem::TankSteeringInputController::Update( double dt )
 {
 	PositionX = m_Horizontal;
@@ -363,6 +678,4 @@ bool Systems::TankSteeringSystem::TankSteeringInputController::OnCommand(const E
 	}
 	return true;
 }
-
-
 

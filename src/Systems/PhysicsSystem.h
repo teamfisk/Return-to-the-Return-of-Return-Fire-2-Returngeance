@@ -23,6 +23,7 @@
 #include "Components/HingeConstraint.h"
 #include "Components/WheelPair.h"
 #include "Components/TowerSteering.h"
+#include "Components/Player.h"
 #include "Events/TankSteer.h"
 #include "Events/SetVelocity.h"
 #include "Events/ApplyForce.h"

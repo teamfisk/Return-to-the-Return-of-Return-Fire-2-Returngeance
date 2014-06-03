@@ -22,6 +22,7 @@
 #include "Systems/DamageSystem.h"
 #include "Systems/WheelPairSystem.h"
 #include "Systems/FollowSystem.h"
+#include "Systems/WallSystem.h"
 #include "Systems/GarageSystem.h"
 
 #include "Components/Camera.h"
@@ -77,10 +78,12 @@ private:
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
 	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
 
-	EntityID CreateTank(int playerID);
 	void CreateGate(glm::vec3 Position);
 	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
 	EntityID CreateJeep(int playerID);
+	EntityID CreateWall(glm::vec3 pos, glm::quat orientation);
+	EntityID CreateGarage(glm::vec3 Position, int playerID);
+	std::vector<EntityID> m_WallDebrisTemplates;
 };
 
 #endif // GameWorld_h__

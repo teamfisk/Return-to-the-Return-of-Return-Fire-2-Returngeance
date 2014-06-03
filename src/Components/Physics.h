@@ -16,13 +16,38 @@ struct Physics : Component
 		EXPLOSION = 4,
 	};
 
+	enum class MotionTypeEnum
+	{
+		Dynamic,
+		Fixed,
+		Keyframed
+	};
+
 	Physics()
-		: Mass(1.f), Static(false), Phantom(false), CalculateCenterOfMass(true), CenterOfMass(glm::vec3(0)), InitialLinearVelocity(glm::vec3(0)), InitialAngularVelocity(glm::vec3(0)),
-	LinearDamping(0.f), AngularDamping(0.05f), GravityFactor(1.f), Friction(0.5f), Restitution(0.4f), MaxLinearVelocity(200.f), MaxAngularVelocity(200.f), 
-	CollisionLayer(0), CollisionSystemGroup(0), CollisionSubSystemId(0), CollisionSubSystemDontCollideWith(0), CollisionEvent(false){}
+		: Mass(1.f)
+		//, Static(false)
+		, MotionType(MotionTypeEnum::Fixed)
+		, Phantom(false)
+		, CalculateCenterOfMass(true)
+		, CenterOfMass(glm::vec3(0))
+		, InitialLinearVelocity(glm::vec3(0))
+		, InitialAngularVelocity(glm::vec3(0))
+		, LinearDamping(0.f)
+		, AngularDamping(0.05f)
+		, GravityFactor(1.f)
+		, Friction(0.5f)
+		, Restitution(0.4f)
+		, MaxLinearVelocity(200.f)
+		, MaxAngularVelocity(200.f)
+		, CollisionLayer(0)
+		, CollisionSystemGroup(0)
+		, CollisionSubSystemId(0)
+		, CollisionSubSystemDontCollideWith(0)
+		, CollisionEvent(false)
+	{ }
 
 	float Mass;
-	bool Static;
+	MotionTypeEnum MotionType;
 	bool Phantom;
 
 	bool CalculateCenterOfMass;

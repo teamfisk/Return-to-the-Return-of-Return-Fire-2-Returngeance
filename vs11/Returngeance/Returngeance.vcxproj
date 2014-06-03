@@ -124,6 +124,7 @@
     <ClCompile Include="..\..\src\Systems\TimerSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\WallSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\World.cpp" />
@@ -171,7 +172,9 @@
     <ClInclude Include="..\..\src\Components\Trigger.h" />
     <ClInclude Include="..\..\src\Components\TriggerRotate.h" />
     <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\SpawnPoint.h" />
     <ClInclude Include="..\..\src\Components\Viewport.h" />
+    <ClInclude Include="..\..\src\Components\Wall.h" />
     <ClInclude Include="..\..\src\Components\Wheel.h" />
     <ClInclude Include="..\..\src\Components\WheelPair.h" />
     <ClInclude Include="..\..\src\CubemapTexture.h" />
@@ -184,8 +187,8 @@
     <ClInclude Include="..\..\src\Events\BindKey.h" />
     <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
     <ClInclude Include="..\..\src\Events\Collision.h" />
-    <ClInclude Include="..\..\src\Events\ComponentCreated.h" />
     <ClInclude Include="..\..\src\Events\CreateExplosion.h" />
+    <ClInclude Include="..\..\src\Events\ComponentCreated.h" />
     <ClInclude Include="..\..\src\Events\Damage.h" />
     <ClInclude Include="..\..\src\Events\DisableCollisions.h" />
     <ClInclude Include="..\..\src\Events\EnableCollisions.h" />
@@ -199,12 +202,14 @@
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
+    <ClInclude Include="..\..\src\Events\OnDead.h" />
     <ClInclude Include="..\..\src\Events\Move.h" />
     <ClInclude Include="..\..\src\Events\PlayBGM.h" />
     <ClInclude Include="..\..\src\Events\PlaySFX.h" />
     <ClInclude Include="..\..\src\Events\Rotate.h" />
     <ClInclude Include="..\..\src\Events\SetVelocity.h" />
     <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
+    <ClInclude Include="..\..\src\Events\SpawnVehicle.h" />
     <ClInclude Include="..\..\src\Events\StopSound.h" />
     <ClInclude Include="..\..\src\Events\TankSteer.h" />
     <ClInclude Include="..\..\src\Events\EnterTrigger.h" />
@@ -247,6 +252,7 @@
     <ClInclude Include="..\..\src\Systems\TimerSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Systems\TriggerSystem.h" />
+    <ClInclude Include="..\..\src\Systems\WallSystem.h" />
     <ClInclude Include="..\..\src\Systems\WheelPairSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
