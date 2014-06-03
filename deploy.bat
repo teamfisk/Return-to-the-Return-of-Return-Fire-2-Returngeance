@@ -15,12 +15,12 @@ MKLINK "%ConfigPath%\Sounds\" "assets\Sounds\" /J
 :: Shaders
 MKLINK "%ConfigPath%\Shaders\" "src\Shaders\" /J
 :: DLLs
-MKLINK "%ConfigPath%\glfw3.dll" "libs\glfw-3.0.4\lib\%Configuration%\glfw3.dll" /H
-MKLINK "%ConfigPath%\fmodex.dll" "libs\FMOD\lib\fmodex.dll" /H
+COPY "libs\glfw-3.0.4\lib\%Configuration%\glfw3.dll" "%ConfigPath%\glfw3.dll"
+COPY "libs\FMOD\lib\fmodex.dll" "%ConfigPath%\fmodex.dll"
 IF %~1==Debug (
-	MKLINK "%ConfigPath%\glew32d.dll" "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32d.dll" /H
+	COPY "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32d.dll" "%ConfigPath%\glew32d.dll"
 )
 IF %~1==Release (
-	MKLINK "%ConfigPath%\glew32.dll" "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32.dll" /H
+	COPY "libs\glew-1.10.0\bin\%Configuration%\Win32\glew32.dll" "%ConfigPath%\glew32.dll"
 )
 GOTO:eof
