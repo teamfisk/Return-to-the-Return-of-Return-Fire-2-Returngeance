@@ -653,6 +653,7 @@ EntityID GameWorld::CreateTank(int playerID)
 			barrelSteering->ShotSpeed = 70.f;
 			barrelSteering->LowerRotationLimit = glm::radians(-10.f);
 			barrelSteering->UpperRotationLimit = glm::radians(40.f);
+			
 			{
 				auto shot = CreateEntity(barrel);
 				auto transform = AddComponent<Components::Transform>(shot);
@@ -660,6 +661,11 @@ EntityID GameWorld::CreateTank(int playerID)
 				transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
 				transform->Scale = glm::vec3(3.f);
 				AddComponent<Components::Template>(shot);
+				auto soundEmitter = AddComponent<Components::SoundEmitter>(shot);
+				soundEmitter->MinDistance = 1000;
+				soundEmitter->Gain = 1;
+				soundEmitter->Loop = false;
+				
 				auto physics = AddComponent<Components::Physics>(shot);
 				physics->Mass = 25.f;
 				physics->Static = false;

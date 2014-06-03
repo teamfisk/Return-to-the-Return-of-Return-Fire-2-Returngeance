@@ -108,6 +108,18 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 		m_TimeSinceLastShot[tankSteeringComponent->Barrel] += dt;
 	}
+
+	auto shot = m_World->GetComponent<Components::TankShell>(entity); 
+	if(shot)
+	{
+		if(inputController->Shoot && m_TimeSinceLastShot[tankSteeringComponent->Barrel] > 0.5)
+		{
+			Events::PlaySFX e;
+			e.Resource = "Sounds/SFX/LongBoom.wav";
+			e.Emitter = entity;
+			EventBroker->Publish(e);
+		}
+	}
 }
 
 bool Systems::TankSteeringSystem::OnCollision( const Events::Collision &e )
