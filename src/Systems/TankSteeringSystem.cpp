@@ -97,7 +97,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			m_TimeSinceLastShot[tankSteeringComponent->Barrel] = 0;
 
 			Events::PlaySFX e;
-			e.Resource = "Sounds/SFX/LongBoom.wav";
+			e.Resource = "Sounds/SFX/TankShot.mp3";
 			e.Position = absoluteTransform.Position;
 			e.Loop = false;
 			EventBroker->Publish(e);
@@ -191,6 +191,13 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			e.SpreadAngle = glm::pi<float>();
 			e.spritePath = "Textures/Sprites/Blast1.png";
 			e.Color = glm::vec4(2, 2, 2, 0.2);
+			EventBroker->Publish(e);
+		}
+		{
+			Events::PlaySFX e;
+			e.MinDistance = 150.f;
+			e.Position = shellTransform->Position;
+			e.Resource = "Sounds/SFX/Explosion.wav";
 			EventBroker->Publish(e);
 		}
 

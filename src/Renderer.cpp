@@ -531,7 +531,20 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 		if (spriteJob)
 		{
 			glm::mat4 modelMatrix = spriteJob->ModelMatrix;
-			MVP = cameraMatrix * modelMatrix;
+			MVP = cameraMatrix * modelMatrix * glm::inverse(glm::toMat4(glm::inverse(m_Camera->Orientation())));
+			
+
+			//auto spriteComponent = m_World->GetComponent<Components::Sprite>(entity);
+			//if (transformComponent && spriteComponent)
+			//{
+			//	//TEMP
+			//	Texture* texture = m_World->ResourceManager->Load<Texture>("Texture", spriteComponent->SpriteFile);
+			//	//glBindTexture(GL_TEXTURE_2D, texture);
+			//	auto transform = m_World->GetComponent<Components::Transform>(spriteComponent->Entity);
+			//	glm::quat orientation2D = glm::angleAxis(glm::eulerAngles(transform->Orientation).z, glm::vec3(0, 0, -1));
+			//	m_Renderer->AddTextureToDraw(texture, transform->Position, orientation2D, transform->Scale);
+			//}
+			
 
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(glm::mat4(MVP)));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(modelMatrix)));

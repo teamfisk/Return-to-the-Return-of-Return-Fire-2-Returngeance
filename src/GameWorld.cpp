@@ -590,7 +590,7 @@ void GameWorld::Initialize()
  	{
 	EntityID Wall = CreateWall(glm::vec3(i*10.f, -15.f, 0.f), glm::quat());
 	}
-
+	
 #pragma endregion Region for all wall creations
 
 	/*EntityID tank1 = CreateTank(1);
@@ -616,7 +616,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}*/
 
-	CreateGarage(glm::vec3(-3.93076, -49, 0), 1);
+	CreateGarage(glm::vec3(-3.93076, 0, 0), 1);
 
 	{
 		auto flag = CreateEntity();

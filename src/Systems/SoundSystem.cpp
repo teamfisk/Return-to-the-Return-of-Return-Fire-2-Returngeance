@@ -44,20 +44,31 @@ void Systems::SoundSystem::Update(double dt)
 	std::map<EntityID, FMOD_CHANNEL*>::iterator it;
 	for(it = m_DeleteChannels.begin(); it != m_DeleteChannels.end();)
 	{
-		FMOD_BOOL *isPlaying = false;
-		FMOD_Channel_IsPlaying(it->second, isPlaying);
+		FMOD_BOOL isPlaying = false;
+		FMOD_Channel_IsPlaying(it->second, &isPlaying);
 		if(isPlaying)
 		{
 			it++;
 		}
 		else
 		{
-			FMOD_Sound_Release(m_DeleteSounds[it->first]);
-			m_DeleteSounds.erase(it->first);
+// 			FMOD_Sound_Release(m_DeleteSounds[it->first]);
+// 			m_DeleteSounds.erase(it->first);
 			it = m_DeleteChannels.erase(it);
 		}
 
 	}
+	//LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
+	for (auto channel : m_Channels)
+	{
+		FMOD_BOOL isPlaying = false;
+		FMOD_Channel_IsPlaying(channel.second, &isPlaying);
+		if(!isPlaying)
+		{
+			m_Channels.erase(channel.first);
+		}
+	}
+
 }
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
@@ -86,7 +97,7 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 	if(emitter)
 	{
 		FMOD_CHANNEL* channel = m_Channels[entity];
-		FMOD_SOUND* sound = m_Sounds[entity];
+		//FMOD_SOUND* sound = m_Sounds[entity];
 		auto eTransform = m_World->GetComponent<Components::Transform>(entity);
 		
 		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
@@ -121,20 +132,13 @@ bool Systems::SoundSystem::OnComponentCreated(const Events::ComponentCreated &ev
 		float pitch = emitter->Pitch;
 		//LoadSound(sound, path, maxDist, minDist);
 		m_Channels.insert(std::make_pair(emitter->Entity, channel));
-		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
+//		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
 	}
 	return true;
 }
 
 bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 {
-// 	auto emitter = m_World->GetComponent<Components::SoundEmitter>(event.Emitter);
-// 	if(!emitter)
-// 	{
-// 		LOG_ERROR("FMOD: The Entity %i does not have a SoundEmitter-component, but is trying to play a sound", event.Emitter);FMOD_CHANNEL* channel = m_Channels[event.Emitter];
-// 		return false;
-// 	}
-
 	auto eEntity = m_World->CreateEntity();
 	auto eTransform = m_World->AddComponent<Components::Transform>(eEntity);
 	eTransform->Position = event.Position;
@@ -146,10 +150,10 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 	
 	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
 	Sound* sound = ResourceManager->Load<Sound>("Sound3D", event.Resource);
-	m_Sounds[eEntity] = *sound;
+	//m_Sounds[eEntity] = *sound;
 	FMOD_Sound_Set3DMinMaxDistance(*sound, eComponent->MinDistance, eComponent->MaxDistance);
 
-	PlaySound(&m_Channels[eEntity], m_Sounds[eEntity], 1.0, eComponent->Loop);
+	PlaySound(&m_Channels[eEntity], *sound, 1.0, eComponent->Loop);
 	return true;
 }
 
@@ -161,7 +165,7 @@ bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 	m_Channels[emitter] = m_BGMChannel;
 	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
 	Sound* sound = ResourceManager->Load<Sound>("Sound2D", event.Resource);
-	m_Sounds[emitter] = *sound;
+	//m_Sounds[emitter] = *sound;
 
 	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_Channels[emitter]);
 	return true;
@@ -200,8 +204,8 @@ void Systems::SoundSystem::OnComponentRemoved(EntityID entity, std::string type,
 	if(emitter)
 	{
 		m_DeleteChannels.insert(std::make_pair(entity, m_Channels[entity]));
-		m_DeleteSounds.insert(std::make_pair(entity, m_Sounds[entity]));
+		//m_DeleteSounds.insert(std::make_pair(entity, m_Sounds[entity]));
 		m_Channels.erase(entity);
-		m_Sounds.erase(entity);
+		//m_Sounds.erase(entity);
 	}
 }
