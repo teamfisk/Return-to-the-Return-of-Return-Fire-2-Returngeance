@@ -294,6 +294,12 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 		return false;
 
 	auto spawnPointComponents = m_World->GetComponentsOfType<Components::SpawnPoint>();
+	if (!spawnPointComponents)
+	{
+		LOG_ERROR("Found no spawn points!");
+		return false;
+	}
+
 	for (auto &spawnPointComponent : *spawnPointComponents)
 	{
 		auto spawnPoint = spawnPointComponent->Entity;
