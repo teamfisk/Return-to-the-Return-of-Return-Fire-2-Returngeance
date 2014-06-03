@@ -77,8 +77,7 @@
     <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp">
       <Filter>Game\Systems</Filter>
-       </ClCompile>
-
+    </ClCompile>
     <ClCompile Include="..\..\src\Systems\WallSystem.cpp">
       <Filter>Gameplay\Systems</Filter>
     </ClCompile>
@@ -520,15 +519,13 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Events\Move.h">
       <Filter>Base\Events</Filter>
-      </ClInclude>
-
+    </ClInclude>
     <ClInclude Include="..\..\src\Components\BlendMap.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\WallSystem.h">
       <Filter>Gameplay\Systems</Filter>
-      </ClInclude>
-
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\LeaveTrigger.h">
       <Filter>Physics\Events</Filter>
     </ClInclude>
@@ -564,12 +561,13 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Events\OnDead.h">
       <Filter>Gameplay\Events</Filter>
-       </ClInclude>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\SpawnVehicle.h">
       <Filter>Game\Events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Components\Wall.h">
       <Filter>Game\Components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Components\SpawnPoint.h">
       <Filter>Game\Components</Filter>
     </ClInclude>
