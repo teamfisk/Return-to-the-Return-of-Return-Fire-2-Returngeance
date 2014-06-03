@@ -139,6 +139,9 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			return false;
 		}
 
+		if(m_World->GetComponent<Components::Template>(shellEntity))
+			return false;
+
 		auto physicsComponents = m_World->GetComponentsOfType<Components::Physics>();
 		auto shellTransform = m_World->GetComponent<Components::Transform>(shellEntity);
 		//auto otherTransform = m_World->GetComponent<Components::Transform>(otherEntity);
@@ -205,8 +208,6 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 					EventBroker->Publish(d);
 				}
 				
-				
-
 				m_World->RemoveEntity(shellEntity);
 			}
 		}
@@ -329,7 +330,7 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
 	auto physics = m_World->AddComponent<Components::Physics>(tank);
 	physics->Mass = 63000 - 16000;
-	physics->Static = false;
+	physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
 	auto vehicle = m_World->AddComponent<Components::Vehicle>(tank);
 	vehicle->MaxTorque = 8000.f;
 	vehicle->MaxSteeringAngle = 90.f;
@@ -397,7 +398,7 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 				m_World->AddComponent<Components::Template>(shot);
 				auto physics = m_World->AddComponent<Components::Physics>(shot);
 				physics->Mass = 25.f;
-				physics->Static = false;
+				physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
 				physics->CollisionEvent = true;
 				auto modelComponent = m_World->AddComponent<Components::Model>(shot);
 				modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";

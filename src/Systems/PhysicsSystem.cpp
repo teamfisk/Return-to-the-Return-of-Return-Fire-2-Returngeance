@@ -80,7 +80,7 @@ void Systems::PhysicsSystem::Initialize()
 		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY;
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
-		worldInfo.setBroadPhaseWorldSize(1500.0f);
+		worldInfo.setBroadPhaseWorldSize(500.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
 
 		// When the simulation type is SIMULATION_TYPE_MULTITHREADED, in the debug build, the sdk performs checks
@@ -151,6 +151,10 @@ void Systems::PhysicsSystem::Update(double dt)
 		EntityID entity = pair.first;
 		EntityID parent = pair.second;
 
+		auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+		if(templateComponent)
+			continue;
+
 		if (m_RigidBodies.find(entity) == m_RigidBodies.end())
 			continue;
 
@@ -218,6 +222,10 @@ void Systems::PhysicsSystem::Update(double dt)
 
 void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {	
+	auto templateComponent = m_World->GetComponent<Components::Template>(entity);
+	if(templateComponent)
+		return;
+
 	auto transformComponent = m_World->GetComponent<Components::Transform>(entity);
 	if (!transformComponent)
 		return;
@@ -297,14 +305,14 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 	auto physicsComponent = m_World->GetComponent<Components::Physics>(entity);
 	if (physicsComponent && m_Shapes[entity].size() > 0)
 	{
-		if(entityParent != 0 && !physicsComponent->Static)
+		if(entityParent != 0 && physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Dynamic)
 		{
 			LOG_ERROR("Entity: %i, Only the baseparent can have a dynamic PhysicsComponent", entity);
 			return;
 		}
 
 		hkpShape* shape;	
-		if(! physicsComponent->Static) // Not static
+		if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Dynamic)
 		{
 			hkArray<hkpShape*> shapeArray;
 			for (auto &shapeData : m_Shapes[entity])
@@ -368,6 +376,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_inertiaTensor = massProperties.m_inertiaTensor;
 				if(physicsComponent->CalculateCenterOfMass)
 					physicsComponent->CenterOfMass = HKVECTOR4_TO_GLMVEC3(massProperties.m_centerOfMass);
+
 				rigidBodyInfo.m_centerOfMass = GLMVEC3_TO_HKVECTOR4(physicsComponent->CenterOfMass);
 				rigidBodyInfo.m_mass = massProperties.m_mass;
 				rigidBodyInfo.m_linearVelocity = GLMVEC3_TO_HKVECTOR4(physicsComponent->InitialLinearVelocity);
@@ -381,7 +390,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
-				rigidBodyInfo.m_enableDeactivation = false;
+				rigidBodyInfo.m_enableDeactivation = true;;
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -438,7 +447,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBody->removeReference();
 			}
 		}
-		else // Static
+		else if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Fixed || physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Keyframed)
 		{
 			// Create the hkpStaticCompoundShape and add the instances.
 			// "meshShape" should not be modified by the user in any way after adding it as an instance.
@@ -490,7 +499,15 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 			hkpRigidBodyCinfo rigidBodyInfo;
 			{
 				rigidBodyInfo.m_shape = shape;
-				rigidBodyInfo.m_motionType = hkpMotion::MOTION_KEYFRAMED;
+				if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Fixed)
+				{
+					rigidBodyInfo.m_motionType = hkpMotion::MOTION_FIXED;
+				}
+				else if(physicsComponent->MotionType == Components::Physics::MotionTypeEnum::Keyframed)
+				{
+					rigidBodyInfo.m_motionType = hkpMotion::MOTION_KEYFRAMED;
+				}
+				
 				auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
 				hkVector4 position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
 				hkQuaternion rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
@@ -513,7 +530,7 @@ void Systems::PhysicsSystem::OnEntityCommit( EntityID entity )
 				rigidBodyInfo.m_maxLinearVelocity = physicsComponent->MaxLinearVelocity;
 				rigidBodyInfo.m_maxAngularVelocity = physicsComponent->MaxAngularVelocity;
 				rigidBodyInfo.m_collisionFilterInfo = hkpGroupFilter::calcFilterInfo(physicsComponent->CollisionLayer, physicsComponent->CollisionSystemGroup, physicsComponent->CollisionSubSystemId, physicsComponent->CollisionSubSystemDontCollideWith);
-				rigidBodyInfo.m_enableDeactivation = false;
+				rigidBodyInfo.m_enableDeactivation = true;
 			}
 			// Create RigidBody
 			hkpRigidBody* rigidBody = new hkpRigidBody(rigidBodyInfo);
@@ -752,6 +769,7 @@ bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 	{
 
 		m_PhysicsWorld->markForWrite();
+		m_RigidBodies[event.Entity]->activate();
 		m_RigidBodies[event.Entity]->setLinearVelocity(GLMVEC3_TO_HKVECTOR4(event.Velocity));
 		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
 		transformComponent->Velocity = event.Velocity;
@@ -795,7 +813,6 @@ void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string typ
 		m_RigidBodies.erase(entity);
 		m_PhysicsWorld->unmarkForWrite();
 	}
-	
 }
 
 

@@ -377,9 +377,9 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	for(auto job : rq.Forward)
 	{
 		glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
-		glm::mat4 cameraMatrix = cameraProjection * m_Camera->ViewMatrix();
+		glm::mat4 cameraMatrix = m_Camera->ViewMatrix();
 
-		glm::vec3 spritePos = glm::vec3(cameraMatrix * job->ModelMatrix * glm::vec4(1, 1, 1, 0));
+		glm::vec3 spritePos = glm::vec3((cameraMatrix * job->ModelMatrix) * glm::vec4(1, 1, 1, 1));
 		job->Depth = spritePos.z;
 	}
 	rq.Forward.Jobs.sort(Renderer::DepthSort);
@@ -389,7 +389,7 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	/*
 	Base pass
 	*/
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
+ 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 	//glViewport(0, 0, m_Width, m_Height);
@@ -475,10 +475,10 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 
 	// Clear G-buffer
-	GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_NONE , GL_NONE , GL_NONE };
 	glDrawBuffers(4, attachments);
-	glClearColor(0.f, 0.f, 0.f, 0.f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(0.f, 0.f, 0.f, 1.f);
+	//glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -512,22 +512,20 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, modelJob->DiffuseTexture);
-			if (modelJob->NormalTexture != 0)
+			/*if (modelJob->NormalTexture != 0)
 			{
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, modelJob->NormalTexture);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, modelJob->NormalTexture);
 			}
 			if (modelJob->SpecularTexture)
 			{
-				glActiveTexture(GL_TEXTURE3);
-				glBindTexture(GL_TEXTURE_2D, modelJob->SpecularTexture);
-			}
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, modelJob->SpecularTexture);
+			}*/
 			glDrawArrays(GL_TRIANGLES, modelJob->StartIndex, modelJob->EndIndex - modelJob->StartIndex + 1);
 
 			continue;
 		}
-
-
 
 		auto spriteJob = std::dynamic_pointer_cast<SpriteJob>(job);
 		if (spriteJob)
@@ -559,9 +557,9 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	glViewport(0, 0, m_Width, m_Height);
 	glScissor(0, 0, m_Width, m_Height);
 
+	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
 
 	m_FinalForwardPassProgram.Bind();
 	//ShaderProgramHandle = m_FinalForwardPassProgram.GetHandle();
@@ -947,7 +945,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind diffuse texture
 	glGenTextures(1, &m_fDiffuseTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
