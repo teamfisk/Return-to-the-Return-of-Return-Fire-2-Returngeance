@@ -22,7 +22,7 @@ Renderer::Renderer(std::shared_ptr<::ResourceManager> resourceManager)
 	LAtt = 0.0f;
 	QAtt = 3.0f;
 	m_ShadowMapRes = 1;
-	m_SunPosition = glm::vec3(0.f, 1.0f, 0.5f);
+	m_SunPosition = glm::vec3(0.f, 1.0f, 0.7f);
 	m_SunTarget = glm::vec3(0, 0, 0);
 	m_SunProjection_height = glm::vec2(-40.f, 40.f);
 	m_SunProjection_width = glm::vec2(-40.f, 40.f);

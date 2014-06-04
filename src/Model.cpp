@@ -223,6 +223,8 @@ void Model::getSimilarVertexIndex()
 				{
 					glm::vec3 tempNormal, tempTangent, tempBiTangent;
 
+					if(glm::dot(Normals[i], Normals[t]) > 0)
+					{
 					tempNormal = Normals[i] + Normals[t];
 					tempTangent = TangentNormals[i] + TangentNormals[t];
 					tempBiTangent = BiTangentNormals[i] + BiTangentNormals[t];
@@ -235,6 +237,7 @@ void Model::getSimilarVertexIndex()
 
 					BiTangentNormals[i] = tempBiTangent;
 					BiTangentNormals[t] = tempBiTangent;
+					}
 				}
 			}
 		}

@@ -49,7 +49,7 @@ vec4 phong(vec3 position, vec3 normal, vec3 specular)
 	float specularFactorSun = pow(dotSpecular, specularExponent);
 	vec3 sIs = specular.r * SunSpecularLight * specularFactorSun;
 
-	return vec4((sId), sIs.r);
+	return vec4((sId + La), sIs.r);
 }
 
 void main()
