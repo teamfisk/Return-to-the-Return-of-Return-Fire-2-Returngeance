@@ -292,8 +292,6 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}*/
 
-	
-
 	{
 		auto flag = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(flag);
@@ -442,6 +440,7 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register<Systems::FollowSystem>([this]() { return new Systems::FollowSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::GarageSystem>([this]() { return new Systems::GarageSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::WallSystem>([this]() { return new Systems::WallSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::TowerSystem>([this]() { return new Systems::TowerSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
 }
 
@@ -465,6 +464,7 @@ void GameWorld::AddSystems()
 	AddSystem<Systems::FollowSystem>();
 	AddSystem<Systems::GarageSystem>();
 	AddSystem<Systems::WallSystem>();
+	AddSystem<Systems::TowerSystem>();
 	AddSystem<Systems::RenderSystem>();
 }
 
@@ -626,6 +626,85 @@ void GameWorld::CreateGate(EntityID parent, glm::vec3 position, glm::quat orient
 		}
 		CommitEntity(gateTrigger);
 	}
+}
+
+EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
+{
+	auto towerBase = CreateEntity(parent);
+	auto transform = AddComponent<Components::Transform>(towerBase);
+	transform->Position = pos;
+
+	auto towerComponent = AddComponent<Components::Tower>(towerBase);
+
+	auto physics = AddComponent<Components::Physics>(towerBase);
+	physics->Mass = 100.f;
+	physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+	auto model = AddComponent<Components::Model>(towerBase);
+	model->ModelFile = "Models/Turret/Base/Base.obj";
+
+	auto health = AddComponent<Components::Health>(towerBase);
+	health->Amount = 50.f;
+
+	auto shape = CreateEntity(towerBase);
+	auto shapetransform = AddComponent<Components::Transform>(shape);
+	auto shapemesh = AddComponent<Components::MeshShape>(shape);
+	shapemesh->ResourceName = "Models/Turret/Base/Base.obj";
+
+	CommitEntity(shape);
+	{
+		auto towerGunRotation = CreateEntity(towerBase);
+		auto transform = AddComponent<Components::Transform>(towerGunRotation);
+		transform->Position = glm::vec3(0.f, 5.889f-0.92791f, 0.f);
+
+
+		auto towerGunBaseModel = CreateEntity(towerGunRotation);
+		{
+			auto transform = AddComponent<Components::Transform>(towerGunBaseModel);
+			transform->Orientation = glm::quat(glm::vec3(0, -glm::pi<float>() / 2.f, 0));
+			auto model = AddComponent<Components::Model>(towerGunBaseModel);
+			model->ModelFile = "Models/Turret/GunRotation/GunRotation.obj";
+		}
+		CommitEntity(towerGunBaseModel);
+
+		auto health = AddComponent<Components::Health>(towerGunRotation);
+		health->Amount = 50.f;
+		
+		{
+			auto towerGun = CreateEntity(towerGunRotation);
+			auto transform = AddComponent<Components::Transform>(towerGun);
+			transform->Position = glm::vec3(0.f, 4.12801f, 1.18125f);
+			//transform->Orientation = glm::quat(glm::vec3(0, -glm::pi<float>() / 2.f, 0));
+
+			auto towerGunModel = CreateEntity(towerGun);
+			{
+				auto transform = AddComponent<Components::Transform>(towerGunModel);
+				transform->Orientation = glm::quat(glm::vec3(0, -glm::pi<float>() / 2.f, 0));
+				auto model = AddComponent<Components::Model>(towerGunModel);
+				model->ModelFile = "Models/Turret/Gun/Gun.obj";
+			}
+			CommitEntity(towerGunModel);
+
+			auto health = AddComponent<Components::Health>(towerGun);
+			health->Amount = 50.f; 
+
+			CommitEntity(towerGun);
+			towerComponent->Gun = towerGun;
+		}
+
+		CommitEntity(towerGunRotation);
+		towerComponent->GunBase = towerGunRotation;
+	}
+
+
+
+
+	towerComponent->ID = playerID;
+
+	CommitEntity(towerBase);
+
+	return towerBase;
+
 }
 
 EntityID GameWorld::CreateWall(EntityID parent, glm::vec3 pos, glm::quat orientation)
@@ -1100,12 +1179,13 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 
 	CreateGate(base, glm::vec3(273.f, 40.185f, 0.06f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, -55.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	//CreateWall(base, glm::vec3(273.f, 40.3f, -45.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	//CreateWall(base, glm::vec3(273.f, 40.3f, -35.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	//CreateWall(base, glm::vec3(273.f, 40.3f, -25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	//CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	//CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	//CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -45.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -35.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), playerID);
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), playerID);
 }

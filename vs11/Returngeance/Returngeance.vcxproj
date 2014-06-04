@@ -122,6 +122,7 @@
     <ClCompile Include="..\..\src\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TimerSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TowerSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\WallSystem.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="..\..\src\Components\Garage.h" />
     <ClInclude Include="..\..\src\Components\Move.h" />
     <ClInclude Include="..\..\src\Components\Rotate.h" />
+    <ClInclude Include="..\..\src\Components\Tower.h" />
     <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Timer.h" />
     <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />
@@ -250,6 +252,7 @@
     <ClInclude Include="..\..\src\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\TimerSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TowerSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Systems\TriggerSystem.h" />
     <ClInclude Include="..\..\src\Systems\WallSystem.h" />
