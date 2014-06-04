@@ -126,11 +126,11 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			}
 
 			{
-// 				Events::PlaySFX e;
-// 				e.Resource = "Sounds/SFX/TankShot.mp3";
-// 				e.Position = absoluteTransform.Position;
-// 				e.Loop = false;
-// 				EventBroker->Publish(e);
+				Events::PlaySFX e;
+				e.Resource = "Sounds/SFX/TankShot.mp3";
+				e.Position = cloneTransform->Position;
+				e.Loop = false;
+				EventBroker->Publish(e);
 			}
 
 			auto clonePhysicsComponent = m_World->GetComponent<Components::Physics>(clone);
@@ -225,11 +225,11 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			EventBroker->Publish(e);
 		}
 		{
-// 			Events::PlaySFX e;
-// 			e.MinDistance = 150.f;
-// 			e.Position = shellTransform->Position;
-// 			e.Resource = "Sounds/SFX/Explosion.wav";
-// 			EventBroker->Publish(e);
+			Events::PlaySFX e;
+			e.MinDistance = 150.f;
+			e.Position = shellTransform->Position;
+			e.Resource = "Sounds/SFX/Explosion.wav";
+			EventBroker->Publish(e);
 		}
 
 		for (auto &physComponent : *physicsComponents)
@@ -399,6 +399,7 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	m_World->AddComponent<Components::Input>(tank);
 	auto health = m_World->AddComponent<Components::Health>(tank);
 	health->Amount = 100.f;
+	m_World->AddComponent<Components::Listener>(tank);
 
 	{
 		auto shape = m_World->CreateEntity(tank);
