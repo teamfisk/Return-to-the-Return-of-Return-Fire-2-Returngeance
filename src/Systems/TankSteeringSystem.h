@@ -48,6 +48,7 @@
 #include "Components/Input.h"
 
 #include "Events/SetViewportCamera.h"
+#include "Events/GameOver.h"
 
 namespace Systems
 {

@@ -145,7 +145,7 @@ private:
 		auto itpair = m_Children[m_Layer + 1].equal_range(event.ViewportFrame);
 		for (auto it = itpair.first; it != itpair.second; ++it)
 		{
-			auto viewportFrame = std::dynamic_pointer_cast<GUI::Viewport>(it->second);
+			auto viewportFrame = dynamic_cast<GUI::Viewport*>(it->second);
 			if (!viewportFrame)
 				continue;
 
