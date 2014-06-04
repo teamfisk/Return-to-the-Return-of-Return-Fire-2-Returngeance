@@ -91,7 +91,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
-	//CreateTerrain();
+	CreateTerrain();
 
 #pragma region Wall_Debris_Template
 
@@ -301,8 +301,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}*/
 
-	CreateGarage(glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(), 1); // glm::vec3(0, glm::pi<float>()/2.f, 0)
-	CreateGarage(glm::vec3(-323.2f, 41.4f, -10.2f), glm::quat(), 2); // glm::vec3(0, -glm::pi<float>()/2.f, 0)
+	
 
 	{
 		auto flag = CreateEntity();
@@ -866,7 +865,7 @@ EntityID GameWorld::CreateGarage(glm::vec3 position, glm::quat orientation, int 
 		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
 		auto rotate = AddComponent<Components::Rotate>(rightHatch);
 		rotate->StartRotation = transform->Orientation;
-		rotate->GoalRotation = transform->Orientation * glm::angleAxis(glm::radians(110.f), glm::vec3(0, 0, 1));
+		rotate->GoalRotation =  transform->Orientation * glm::angleAxis(glm::radians(110.f), glm::vec3(0, 0, 1));
 		rotate->Time = 5.f;
 		{
 			auto shape = CreateEntity(rightHatch);
@@ -1048,7 +1047,7 @@ void GameWorld::CreateTerrain()
 	}
 
 	CreateBase(glm::quat());
-	CreateBase(glm::quat(glm::vec3(0, glm::pi<float>()/2.f, 0)));
+	CreateBase(glm::quat(glm::vec3(0, glm::pi<float>(), 0)));
 
 	{
 		auto tree = CreateEntity();
@@ -1219,4 +1218,6 @@ void GameWorld::CreateBase(glm::quat orientation)
 		CommitEntity(groundshape);
 		CommitEntity(road_small);
 	}
+
+	CreateGarage(glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>(), 0)), 1); // glm::vec3(0, glm::pi<float>()/2.f, 0)
 }
