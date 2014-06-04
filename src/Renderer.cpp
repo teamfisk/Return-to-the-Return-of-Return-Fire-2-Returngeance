@@ -532,8 +532,9 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 		if (spriteJob)
 		{
 			glm::mat4 modelMatrix = spriteJob->ModelMatrix;
-			MVP = cameraMatrix * modelMatrix;
-
+			glm::mat4 billboardingMatrix = glm::inverse(glm::toMat4(glm::inverse(m_Camera->Orientation())));
+			MVP = cameraMatrix * modelMatrix * billboardingMatrix;
+			
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(glm::mat4(MVP)));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(modelMatrix)));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4(m_Camera->ViewMatrix())));

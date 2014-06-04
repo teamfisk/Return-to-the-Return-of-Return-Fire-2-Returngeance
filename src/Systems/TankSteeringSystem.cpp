@@ -90,12 +90,48 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			auto cloneTransform = m_World->GetComponent<Components::Transform>(clone);
 			cloneTransform->Position = templateAbsoluteTransform.Position;
 			cloneTransform->Orientation = absoluteTransform.Orientation * cloneTransform->Orientation;
+
 			Events::SetVelocity eSetVelocity;
 			eSetVelocity.Entity = clone;
 			eSetVelocity.Velocity = tankTransform->Velocity + absoluteTransform.Orientation * (glm::vec3(0.f, 0.f, -1.f) * barrelSteeringComponent->ShotSpeed);
 			EventBroker->Publish(eSetVelocity);
 			m_TimeSinceLastShot[tankSteeringComponent->Barrel] = 0;
 
+			{
+				Events::CreateExplosion e;
+				e.LifeTime = 1.5;
+				e.ParticleScale.push_back(0.6);
+				e.ParticleScale.push_back(1.8);
+				e.ParticlesToSpawn = 5;
+				e.Position = cloneTransform->Position;
+				e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+				e.Speed = 1.7;
+				e.SpreadAngle = glm::pi<float>()/10;
+				e.spritePath = "Textures/Sprites/Smoke1.png";
+				e.Color = glm::vec4(0.6,0.6,0.6,1);
+				EventBroker->Publish(e);
+			}
+			{
+				Events::CreateExplosion e;
+				e.LifeTime = 0.2;
+				e.ParticleScale.push_back(1);
+				//e.ParticleScale.push_back(2);
+				e.ParticlesToSpawn = 1;
+				e.Position = cloneTransform->Position;
+				e.Speed = 0;
+				e.SpreadAngle = glm::pi<float>();
+				e.spritePath = "Textures/Sprites/MuzzleFlash.png";
+				e.Color = glm::vec4(2, 2, 2, 0.2);
+				EventBroker->Publish(e);
+			}
+
+			{
+// 				Events::PlaySFX e;
+// 				e.Resource = "Sounds/SFX/TankShot.mp3";
+// 				e.Position = absoluteTransform.Position;
+// 				e.Loop = false;
+// 				EventBroker->Publish(e);
+			}
 
 			auto clonePhysicsComponent = m_World->GetComponent<Components::Physics>(clone);
 			//1,670m/s
@@ -109,6 +145,15 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 		m_TimeSinceLastShot[tankSteeringComponent->Barrel] += dt;
 	}
+
+// 	auto shot = m_World->GetComponent<Components::TankShell>(entity); 
+// 	if(shot)
+// 	{
+// 		if(inputController->Shoot && m_TimeSinceLastShot[tankSteeringComponent->Barrel] > 0.5)
+// 		{
+// 			
+// 		}
+// 	}
 }
 
 bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
@@ -178,6 +223,13 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			e.spritePath = "Textures/Sprites/Blast1.png";
 			e.Color = glm::vec4(2, 2, 2, 0.2);
 			EventBroker->Publish(e);
+		}
+		{
+// 			Events::PlaySFX e;
+// 			e.MinDistance = 150.f;
+// 			e.Position = shellTransform->Position;
+// 			e.Resource = "Sounds/SFX/Explosion.wav";
+// 			EventBroker->Publish(e);
 		}
 
 		for (auto &physComponent : *physicsComponents)
