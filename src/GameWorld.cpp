@@ -91,6 +91,24 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
+
+#pragma region Lights
+	{
+	auto light = CreateEntity();
+	auto transform = AddComponent<Components::Transform>(light);
+	auto model = AddComponent<Components::Model>(light);
+	model->ModelFile = "Models/Placeholders/PhysicsTest/PointLight.obj";
+	auto pointLight = AddComponent<Components::PointLight>(light);
+	pointLight->Radius = 40.f;
+	pointLight->Diffuse = glm::vec3(1.0f, 0.5f, 0.3f);
+	pointLight->Specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	pointLight->specularExponent = 100.f;
+
+	}
+
+#pragma endregion Region for world lights
+
+#pragma region Ground and roads
  	{
  		auto road_base = CreateEntity();
  		auto transform = AddComponent<Components::Transform>(road_base);
@@ -342,6 +360,9 @@ void GameWorld::Initialize()
 		CommitEntity(ground_base_mirrored);
 	}
 
+#pragma endregion Region for ground and roads
+
+
 	{
 		auto tree = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(tree);
@@ -406,6 +427,16 @@ void GameWorld::Initialize()
 		}*/
 
 		CommitEntity(tree);
+	}
+
+	{
+		auto leafs = CreateEntity();
+		auto transform = AddComponent<Components::Transform>(leafs);
+		transform->Position = glm::vec3(0, 0, 0);
+		auto model = AddComponent<Components::Model>(leafs);
+		model->ModelFile = "Models/Tree/Leafs/Leafs.obj";
+		model->Transparent = true;
+		CommitEntity(leafs);
 	}
 
 #pragma region Wall_Debris_Template
@@ -616,7 +647,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}*/
 
-	CreateGarage(glm::vec3(-3.93076, -49, 0), 1);
+	CreateGarage(glm::vec3(-3.93076, 10, 0), 1);
 
 	{
 		auto flag = CreateEntity();

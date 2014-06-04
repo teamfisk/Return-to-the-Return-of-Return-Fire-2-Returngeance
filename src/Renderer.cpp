@@ -126,6 +126,7 @@ void Renderer::LoadContent()
 	m_SunPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/SunPass.vert.glsl")));
 	m_SunPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/SunPass.frag.glsl")));
 	m_SunPassProgram.Compile();
+	glBindFragDataLocation(m_SunPassProgram.GetHandle(), 0, "frag_Light");
 	m_SunPassProgram.Link();
 
 	m_ForwardRendering.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/ForwardRendering.vert.glsl")));
@@ -142,7 +143,6 @@ void Renderer::LoadContent()
 	m_FirstPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex.glsl")));
 	m_FirstPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment.glsl")));
 	m_FirstPassProgram.Compile();
-
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 0, "frag_Diffuse");
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 1, "frag_Position");
 	glBindFragDataLocation(m_FirstPassProgram.GetHandle(), 2, "frag_Normal");
@@ -151,6 +151,7 @@ void Renderer::LoadContent()
 	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex2.glsl")));
 	m_SecondPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/Fragment2.glsl")));
 	m_SecondPassProgram.Compile();
+	glBindFragDataLocation(m_SecondPassProgram.GetHandle(), 0, "frag_Light");
 	m_SecondPassProgram.Link();
 
 	m_SecondPassProgram_Debug.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/Vertex2.glsl")));
@@ -161,6 +162,7 @@ void Renderer::LoadContent()
 	m_FinalPassProgram.AddShader(std::shared_ptr<Shader>(new VertexShader("Shaders/FinalPass.vert.glsl")));
 	m_FinalPassProgram.AddShader(std::shared_ptr<Shader>(new FragmentShader("Shaders/FinalPass.frag.glsl")));
 	m_FinalPassProgram.Compile();
+	glBindFragDataLocation(m_FinalPassProgram.GetHandle(), 0, "frag_Diffuse");
 	m_FinalPassProgram.Link();
 	m_ScreenQuad = CreateQuad();
 	CreateShadowMap(m_ShadowMapRes);
@@ -269,6 +271,8 @@ void Renderer::Draw(double dt)
 
 void Renderer::DrawFrame(RenderQueuePair &rq)
 {
+	return;
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
@@ -387,79 +391,79 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	//DrawShadowMap(rq.Deferred);
 
 	/*
-	Base pass
+		Base pass
 	*/
- 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
+ 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 	//glViewport(0, 0, m_Width, m_Height);
 
 	// Clear G-buffer
-	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-	glDrawBuffers(4, windowBuffClear);
+	GLenum FirstPass[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, FirstPass);
 	glClearColor(115.f / 255, 192.f / 255, 255.f / 255, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Execute the first render stage which will fill out the internal buffers with data(??)
 	m_FirstPassProgram.Bind();
-	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-	glDrawBuffers(4, windowBuffOpaque);
 
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
-	DrawSkybox();
+	//DrawSkybox();
+
 	DrawFBOScene(rq.Deferred);
 
 	/*
-	Lighting pass
+		Lighting pass
 	*/
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbLightingPass);
+	//glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 	GLenum lightingPassAttachments[] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, lightingPassAttachments);
+
+	glCullFace(GL_FRONT);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE,GL_ONE);
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
 
 	glClearColor(0.f, 0.f, 0.f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	m_SecondPassProgram.Bind();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
-
-	glCullFace(GL_FRONT);
-	DrawLightScene(rq.Deferred);
+	//DrawLightScene(rq.Deferred);
 	DrawSunLightScene();
 
 	/*
-	Final pass
+		Final pass
 	*/
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	//glViewport(m_Viewport.X, m_Viewport.Y, m_Viewport.Width, m_Viewport.Height);
-	glViewport(0, 0, m_Width, m_Height);
-	//glScissor(0, 0, m_Width, m_Height);
-	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
+	glViewport(0, 0, m_Width, m_Height);
+	glScissor(0, 0, m_Width, m_Height);
+ 	//glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+ 
+ 	
+
+	GLenum windowBuffOpaque2[] = { GL_COLOR_ATTACHMENT0, GL_NONE, GL_NONE, GL_NONE };
+	glDrawBuffers(4, windowBuffOpaque2);
 
 	m_FinalPassProgram.Bind();
-
-	// Ambient light
-	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.7f)));
-	glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
-
-	glCullFace(GL_BACK);
-	glBindVertexArray(m_ScreenQuad);
-	glEnableVertexAttribArray(0);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+ 	// Ambient light
+ 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.3f)));
+ 	//glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
+ 
+ 	glActiveTexture(GL_TEXTURE0);
+ 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
+ 	glActiveTexture(GL_TEXTURE1);
+ 	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
+ 
+ 	glCullFace(GL_BACK);
+ 	glBindVertexArray(m_ScreenQuad);
+ 	glEnableVertexAttribArray(0);
+ 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	/*
 		Transparency
@@ -469,24 +473,22 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 
 void Renderer::ForwardRendering(RenderQueue &rq)
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbBasePass);
-
-	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
-
-	// Clear G-buffer
-	GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_NONE , GL_NONE , GL_NONE };
-	glDrawBuffers(4, attachments);
-	//glClearColor(0.f, 0.f, 0.f, 1.f);
-	//glClear(GL_COLOR_BUFFER_BIT);
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
-
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
+	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+
+	// Clear G-buffer
+	//GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_NONE , GL_NONE, GL_NONE };
+	//glDrawBuffers(4, attachments);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(0.f, 0.f, 0.f, 0.f);
 
 	glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
 	glm::mat4 cameraMatrix = cameraProjection * m_Camera->ViewMatrix();
@@ -496,7 +498,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	GLuint ShaderProgramHandle = m_ForwardRendering.GetHandle();
 	for (auto &job : rq)
 	{
-		auto modelJob = std::dynamic_pointer_cast<ModelJob>(job);
+ 		auto modelJob = std::dynamic_pointer_cast<ModelJob>(job);
 		if (modelJob)
 		{
 			glm::mat4 modelMatrix = modelJob->ModelMatrix;
@@ -553,7 +555,8 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	/*
 	Final pass
 	*/
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, m_Width, m_Height);
 	glScissor(0, 0, m_Width, m_Height);
 
@@ -569,7 +572,9 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	//glUniform1f(glGetUniformLocation(ShaderProgramHandle, "Gamma"), Gamma);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
+// 	glActiveTexture(GL_TEXTURE1);
+// 	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
 
 	glCullFace(GL_BACK);
 	glBindVertexArray(m_ScreenQuad);
@@ -945,7 +950,7 @@ void Renderer::FrameBufferTextures()
 	//Generate and bind diffuse texture
 	glGenTextures(1, &m_fDiffuseTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fDiffuseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -1009,7 +1014,7 @@ void Renderer::FrameBufferTextures()
 
 	glGenTextures(1, &m_fLightingTexture);
 	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -1266,12 +1271,7 @@ void Renderer::DrawFBOScene(RenderQueue &rq)
 
 void Renderer::DrawLightScene(RenderQueue &rq)
 {
-	glEnable(GL_BLEND);
-	glBlendEquation (GL_FUNC_ADD);
-	glBlendFunc(GL_ONE,GL_ONE);
-
-	glDisable (GL_DEPTH_TEST);
-	glDepthMask (GL_FALSE);
+	
 	glBindVertexArray(m_sphereModel->VAO);
 
 	glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
@@ -1281,6 +1281,13 @@ void Renderer::DrawLightScene(RenderQueue &rq)
 
 	m_SecondPassProgram.Bind();
 	GLuint ShaderProgramHandle = m_SecondPassProgram.GetHandle();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
 
 	for (auto &light : Lights)
 	{
@@ -1304,21 +1311,10 @@ void Renderer::DrawLightScene(RenderQueue &rq)
 
 		glDrawArrays(GL_TRIANGLES, 0, m_sphereModel->Vertices.size());
 	};
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDisable(GL_BLEND);
 }
 
 void Renderer::DrawSunLightScene()
 {
-	glCullFace(GL_BACK);
-
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE,GL_ONE);
-
-	glDisable (GL_DEPTH_TEST);
-	glDepthMask (GL_FALSE);
 	//glBindVertexArray(m_sphereModel->VAO);
 
 	glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
@@ -1327,7 +1323,13 @@ void Renderer::DrawSunLightScene()
 
 	m_SunPassProgram.Bind();
 	GLuint ShaderProgramHandle = m_SunPassProgram.GetHandle();
-	
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_fPositionTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_fNormalsTexture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_fSpecularTexture);
 
 	glUniform2fv(glGetUniformLocation(ShaderProgramHandle, "ViewportSize"), 1, glm::value_ptr(glm::vec2(m_Width, m_Height)));
 	glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
@@ -1339,10 +1341,6 @@ void Renderer::DrawSunLightScene()
 	glBindVertexArray(m_ScreenQuad);
 	glEnableVertexAttribArray(0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glEnable (GL_DEPTH_TEST);
-	glDepthMask (GL_TRUE);
-	glDisable (GL_BLEND);
 }
 
 void Renderer::SetSphereModel( Model* _model )

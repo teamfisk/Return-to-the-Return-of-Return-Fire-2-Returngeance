@@ -93,7 +93,7 @@ Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
 	if (Vertices.size() > 0)
 	{
 		CreateTangents();
-		//getSimilarVertexIndex();
+		getSimilarVertexIndex();
 		CreateBuffers(Vertices, Normals, TangentNormals, BiTangentNormals, TextureCoords);
 	}
 	else
@@ -105,7 +105,7 @@ Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
 void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec3> tangents, std::vector<glm::vec3> biTangents, std::vector<glm::vec2>textureCoords)
 {
 
-	LOG_INFO("Generating VertexBuffer");
+	//LOG_INFO("Generating VertexBuffer");
 	glGenBuffers(1, &VertexBuffer);
 	if (vertices.size() > 0)
 	{
@@ -118,7 +118,7 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 		LOG_WARNING("Created empty vertex buffer!");
 	}
 
-	LOG_INFO("Generating NormalBuffer");
+	//LOG_INFO("Generating NormalBuffer");
 	glGenBuffers(1, &NormalBuffer);
 	if (normals.size() > 0)
 	{
@@ -131,7 +131,7 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 		LOG_WARNING("Created empty normal buffer!");
 	}
 
-	LOG_INFO("Generating TangentNormalsBuffer");
+	//LOG_INFO("Generating TangentNormalsBuffer");
 	glGenBuffers(1, &TangentNormalsBuffer);
 	if (tangents.size() > 0)
 	{
@@ -144,7 +144,7 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 		LOG_WARNING("Created empty tangent buffer!");
 	}
 
-	LOG_INFO("Generating BiTangentNormalsBuffer");
+	//LOG_INFO("Generating BiTangentNormalsBuffer");
 	glGenBuffers(1, &BiTangentNormalsBuffer);
 	if (biTangents.size() > 0)
 	{
@@ -158,7 +158,7 @@ void Model::CreateBuffers( std::vector<glm::vec3> vertices, std::vector<glm::vec
 	}
 
 
-	LOG_INFO("Generating textureCoordBuffer");
+	//LOG_INFO("Generating textureCoordBuffer");
 	glGenBuffers(1, &TextureCoordBuffer);
 	if (textureCoords.size() > 0)
 	{

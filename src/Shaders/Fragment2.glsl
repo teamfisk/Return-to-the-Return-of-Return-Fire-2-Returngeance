@@ -24,6 +24,7 @@ const vec3 ks = vec3(1.0, 1.0, 1.0);
 const vec3 kd = vec3(1.0, 1.0, 1.0);
 const vec3 ka = vec3(1.0, 1.0, 1.0);
 const float kshine = 1.0;
+const vec3 La = vec3(0.3, 0.3, 0.3);
 
 
 in VertexData
@@ -32,7 +33,7 @@ in VertexData
 	vec2 TextureCoord;
 } Input;
 
-out vec4 FragColor;
+out vec4 frag_Light;
 
 vec4 phong(vec3 position, vec3 normal, vec3 specular)
 {
@@ -67,6 +68,8 @@ void main()
 	vec4 NormalTexel = texture(NormalsTexture, TextureCoord);
 	vec4 SpecularTexel = texture(SpecularTexture, TextureCoord);
 
-	FragColor = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel));
+	frag_Light = phong(vec3(PositionTexel), vec3(NormalTexel), vec3(SpecularTexel));
+	//FragColor = DiffuseTexel * vec4(1.0/La, 0.0) * (vec4(La, 0.0) + vec4(LightTexel.rgb, 0.0) + vec4(LightTexel.a, LightTexel.a, LightTexel.a, 0.0));
+	//FragColor = DiffuseTexel * (vec4(La, 0.0) + vec4(LightTexel.rgb, 0.0)) + vec4(LightTexel.a, LightTexel.a, LightTexel.a, 0.0);
 	//FragColor = NormalTexel;
 }
