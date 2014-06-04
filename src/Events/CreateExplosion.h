@@ -9,8 +9,10 @@ namespace Events
 {
 	struct CreateExplosion : Event
 	{
-		CreateExplosion() 
-			: Color(glm::vec4(0)) {}
+		CreateExplosion() : 
+			Color(glm::vec4(0)), 
+			UseGoalVector(false) {}
+
 		glm::vec3 Position;
 		glm::vec4 Color;
 		double LifeTime;
@@ -20,6 +22,10 @@ namespace Events
 		float Speed;
 		float SpreadAngle;
 		std::vector<float> ParticleScale;
+		bool UseGoalVector;
+		glm::vec3 GoalVelocity;
+		bool Emitting;
+		float SpawnFrequency;
 	};
 
 }
