@@ -227,30 +227,30 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 // 			EventBroker->Publish(e);
 			
 			Events::CreateExplosion e;
-			e.LifeTime = 1;
+			e.LifeTime = 1.5;
 			e.ParticleScale.push_back(1);
-			e.ParticleScale.push_back(3);
+			e.ParticleScale.push_back(6);
 			e.ParticlesToSpawn = 20;
 			e.Position = shellTransform->Position;
 			e.SpreadAngle = glm::radians<float>(180) / 4;
 			e.RelativeUpOrientation = glm::angleAxis(glm::radians<float>(90), glm::vec3(1,0,0));
 			e.UseGoalVector = true;
-			e.GoalVelocity = glm::vec3(0,-4,0);
-			e.Speed = 6;
+			e.GoalVelocity = glm::vec3(0,-12,0);
+			e.Speed = 12;
 			e.spritePath = "Textures/Sprites/Splash.png";
 			e.Color = glm::vec4(5.f,5.f,5.f,1);
 
 			EventBroker->Publish(e);
-			e.LifeTime = 1;
+			e.LifeTime = 1.5;
 			e.ParticleScale.push_back(1);
-			e.ParticleScale.push_back(3);
+			e.ParticleScale.push_back(6);
 			e.ParticlesToSpawn = 20;
 			e.Position = shellTransform->Position;
 			e.SpreadAngle = glm::radians<float>(180)/ 4;
 			e.RelativeUpOrientation = glm::angleAxis(glm::radians<float>(90), glm::vec3(1,0,0));
 			e.UseGoalVector = true;
-			e.GoalVelocity = glm::vec3(0,-4,0);
-			e.Speed = 6;
+			e.GoalVelocity = glm::vec3(0,-12,0);
+			e.Speed = 12;
 			e.spritePath = "Textures/Sprites/Splash.png";
 			e.Color = glm::vec4(1.f,1.f,1.f,1);
 			EventBroker->Publish(e);

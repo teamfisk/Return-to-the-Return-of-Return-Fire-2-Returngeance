@@ -11,7 +11,7 @@ void Systems::SoundSystem::Initialize()
 	
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	FMOD_System_Create(&m_System);
-	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_3D_RIGHTHANDED, 0);
+	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_ENABLE_PROFILE, 0);
 	if(result != FMOD_OK)
 	{
 		LOG_ERROR("Did initialized load FMOD correctly");
