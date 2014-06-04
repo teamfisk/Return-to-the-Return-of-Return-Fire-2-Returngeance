@@ -999,6 +999,26 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 	}
 
 	{
+		auto bridge_middle = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(bridge_middle);
+		auto model = AddComponent<Components::Model>(bridge_middle);
+		model->ModelFile = "Models/TerrainFiveIstles/Bridges/MiddleBridge.obj";
+		auto physics = AddComponent<Components::Physics>(bridge_middle);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transformshape = AddComponent<Components::Transform>(shape);
+			auto meshShape = AddComponent<Components::MeshShape>(shape);
+			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/MiddleBridge.obj";
+			CommitEntity(shape);
+		}
+		CommitEntity(bridge_middle);
+	}
+
+	{
 		auto terrain_base = CreateEntity(base);
 		auto transform = AddComponent<Components::Transform>(terrain_base);
 		auto model = AddComponent<Components::Model>(terrain_base);
@@ -1064,6 +1084,26 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 
 		CommitEntity(groundshape);
 		CommitEntity(road_base);
+	}
+
+	{
+		auto bridge_base = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(bridge_base);
+		auto model = AddComponent<Components::Model>(bridge_base);
+		model->ModelFile = "Models/TerrainFiveIstles/Bridges/BaseBridge.obj";
+		auto physics = AddComponent<Components::Physics>(bridge_base);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		{
+			auto shape = CreateEntity(bridge_base);
+			auto transformshape = AddComponent<Components::Transform>(shape);
+			auto meshShape = AddComponent<Components::MeshShape>(shape);
+			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/BaseBridge.obj";
+			CommitEntity(shape);
+		}
+		CommitEntity(bridge_base);
 	}
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), playerID);
