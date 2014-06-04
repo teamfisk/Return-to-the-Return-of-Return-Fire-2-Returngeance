@@ -41,8 +41,8 @@ public:
 			m_FreeCamViewport = new Viewport(m_WorldFrame, "ViewportFreeCam", m_World);
 			m_FreeCamViewport->Hide();
 		}
-		m_WorldFrame->Hide();
-		m_MainMenuFrame = new MainMenuFrame(this, "MainMenu");
+		//m_WorldFrame->Hide();
+		//m_MainMenuFrame = new MainMenuFrame(this, "MainMenu");
 
 		m_World->Initialize();
 	}
