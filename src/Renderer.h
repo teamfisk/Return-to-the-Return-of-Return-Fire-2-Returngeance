@@ -167,6 +167,10 @@ private:
 	GLuint m_ShadowFrameBuffer;
 	GLuint m_ShadowDepthTexture;
 
+
+	GLuint m_fbFinalPass;
+	GLuint m_fFinalDiffuseTexture;
+
 	GLuint m_fbBasePass;
 	GLuint m_fDiffuseTexture;
 	GLuint m_fPositionTexture;

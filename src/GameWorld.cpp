@@ -513,12 +513,15 @@ void GameWorld::BindGamepadButton(Gamepad::Button button, std::string command, f
 	EventBroker->Publish(e);
 }
 
-void GameWorld::CreateGate(glm::vec3 Position)
+void GameWorld::CreateGate(EntityID parent, glm::vec3 position, glm::quat orientation)
 {
+	auto gateParent = CreateEntity(parent);
+	auto transform = AddComponent<Components::Transform>(gateParent);
+	transform->Position = position;
+	transform->Orientation = orientation;
 	{
-		auto gateBase = CreateEntity();
+		auto gateBase = CreateEntity(gateParent);
 		auto transform = AddComponent<Components::Transform>(gateBase);
-		transform->Position = Position;
 		auto model = AddComponent<Components::Model>(gateBase);
 		model->ModelFile = "Models/Gate/Lift/Lift.obj";
 		auto physics = AddComponent<Components::Physics>(gateBase);
@@ -577,10 +580,9 @@ void GameWorld::CreateGate(glm::vec3 Position)
 		CommitEntity(gateBase);
 	}
 
+	auto gate = CreateEntity(gateParent);
 	{
-		auto gate = CreateEntity();
 		auto transform = AddComponent<Components::Transform>(gate);
-		transform->Position = Position;
 		auto model = AddComponent<Components::Model>(gate);
 		model->ModelFile = "Models/Gate/Gate/Gate.obj";		
 		auto physics = AddComponent<Components::Physics>(gate);
@@ -588,8 +590,8 @@ void GameWorld::CreateGate(glm::vec3 Position)
 		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
 		auto move = AddComponent<Components::Move>(gate);
 		move->Speed = 5.f;
-		move->GoalPosition = glm::vec3(Position.x, Position.y + 9.02345f, Position.z);
-		move->StartPosition = glm::vec3(Position.x, Position.y, Position.z);
+		move->GoalPosition = glm::vec3(0, 9.02345f, 0);
+		move->StartPosition = glm::vec3(0, 0, 0);
 		{
 			auto mainShape = CreateEntity(gate);
 			auto transform = AddComponent<Components::Transform>(mainShape);
@@ -611,29 +613,27 @@ void GameWorld::CreateGate(glm::vec3 Position)
 			CommitEntity(lowerShape);
 		}
 		CommitEntity(gate);
+	}
+
+	{
+		auto gateTrigger = CreateEntity(gateParent);
+		auto transform = AddComponent<Components::Transform>(gateTrigger);
+		transform->Position = glm::vec3(0, 2.8241, 0);
+		auto trigger = AddComponent<Components::Trigger>(gateTrigger);
+		auto triggerMove = AddComponent<Components::TriggerMove>(gateTrigger);
+		triggerMove->Entity = gate;
 
 		{
-			auto gateTrigger = CreateEntity();
-			auto transform = AddComponent<Components::Transform>(gateTrigger);
-			transform->Position = glm::vec3(Position.x, Position.y + 2.8241, Position.z);
-			auto trigger = AddComponent<Components::Trigger>(gateTrigger);
-			auto triggerMove = AddComponent<Components::TriggerMove>(gateTrigger);
-			triggerMove->Entity = gate;
-
-
-			{
-				auto shape = CreateEntity(gateTrigger);
-				auto transform = AddComponent<Components::Transform>(shape);
-				transform->Position = glm::vec3(0.f, 2.8241f, 0.f);
-				auto box = AddComponent<Components::BoxShape>(shape);
-				box->Width = 6.963f;
-				box->Height = 3.104f;
-				box->Depth = 10.356f;
-				CommitEntity(shape);
-			}
-			CommitEntity(gateTrigger);
+			auto shape = CreateEntity(gateTrigger);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(0.f, 2.8241f, 0.f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 6.963f;
+			box->Height = 3.104f;
+			box->Depth = 10.356f;
+			CommitEntity(shape);
 		}
-
+		CommitEntity(gateTrigger);
 	}
 }
 
@@ -949,7 +949,7 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 	auto base = CreateEntity();
 	auto transform = AddComponent<Components::Transform>(base);
 	transform->Orientation = orientation;
-
+#pragma region Terrain
 	{
 		auto ground_small = CreateEntity(base);
 		auto transform = AddComponent<Components::Transform>(ground_small);
@@ -1012,7 +1012,7 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 			auto shape = CreateEntity(bridge_middle);
 			auto transformshape = AddComponent<Components::Transform>(shape);
 			auto meshShape = AddComponent<Components::MeshShape>(shape);
-			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/MiddleBridge.obj";
+			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/MiddleBridgeCollision.obj";
 			CommitEntity(shape);
 		}
 		CommitEntity(bridge_middle);
@@ -1105,6 +1105,9 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 		}
 		CommitEntity(bridge_base);
 	}
+#pragma endregion Terrain
+
+	CreateGate(base, glm::vec3(273.f, 40.185f, 0.06f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), playerID);
 }

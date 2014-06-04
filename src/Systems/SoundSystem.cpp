@@ -59,8 +59,7 @@ void Systems::SoundSystem::Update(double dt)
 
 	}
 	//LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
-	
-	std::map<EntityID, FMOD_CHANNEL*>::iterator it;
+
 	for(it = m_Channels.begin(); it != m_Channels.end();)
 	{
 		FMOD_BOOL isPlaying = false;
