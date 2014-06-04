@@ -59,16 +59,21 @@ void Systems::SoundSystem::Update(double dt)
 
 	}
 	//LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
-	for (auto channel : m_Channels)
+	
+	std::map<EntityID, FMOD_CHANNEL*>::iterator it;
+	for(it = m_Channels.begin(); it != m_Channels.end();)
 	{
 		FMOD_BOOL isPlaying = false;
-		FMOD_Channel_IsPlaying(channel.second, &isPlaying);
+		FMOD_Channel_IsPlaying(it->second, &isPlaying);
 		if(!isPlaying)
 		{
-			m_Channels.erase(channel.first);
+			it = m_Channels.erase(it);			
+		}
+		else
+		{
+			it++;
 		}
 	}
-
 }
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
