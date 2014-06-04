@@ -365,8 +365,8 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 		// Create a tank
 		EntityID tank = CreateTank(event.PlayerID);
 		auto tankTransform = m_World->GetComponent<Components::Transform>(tank);
- 		tankTransform->Position = glm::vec3(0, 50, 0);//absoluteTransform.Position;
-// 		tankTransform->Orientation = absoluteTransform.Orientation;
+ 		tankTransform->Position = absoluteTransform.Position;
+ 		tankTransform->Orientation = absoluteTransform.Orientation;
 		// Set the viewport correctly
 		Events::SetViewportCamera e;
 		e.CameraEntity = m_World->GetProperty<EntityID>(tank, "Camera");

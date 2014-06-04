@@ -43,6 +43,8 @@ void GameWorld::Initialize()
 
 	BindKey(GLFW_KEY_Z, "shoot", 1.f);
 	BindGamepadAxis(Gamepad::Axis::RightTrigger, "shoot", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightTrigger, "jeep_vertical", 1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "jeep_vertical", -1.f);
 
 	BindKey(GLFW_KEY_X, "use", 1.f);
 	BindGamepadButton(Gamepad::Button::X, "use", 1.f);
@@ -1011,13 +1013,68 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 
 		{
 			auto shape = CreateEntity(bridge_middle);
-			auto transformshape = AddComponent<Components::Transform>(shape);
-			auto meshShape = AddComponent<Components::MeshShape>(shape);
-			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/MiddleBridgeCollision.obj";
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(70.31883f, 26.42735f, 0.50379f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 26.324f;
+			box->Height = 2.727f;
+			box->Depth = 6.798f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(70.43447f, 29.23594f, 7.37155f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 27.724f;
+			box->Height = 1.334f;
+			box->Depth = 0.571f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(70.43447f, 29.26906f, -6.68171f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 27.724f;
+			box->Height = 1.334f;
+			box->Depth = 0.571f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(70.36976f, 33.56011f, 9.68543f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 1.8f;
+			box->Height = 15.984f;
+			box->Depth = 1.456f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(70.36976f, 33.56011f, -8.67785f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 1.799f;
+			box->Height = 15.983f;
+			box->Depth = 1.456f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(99.16043f, 25.0318f, 0.54486f);
+			transform->Orientation = glm::angleAxis(glm::radians(-9.087f), glm::vec3(0, 0, 1));
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 3.566f;
+			box->Height = 3.566f;
+			box->Depth = 7.632f;
 			CommitEntity(shape);
 		}
 		CommitEntity(bridge_middle);
 	}
+
 
 	{
 		auto terrain_base = CreateEntity(base);
@@ -1099,11 +1156,55 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 
 		{
 			auto shape = CreateEntity(bridge_base);
-			auto transformshape = AddComponent<Components::Transform>(shape);
-			auto meshShape = AddComponent<Components::MeshShape>(shape);
-			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/BaseBridge.obj";
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(166.19089f, 25.99645f, -0.50379f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 27.723f;
+			box->Height = 2.727f;
+			box->Depth = 6.798f;
 			CommitEntity(shape);
 		}
+		{
+			auto shape = CreateEntity(bridge_base);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(166.19089f, 28.37571f, -6.68171f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 27.724f;
+			box->Height = 1.334f;
+			box->Depth = 0.571f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_base);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(166.19089f, 28.37571f, 7.68929f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 27.724f;
+			box->Height = 1.334f;
+			box->Depth = 0.571f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_base);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(166.12617f, 33.56011f, -8.67785f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 1.8;
+			box->Height = 15.984f;
+			box->Depth = 1.456f;
+			CommitEntity(shape);
+		}
+		{
+			auto shape = CreateEntity(bridge_base);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(166.12617f, 33.56011f, 9.68543f);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 1.8;
+			box->Height = 15.984f;
+			box->Depth = 1.456f;
+			CommitEntity(shape);
+		}
+
 		CommitEntity(bridge_base);
 	}
 #pragma endregion Terrain
