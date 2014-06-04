@@ -276,6 +276,7 @@ void Renderer::DrawFrame(RenderQueuePair &rq)
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
 
+	glEnable(GL_SCISSOR_TEST);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);

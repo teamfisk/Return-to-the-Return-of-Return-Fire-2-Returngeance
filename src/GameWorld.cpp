@@ -91,7 +91,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
-	//CreateTerrain();
+	CreateTerrain();
 
 #pragma region Wall_Debris_Template
 
@@ -275,7 +275,7 @@ void GameWorld::Initialize()
  	{
 	EntityID Wall = CreateWall(glm::vec3(i*10.f, -15.f, 0.f), glm::quat());
 	}
-	
+
 #pragma endregion Region for all wall creations
 
 	/*EntityID tank1 = CreateTank(1);
@@ -301,8 +301,7 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}*/
 
-	CreateGarage(glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(), 1); // glm::vec3(0, glm::pi<float>()/2.f, 0)
-	CreateGarage(glm::vec3(-323.2f, 41.4f, -10.2f), glm::quat(), 2); // glm::vec3(0, -glm::pi<float>()/2.f, 0)
+	
 
 	{
 		auto flag = CreateEntity();
@@ -790,178 +789,6 @@ EntityID GameWorld::CreateJeep(int playerID)
 	return jeep;	
 }
 
-EntityID GameWorld::CreateGarage(glm::vec3 position, glm::quat orientation, int playerID)
-{
-	auto garage = CreateEntity();
-	auto transform = AddComponent<Components::Transform>(garage);
-	transform->Position = position;
-	transform->Orientation = orientation;
-	auto player = AddComponent<Components::Player>(garage);
-	player->ID = playerID;
-
-	auto ElevatorBase = CreateEntity(garage);
-	{
-		auto transform = AddComponent<Components::Transform>(ElevatorBase);
-		auto model = AddComponent<Components::Model>(ElevatorBase);
-		model->ModelFile = "Models/SpawnRamp/Main/Main.obj";
-		auto physics = AddComponent<Components::Physics>(ElevatorBase);
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-
-		{
-			auto mainShape = CreateEntity(ElevatorBase);
-			auto transform = AddComponent<Components::Transform>(mainShape);
-			transform->Position = glm::vec3(0.f, 0, 0.f);
-			auto mesh = AddComponent<Components::MeshShape>(mainShape);
-			mesh->ResourceName = "Models/SpawnRamp/Main/CollisionShape.obj";
-			CommitEntity(mainShape);
-		}
-		{
-			auto StairsShape = CreateEntity(ElevatorBase);
-			auto transform = AddComponent<Components::Transform>(StairsShape);
-			transform->Position = glm::vec3(-7.48639f, 0.4809f, 3.79166f);
-			auto box = AddComponent<Components::BoxShape>(StairsShape);
-			box->Width = 1.211f;
-			box->Height = 1.798f;
-			box->Depth = 3.229f;
-			CommitEntity(StairsShape);
-		}
-	}
-	CommitEntity(ElevatorBase);
-
-	auto leftHatch = CreateEntity(garage);
-	{
-		auto transform = AddComponent<Components::Transform>(leftHatch);
-		transform->Position = glm::vec3(5.83103f, 1.3553f, -2.40268f);
-		auto model = AddComponent<Components::Model>(leftHatch);
-		model->ModelFile = "Models/SpawnRamp/LeftHatch/LeftHatch.obj";
-		auto physics = AddComponent<Components::Physics>(leftHatch);
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-		auto rotate = AddComponent<Components::Rotate>(leftHatch);
-		rotate->StartRotation = transform->Orientation;
-		rotate->GoalRotation = transform->Orientation * glm::angleAxis(-glm::radians(110.f), glm::vec3(0, 0, 1));
-		rotate->Time = 5.f;
-		{
-			auto shape = CreateEntity(leftHatch);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(-2.79331, 0, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 2.317f;
-			box->Height = 0.183f;
-			box->Depth = 6.987f;
-			CommitEntity(shape);
-		}
-		CommitEntity(leftHatch);
-	}
-
-	auto rightHatch = CreateEntity(garage);
-	{
-		auto transform = AddComponent<Components::Transform>(rightHatch);
-		transform->Position = glm::vec3(-4.52423f, 1.3553f, -2.40268f);
-		auto model = AddComponent<Components::Model>(rightHatch);
-		model->ModelFile = "Models/SpawnRamp/RightHatch/RightHatch.obj";
-		auto physics = AddComponent<Components::Physics>(rightHatch);
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-		auto rotate = AddComponent<Components::Rotate>(rightHatch);
-		rotate->StartRotation = transform->Orientation;
-		rotate->GoalRotation = transform->Orientation * glm::angleAxis(glm::radians(110.f), glm::vec3(0, 0, 1));
-		rotate->Time = 5.f;
-		{
-			auto shape = CreateEntity(rightHatch);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(2.79331, 0, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 2.317f;
-			box->Height = 0.183f;
-			box->Depth = 6.987f;
-			CommitEntity(shape);
-		}
-		CommitEntity(rightHatch);
-	}
-
-	auto elevator = CreateEntity(garage);
-	{
-		auto transform = AddComponent<Components::Transform>(elevator);
-		transform->Position = glm::vec3(0.69385f, 1.25222f, -2.39938f) + glm::vec3(0, -9.5f, 0);
-		auto model = AddComponent<Components::Model>(elevator);
-		model->ModelFile = "Models/SpawnRamp/Elevator/Elevator.obj";
-		auto physics = AddComponent<Components::Physics>(elevator);
-		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
-		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
-		auto move = AddComponent<Components::Move>(elevator);
-		move->StartPosition = transform->Position;
-		move->GoalPosition = transform->Position + glm::vec3(0, 9.5f, 0);
-		move->Speed = 1.5f;
-		{
-			auto shape = CreateEntity(elevator);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 4.754f;
-			box->Height = 0.141f;
-			box->Depth = 6.86f;
-			CommitEntity(shape);
-		}
-
-		auto spawnPoint = CreateEntity(elevator);
-		{
-			auto transform = AddComponent<Components::Transform>(spawnPoint);
-			transform->Position.y = 1.f;
-			auto spawnPointComponent = AddComponent<Components::SpawnPoint>(spawnPoint);
-		}
-		CommitEntity(spawnPoint);
-	}
-	CommitEntity(elevator);
-
-	auto garageComponent = AddComponent<Components::Garage>(garage);
-	garageComponent->DoorLeft = leftHatch;
-	garageComponent->DoorRight = rightHatch;
-	garageComponent->Elevator = elevator;
-	CommitEntity(garage);
-
-	{
-		auto trigger = CreateEntity(garage);
-		SetProperty(trigger, "Name", "BoundsTrigger");
-		auto transform = AddComponent<Components::Transform>(trigger);
-		transform->Position = glm::vec3(0, 44.87521f, 0);
-		auto triggerComponent = AddComponent<Components::Trigger>(trigger);
-		{
-			auto shape = CreateEntity(trigger);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 72.98f;
-			box->Height = 54.53f;
-			box->Depth = 72.98f;
-			CommitEntity(shape);
-		}
-		CommitEntity(trigger);
-	}
-
-	{
-		auto trigger = CreateEntity(garage);
-		SetProperty(trigger, "Name", "ElevatorShaftTrigger");
-		auto transform = AddComponent<Components::Transform>(trigger);
-		transform->Position = glm::vec3(0.69385f, -6.7997f, -2.0f);
-		auto triggerComponent = AddComponent<Components::Trigger>(trigger);
-		{
-			auto shape = CreateEntity(trigger);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(0, 0, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 2.0f;
-			box->Height = 12.f;
-			box->Depth = 2.0f;
-			CommitEntity(shape);
-		}
-		CommitEntity(trigger);
-	}
-	
-	return garage;
-}
-
 void GameWorld::CreateTerrain()
 {
 	{
@@ -1047,8 +874,8 @@ void GameWorld::CreateTerrain()
 		CommitEntity(ground_middle);
 	}
 
-	CreateBase(glm::quat());
-	CreateBase(glm::quat(glm::vec3(0, glm::pi<float>()/2.f, 0)));
+	CreateBase(glm::quat(), 1);
+	CreateBase(glm::quat(glm::vec3(0, glm::pi<float>(), 0)), 2);
 
 	{
 		auto tree = CreateEntity();
@@ -1117,12 +944,15 @@ void GameWorld::CreateTerrain()
 	}
 }
 
-void GameWorld::CreateBase(glm::quat orientation)
+void GameWorld::CreateBase(glm::quat orientation, int playerID)
 {
+	auto base = CreateEntity();
+	auto transform = AddComponent<Components::Transform>(base);
+	transform->Orientation = orientation;
+
 	{
-		auto ground_small = CreateEntity();
+		auto ground_small = CreateEntity(base);
 		auto transform = AddComponent<Components::Transform>(ground_small);
-		transform->Orientation = orientation;
 		auto model = AddComponent<Components::Model>(ground_small);
 		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
 		auto blendmap = AddComponent<Components::BlendMap>(ground_small);
@@ -1149,12 +979,51 @@ void GameWorld::CreateBase(glm::quat orientation)
 	}
 
 	{
-		auto ground_base = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(ground_base);
-		transform->Orientation = orientation;
-		auto model = AddComponent<Components::Model>(ground_base);
+		auto road_small = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(road_small);
+		auto model = AddComponent<Components::Model>(road_small);
+		model->ModelFile = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
+		auto physics = AddComponent<Components::Physics>(road_small);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto groundshape = CreateEntity(road_small);
+		auto transformshape = AddComponent<Components::Transform>(groundshape);
+		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
+
+
+		CommitEntity(groundshape);
+		CommitEntity(road_small);
+	}
+
+	{
+		auto bridge_middle = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(bridge_middle);
+		auto model = AddComponent<Components::Model>(bridge_middle);
+		model->ModelFile = "Models/TerrainFiveIstles/Bridges/MiddleBridge.obj";
+		auto physics = AddComponent<Components::Physics>(bridge_middle);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		{
+			auto shape = CreateEntity(bridge_middle);
+			auto transformshape = AddComponent<Components::Transform>(shape);
+			auto meshShape = AddComponent<Components::MeshShape>(shape);
+			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/MiddleBridge.obj";
+			CommitEntity(shape);
+		}
+		CommitEntity(bridge_middle);
+	}
+
+	{
+		auto terrain_base = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(terrain_base);
+		auto model = AddComponent<Components::Model>(terrain_base);
 		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
-		auto blendmap = AddComponent<Components::BlendMap>(ground_base);
+		auto blendmap = AddComponent<Components::BlendMap>(terrain_base);
 		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
 		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
 		blendmap->TextureGreen = "Textures/Ground/Grass0126_2_S.jpg";
@@ -1163,25 +1032,43 @@ void GameWorld::CreateBase(glm::quat orientation)
 		blendmap->TextureBlueNormal = "Textures/Ground/Cliffs2NM.png";
 		blendmap->TextureRepeats = 30.f;
 
+		auto physics = AddComponent<Components::Physics>(terrain_base);
+		physics->Mass = 10;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->CollisionLayer = 1;
+
+		auto shape = CreateEntity(terrain_base);
+		auto transformshape = AddComponent<Components::Transform>(shape);
+		auto meshShape = AddComponent<Components::MeshShape>(shape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
+
+
+		CommitEntity(shape);
+		CommitEntity(terrain_base);
+	}
+
+	{
+		auto ground_base = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(ground_base);
+		auto model = AddComponent<Components::Model>(ground_base);
+		model->ModelFile = "Models/TerrainFiveIstles/BaseGround.obj";
 		auto physics = AddComponent<Components::Physics>(ground_base);
 		physics->Mass = 10;
 		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
-		auto groundshape = CreateEntity(ground_base);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Base.obj";
-
-
-		CommitEntity(groundshape);
+		auto shape = CreateEntity(ground_base);
+		auto transformshape = AddComponent<Components::Transform>(shape);
+		auto meshShape = AddComponent<Components::MeshShape>(shape);
+		meshShape->ResourceName = "Models/TerrainFiveIstles/BaseGround.obj";
+		
+		CommitEntity(shape);
 		CommitEntity(ground_base);
 	}
 
 	{
-		auto road_base = CreateEntity();
+		auto road_base = CreateEntity(base);
 		auto transform = AddComponent<Components::Transform>(road_base);
-		transform->Orientation = orientation;
 		auto model = AddComponent<Components::Model>(road_base);
 		model->ModelFile = "Models/TerrainFiveIstles/Roads/BaseRoad.obj";
 		auto physics = AddComponent<Components::Physics>(road_base);
@@ -1200,23 +1087,198 @@ void GameWorld::CreateBase(glm::quat orientation)
 	}
 
 	{
-		auto road_small = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(road_small);
-		transform->Orientation = orientation;
-		auto model = AddComponent<Components::Model>(road_small);
-		model->ModelFile = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
-		auto physics = AddComponent<Components::Physics>(road_small);
+		auto bridge_base = CreateEntity(base);
+		auto transform = AddComponent<Components::Transform>(bridge_base);
+		auto model = AddComponent<Components::Model>(bridge_base);
+		model->ModelFile = "Models/TerrainFiveIstles/Bridges/BaseBridge.obj";
+		auto physics = AddComponent<Components::Physics>(bridge_base);
 		physics->Mass = 10;
 		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 		physics->CollisionLayer = 1;
 
-		auto groundshape = CreateEntity(road_small);
-		auto transformshape = AddComponent<Components::Transform>(groundshape);
-		auto meshShape = AddComponent<Components::MeshShape>(groundshape);
-		meshShape->ResourceName = "Models/TerrainFiveIstles/Roads/SmallRoad.obj";
-
-
-		CommitEntity(groundshape);
-		CommitEntity(road_small);
+		{
+			auto shape = CreateEntity(bridge_base);
+			auto transformshape = AddComponent<Components::Transform>(shape);
+			auto meshShape = AddComponent<Components::MeshShape>(shape);
+			meshShape->ResourceName = "Models/TerrainFiveIstles/Bridges/BaseBridge.obj";
+			CommitEntity(shape);
+		}
+		CommitEntity(bridge_base);
 	}
+
+	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), playerID);
+}
+EntityID GameWorld::CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int playerID)
+{
+	auto garage = CreateEntity(parent);
+	auto transform = AddComponent<Components::Transform>(garage);
+	transform->Position = Position;
+	transform->Orientation = orientation;
+
+	auto player = CreateEntity(garage);
+	auto playerComponent = AddComponent<Components::Player>(player);
+	playerComponent->ID = playerID;
+
+	auto ElevatorBase = CreateEntity(garage);
+	{
+		auto transform = AddComponent<Components::Transform>(ElevatorBase);
+		auto model = AddComponent<Components::Model>(ElevatorBase);
+		model->ModelFile = "Models/SpawnRamp/Main/Main.obj";
+		auto physics = AddComponent<Components::Physics>(ElevatorBase);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+
+		{
+			auto mainShape = CreateEntity(ElevatorBase);
+			auto transform = AddComponent<Components::Transform>(mainShape);
+			transform->Position = glm::vec3(0.f, 0, 0.f);
+			auto mesh = AddComponent<Components::MeshShape>(mainShape);
+			mesh->ResourceName = "Models/SpawnRamp/Main/CollisionShape.obj";
+			CommitEntity(mainShape);
+		}
+		{
+			auto StairsShape = CreateEntity(ElevatorBase);
+			auto transform = AddComponent<Components::Transform>(StairsShape);
+			transform->Position = glm::vec3(-7.48639f, 0.4809f, 3.79166f);
+			auto box = AddComponent<Components::BoxShape>(StairsShape);
+			box->Width = 1.211f;
+			box->Height = 1.798f;
+			box->Depth = 3.229f;
+			CommitEntity(StairsShape);
+		}
+	}
+	CommitEntity(ElevatorBase);
+
+	auto leftHatch = CreateEntity(garage);
+	{
+		auto transform = AddComponent<Components::Transform>(leftHatch);
+		transform->Position = glm::vec3(5.83103f, 1.3553f, -2.40268f);
+		auto model = AddComponent<Components::Model>(leftHatch);
+		model->ModelFile = "Models/SpawnRamp/LeftHatch/LeftHatch.obj";
+		auto physics = AddComponent<Components::Physics>(leftHatch);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+		auto rotate = AddComponent<Components::Rotate>(leftHatch);
+		rotate->StartRotation = transform->Orientation;
+		rotate->GoalRotation = transform->Orientation * glm::angleAxis(-glm::radians(110.f), glm::vec3(0, 0, 1));
+		rotate->Time = 5.f;
+		{
+			auto shape = CreateEntity(leftHatch);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(-2.79331, 0, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 2.317f;
+			box->Height = 0.183f;
+			box->Depth = 6.987f;
+			CommitEntity(shape);
+		}
+		CommitEntity(leftHatch);
+	}
+
+	auto rightHatch = CreateEntity(garage);
+	{
+		auto transform = AddComponent<Components::Transform>(rightHatch);
+		transform->Position = glm::vec3(-4.52423f, 1.3553f, -2.40268f);
+		auto model = AddComponent<Components::Model>(rightHatch);
+		model->ModelFile = "Models/SpawnRamp/RightHatch/RightHatch.obj";
+		auto physics = AddComponent<Components::Physics>(rightHatch);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+		auto rotate = AddComponent<Components::Rotate>(rightHatch);
+		rotate->StartRotation = transform->Orientation;
+		rotate->GoalRotation =  transform->Orientation * glm::angleAxis(glm::radians(110.f), glm::vec3(0, 0, 1));
+		rotate->Time = 5.f;
+		{
+			auto shape = CreateEntity(rightHatch);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(2.79331, 0, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 2.317f;
+			box->Height = 0.183f;
+			box->Depth = 6.987f;
+			CommitEntity(shape);
+		}
+		CommitEntity(rightHatch);
+	}
+
+	auto elevator = CreateEntity(garage);
+	{
+		auto transform = AddComponent<Components::Transform>(elevator);
+		transform->Position = glm::vec3(0.69385f, 1.25222f, -2.39938f) + glm::vec3(0, -9.5f, 0);
+		auto model = AddComponent<Components::Model>(elevator);
+		model->ModelFile = "Models/SpawnRamp/Elevator/Elevator.obj";
+		auto physics = AddComponent<Components::Physics>(elevator);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Keyframed;
+		physics->CollisionLayer = (int)Components::Physics::CollisionLayer::STATIC;
+		auto move = AddComponent<Components::Move>(elevator);
+		move->StartPosition = transform->Position;
+		move->GoalPosition = transform->Position + glm::vec3(0, 9.5f, 0);
+		move->Speed = 1.5f;
+		{
+			auto shape = CreateEntity(elevator);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(0, 0, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 4.754f;
+			box->Height = 0.141f;
+			box->Depth = 6.86f;
+			CommitEntity(shape);
+		}
+
+		auto spawnPoint = CreateEntity(elevator);
+		{
+			auto transform = AddComponent<Components::Transform>(spawnPoint);
+			transform->Position.y = 1.f;
+			auto spawnPointComponent = AddComponent<Components::SpawnPoint>(spawnPoint);
+			spawnPointComponent->Player = player;
+		}
+		CommitEntity(spawnPoint);
+	}
+	CommitEntity(elevator);
+
+	auto garageComponent = AddComponent<Components::Garage>(garage);
+	garageComponent->DoorLeft = leftHatch;
+	garageComponent->DoorRight = rightHatch;
+	garageComponent->Elevator = elevator;
+	CommitEntity(garage);
+
+	{
+		auto trigger = CreateEntity(garage);
+		SetProperty(trigger, "Name", "BoundsTrigger");
+		auto transform = AddComponent<Components::Transform>(trigger);
+		transform->Position = glm::vec3(0, 44.87521f, 0);
+		auto triggerComponent = AddComponent<Components::Trigger>(trigger);
+		{
+			auto shape = CreateEntity(trigger);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(0, 0, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 72.98f;
+			box->Height = 54.53f;
+			box->Depth = 72.98f;
+			CommitEntity(shape);
+		}
+		CommitEntity(trigger);
+	}
+
+	{
+		auto trigger = CreateEntity(garage);
+		SetProperty(trigger, "Name", "ElevatorShaftTrigger");
+		auto transform = AddComponent<Components::Transform>(trigger);
+		transform->Position = glm::vec3(0.69385f, -6.7997f, -2.0f);
+		auto triggerComponent = AddComponent<Components::Trigger>(trigger);
+		{
+			auto shape = CreateEntity(trigger);
+			auto transform = AddComponent<Components::Transform>(shape);
+			transform->Position = glm::vec3(0, 0, 0);
+			auto box = AddComponent<Components::BoxShape>(shape);
+			box->Width = 2.0f;
+			box->Height = 12.f;
+			box->Depth = 2.0f;
+			CommitEntity(shape);
+		}
+		CommitEntity(trigger);
+	}
+	
+	return garage;
 }

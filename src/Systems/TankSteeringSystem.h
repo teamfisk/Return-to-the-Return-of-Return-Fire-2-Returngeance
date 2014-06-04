@@ -22,6 +22,7 @@
 #include "Components/Health.h"
 #include "Components/TankShell.h"
 #include "Components/SphereShape.h"
+#include "Components/Listener.h"
 
 #include "Events/EnableCollisions.h"
 #include "Events/DisableCollisions.h"

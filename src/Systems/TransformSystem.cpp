@@ -24,7 +24,7 @@ void Systems::TransformSystem::UpdateEntity( double dt, EntityID entity, EntityI
 	if(m_MoveItems.find(entity) != m_MoveItems.end())
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity);
-
+		
 		glm::vec3 direction = glm::normalize(m_MoveItems[entity].GoalPosition - transform->Position);
 		glm::vec3 movement = direction * m_MoveItems[entity].Speed * (float)dt;
 
@@ -54,6 +54,7 @@ void Systems::TransformSystem::UpdateEntity( double dt, EntityID entity, EntityI
 	if(m_RotationItems.find(entity) != m_RotationItems.end())
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity);
+		auto absolutetransform = AbsoluteTransform(entity);
 
 		float percentage = dt/m_RotationItems[entity].Time;
 		m_RotationItems[entity].Time -= dt;
