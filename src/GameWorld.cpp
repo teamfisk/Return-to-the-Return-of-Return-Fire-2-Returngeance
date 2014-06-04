@@ -271,15 +271,6 @@ void GameWorld::Initialize()
 	}
 #pragma endregion Region for wall debris
 
-#pragma region Wall_Regin
-
- 	for(int i = 10; i < 0; i++)
- 	{
-	EntityID Wall = CreateWall(glm::vec3(i*10.f, -15.f, 0.f), glm::quat());
-	}
-
-#pragma endregion Region for all wall creations
-
 	/*EntityID tank1 = CreateTank(1);
 	{
 		auto transform = GetComponent<Components::Transform>(tank1);
@@ -640,9 +631,9 @@ void GameWorld::CreateGate(EntityID parent, glm::vec3 position, glm::quat orient
 	}
 }
 
-EntityID GameWorld::CreateWall(glm::vec3 pos, glm::quat orientation)
+EntityID GameWorld::CreateWall(EntityID parent, glm::vec3 pos, glm::quat orientation)
 {
-	auto wall = CreateEntity();
+	auto wall = CreateEntity(parent);
 	auto transform = AddComponent<Components::Transform>(wall);
 	transform->Position = pos;
 	transform->Orientation = orientation;
@@ -1210,6 +1201,14 @@ void GameWorld::CreateBase(glm::quat orientation, int playerID)
 #pragma endregion Terrain
 
 	CreateGate(base, glm::vec3(273.f, 40.185f, 0.06f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+
+	CreateWall(base, glm::vec3(273.f, 40.3f, -55.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -45.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -35.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), playerID);
 }

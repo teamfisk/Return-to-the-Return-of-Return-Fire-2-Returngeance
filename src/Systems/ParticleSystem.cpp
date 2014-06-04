@@ -49,11 +49,15 @@ void Systems::ParticleSystem::UpdateEntity(double dt, EntityID entity, EntityID 
 	{
 		emitterComponent->TimeSinceLastSpawn += dt;
 		auto emitterTransformComponent = m_World->GetComponent<Components::Transform>(entity);
-// 		if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
-// 		{
-// 			SpawnParticles(entity);
-// 			emitterComponent->TimeSinceLastSpawn = 0;
-// 		}
+		if(emitterComponent->Emitting)
+		{
+			if(emitterComponent->TimeSinceLastSpawn > emitterComponent->SpawnFrequency)
+			{
+				SpawnParticles(entity);
+				emitterComponent->TimeSinceLastSpawn = 0;
+			}
+		}
+		
 	}
 
 	auto particleComponent = m_World->GetComponent<Components::Particle>(entity);
@@ -242,10 +246,17 @@ bool Systems::ParticleSystem::CreateExplosion(const Events::CreateExplosion &e)
 	emitter->SpawnCount = e.ParticlesToSpawn;
 	emitter->Speed = e.Speed;
 	emitter->SpreadAngle = e.SpreadAngle; 
+	emitter->Emitting = e.Emitting;
+	emitter->SpawnFrequency = e.SpawnFrequency;
 	//emitter->ScaleSpectrum.push_back(glm::vec3(e.ParticleScale));
 	emitter->SpawnFrequency = e.LifeTime + 20; //temp
 	emitter->Fade = true;
 	emitter->Color = e.Color;
+	if(e.UseGoalVector)
+	{
+		emitter->UseGoalVelocity = e.UseGoalVector;
+		emitter->GoalVelocity = e.GoalVelocity;
+	}
 	std::vector<glm::vec3> scale;
 	scale.push_back(glm::vec3(e.ParticleScale[0]));
 	if(e.ParticleScale.size() >= 2)

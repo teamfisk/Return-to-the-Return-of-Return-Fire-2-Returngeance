@@ -11,7 +11,7 @@ void Systems::SoundSystem::Initialize()
 	
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	FMOD_System_Create(&m_System);
-	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_3D_RIGHTHANDED, 0);
+	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_ENABLE_PROFILE, 0);
 	if(result != FMOD_OK)
 	{
 		LOG_ERROR("Did initialized load FMOD correctly");
@@ -59,16 +59,20 @@ void Systems::SoundSystem::Update(double dt)
 
 	}
 	//LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
-	for (auto channel : m_Channels)
+
+	for(it = m_Channels.begin(); it != m_Channels.end();)
 	{
 		FMOD_BOOL isPlaying = false;
-		FMOD_Channel_IsPlaying(channel.second, &isPlaying);
+		FMOD_Channel_IsPlaying(it->second, &isPlaying);
 		if(!isPlaying)
 		{
-			m_Channels.erase(channel.first);
+			it = m_Channels.erase(it);			
+		}
+		else
+		{
+			it++;
 		}
 	}
-
 }
 
 void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)

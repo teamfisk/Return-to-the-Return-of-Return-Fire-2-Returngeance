@@ -13,7 +13,7 @@ bool OBJ::LoadFromFile(std::string filename)
 		return false;
 	}
 
-	LOG_INFO("Parsing .obj \"%s\"", m_Path.string().c_str());
+	//LOG_INFO("Parsing .obj \"%s\"", m_Path.string().c_str());
 
 	std::string line;
 	while (std::getline(file, line))
@@ -121,7 +121,7 @@ void OBJ::ParseMaterial()
 		return;
 	}
 
-	LOG_INFO("Parsing .mtl \"%s\"", m_MaterialPath.string().c_str());
+	//LOG_INFO("Parsing .mtl \"%s\"", m_MaterialPath.string().c_str());
 
 	std::string currentMaterialName;
 	MaterialInfo* currentMaterial = nullptr;
@@ -144,7 +144,7 @@ void OBJ::ParseMaterial()
 		{
 			MaterialInfo mat;
 			ss >> currentMaterialName;
-			LOG_INFO("Parsing material %s", currentMaterialName.c_str());
+			//LOG_INFO("Parsing material %s", currentMaterialName.c_str());
 			Materials[currentMaterialName] = mat;
 			currentMaterial = &Materials[currentMaterialName];
 			continue;
