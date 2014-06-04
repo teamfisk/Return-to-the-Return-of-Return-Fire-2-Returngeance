@@ -24,6 +24,7 @@
 #include "Systems/FollowSystem.h"
 #include "Systems/WallSystem.h"
 #include "Systems/GarageSystem.h"
+#include "Systems/JeepSteeringSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"

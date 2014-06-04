@@ -1,649 +1,201 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\main.cpp" />
-    <ClCompile Include="..\..\src\GameWorld.cpp" />
-    <ClCompile Include="..\..\src\World.cpp" />
-    <ClCompile Include="..\..\src\ShaderProgram.cpp" />
-    <ClCompile Include="..\..\src\PrecompiledHeader.cpp" />
-    <ClCompile Include="..\..\src\Systems\RenderSystem.cpp">
-      <Filter>Rendering\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Renderer.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Skybox.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Texture.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\OBJ.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Model.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Camera.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\CubemapTexture.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp">
-      <Filter>Physics\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\TransformSystem.cpp">
-      <Filter>Base\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\DebugSystem.cpp">
-      <Filter>Base\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\SoundSystem.cpp">
-      <Filter>Audio\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\InputSystem.cpp">
-      <Filter>Input\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp">
-      <Filter>Input\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ResourceManager.cpp" />
-    <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp">
-      <Filter>Particle System\Systems</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\src\Camera.cpp" />
+    <ClCompile Include="..\..\src\CubemapTexture.cpp" />
     <ClCompile Include="..\..\src\EventBroker.cpp" />
-    <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\InputManager.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp">
-      <Filter>Physics\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp">
-      <Filter>Game\Vehicles\Helicopter\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp">
-      <Filter>Physics\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\TimerSystem.cpp">
-      <Filter>Base\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\DamageSystem.cpp">
-      <Filter>Game\Systems</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\src\GameWorld.cpp" />
+    <ClCompile Include="..\..\src\InputManager.cpp" />
+    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\Model.cpp" />
+    <ClCompile Include="..\..\src\OBJ.cpp" />
+    <ClCompile Include="..\..\src\Physics\VehicleSetup.cpp" />
+    <ClCompile Include="..\..\src\PrecompiledHeader.cpp" />
+    <ClCompile Include="..\..\src\Renderer.cpp" />
+    <ClCompile Include="..\..\src\ResourceManager.cpp" />
+    <ClCompile Include="..\..\src\ShaderProgram.cpp" />
+    <ClCompile Include="..\..\src\Skybox.cpp" />
+    <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\Systems\DamageSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\FollowSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\GarageSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\RenderSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\SoundSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TankSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TimerSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TransformSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\TriggerSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\WallSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
-    <ClCompile Include="..\..\src\Systems\FollowSystem.cpp">
-      <Filter>Game\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\WallSystem.cpp">
-      <Filter>Gameplay\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Systems\GarageSystem.cpp">
-      <Filter>Game\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Sound.cpp">
-      <Filter>Audio</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\src\Texture.cpp" />
+    <ClCompile Include="..\..\src\World.cpp" />
+    <ClCompile Include="..\..\src\Systems\JeepSteeringSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Util">
-      <UniqueIdentifier>{ce43847c-9745-46d2-b000-069af4882886}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{8974329a-5c12-4b94-86e7-5931555bc129}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering">
-      <UniqueIdentifier>{aca514ec-84de-423c-a270-ec4399904c5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Components">
-      <UniqueIdentifier>{fcbc3469-7049-4c07-9d76-f8f1e872f042}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Systems">
-      <UniqueIdentifier>{f6c5fd1d-7180-42b7-b973-a91bfc3ea189}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics">
-      <UniqueIdentifier>{d08cc18b-b7d8-47a7-91af-7283052e4c97}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Components">
-      <UniqueIdentifier>{1c5d571e-55f4-498b-b64a-2f28ac2cd9b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Systems">
-      <UniqueIdentifier>{635843f6-c94e-4798-8201-db64d11e2a03}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base">
-      <UniqueIdentifier>{3bd82924-397c-4c5a-959c-971612269374}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base\Components">
-      <UniqueIdentifier>{c17ff66a-f9f5-4329-a05d-e7bf8a140dd3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base\Systems">
-      <UniqueIdentifier>{caa1e07f-fa19-4706-bf59-de74a0290763}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Audio">
-      <UniqueIdentifier>{444e18d8-8ab6-413b-b9b0-59a6309e0511}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Audio\Components">
-      <UniqueIdentifier>{a2db813b-1d08-4d48-97ac-2faaff29a1cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Audio\Systems">
-      <UniqueIdentifier>{44c41b41-b706-4d88-8d50-abdeb2a828fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input">
-      <UniqueIdentifier>{30c6d948-459c-4fc7-b44d-ecbe5f34203e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input\Components">
-      <UniqueIdentifier>{8bcc0a31-3e0d-4342-8d10-ec8edfa03abd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input\Systems">
-      <UniqueIdentifier>{93ce6550-7614-46b4-a554-0eec26e6fbf6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Particle System">
-      <UniqueIdentifier>{0bb544bb-1b0a-487f-88d6-f8ab8a2795f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Particle System\Components">
-      <UniqueIdentifier>{a6ca6194-3aa5-46cc-ac05-206f9a400dec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Particle System\Systems">
-      <UniqueIdentifier>{9f45f029-46c8-4c0d-b44c-dc9bffd3c6a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GUI">
-      <UniqueIdentifier>{6e633434-4aed-453d-b2f9-8c51ca7f78db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Audio\Events">
-      <UniqueIdentifier>{85692f3a-5241-4780-a3ca-f4d8a2851392}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input\Events">
-      <UniqueIdentifier>{ee125b77-b275-4841-abc9-374957a89916}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics\Events">
-      <UniqueIdentifier>{42ae084f-ade8-402c-87ba-f03f6b846bc8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Events">
-      <UniqueIdentifier>{a025d51e-594d-4844-983b-f683726bf1bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base\Events">
-      <UniqueIdentifier>{ffab6cc2-2fbf-400f-9398-a6741b6cc95c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{5b992473-73e6-485e-8f13-17e0801fb2ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Vehicles">
-      <UniqueIdentifier>{8a78be3a-a3c5-4054-a2f1-1456f3fcbab0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Vehicles\Helicopter">
-      <UniqueIdentifier>{8ccc0abe-5bdd-4656-ab11-5708a39c71ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Vehicles\Helicopter\Components">
-      <UniqueIdentifier>{b2416d05-a49e-4fef-a5c4-cd03d8cc2efd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Vehicles\Helicopter\Systems">
-      <UniqueIdentifier>{b34c0c95-a887-4cf4-af24-cf7c1f459aa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Components">
-      <UniqueIdentifier>{cb06b441-90b8-46ed-b347-4190dac7185b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Particle System\Events">
-      <UniqueIdentifier>{ddd3c442-7c2f-4690-9308-fcef62deee0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Systems">
-      <UniqueIdentifier>{3c2ea0e5-41a1-4b11-a891-1d59ead7223c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base\Events">
-      <UniqueIdentifier>{3cbe68d9-2446-45ee-8637-ffb805997dcd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Events">
-      <UniqueIdentifier>{9702064a-02a2-4b3c-a2ab-47c23a9cf49c}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\World.h" />
-    <ClInclude Include="..\..\src\GameWorld.h" />
-    <ClInclude Include="..\..\src\Factory.h" />
-    <ClInclude Include="..\..\src\Entity.h" />
-    <ClInclude Include="..\..\src\Component.h" />
-    <ClInclude Include="..\..\src\System.h" />
-    <ClInclude Include="..\..\src\Util\GLError.h">
-      <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Util\Logging.h">
-      <Filter>Util</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\src\Camera.h" />
     <ClInclude Include="..\..\src\Color.h" />
+    <ClInclude Include="..\..\src\Component.h" />
+    <ClInclude Include="..\..\src\Components\BarrelSteering.h" />
+    <ClInclude Include="..\..\src\Components\BlendMap.h" />
+    <ClInclude Include="..\..\src\Components\BoxShape.h" />
+    <ClInclude Include="..\..\src\Components\Camera.h" />
+    <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
+    <ClInclude Include="..\..\src\Components\Flag.h" />
+    <ClInclude Include="..\..\src\Components\Follow.h" />
+    <ClInclude Include="..\..\src\Components\FrameTimer.h" />
+    <ClInclude Include="..\..\src\Components\Garage.h" />
+    <ClInclude Include="..\..\src\Components\Move.h" />
+    <ClInclude Include="..\..\src\Components\Rotate.h" />
+    <ClInclude Include="..\..\src\Components\TriggerMove.h" />
+    <ClInclude Include="..\..\src\Components\Timer.h" />
+    <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />
+    <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h" />
+    <ClInclude Include="..\..\src\Components\FreeSteering.h" />
+    <ClInclude Include="..\..\src\Components\Health.h" />
+    <ClInclude Include="..\..\src\Components\HelicopterSteering.h" />
+    <ClInclude Include="..\..\src\Components\HingeConstraint.h" />
+    <ClInclude Include="..\..\src\Components\Input.h" />
+    <ClInclude Include="..\..\src\Components\Listener.h" />
+    <ClInclude Include="..\..\src\Components\MeshShape.h" />
+    <ClInclude Include="..\..\src\Components\Model.h" />
+    <ClInclude Include="..\..\src\Components\Particle.h" />
+    <ClInclude Include="..\..\src\Components\ParticleEmitter.h" />
+    <ClInclude Include="..\..\src\Components\Physics.h" />
+    <ClInclude Include="..\..\src\Components\Player.h" />
+    <ClInclude Include="..\..\src\Components\PointLight.h" />
+    <ClInclude Include="..\..\src\Components\SoundEmitter.h" />
+    <ClInclude Include="..\..\src\Components\SphereShape.h" />
+    <ClInclude Include="..\..\src\Components\Sprite.h" />
+    <ClInclude Include="..\..\src\Components\TankShell.h" />
+    <ClInclude Include="..\..\src\Components\TankSteering.h" />
+    <ClInclude Include="..\..\src\Components\Template.h" />
+    <ClInclude Include="..\..\src\Components\TowerSteering.h" />
+    <ClInclude Include="..\..\src\Components\Transform.h" />
+    <ClInclude Include="..\..\src\Components\Trigger.h" />
+    <ClInclude Include="..\..\src\Components\TriggerRotate.h" />
+    <ClInclude Include="..\..\src\Components\Vehicle.h" />
+    <ClInclude Include="..\..\src\Components\SpawnPoint.h" />
+    <ClInclude Include="..\..\src\Components\Viewport.h" />
+    <ClInclude Include="..\..\src\Components\Wall.h" />
+    <ClInclude Include="..\..\src\Components\Wheel.h" />
+    <ClInclude Include="..\..\src\Components\WheelPair.h" />
+    <ClInclude Include="..\..\src\CubemapTexture.h" />
     <ClInclude Include="..\..\src\Engine.h" />
-    <ClInclude Include="..\..\src\PrecompiledHeader.h" />
-    <ClInclude Include="..\..\src\ShaderProgram.h" />
-    <ClInclude Include="..\..\src\Components\Model.h">
-      <Filter>Rendering\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Sprite.h">
-      <Filter>Rendering\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Renderer.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Skybox.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Texture.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\OBJ.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Model.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Camera.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\CubemapTexture.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Physics.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\PhysicsSystem.h">
-      <Filter>Physics\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Transform.h">
-      <Filter>Base\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Template.h">
-      <Filter>Base\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Camera.h">
-      <Filter>Rendering\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\TransformSystem.h">
-      <Filter>Base\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\DebugSystem.h">
-      <Filter>Base\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\SoundSystem.h">
-      <Filter>Audio\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\SoundEmitter.h">
-      <Filter>Audio\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\RenderSystem.h">
-      <Filter>Rendering\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\InputSystem.h">
-      <Filter>Input\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h">
-      <Filter>Input\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Input.h">
-      <Filter>Input\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\FreeSteering.h">
-      <Filter>Input\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\ParticleEmitter.h">
-      <Filter>Particle System\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\PointLight.h">
-      <Filter>Rendering\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\DirectionalLight.h">
-      <Filter>Rendering\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ResourceManager.h" />
-    <ClInclude Include="..\..\src\Sound.h">
-      <Filter>Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Vehicle.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Wheel.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Physics\VehicleSetup.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\BoxShape.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\SphereShape.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\MeshShape.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Util\UnorderedMapPair.h">
-      <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\HingeConstraint.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\ExtendedMeshShape.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\WheelPair.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\ParticleSystem.h">
-      <Filter>Particle System\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Particle.h">
-      <Filter>Particle System\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\Frame.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Util\Rectangle.h">
-      <Filter>Util</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\Events\ApplyForce.h" />
+    <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h" />
+    <ClInclude Include="..\..\src\Events\BindGamepadAxis.h" />
+    <ClInclude Include="..\..\src\Events\BindGamepadButton.h" />
+    <ClInclude Include="..\..\src\Events\BindKey.h" />
+    <ClInclude Include="..\..\src\Events\BindMouseButton.h" />
+    <ClInclude Include="..\..\src\Events\Collision.h" />
+    <ClInclude Include="..\..\src\Events\CreateExplosion.h" />
+    <ClInclude Include="..\..\src\Events\ComponentCreated.h" />
+    <ClInclude Include="..\..\src\Events\Damage.h" />
+    <ClInclude Include="..\..\src\Events\DisableCollisions.h" />
+    <ClInclude Include="..\..\src\Events\EnableCollisions.h" />
+    <ClInclude Include="..\..\src\Events\GamepadAxis.h" />
+    <ClInclude Include="..\..\src\Events\GamepadButton.h" />
+    <ClInclude Include="..\..\src\Events\InputCommand.h" />
+    <ClInclude Include="..\..\src\Events\KeyDown.h" />
+    <ClInclude Include="..\..\src\Events\KeyUp.h" />
+    <ClInclude Include="..\..\src\Events\LeaveTrigger.h" />
+    <ClInclude Include="..\..\src\Events\LockMouse.h" />
+    <ClInclude Include="..\..\src\Events\MouseMove.h" />
+    <ClInclude Include="..\..\src\Events\MousePress.h" />
+    <ClInclude Include="..\..\src\Events\MouseRelease.h" />
+    <ClInclude Include="..\..\src\Events\OnDead.h" />
+    <ClInclude Include="..\..\src\Events\Move.h" />
+    <ClInclude Include="..\..\src\Events\PlayBGM.h" />
+    <ClInclude Include="..\..\src\Events\PlaySFX.h" />
+    <ClInclude Include="..\..\src\Events\Rotate.h" />
+    <ClInclude Include="..\..\src\Events\SetVelocity.h" />
+    <ClInclude Include="..\..\src\Events\SetViewportCamera.h" />
+    <ClInclude Include="..\..\src\Events\SpawnVehicle.h" />
+    <ClInclude Include="..\..\src\Events\StopSound.h" />
+    <ClInclude Include="..\..\src\Events\TankSteer.h" />
+    <ClInclude Include="..\..\src\Events\EnterTrigger.h" />
+    <ClInclude Include="..\..\src\Factory.h" />
+    <ClInclude Include="..\..\src\GameWorld.h" />
+    <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
-    <ClInclude Include="..\..\src\Events\KeyDown.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\KeyUp.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\InputManager.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\MousePress.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\MouseRelease.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\MouseMove.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\BindKey.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\BindMouseButton.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\InputCommand.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\InputController.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\RenderQueue.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\Viewport.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Physics\VehicleSetup.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\TankSteering.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\TankSteer.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h">
-      <Filter>Physics\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\TowerSteering.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\BarrelSteering.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\SetVelocity.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\GamepadAxis.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\GamepadButton.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\BindGamepadAxis.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\BindGamepadButton.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Viewport.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Health.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\LockMouse.h">
-      <Filter>Input\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\HelicopterSteering.h">
-      <Filter>Game\Vehicles\Helicopter\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h">
-      <Filter>Game\Vehicles\Helicopter\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\ApplyForce.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\ApplyPointImpulse.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Player.h">
-      <Filter>Game\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\CreateExplosion.h">
-      <Filter>Particle System\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\Collision.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Health.h">
-      <Filter>Gameplay\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Listener.h">
-      <Filter>Audio\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\ComponentCreated.h">
-      <Filter>Base\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\PlayBGM.h">
-      <Filter>Audio\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\PlaySFX.h">
-      <Filter>Audio\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\StopSound.h">
-      <Filter>Audio\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\TankShell.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\DisableCollisions.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\EnableCollisions.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Trigger.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\TriggerSystem.h">
-      <Filter>Physics\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\TriggerExplosion.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\EnterTrigger.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\TimerSystem.h">
-      <Filter>Base\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Timer.h">
-      <Filter>Base\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\FrameTimer.h">
-      <Filter>Base\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\DamageSystem.h">
-      <Filter>Game\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\Damage.h">
-      <Filter>Game\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Flag.h">
-      <Filter>Game\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\TextureFrame.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\WorldFrame.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\SetViewportCamera.h">
-      <Filter>Rendering\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\GameFrame.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\HealthOverlay.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\PlayerHUD.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\WheelPairSystem.h">
-      <Filter>Physics\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\Move.h">
-      <Filter>Base\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\BlendMap.h">
-      <Filter>Rendering\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\WallSystem.h">
-      <Filter>Gameplay\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\LeaveTrigger.h">
-      <Filter>Physics\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Follow.h">
-      <Filter>Game\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\FollowSystem.h">
-      <Filter>Game\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\Rotate.h">
-      <Filter>Base\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\TriggerMove.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\TriggerRotate.h">
-      <Filter>Physics\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Systems\GarageSystem.h">
-      <Filter>Game\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Garage.h">
-      <Filter>Game\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Move.h">
-      <Filter>Base\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Rotate.h">
-      <Filter>Base\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GUI\VehicleSelection.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\OnDead.h">
-      <Filter>Gameplay\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Events\SpawnVehicle.h">
-      <Filter>Game\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\Wall.h">
-      <Filter>Game\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Components\SpawnPoint.h">
-      <Filter>Game\Components</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\GameFrame.h" />
+    <ClInclude Include="..\..\src\GUI\HealthOverlay.h" />
+    <ClInclude Include="..\..\src\GUI\PlayerHUD.h" />
+    <ClInclude Include="..\..\src\GUI\VehicleSelection.h" />
+    <ClInclude Include="..\..\src\GUI\WorldFrame.h" />
+    <ClInclude Include="..\..\src\GUI\TextureFrame.h" />
+    <ClInclude Include="..\..\src\GUI\Viewport.h" />
+    <ClInclude Include="..\..\src\InputController.h" />
+    <ClInclude Include="..\..\src\InputManager.h" />
+    <ClInclude Include="..\..\src\Model.h" />
+    <ClInclude Include="..\..\src\OBJ.h" />
+    <ClInclude Include="..\..\src\Physics\VehicleSetup.h" />
+    <ClInclude Include="..\..\src\PrecompiledHeader.h" />
+    <ClInclude Include="..\..\src\Renderer.h" />
+    <ClInclude Include="..\..\src\RenderQueue.h" />
+    <ClInclude Include="..\..\src\ResourceManager.h" />
+    <ClInclude Include="..\..\src\ShaderProgram.h" />
+    <ClInclude Include="..\..\src\Skybox.h" />
+    <ClInclude Include="..\..\src\Sound.h" />
+    <ClInclude Include="..\..\src\System.h" />
+    <ClInclude Include="..\..\src\Systems\DamageSystem.h" />
+    <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
+    <ClInclude Include="..\..\src\Systems\FollowSystem.h" />
+    <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\GarageSystem.h" />
+    <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\InputSystem.h" />
+    <ClInclude Include="..\..\src\Systems\ParticleSystem.h" />
+    <ClInclude Include="..\..\src\Systems\PhysicsSystem.h" />
+    <ClInclude Include="..\..\src\Systems\RenderSystem.h" />
+    <ClInclude Include="..\..\src\Systems\SoundSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TankSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TimerSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
+    <ClInclude Include="..\..\src\Systems\TriggerSystem.h" />
+    <ClInclude Include="..\..\src\Systems\WallSystem.h" />
+    <ClInclude Include="..\..\src\Systems\WheelPairSystem.h" />
+    <ClInclude Include="..\..\src\Texture.h" />
+    <ClInclude Include="..\..\src\Util\GLError.h" />
+    <ClInclude Include="..\..\src\Util\Rectangle.h" />
+    <ClInclude Include="..\..\src\Util\Logging.h" />
+    <ClInclude Include="..\..\src\Util\UnorderedMapPair.h" />
+    <ClInclude Include="..\..\src\World.h" />
+    <ClInclude Include="..\..\src\Systems\JeepSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Components\JeepSteering.h" />
+    <ClInclude Include="..\..\src\Events\JeepSteer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\Shaders\Fragment2.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Normals.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Normals.geo.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\ShadowMap.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\ShadowMap.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Skybox.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Skybox.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Vertex.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Vertex2.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\AABB.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Fragment.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\Fragment2-Debug.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\FinalPass.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\FinalPass.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\SunPass.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\SunPass.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\BlendMap.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\BlendMap.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl">
-      <Filter>Shaders</Filter>
-    </None>
+    <None Include="..\..\src\Shaders\AABB.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.frag.glsl" />
+    <None Include="..\..\src\Shaders\BlendMap.vert.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalForwardPass.vert.glsl" />
+    <None Include="..\..\src\Shaders\FinalPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\FinalPass.vert.glsl" />
+    <None Include="..\..\src\Shaders\ForwardRendering.frag.glsl" />
+    <None Include="..\..\src\Shaders\ForwardRendering.vert.glsl" />
+    <None Include="..\..\src\Shaders\Fragment.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2-Debug.glsl" />
+    <None Include="..\..\src\Shaders\Fragment2.glsl" />
+    <None Include="..\..\src\Shaders\Normals.frag.glsl" />
+    <None Include="..\..\src\Shaders\Normals.geo.glsl" />
+    <None Include="..\..\src\Shaders\ShadowMap.frag.glsl" />
+    <None Include="..\..\src\Shaders\ShadowMap.vert.glsl" />
+    <None Include="..\..\src\Shaders\Skybox.frag.glsl" />
+    <None Include="..\..\src\Shaders\Skybox.vert.glsl" />
+    <None Include="..\..\src\Shaders\SunPass.frag.glsl" />
+    <None Include="..\..\src\Shaders\SunPass.vert.glsl" />
+    <None Include="..\..\src\Shaders\Vertex.glsl" />
+    <None Include="..\..\src\Shaders\Vertex2.glsl" />
+    <None Include="..\..\src\Shaders\VisualizeDepth.frag.glsl" />
+    <None Include="..\..\src\Shaders\VisualizeDepth.vert.glsl" />
   </ItemGroup>
 </Project>
