@@ -9,9 +9,12 @@ namespace Components
 	struct Health : Component
 	{
 		Health()
-			: Amount(1.0f) { }
+			: Amount(1.0f) 
+			, VulnerableToSplash(true)
+		{ }
 
 		float Amount;
+		bool VulnerableToSplash;
 
 		virtual Health* Clone() const override { return new Health(*this); }
 	};

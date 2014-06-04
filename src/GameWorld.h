@@ -30,6 +30,7 @@
 #include "Components/DirectionalLight.h"
 #include "Components/Input.h"
 #include "Components/Model.h"
+#include "Components/DamageModel.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
 #include "Components/PointLight.h"

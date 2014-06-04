@@ -20,6 +20,18 @@ bool Systems::WallSystem::Damage( const Events::Damage &event )
 		return false;
 	}
 	LOG_INFO("WallSystem::Damage");
+
+	// Change to damage model
+	auto modelComponent = m_World->GetComponent<Components::Model>(event.Entity);
+	auto damageModel = m_World->GetComponent<Components::DamageModel>(event.Entity);
+	if (modelComponent)
+	{
+		modelComponent->ModelFile = damageModel->ModelFile;
+		modelComponent->Color = damageModel->Color;
+		modelComponent->ShadowCaster = damageModel->ShadowCaster;
+		modelComponent->Transparent = damageModel->Transparent;
+	}
+
 	auto wallhealthcomponent = m_World->GetComponent<Components::Health>(event.Entity);
 	if(wallhealthcomponent->Amount > 0)
 	{
@@ -29,6 +41,7 @@ bool Systems::WallSystem::Damage( const Events::Damage &event )
 	//auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
 	Components::Transform transformComponent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(event.Entity);
 
+	// Spawn debris
 	for(auto d : wallComponent->Walldebris)
 	{
 		auto debris = m_World->CloneEntity(d);

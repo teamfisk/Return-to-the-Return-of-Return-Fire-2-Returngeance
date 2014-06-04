@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\src\Components\BlendMap.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
+    <ClInclude Include="..\..\src\Components\DamageModel.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\Flag.h" />
     <ClInclude Include="..\..\src\Components\Follow.h" />
