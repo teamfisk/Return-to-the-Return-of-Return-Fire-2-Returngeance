@@ -1,5 +1,4 @@
 #include <array>
-
 #include "System.h"
 #include "Events/TankSteer.h"
 #include "Events/SetVelocity.h"
@@ -23,6 +22,7 @@
 #include "Components/TankShell.h"
 #include "Components/SphereShape.h"
 #include "Components/Listener.h"
+#include "Components/SoundEmitter.h"
 
 #include "Events/EnableCollisions.h"
 #include "Events/DisableCollisions.h"

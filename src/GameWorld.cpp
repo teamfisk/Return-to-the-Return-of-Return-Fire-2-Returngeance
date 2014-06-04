@@ -11,7 +11,7 @@ void GameWorld::Initialize()
 	//Background Music
 	{
 		Events::PlayBGM e;
-		e.Resource = "Sounds/BGM/RideoftheValkyries.mp3";
+		e.Resource = "Sounds/SFX/WUB.mp3";
 		EventBroker->Publish(e);
 	}
 

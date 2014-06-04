@@ -62,7 +62,7 @@ void Systems::SoundSystem::Update(double dt)
 		}
 
 	}
-	LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
+	//LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
 
 	for(it = m_Channels.begin(); it != m_Channels.end();)
 	{
