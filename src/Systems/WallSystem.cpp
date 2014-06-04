@@ -25,30 +25,29 @@ bool Systems::WallSystem::Damage( const Events::Damage &event )
 	{
 		return false;
 	}
-
-	
-	LOG_INFO("You are dead");
-	auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+	LOG_INFO("Entity %i is dead", event.Entity);
+	//auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+	Components::Transform transformComponent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(event.Entity);
 
 	for(auto d : wallComponent->Walldebris)
 	{
 		auto debris = m_World->CloneEntity(d);
 		
 		auto transform = m_World->GetComponent<Components::Transform>(debris);
-		transform->Position += transformComponent->Position;
+		transform->Orientation = transform->Orientation * transformComponent.Orientation;
+		transform->Position = transform->Orientation * transform->Position + transformComponent.Position;
+		
+		//DO STUFF! :D
+		float distance = glm::distance(transform->Position, transformComponent.Position);
+		float radius = 5.f;
+		float strength = (1.f - pow(distance / radius, 2)) * 20.f;
+		glm::vec3 direction = glm::normalize(transformComponent.Position - transform->Position);
 
-			// DO STUFF! :D
-			float distance = glm::distance(transform->Position, transformComponent->Position);
-			float radius = 5.f;
-			float strength = (1.f - pow(distance / radius, 2)) * 500.f;
-			glm::vec3 direction = glm::normalize(transformComponent->Position - transform->Position);
-
-			Events::ApplyPointImpulse e;
-			e.Entity = debris;
-			e.Impulse = direction * strength;
-			e.Position = transformComponent->Position;
-			EventBroker->Publish(e);
-
+		Events::ApplyPointImpulse e;
+		e.Entity = debris;
+		e.Impulse = direction * strength;
+		e.Position = transformComponent.Position;
+		EventBroker->Publish(e);
 	}
 
 	m_World->RemoveEntity(event.Entity);
