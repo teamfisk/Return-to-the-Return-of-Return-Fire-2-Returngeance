@@ -300,7 +300,7 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 			auto absoluteTransformParent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(parent);
 			transformComponent->Position -= absoluteTransformParent.Position;
 			transformComponent->Position = transformComponent->Position * absoluteTransformParent.Orientation;
-			transformComponent->Orientation = absoluteTransformParent.Orientation * glm::inverse(transformComponent->Orientation);
+			transformComponent->Orientation = glm::inverse(absoluteTransformParent.Orientation) * transformComponent->Orientation;
 		}
 	}
 

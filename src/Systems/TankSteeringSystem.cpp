@@ -300,11 +300,11 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 		return false;
 	}
 
-	for (auto &spawnPointComponent : *spawnPointComponents)
+	for (auto &component : *spawnPointComponents)
 	{
-		auto spawnPoint = spawnPointComponent->Entity;
-		auto spawnPointBaseParent = m_World->GetEntityBaseParent(spawnPoint);
-		auto playerComponent = m_World->GetComponent<Components::Player>(spawnPointBaseParent);
+		auto spawnPoint = component->Entity;
+		auto spawnPointComponent = std::dynamic_pointer_cast<Components::SpawnPoint>(component);
+		auto playerComponent = m_World->GetComponent<Components::Player>(spawnPointComponent->Player);
 		if (!playerComponent || playerComponent->ID != event.PlayerID)
 			continue;
 		

@@ -82,9 +82,9 @@ private:
 	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
 	EntityID CreateJeep(int playerID);
 	EntityID CreateWall(glm::vec3 pos, glm::quat orientation);
-	EntityID CreateGarage(glm::vec3 Position, glm::quat orientation, int playerID);
+	EntityID CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int playerID);
 	void CreateTerrain();
-	void CreateBase(glm::quat orientation);
+	void CreateBase(glm::quat orientation, int playerID);
 	std::vector<EntityID> m_WallDebrisTemplates;
 };
 
