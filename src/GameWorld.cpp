@@ -93,8 +93,6 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
-	CreateTerrain();
-
 #pragma region Wall_Debris_Template
 
 	{
@@ -265,11 +263,13 @@ void GameWorld::Initialize()
 		auto shape = CreateEntity(debri);
 		auto shapetransform = AddComponent<Components::Transform>(shape);
 		auto shapemesh = AddComponent<Components::MeshShape>(shape);
-		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyed.obj"; //Lägg in ny collision modell
+		shapemesh->ResourceName = "Models/Wall/WallDestroyed/WallDestroyedColosion.obj";
 
 		m_WallDebrisTemplates.push_back(debri);
 	}
 #pragma endregion Region for wall debris
+
+	CreateTerrain();
 
 	/*EntityID tank1 = CreateTank(1);
 	{
@@ -752,7 +752,7 @@ void GameWorld::CreateTerrain()
 	}
 
 	CreateBase(glm::quat(), 1);
-	CreateBase(glm::quat(glm::vec3(0, glm::pi<float>(), 0)), 2);
+	//CreateBase(glm::quat(glm::vec3(0, glm::pi<float>(), 0)), 2);
 
 	{
 		auto tree = CreateEntity();
@@ -1084,14 +1084,13 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 #pragma endregion Terrain
 
 	CreateGate(base, glm::vec3(273.f, 40.185f, 0.06f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
-
 	CreateWall(base, glm::vec3(273.f, 40.3f, -55.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateWall(base, glm::vec3(273.f, 40.3f, -45.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateWall(base, glm::vec3(273.f, 40.3f, -35.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateWall(base, glm::vec3(273.f, 40.3f, -25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	//CreateWall(base, glm::vec3(273.f, 40.3f, -45.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	//CreateWall(base, glm::vec3(273.f, 40.3f, -35.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	//CreateWall(base, glm::vec3(273.f, 40.3f, -25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	//CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	//CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
+	//CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
 }

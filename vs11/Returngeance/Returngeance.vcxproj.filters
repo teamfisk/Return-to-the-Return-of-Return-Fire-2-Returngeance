@@ -85,6 +85,7 @@
       <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Systems\WallSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\GameStateSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\JeepSteeringSystem.cpp">
       <Filter>Physics\Systems</Filter>
     </ClCompile>
@@ -581,6 +582,35 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\JeepSteeringSystem.h">
       <Filter>Physics\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\OnDead.h" />
+    <ClInclude Include="..\..\src\Systems\WallSystem.h" />
+    <ClInclude Include="..\..\src\GUI\GameOverFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\GameStateSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\FlagPickup.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\FlagCaptured.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\FlagDropped.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\FlagReturned.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\GameOver.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUI\MainMenuFrame.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\GameStart.h">
+      <Filter>Game\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

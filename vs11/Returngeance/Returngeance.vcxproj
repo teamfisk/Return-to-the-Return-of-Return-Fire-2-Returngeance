@@ -114,6 +114,7 @@
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FreeSteeringSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\GameStateSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\GarageSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\HelicopterSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\InputSystem.cpp" />
@@ -195,8 +196,14 @@
     <ClInclude Include="..\..\src\Events\Damage.h" />
     <ClInclude Include="..\..\src\Events\DisableCollisions.h" />
     <ClInclude Include="..\..\src\Events\EnableCollisions.h" />
+    <ClInclude Include="..\..\src\Events\FlagCaptured.h" />
+    <ClInclude Include="..\..\src\Events\FlagDropped.h" />
+    <ClInclude Include="..\..\src\Events\FlagPickup.h" />
+    <ClInclude Include="..\..\src\Events\FlagReturned.h" />
+    <ClInclude Include="..\..\src\Events\GameOver.h" />
     <ClInclude Include="..\..\src\Events\GamepadAxis.h" />
     <ClInclude Include="..\..\src\Events\GamepadButton.h" />
+    <ClInclude Include="..\..\src\Events\GameStart.h" />
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
     <ClInclude Include="..\..\src\Events\JeepSteer.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
@@ -222,7 +229,9 @@
     <ClInclude Include="..\..\src\GUI\Frame.h" />
     <ClInclude Include="..\..\src\EventBroker.h" />
     <ClInclude Include="..\..\src\GUI\GameFrame.h" />
+    <ClInclude Include="..\..\src\GUI\GameOverFrame.h" />
     <ClInclude Include="..\..\src\GUI\HealthOverlay.h" />
+    <ClInclude Include="..\..\src\GUI\MainMenuFrame.h" />
     <ClInclude Include="..\..\src\GUI\PlayerHUD.h" />
     <ClInclude Include="..\..\src\GUI\VehicleSelection.h" />
     <ClInclude Include="..\..\src\GUI\WorldFrame.h" />
@@ -246,6 +255,7 @@
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FollowSystem.h" />
     <ClInclude Include="..\..\src\Systems\FreeSteeringSystem.h" />
+    <ClInclude Include="..\..\src\Systems\GameStateSystem.h" />
     <ClInclude Include="..\..\src\Systems\GarageSystem.h" />
     <ClInclude Include="..\..\src\Systems\HelicopterSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\InputSystem.h" />
