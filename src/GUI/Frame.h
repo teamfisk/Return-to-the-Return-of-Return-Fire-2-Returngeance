@@ -36,6 +36,7 @@ public:
 		: EventBroker(eventBroker)
 		, ResourceManager(resourceManager)
 		, Rectangle()
+		, m_Parent(nullptr)
 		, m_Name("UIParent")
 		, m_Layer(0)
 		, m_Hidden(false)
@@ -46,12 +47,28 @@ public:
 		: m_Name(name)
 		, m_Layer(0)
 		, m_Hidden(false)
-	{ SetParent(std::shared_ptr<Frame>(parent)); Initialize(); }
+	{ SetParent(parent); Initialize(); }
+
+	~Frame()
+	{
+		/*for (auto layer : m_Children)
+		{
+			for (auto child : layer.second)
+			{
+				delete child.second;
+			}
+		}
+
+		if (m_Parent)
+		{
+			m_Parent->RemoveChild(this);
+		}*/
+	}
 
 	::RenderQueuePair RenderQueue;
 
-	std::shared_ptr<Frame> Parent() const { return m_Parent; }
-	void SetParent(std::shared_ptr<Frame> parent) 
+	Frame* Parent() const { return m_Parent; }
+	void SetParent(Frame* parent) 
 	{
 		if (parent == nullptr)
 		{
@@ -62,13 +79,13 @@ public:
 		Width = parent->Width;
 		Height = parent->Height;
 		m_Layer = parent->Layer() + 1;
-		parent->AddChild(std::shared_ptr<Frame>(this));
+		parent->AddChild(this);
 		m_Parent = parent;
 		EventBroker = parent->EventBroker;
 		ResourceManager = parent->ResourceManager;
 	}
 
-	void AddChild(std::shared_ptr<Frame> child)
+	void AddChild(Frame* child)
 	{
 		m_Children[child->m_Layer].insert(std::make_pair(child->Name(), child));
 		if (m_Parent)
@@ -77,7 +94,19 @@ public:
 		}
 	}
 
-	typedef std::map<std::string, std::shared_ptr<Frame>>::const_iterator FrameChildrenIterator;
+	void RemoveChild(Frame* child)
+	{
+		auto it = m_Children.find(child->m_Layer);
+		if (it != m_Children.end())
+		{
+			m_Children.erase(it);
+		}
+
+		if (m_Parent)
+		{
+			m_Parent->RemoveChild(child);
+		}
+	}
 
 	std::string Name() const { return m_Name; }
 	void SetName(std::string val) { m_Name = val; }
@@ -89,8 +118,14 @@ public:
 		else
 			return m_Hidden; 
 	}
-	void Hide() { m_Hidden = true; }
-	void Show() { m_Hidden = false; }
+
+	bool Visible() const
+	{
+		return !Hidden();
+	}
+
+	virtual void Hide() { m_Hidden = true; }
+	virtual void Show() { m_Hidden = false; }
 
 	int Left() const override
 	{ 
@@ -144,9 +179,6 @@ public:
 
 	void UpdateLayered(double dt)
 	{
-		if (this->Hidden())
-			return;
-
 		// Update ourselves
 		this->Update(dt);
 
@@ -157,8 +189,6 @@ public:
 			for (auto &pairChild : children)
 			{
 				auto child = pairChild.second;
-				if (child->Hidden())
-					continue;
 				child->Update(dt);
 			}
 		}
@@ -200,8 +230,8 @@ protected:
 	int m_Layer;
 	bool m_Hidden;
 
-	std::shared_ptr<Frame> m_Parent;
-	typedef std::multimap<std::string, std::shared_ptr<Frame>> Children_t; // name -> frame
+	Frame* m_Parent;
+	typedef std::multimap<std::string, Frame*> Children_t; // name -> frame
 	std::map<int, Children_t> m_Children; // layer -> Children_t
 
 	virtual bool OnKeyDown(const Events::KeyDown &event) { return false; }

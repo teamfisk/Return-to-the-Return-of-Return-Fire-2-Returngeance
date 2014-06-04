@@ -3,6 +3,7 @@
 
 
 #include "System.h"
+#include "Systems/TransformSystem.h"
 #include "Events/OnDead.h"
 #include "Events/Damage.h"
 #include "Events/ApplyPointImpulse.h"

@@ -18,12 +18,12 @@ bool Systems::DamageSystem::OnDamage( const Events::Damage &event )
 		return false;
 	auto health = m_World->GetComponent<Components::Health>(event.Entity);
 	health->Amount -= event.Amount;
-	if(health->Amount <= 0)
-	{
-		Events::OnDead e;
-		e.Entity = event.Entity;
-		EventBroker->Publish(e);
-	}
+	//if(health->Amount <= 0)
+	//{
+	//	Events::OnDead e;
+	//	e.Entity = event.Entity;
+	//	EventBroker->Publish(e);
+	//}
 	LOG_INFO("Damaged entity %i, Health left: %f", event.Entity, health->Amount);
 	return true;
 }

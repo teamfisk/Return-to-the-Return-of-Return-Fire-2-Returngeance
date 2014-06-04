@@ -40,6 +40,9 @@ namespace GUI
 
 		void Update(double dt) override
 		{
+			if (Hidden())
+				return;
+
 			glm::vec2 posDiff = m_TargetCoordinate - m_CurrentCoordinate;
 			m_CurrentCoordinate += posDiff * 2.f * (float)dt;
 
@@ -77,28 +80,30 @@ namespace GUI
 			if (event.PlayerID != m_PlayerID)
 				return false;
 
+			const float deadzone = 0.5f;
+
 			// Menu movement
 			if (event.Command == "interface_horizontal" || event.Command == "interface_vertical")
 			{
 				// Horizontal scrolling
 				if (event.Command == "interface_horizontal")
 				{
-					if (event.Value > 0)
+					if (event.Value > deadzone)
 						m_CurrentSelection++;
-					else if (event.Value < 0)
+					else if (event.Value < -deadzone)
 						m_CurrentSelection--;
 				}
 				// Vertical scrolling to switch between "rows" in an intuitive way
 				else if (event.Command == "interface_vertical")
 				{
-					if (event.Value > 0)
+					if (event.Value > deadzone)
 					{
 						if (m_CurrentSelection == 0)
 							m_CurrentSelection++;
 						else if (m_CurrentSelection == 3)
 							m_CurrentSelection--;
 					}
-					else if (event.Value < 0)
+					else if (event.Value < -deadzone)
 					{
 						if (m_CurrentSelection == 1)
 							m_CurrentSelection--;

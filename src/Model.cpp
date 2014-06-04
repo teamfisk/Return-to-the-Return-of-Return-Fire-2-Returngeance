@@ -93,7 +93,7 @@ Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
 	if (Vertices.size() > 0)
 	{
 		CreateTangents();
-		getSimilarVertexIndex();
+		//getSimilarVertexIndex();
 		CreateBuffers(Vertices, Normals, TangentNormals, BiTangentNormals, TextureCoords);
 	}
 	else
@@ -223,7 +223,7 @@ void Model::getSimilarVertexIndex()
 				{
 					glm::vec3 tempNormal, tempTangent, tempBiTangent;
 
-					if(glm::dot(Normals[i], Normals[t]) > 0)
+					if(glm::dot(Normals[i], Normals[t]) > .4f)
 					{
 					tempNormal = Normals[i] + Normals[t];
 					tempTangent = TangentNormals[i] + TangentNormals[t];
