@@ -2,13 +2,18 @@
 #include "SoundSystem.h"
 #include "World.h"
 
+Systems::SoundSystem::~SoundSystem()
+{
+	FMOD_System_Release(m_System);
+}
+
 void Systems::SoundSystem::Initialize()
 {
 	EVENT_SUBSCRIBE_MEMBER(m_EComponentCreated, &SoundSystem::OnComponentCreated);
 	EVENT_SUBSCRIBE_MEMBER(m_EPlaySFX, &SoundSystem::PlaySFX);
 	EVENT_SUBSCRIBE_MEMBER(m_EPlayBGM, &SoundSystem::PlayBGM);
 	EVENT_SUBSCRIBE_MEMBER(m_EStopSound, &SoundSystem::StopSound);
-	
+	m_isPlaying = false;
 	m_TransformSystem = m_World->GetSystem<Systems::TransformSystem>();
 	FMOD_System_Create(&m_System);
 	FMOD_RESULT result = FMOD_System_Init(m_System, 32, FMOD_INIT_3D_RIGHTHANDED | FMOD_INIT_ENABLE_PROFILE, 0);
@@ -44,9 +49,8 @@ void Systems::SoundSystem::Update(double dt)
 	std::map<EntityID, FMOD_CHANNEL*>::iterator it;
 	for(it = m_DeleteChannels.begin(); it != m_DeleteChannels.end();)
 	{
-		FMOD_BOOL isPlaying = false;
-		FMOD_Channel_IsPlaying(it->second, &isPlaying);
-		if(isPlaying)
+		FMOD_Channel_IsPlaying(it->second, &m_isPlaying);
+		if(m_isPlaying)
 		{
 			it++;
 		}
@@ -58,13 +62,12 @@ void Systems::SoundSystem::Update(double dt)
 		}
 
 	}
-	//LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
+	LOG_INFO("Antal emitters i listan: %i", m_Channels.size());
 
 	for(it = m_Channels.begin(); it != m_Channels.end();)
 	{
-		FMOD_BOOL isPlaying = false;
-		FMOD_Channel_IsPlaying(it->second, &isPlaying);
-		if(!isPlaying)
+		FMOD_Channel_IsPlaying(it->second, &m_isPlaying);
+		if(!m_isPlaying)
 		{
 			it = m_Channels.erase(it);			
 		}
@@ -163,21 +166,28 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 
 bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 {
-	auto emitter = m_World->CreateEntity();
-	auto eTransform = m_World->AddComponent<Components::Transform>(emitter);
-	auto eComponent = m_World->AddComponent<Components::SoundEmitter>(emitter);
-	m_Channels[emitter] = m_BGMChannel;
-	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
+	
+	FMOD_Channel_Stop(m_BGMChannel);
 	Sound* sound = ResourceManager->Load<Sound>("Sound2D", event.Resource);
-	//m_Sounds[emitter] = *sound;
 
-	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_Channels[emitter]);
+	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_BGMChannel);
+	FMOD_Channel_SetMode(m_BGMChannel, FMOD_LOOP_NORMAL);
+	FMOD_Sound_SetLoopCount(*sound, -1);
+
 	return true;
 }
 
 bool Systems::SoundSystem::StopSound(const Events::StopSound &event)
 {
-	FMOD_Channel_Stop(m_Channels[event.Emitter]);
+	auto eComp = m_World->GetComponent<Components::SoundEmitter>(event.Emitter);
+	if(eComp)
+	{
+		FMOD_Channel_Stop(m_Channels[event.Emitter]);
+	}
+	else
+	{
+		FMOD_Channel_Stop(m_BGMChannel);
+	}
 	return true;
 }
 

@@ -8,6 +8,13 @@ void GameWorld::Initialize()
 	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
+	//Background Music
+	{
+		Events::PlayBGM e;
+		e.Resource = "Sounds/BGM/RideoftheValkyries.mp3";
+		EventBroker->Publish(e);
+	}
+
 	// Interface
 	BindKey(GLFW_KEY_A, "interface_horizontal", -1.f);
 	BindKey(GLFW_KEY_D, "interface_horizontal", 1.f);

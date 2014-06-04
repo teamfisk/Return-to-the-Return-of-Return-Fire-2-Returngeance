@@ -85,6 +85,28 @@ void InputManager::Update(double dt)
 		EventBroker->Publish(e);
 	}
 
+	
+	if(m_CurrentKeyState[GLFW_KEY_P])
+	{
+		Events::StopSound e;
+		e.Emitter = 1;
+		EventBroker->Publish(e);
+	}
+	if(m_CurrentKeyState[GLFW_KEY_L])
+	{
+		Events::PlayBGM e;
+		e.Resource = "Sounds/BGM/WilliamTellOverture.mp3";
+		e.Loop = true;
+		EventBroker->Publish(e);
+	}
+	if(m_CurrentKeyState[GLFW_KEY_O])
+	{
+		Events::PlayBGM e;
+		e.Resource = "Sounds/BGM/DiesIrae.mp3";
+		e.Loop = true;
+		EventBroker->Publish(e);
+	}
+
 
 	// // Lock mouse while holding LMB
 	// if (m_CurrentMouseState[GLFW_MOUSE_BUTTON_LEFT])

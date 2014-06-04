@@ -13,6 +13,9 @@
 #include "Events/GamepadAxis.h"
 #include "Events/GamepadButton.h"
 
+#include "Events/StopSound.h"
+#include "Events/PlayBGM.h"
+
 class InputManager
 {
 public:
