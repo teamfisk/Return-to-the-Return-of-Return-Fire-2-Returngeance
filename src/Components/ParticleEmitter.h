@@ -20,6 +20,7 @@ struct ParticleEmitter : Component
 		, SpreadAngle(0)
 		, LifeTime(0)
 		, TimeSinceLastSpawn(100)
+		, Emitting(false)
 		, Color(glm::vec4(0)) { } 
 
 	EntityID ParticleTemplate;
@@ -32,6 +33,7 @@ struct ParticleEmitter : Component
 	double LifeTime;
 	bool UseGoalVelocity;
 	bool Fade;
+	bool Emitting;
 	glm::vec3 GoalVelocity;
 	std::vector<float> AngularVelocitySpectrum;
 	std::vector<glm::vec3> OrientationSpectrum; //Keep? noo..
