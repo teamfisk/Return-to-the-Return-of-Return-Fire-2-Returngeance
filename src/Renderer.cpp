@@ -271,7 +271,6 @@ void Renderer::Draw(double dt)
 
 void Renderer::DrawFrame(RenderQueuePair &rq)
 {
-	return;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
@@ -389,7 +388,6 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	rq.Forward.Jobs.sort(Renderer::DepthSort);
 
 	//DrawShadowMap(rq.Deferred);
-
 	/*
 		Base pass
 	*/
@@ -399,8 +397,6 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	//glViewport(0, 0, m_Width, m_Height);
 
 	// Clear G-buffer
-	GLenum FirstPass[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-	glDrawBuffers(4, FirstPass);
 	glClearColor(115.f / 255, 192.f / 255, 255.f / 255, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -420,39 +416,39 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	//glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
-	GLenum lightingPassAttachments[] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, lightingPassAttachments);
+	
 
 	glCullFace(GL_FRONT);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE,GL_ONE);
+	glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
 
 	glClearColor(0.f, 0.f, 0.f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//DrawLightScene(rq.Deferred);
+	DrawLightScene(rq.Deferred);
+	glCullFace(GL_BACK);
 	DrawSunLightScene();
 
 	/*
 		Final pass
 	*/
 
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbFinalPass);
 	glViewport(0, 0, m_Width, m_Height);
 	glScissor(0, 0, m_Width, m_Height);
  	//glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
- 
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.f, 0.f, 0.f, 0.f);
  	
 
-	GLenum windowBuffOpaque2[] = { GL_COLOR_ATTACHMENT0, GL_NONE, GL_NONE, GL_NONE };
-	glDrawBuffers(4, windowBuffOpaque2);
+	
 
 	m_FinalPassProgram.Bind();
  	// Ambient light
- 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(0.3f)));
+ 	glUniform3fv(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "La"), 1, glm::value_ptr(glm::vec3(1.0f)));
  	//glUniform1f(glGetUniformLocation(m_FinalPassProgram.GetHandle(), "Gamma"), Gamma);
  
  	glActiveTexture(GL_TEXTURE0);
@@ -487,7 +483,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	// Clear G-buffer
 	//GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_NONE , GL_NONE, GL_NONE };
 	//glDrawBuffers(4, attachments);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	//glClearColor(0.f, 0.f, 0.f, 0.f);
 
 	glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
@@ -509,12 +505,14 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(m_Camera->ViewMatrix()));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "P"), 1, GL_FALSE, glm::value_ptr(cameraProjection));
 			glUniform4fv(glGetUniformLocation(ShaderProgramHandle, "Color"), 1, glm::value_ptr(modelJob->Color));
+			glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "La"), 1, glm::value_ptr(glm::vec3(1.0f)));
+			glUniform3fv(glGetUniformLocation(ShaderProgramHandle, "directionToSun"), 1, glm::value_ptr(glm::normalize(m_SunPosition)));
 
 			glBindVertexArray(modelJob->VAO);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, modelJob->DiffuseTexture);
-			/*if (modelJob->NormalTexture != 0)
+			if (modelJob->NormalTexture != 0)
 			{
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, modelJob->NormalTexture);
@@ -523,7 +521,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 			{
 			glActiveTexture(GL_TEXTURE3);
 			glBindTexture(GL_TEXTURE_2D, modelJob->SpecularTexture);
-			}*/
+			}
 			glDrawArrays(GL_TRIANGLES, modelJob->StartIndex, modelJob->EndIndex - modelJob->StartIndex + 1);
 
 			continue;
@@ -572,7 +570,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	//glUniform1f(glGetUniformLocation(ShaderProgramHandle, "Gamma"), Gamma);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fFinalDiffuseTexture);
 // 	glActiveTexture(GL_TEXTURE1);
 // 	glBindTexture(GL_TEXTURE_2D, m_fLightingTexture);
 
@@ -1002,12 +1000,40 @@ void Renderer::FrameBufferTextures()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fSpecularTexture, 0);
 	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, m_fShadowTexture, 0);
 
+	GLenum FirstPass[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, FirstPass);
+
 	GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
 	{
 		LOG_ERROR("DeferredLighting:Init: m_fbBasePass incomplete: 0x%x\n", fbStatus);
 		//exit(1);
 	}
+	
+	m_fbFinalPass = 0;
+	glGenFramebuffers(1, &m_fbFinalPass);
+	glGenTextures(1, &m_fFinalDiffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, m_fFinalDiffuseTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbFinalPass);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fFinalDiffuseTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_fDepthBuffer);
+
+	GLenum FinalPassAttachments[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, FinalPassAttachments);
+
+	fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 
+	{
+		LOG_ERROR("DeferredLighting:Init: m_fbLightingPass incomplete: 0x%x\n", fbStatus);
+		//exit(1);
+	}
+
 
 	m_fbLightingPass = 0;
 	glGenFramebuffers(1, &m_fbLightingPass);
@@ -1022,6 +1048,9 @@ void Renderer::FrameBufferTextures()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbLightingPass);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fLightingTexture, 0);
+
+	GLenum lightingPassAttachments[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, lightingPassAttachments);
 
 	fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if(fbStatus != GL_FRAMEBUFFER_COMPLETE) 

@@ -1,4 +1,5 @@
 #version 430
+//Dicksdickdickdickssssss
 
 uniform vec3 La;
 
@@ -25,6 +26,7 @@ void main()
 
 	//frag_Diffuse = DiffuseTexel * ((vec4(LightingTexel.rgb, 0.0) + vec4(LightingTexel.a, LightingTexel.a, LightingTexel.a, 0.0)));
 	frag_Diffuse = DiffuseTexel * (vec4(La, 0.0) * (vec4(LightingTexel.rgb, 0.0) + vec4(LightingTexel.a, LightingTexel.a, LightingTexel.a, 0.0)));
+	//frag_Diffuse = LightingTexel;
 
 	//FragmentColor = vec4(pow(_FragmentColor.rgb, vec3(1.0 / Gamma)), _FragmentColor.a);
 }
