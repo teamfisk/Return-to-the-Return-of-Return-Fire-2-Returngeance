@@ -375,7 +375,7 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 {
 	if (event.VehicleType != "Tank")
 		return false;
-
+	
 	auto spawnPointComponents = m_World->GetComponentsOfType<Components::SpawnPoint>();
 	if (!spawnPointComponents)
 	{
@@ -387,8 +387,15 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 	{
 		auto spawnPoint = component->Entity;
 		auto spawnPointComponent = std::dynamic_pointer_cast<Components::SpawnPoint>(component);
-		auto playerComponent = m_World->GetComponent<Components::Player>(spawnPointComponent->Player);
-		if (!playerComponent || playerComponent->ID != event.PlayerID)
+		auto teamComponent =  m_World->GetComponent<Components::Team>(spawnPoint);
+
+		if(!teamComponent)
+		{
+			LOG_ERROR("SpawnPoint has no TeamComponent");
+			continue;
+		}
+
+		if (teamComponent->TeamID != event.PlayerID)
 			continue;
 		
 		Components::Transform absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(spawnPoint);

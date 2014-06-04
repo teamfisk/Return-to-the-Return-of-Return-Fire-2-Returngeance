@@ -28,6 +28,7 @@
 #include "Components/Input.h"
 #include "Components/JeepSteering.h"
 #include "Events/JeepSteer.h"
+#include "Components/Team.h"
 
 #include "Events/SetViewportCamera.h"
 

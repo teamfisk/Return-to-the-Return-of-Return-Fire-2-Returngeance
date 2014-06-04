@@ -9,6 +9,7 @@ namespace Components
 	struct Trigger : Component
 	{
 		bool TriggerOnce;
+		int TeamID;
 		virtual Trigger* Clone() const override { return new Trigger(*this); }
 	};
 

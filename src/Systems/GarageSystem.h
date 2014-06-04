@@ -18,6 +18,7 @@
 #include "Events/Rotate.h"
 #include "Components/Move.h"
 #include "Components/Rotate.h"
+#include "Components/Team.h"
 
 namespace Systems
 {
