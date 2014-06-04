@@ -52,7 +52,7 @@ private:
 	std::vector<EntityID> m_Listeners;
 	std::map<EntityID, FMOD_CHANNEL*> m_Channels;
 	std::map<EntityID, FMOD_CHANNEL*> m_DeleteChannels;
-	std::map<EntityID, FMOD_SOUND*> m_Sounds;	
+	//std::map<EntityID, FMOD_SOUND*> m_Sounds;	
 	std::map<EntityID, FMOD_SOUND*> m_DeleteSounds;	
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 	

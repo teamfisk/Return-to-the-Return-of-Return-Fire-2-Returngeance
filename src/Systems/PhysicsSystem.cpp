@@ -80,7 +80,7 @@ void Systems::PhysicsSystem::Initialize()
 		worldInfo.m_broadPhaseBorderBehaviour = hkpWorldCinfo::BROADPHASE_BORDER_FIX_ENTITY;
 
 		// You must specify the size of the broad phase - objects should not be simulated outside this region
-		worldInfo.setBroadPhaseWorldSize(500.0f);
+		worldInfo.setBroadPhaseWorldSize(1000.0f);
 		m_PhysicsWorld = new hkpWorld(worldInfo);
 
 		// When the simulation type is SIMULATION_TYPE_MULTITHREADED, in the debug build, the sdk performs checks
@@ -180,6 +180,12 @@ void Systems::PhysicsSystem::Update(double dt)
 			rotation = GLMQUAT_TO_HKQUATERNION(transformComponent->Orientation);
 			velocity = GLMVEC3_TO_HKVECTOR4(transformComponent->Velocity);
 		}
+		
+		/*auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(entity);
+		position = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Position);
+		rotation = GLMQUAT_TO_HKQUATERNION(absoluteTransform.Orientation);
+		velocity = GLMVEC3_TO_HKVECTOR4(absoluteTransform.Velocity);*/
+		
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodies[entity]->setPositionAndRotation(position, rotation);
 
@@ -268,17 +274,33 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
 		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
+		
+		/*	if(transformComponentParent)
+		{
+		auto absoluteTransformParent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(parent);
+		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
+		transformComponent->Orientation = glm::inverse(HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation())) * absoluteTransformParent.Orientation;
+		transformComponent->Velocity =  HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
+		}
+		else
+		{
+		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
 		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
 		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
 		transformComponent->Velocity = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
-		// TODO: No support for Scale, MIGHT be possible
+		}*/
+
+		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
+		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
+		transformComponent->Velocity = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
 
 		// HACK: WTF IS THIS?
 		if (transformComponentParent)
 		{
-			transformComponent->Position -= transformComponentParent->Position;
-			transformComponent->Position = transformComponent->Position * transformComponentParent->Orientation;
-			transformComponent->Orientation =  transformComponent->Orientation * glm::inverse(transformComponentParent->Orientation);
+			auto absoluteTransformParent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(parent);
+			transformComponent->Position -= absoluteTransformParent.Position;
+			transformComponent->Position = transformComponent->Position * absoluteTransformParent.Orientation;
+			transformComponent->Orientation = glm::inverse(absoluteTransformParent.Orientation) * transformComponent->Orientation;
 		}
 	}
 

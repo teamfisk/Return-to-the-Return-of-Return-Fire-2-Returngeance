@@ -132,7 +132,11 @@ public:
 	Rectangle AbsoluteRectangle()
 	{
 		int left = Left();
+		if (m_Parent)
+			left = std::max(left, m_Parent->Left());
 		int top = Top();
+		if (m_Parent)
+			top = std::max(top, m_Parent->Top());
 		int width = Right() - left;
 		int height = Bottom() - top;
 		return Rectangle(left, top, width, height);

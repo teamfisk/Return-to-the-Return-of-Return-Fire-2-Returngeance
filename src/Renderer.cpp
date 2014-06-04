@@ -279,6 +279,7 @@ void Renderer::DrawFrame(RenderQueuePair &rq)
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
 
+	glEnable(GL_SCISSOR_TEST);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -531,8 +532,9 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 		if (spriteJob)
 		{
 			glm::mat4 modelMatrix = spriteJob->ModelMatrix;
-			MVP = cameraMatrix * modelMatrix;
-
+			glm::mat4 billboardingMatrix = glm::inverse(glm::toMat4(glm::inverse(m_Camera->Orientation())));
+			MVP = cameraMatrix * modelMatrix * billboardingMatrix;
+			
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "MVP"), 1, GL_FALSE, glm::value_ptr(glm::mat4(MVP)));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "M"), 1, GL_FALSE, glm::value_ptr(glm::mat4(modelMatrix)));
 			glUniformMatrix4fv(glGetUniformLocation(ShaderProgramHandle, "V"), 1, GL_FALSE, glm::value_ptr(glm::mat4(m_Camera->ViewMatrix())));

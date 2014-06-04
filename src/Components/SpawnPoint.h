@@ -8,6 +8,8 @@ namespace Components
 
 struct SpawnPoint : Component
 {
+	EntityID Player;
+
 	virtual SpawnPoint* Clone() const override { return new SpawnPoint(*this); }
 };
 

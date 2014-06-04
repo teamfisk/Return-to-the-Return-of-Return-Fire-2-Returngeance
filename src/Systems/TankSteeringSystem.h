@@ -22,12 +22,16 @@
 #include "Components/Health.h"
 #include "Components/TankShell.h"
 #include "Components/SphereShape.h"
+#include "Components/Listener.h"
 
 #include "Events/EnableCollisions.h"
 #include "Events/DisableCollisions.h"
 #include "Components/Trigger.h"
 #include "Components/TriggerExplosion.h"
 #include "Components/FrameTimer.h"
+
+#include "Events/PlaySFX.h"
+#include "Events/PlayBGM.h"
 
 #include "Events/Damage.h"
 #include "Components/Vehicle.h"
