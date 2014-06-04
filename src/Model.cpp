@@ -223,7 +223,7 @@ void Model::getSimilarVertexIndex()
 				{
 					glm::vec3 tempNormal, tempTangent, tempBiTangent;
 
-					if(glm::dot(Normals[i], Normals[t]) > 0)
+					if(glm::dot(Normals[i], Normals[t]) > .4f)
 					{
 					tempNormal = Normals[i] + Normals[t];
 					tempTangent = TangentNormals[i] + TangentNormals[t];
