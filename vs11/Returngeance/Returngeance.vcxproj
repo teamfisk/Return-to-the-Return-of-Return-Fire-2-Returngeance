@@ -109,6 +109,7 @@
     <ClCompile Include="..\..\src\ShaderProgram.cpp" />
     <ClCompile Include="..\..\src\Skybox.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\Systems\JeepSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\DamageSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp" />
@@ -138,13 +139,16 @@
     <ClInclude Include="..\..\src\Components\BlendMap.h" />
     <ClInclude Include="..\..\src\Components\BoxShape.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
+    <ClInclude Include="..\..\src\Components\DamageModel.h" />
     <ClInclude Include="..\..\src\Components\DirectionalLight.h" />
     <ClInclude Include="..\..\src\Components\Flag.h" />
     <ClInclude Include="..\..\src\Components\Follow.h" />
     <ClInclude Include="..\..\src\Components\FrameTimer.h" />
     <ClInclude Include="..\..\src\Components\Garage.h" />
+    <ClInclude Include="..\..\src\Components\JeepSteering.h" />
     <ClInclude Include="..\..\src\Components\Move.h" />
     <ClInclude Include="..\..\src\Components\Rotate.h" />
+    <ClInclude Include="..\..\src\Components\Team.h" />
     <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Timer.h" />
     <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />
@@ -202,6 +206,7 @@
     <ClInclude Include="..\..\src\Events\GamepadButton.h" />
     <ClInclude Include="..\..\src\Events\GameStart.h" />
     <ClInclude Include="..\..\src\Events\InputCommand.h" />
+    <ClInclude Include="..\..\src\Events\JeepSteer.h" />
     <ClInclude Include="..\..\src\Events\KeyDown.h" />
     <ClInclude Include="..\..\src\Events\KeyUp.h" />
     <ClInclude Include="..\..\src\Events\LeaveTrigger.h" />
@@ -246,6 +251,7 @@
     <ClInclude Include="..\..\src\Skybox.h" />
     <ClInclude Include="..\..\src\Sound.h" />
     <ClInclude Include="..\..\src\System.h" />
+    <ClInclude Include="..\..\src\Systems\JeepSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\DamageSystem.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
     <ClInclude Include="..\..\src\Systems\FollowSystem.h" />

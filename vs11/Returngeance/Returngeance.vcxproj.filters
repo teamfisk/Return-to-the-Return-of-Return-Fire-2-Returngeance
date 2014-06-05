@@ -74,7 +74,6 @@
     <ClCompile Include="..\..\src\Systems\DamageSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\FollowSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
@@ -84,8 +83,18 @@
     <ClCompile Include="..\..\src\Sound.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Systems\WallSystem.cpp" />
-    <ClCompile Include="..\..\src\Systems\GameStateSystem.cpp" />
+    <ClCompile Include="..\..\src\Systems\JeepSteeringSystem.cpp">
+      <Filter>Physics\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\GameStateSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp">
+      <Filter>Physics\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\WallSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -570,6 +579,12 @@
     <ClInclude Include="..\..\src\Components\SpawnPoint.h">
       <Filter>Game\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\Team.h">
+      <Filter>Game\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\JeepSteeringSystem.h">
+      <Filter>Physics\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Events\OnDead.h" />
     <ClInclude Include="..\..\src\Systems\WallSystem.h" />
     <ClInclude Include="..\..\src\GUI\GameOverFrame.h">
@@ -598,6 +613,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Events\GameStart.h">
       <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\OnDead.h">
+      <Filter>Game\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\JeepSteer.h">
+      <Filter>Physics\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\JeepSteering.h">
+      <Filter>Physics\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\WallSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\DamageModel.h">
+      <Filter>Rendering\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Events\OnDead.h" />
     <ClInclude Include="..\..\src\Systems\WallSystem.h" />

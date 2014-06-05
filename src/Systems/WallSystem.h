@@ -8,6 +8,7 @@
 #include "Events/Damage.h"
 #include "Events/ApplyPointImpulse.h"
 #include "Components/Model.h"
+#include "Components/DamageModel.h"
 #include "Components/Wall.h"
 #include "Components/Transform.h"
 #include "Components/Physics.h"

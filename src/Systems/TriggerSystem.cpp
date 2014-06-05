@@ -44,10 +44,18 @@ void Systems::TriggerSystem::OnEntityRemoved( EntityID entity )
 
 bool Systems::TriggerSystem::OnEnterTrigger( const Events::EnterTrigger &event )
 {
-	
+
+	auto teamComponent = m_World->GetComponent<Components::Team>(event.Trigger);
+	auto playerComponent = m_World->GetComponent<Components::Player>(event.Entity);
+
+	if(!teamComponent || !playerComponent)
+		return false;
+	if (teamComponent->TeamID != playerComponent->ID)
+		return false;
 
 	auto flagComponent1 = m_World->GetComponent<Components::Flag>(event.Trigger);
 	auto flagComponent2 = m_World->GetComponent<Components::Flag>(event.Entity);
+
 	 //HACK: SIMON IS DISSING AMERICA
 	if(flagComponent1)
 	{
@@ -77,6 +85,17 @@ bool Systems::TriggerSystem::OnEnterTrigger( const Events::EnterTrigger &event )
 
 bool Systems::TriggerSystem::OnLeaveTrigger( const Events::LeaveTrigger &event )
 {
+	auto teamComponent = m_World->GetComponent<Components::Team>(event.Trigger);
+	auto playerComponent = m_World->GetComponent<Components::Player>(event.Entity);
+
+	if(!teamComponent || !playerComponent)
+		return false;
+	if (teamComponent->TeamID != playerComponent->ID)
+		return false;
+
+	auto flagComponent1 = m_World->GetComponent<Components::Flag>(event.Trigger);
+	auto flagComponent2 = m_World->GetComponent<Components::Flag>(event.Entity);
+
 	auto triggerMoveComponent = m_World->GetComponent<Components::TriggerMove>(event.Trigger);
 	if (triggerMoveComponent)
 	{

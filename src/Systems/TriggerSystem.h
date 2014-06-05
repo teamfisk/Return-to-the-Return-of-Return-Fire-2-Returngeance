@@ -21,6 +21,7 @@
 #include "Components/Move.h"
 #include "Components/Rotate.h"
 #include "Components/Player.h"
+#include "Components/Team.h"
 #include "Events/Move.h"
 #include "Events/Rotate.h"
 #include <math.h>

@@ -114,7 +114,7 @@ void VehicleSetup::setupVehicleData(const hkpWorld* world, hkpVehicleData& data 
 
 	data.m_chassisUnitInertiaYaw = 0.8f;
 	data.m_chassisUnitInertiaRoll = 1.0f;
-	data.m_chassisUnitInertiaPitch = 1.0f;
+	data.m_chassisUnitInertiaPitch = 2.0f;
 
 	// Adds or removes torque around the yaw axis 
 	// based on the current steering angle.  This will 

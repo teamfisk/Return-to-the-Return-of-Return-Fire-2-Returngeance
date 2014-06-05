@@ -14,6 +14,7 @@
 #include "Components/Vehicle.h"
 #include "Components/Player.h"
 #include "Components/Model.h"
+#include "Components/Team.h"
 #include "Systems/TransformSystem.h"
 #include "Systems/ParticleSystem.h"
 #include "InputController.h"

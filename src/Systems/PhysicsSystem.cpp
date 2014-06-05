@@ -33,6 +33,7 @@ void Systems::PhysicsSystem::Initialize()
 
 	// Events
 	EVENT_SUBSCRIBE_MEMBER(m_ETankSteer, &Systems::PhysicsSystem::OnTankSteer);
+	EVENT_SUBSCRIBE_MEMBER(m_EJeepSteer, &Systems::PhysicsSystem::OnJeepSteer);
 	EVENT_SUBSCRIBE_MEMBER(m_ESetVelocity, &Systems::PhysicsSystem::OnSetVelocity);
 	EVENT_SUBSCRIBE_MEMBER(m_EApplyForce, &Systems::PhysicsSystem::OnApplyForce);
 	EVENT_SUBSCRIBE_MEMBER(m_EApplyPointImpulse, &Systems::PhysicsSystem::OnApplyPointImpulse);
@@ -275,27 +276,10 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
 		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
-		
-		/*	if(transformComponentParent)
-		{
-		auto absoluteTransformParent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(parent);
-		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
-		transformComponent->Orientation = glm::inverse(HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation())) * absoluteTransformParent.Orientation;
-		transformComponent->Velocity =  HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
-		}
-		else
-		{
-		auto transformComponentParent = m_World->GetComponent<Components::Transform>(parent);
-		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
-		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
-		transformComponent->Velocity = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
-		}*/
-
 		transformComponent->Position = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getPosition());
 		transformComponent->Orientation = HKQUATERNION_TO_GLMQUAT(m_RigidBodies[entity]->getRotation());
 		transformComponent->Velocity = HKVECTOR4_TO_GLMVEC3(m_RigidBodies[entity]->getLinearVelocity());
 
-		// HACK: WTF IS THIS?
 		if (transformComponentParent)
 		{
 			auto absoluteTransformParent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(parent);
@@ -759,47 +743,6 @@ void HK_CALL Systems::PhysicsSystem::HavokErrorReport(const char* msg, void*)
 	LOG_INFO("%s", msg);
 }
 
-bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
-{
-	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
-	
-	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
-	{
-		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
-		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
-		
-		float steeringX = event.PositionX;
-
-		glm::vec3 velocityNormalized = glm::normalize(HKVECTOR4_TO_GLMVEC3(m_RigidBodies[event.Entity]->getLinearVelocity()));
-		glm::vec3 forward = glm::normalize(transformComponent->Orientation * glm::vec3(0, 0, -1));
-		float dotProduct = glm::dot(forward, velocityNormalized);
-
-		if(dotProduct < 0)
-		{
-			steeringX = (1 - (glm::clamp(abs(m_Vehicles[event.Entity]->calcKMPH() /vehicleComponent->TopSpeed), 0.f, 0.7f))) * steeringX;
-		}
-		
-		if(abs(m_Vehicles[event.Entity]->calcKMPH()) < 2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
-		{
-			deviceStatus->m_positionY = -0.4f;
-			deviceStatus->m_positionX = steeringX;
-		}
-		else
-		{
-			deviceStatus->m_positionX = event.PositionX;
-			deviceStatus->m_positionY = event.PositionY;
-		}
-		
-		if(event.PositionY > 0)
-		{
-			deviceStatus->m_reverseButtonPressed = true;
-		}
-		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
-	}
-
-	return true;
-}
-
 bool Systems::PhysicsSystem::OnSetVelocity( const Events::SetVelocity &event )
 {
 	if(m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
@@ -893,5 +836,68 @@ bool Systems::PhysicsSystem::OnDisableCollisions( const Events::DisableCollision
 	m_PhysicsWorld->markForWrite();
 	m_PhysicsWorld->setCollisionFilter(m_CollisionFilter);
 	m_PhysicsWorld->unmarkForWrite();
+	return true;
+}
+
+
+bool Systems::PhysicsSystem::OnTankSteer(const Events::TankSteer &event)
+{
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
+
+	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	{
+		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
+		auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+
+		float steeringX = event.PositionX;
+
+		glm::vec3 velocityNormalized = glm::normalize(HKVECTOR4_TO_GLMVEC3(m_RigidBodies[event.Entity]->getLinearVelocity()));
+		glm::vec3 forward = glm::normalize(transformComponent->Orientation * glm::vec3(0, 0, -1));
+		float dotProduct = glm::dot(forward, velocityNormalized);
+
+		if(dotProduct < 0)
+		{
+			steeringX = (1 - (glm::clamp(abs(m_Vehicles[event.Entity]->calcKMPH() /vehicleComponent->TopSpeed), 0.f, 0.7f))) * steeringX;
+		}
+
+		if(abs(m_Vehicles[event.Entity]->calcKMPH()) < 2 && abs(m_Vehicles[event.Entity]->m_mainSteeringAngle) > 80.f * (HK_REAL_PI / 180))
+		{
+			deviceStatus->m_positionY = -0.4f;
+			deviceStatus->m_positionX = steeringX;
+		}
+		else
+		{
+			deviceStatus->m_positionX = event.PositionX;
+			deviceStatus->m_positionY = event.PositionY;
+		}
+
+		if(event.PositionY > 0)
+		{
+			deviceStatus->m_reverseButtonPressed = true;
+		}
+		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
+	}
+
+	return true;
+}
+
+
+bool Systems::PhysicsSystem::OnJeepSteer( const Events::JeepSteer &event )
+{
+	auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(event.Entity);
+
+	if (vehicleComponent && m_Vehicles.find(event.Entity) != m_Vehicles.end() && m_RigidBodies.find(event.Entity) != m_RigidBodies.end())
+	{
+		hkpVehicleDriverInputAnalogStatus* deviceStatus = (hkpVehicleDriverInputAnalogStatus*)m_Vehicles[event.Entity]->m_deviceStatus;
+		deviceStatus->m_positionX = event.PositionX;
+		deviceStatus->m_positionY = event.PositionY;
+
+		if(event.PositionY > 0)
+		{
+			deviceStatus->m_reverseButtonPressed = true;
+		}
+		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
+	}
+
 	return true;
 }
