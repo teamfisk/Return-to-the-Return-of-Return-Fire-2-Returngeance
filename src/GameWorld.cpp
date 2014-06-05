@@ -8,7 +8,15 @@ void GameWorld::Initialize()
 	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/Plane.obj");
 	ResourceManager->Preload("Model", "Models/Placeholders/PhysicsTest/ArrowCube.obj");
 
-	//Background Music
+	ResourceManager->Preload("Model", "Models/Tank/TankCollisionShape.obj");
+	ResourceManager->Preload("Model", "Models/Tank/tankBody.obj");
+	ResourceManager->Preload("Model", "Models/Tank/tankTop.obj");
+	ResourceManager->Preload("Model", "Models/Tank/tankBarrel.obj");
+	ResourceManager->Preload("Model", "Models/Jeep/Chassi/Chassi.OBJ");
+	ResourceManager->Preload("Model", "Models/Jeep/WheelFront/wheelFront.obj");
+	ResourceManager->Preload("Model", "Models/Jeep/WheelBack/wheelBack.obj");
+		
+		//Background Music
 	{
 		Events::PlayBGM e;
 		e.Resource = "Sounds/SFX/WUB.mp3";
@@ -23,6 +31,10 @@ void GameWorld::Initialize()
 	BindGamepadButton(Gamepad::Button::Right, "interface_horizontal", 1.f);
 	BindKey(GLFW_KEY_W, "interface_vertical", 1.f);
 	BindKey(GLFW_KEY_S, "interface_vertical", -1.f);
+
+	BindKey(GLFW_KEY_W, "jeep_vertical", 1.f);
+	BindKey(GLFW_KEY_S, "jeep_vertical", -1.f);
+
 	BindGamepadAxis(Gamepad::Axis::LeftY, "interface_vertical", 1.f);
 	BindGamepadButton(Gamepad::Button::Up, "interface_vertical", 1.f);
 	BindGamepadButton(Gamepad::Button::Down, "interface_vertical", -1.f);
@@ -869,6 +881,18 @@ void GameWorld::CreateTerrain()
 		auto transform = AddComponent<Components::Transform>(decoration_middle);
 		auto model = AddComponent<Components::Model>(decoration_middle);
 		model->ModelFile = "Models/TerrainFiveIstles/Decoration/Middle.obj";
+		auto physics = AddComponent<Components::Physics>(decoration_middle);
+		physics->Mass = 1.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+
+		{
+			auto shape = CreateEntity(decoration_middle);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto mesh = AddComponent<Components::MeshShape>(shape);
+			mesh->ResourceName = "Models/TerrainFiveIstles/Decoration/Middle.obj";
+			CommitEntity(shape);
+		}
+
 		CommitEntity(decoration_middle);
 	}
 
@@ -1184,6 +1208,16 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 		auto transform = AddComponent<Components::Transform>(decoration_base);
 		auto model = AddComponent<Components::Model>(decoration_base);
 		model->ModelFile = "Models/TerrainFiveIstles/Decoration/Base.obj";
+		auto physics = AddComponent<Components::Physics>(decoration_base);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+		physics->Mass = 1.f;
+		{
+			auto shape = CreateEntity(decoration_base);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto mesh = AddComponent<Components::MeshShape>(shape);
+			mesh->ResourceName = "Models/TerrainFiveIstles/Decoration/BaseCollision.obj";
+			CommitEntity(shape);
+		}
 		CommitEntity(decoration_base);
 	}
 
@@ -1439,10 +1473,10 @@ EntityID GameWorld::CreateGarage(EntityID parent, glm::vec3 Position, glm::quat 
 		{
 			auto shape = CreateEntity(elevator);
 			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(0, 0, 0);
+			transform->Position = glm::vec3(0, -2, 0);
 			auto box = AddComponent<Components::BoxShape>(shape);
 			box->Width = 4.754f;
-			box->Height = 0.141f;
+			box->Height = 2.141f;
 			box->Depth = 6.86f;
 			CommitEntity(shape);
 		}

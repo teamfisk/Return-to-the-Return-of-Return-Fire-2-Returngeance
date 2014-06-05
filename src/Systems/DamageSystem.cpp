@@ -25,8 +25,5 @@ bool Systems::DamageSystem::OnDamage( const Events::Damage &event )
 		e.Entity = event.Entity;
 		EventBroker->Publish(e);
 	}
-		
-	
-	LOG_INFO("Damaged entity %i, Health left: %f", event.Entity, health->Amount);
 	return true;
 }

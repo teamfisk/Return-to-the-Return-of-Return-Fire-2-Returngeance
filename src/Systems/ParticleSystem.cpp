@@ -239,7 +239,6 @@ void Systems::ParticleSystem::ScalarInterpolation(double timeProgress, std::vect
 
 bool Systems::ParticleSystem::CreateExplosion(const Events::CreateExplosion &e)
 {
-	LOG_INFO("Spawning an explosion");
 	auto explosion = m_World->CreateEntity();
 	auto emitter = m_World->AddComponent<Components::ParticleEmitter>(explosion);
 	emitter->LifeTime = e.LifeTime;

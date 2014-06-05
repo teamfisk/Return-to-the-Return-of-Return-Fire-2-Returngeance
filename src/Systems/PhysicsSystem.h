@@ -112,7 +112,6 @@ public:
 			e.Entity1 = entity1;
 			e.Entity2 = entity2;
 			m_PhysicsSystem->EventBroker->Publish(e);
-			LOG_INFO("CollisionEvent!");
 		}
 		
 	private:

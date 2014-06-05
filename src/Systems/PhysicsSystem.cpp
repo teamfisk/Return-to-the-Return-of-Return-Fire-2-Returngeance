@@ -787,7 +787,6 @@ void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string typ
 	
 	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		LOG_INFO("Removed Trigger of entity %i", entity);
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
 		m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
