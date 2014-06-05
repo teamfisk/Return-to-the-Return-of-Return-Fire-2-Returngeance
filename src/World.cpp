@@ -78,16 +78,16 @@ bool World::ValidEntity(EntityID entity)
 
 void World::RemoveEntity(EntityID entity)
 {
+	m_EntitiesToRemove.insert(entity);
+
 	auto it = m_EntityChildren.find(entity);
 	if (it != m_EntityChildren.end())
 	{
 		for (auto entity : it->second)
 		{
-			m_EntitiesToRemove.insert(entity);
+			RemoveEntity(entity);
 		}
 	}
-
-	m_EntitiesToRemove.insert(entity);
 }
 
 void World::ProcessEntityRemovals()
