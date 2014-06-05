@@ -91,6 +91,7 @@ private:
 	void CreateTerrain();
 	void CreateBase(glm::quat orientation, int playerID);
 	std::vector<EntityID> m_WallDebrisTemplates;
+	std::vector<EntityID> m_TowerDebrisTemplates;
 	EntityID m_ShotTemplate;
 };
 

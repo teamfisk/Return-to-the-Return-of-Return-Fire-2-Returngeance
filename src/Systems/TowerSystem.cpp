@@ -7,18 +7,73 @@ void Systems::TowerSystem::RegisterComponents( ComponentFactory* cf )
 	cf->Register<Components::Tower>([]() { return new Components::Tower(); });
 	cf->Register<Components::Turret>([]() { return new Components::Turret(); });
 	cf->Register<Components::TurretShot>([]() {return new Components::TurretShot(); });
+	cf->Register<Components::TowerDebris>([]() {return new Components::TowerDebris(); });
 }
 
 void Systems::TowerSystem::Initialize()
 {
 	//EVENT_SUBSCRIBE_MEMBER(m_eDamage, &Systems::TowerSystem::Damage);
 	EVENT_SUBSCRIBE_MEMBER(m_ECollision, &Systems::TowerSystem::OnCollision);
+	EVENT_SUBSCRIBE_MEMBER(m_eDamage, &Systems::TowerSystem::Damage);
+
 	Temp_m_TimeSinceLastShot = 0;
 }
 
 void Systems::TowerSystem::Update( double dt )
 {
 
+}
+
+bool Systems::TowerSystem::Damage( const Events::Damage &event )
+{
+	auto debrisComponent = m_World->GetComponent<Components::TowerDebris>(event.Entity);
+	if(!debrisComponent)
+	{
+		return false;
+	}
+	LOG_INFO("TowerSystem::Damage");
+
+	// Change to damage model
+
+	auto wallhealthcomponent = m_World->GetComponent<Components::Health>(event.Entity);
+	if(wallhealthcomponent->Amount > 0)
+	{
+		return false;
+	}
+	LOG_INFO("Entity %i is dead", event.Entity);
+	auto entitytransform = m_World->GetComponent<Components::Transform>(event.Entity);
+	if(!entitytransform)
+		return false;
+	//auto transformComponent = m_World->GetComponent<Components::Transform>(event.Entity);
+	Components::Transform transformComponent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(event.Entity);
+
+	// Spawn debris
+	for(auto d : debrisComponent->TowerDebrisIDs)
+	{
+		auto debris = m_World->CloneEntity(d);
+
+		auto transform = m_World->GetComponent<Components::Transform>(debris);
+		Components::Transform absolutetransformComponent = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(debris);
+		transform->Orientation = transform->Orientation * transformComponent.Orientation;
+		transform->Position = transform->Orientation * transform->Position + transformComponent.Position;
+
+		//DO STUFF! :D
+		float distance = glm::distance(transform->Position, transformComponent.Position);
+		float radius = 15.f;
+		float strength = (1.f - pow(distance / radius, 2)) * 2000.f;
+		glm::vec3 direction = glm::normalize(transformComponent.Position - transform->Position);
+
+		Events::ApplyPointImpulse e;
+		e.Entity = debris;
+		e.Impulse = direction * strength;
+		e.Position = transformComponent.Position;
+		EventBroker->Publish(e);
+
+	}
+
+	entitytransform->Position = glm::vec3(0.f, -50000000.f, 0.f);
+
+	return true;
 }
 
 void Systems::TowerSystem::UpdateEntity( double dt, EntityID entity, EntityID parent )
@@ -48,7 +103,7 @@ void Systems::TowerSystem::UpdateEntity( double dt, EntityID entity, EntityID pa
 	for(auto player : *players)
 	{
 		auto playerComponent = std::dynamic_pointer_cast<Components::Player>(player);
-		if(towerComponent->ID != playerComponent->ID) //!= betyder att den bara targetar sitt eget lag, == fienden.
+		if(towerComponent->ID == playerComponent->ID) //!= betyder att den bara targetar sitt eget lag, == fienden.
 			continue;
 
 		auto playerTransform = m_World->GetComponent<Components::Transform>(player->Entity);
