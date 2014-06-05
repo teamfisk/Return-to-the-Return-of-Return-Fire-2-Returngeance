@@ -1371,7 +1371,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 	CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), teamID);
+	//CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), teamID);
 
 	// -Z
 	CreateWall(base, glm::vec3(280.f, 40.3f, -62.f), glm::quat(glm::vec3(0, 0, 0)));
@@ -1403,6 +1403,13 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 	CreateWall(base, glm::vec3(330.f, 40.3f, 32.f), glm::quat(glm::vec3(0, 0, 0)));
 	CreateWall(base, glm::vec3(340.f, 40.3f, 32.f), glm::quat(glm::vec3(0, 0, 0)));
 	CreateWall(base, glm::vec3(350.f, 40.3f, 32.f), glm::quat(glm::vec3(0, 0, 0)));
+
+	CreateTower(base, glm::vec3(273.01227f, 40.43885f, 32.99123f), teamID);
+	CreateTower(base, glm::vec3(273.01227f, 40.30102f, -62.82098f), teamID);
+	CreateTower(base, glm::vec3(357.36978f, 40.43885f, -62.82098f), teamID);
+	CreateTower(base, glm::vec3(357.36978f, 40.43885f, 32.99123f), teamID);
+	CreateTower(base, glm::vec3(119.64996f, 28.90156f, 16.63123f), teamID);
+	CreateTower(base, glm::vec3(119.05541f, 29.54314f, 18.33529f), teamID);
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
 }
