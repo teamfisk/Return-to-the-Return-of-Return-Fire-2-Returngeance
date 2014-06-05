@@ -785,7 +785,22 @@ bool Systems::PhysicsSystem::OnApplyPointImpulse( const Events::ApplyPointImpuls
 void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string type, Component* component)
 {
 	
-	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
+	
+}
+
+
+void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
+{
+	if (m_Vehicles.find(entity) != m_Vehicles.end())
+	{
+		m_PhysicsWorld->markForWrite();
+		m_Vehicles[entity]->removeFromWorld();
+		m_PhysicsWorld->unmarkForWrite();
+		m_Vehicles.erase(entity);
+		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+		m_RigidBodies.erase(entity);
+	}
+	else if (m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
@@ -793,11 +808,6 @@ void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string typ
 		m_RigidBodies.erase(entity);
 		m_PhysicsWorld->unmarkForWrite();
 	}
-}
-
-
-void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
-{
 	/*
    	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
@@ -898,27 +908,28 @@ bool Systems::PhysicsSystem::OnDead( const Events::Dead &e )
 {
 	if(m_Vehicles.find(e.Entity) != m_Vehicles.end())
 	{
-		EntityID camera = m_World->GetProperty<EntityID>(e.Entity, "Camera");
-		m_World->RemoveComponent<Components::Camera>(camera);
-		auto transform = m_World->GetComponent<Components::Transform>(e.Entity);
-		transform->Position = glm::vec3(0, -10000.f, 0);
-		//m_RigidBodies[e.Entity]->setPosition(hkVector4(0, -10000, 0));
+		m_World->RemoveEntity(e.Entity);
+		//EntityID camera = m_World->GetProperty<EntityID>(e.Entity, "Camera");
+		//m_World->RemoveComponent<Components::Camera>(camera);
+		//auto transform = m_World->GetComponent<Components::Transform>(e.Entity);
+		//transform->Position = glm::vec3(0, -10000.f, 0);
+		////m_RigidBodies[e.Entity]->setPosition(hkVector4(0, -10000, 0));
 
-		/*m_Vehicles.erase(e.Entity);
-		m_RigidBodyEntities.erase(m_RigidBodies[e.Entity]);
-		m_RigidBodies.erase(e.Entity);*/
+		///*m_Vehicles.erase(e.Entity);
+		//m_RigidBodyEntities.erase(m_RigidBodies[e.Entity]);
+		//m_RigidBodies.erase(e.Entity);*/
 
-		auto jeep = m_World->GetComponent<Components::JeepSteering>(e.Entity);
-		if(jeep)
-		{
-			m_World->RemoveComponent<Components::JeepSteering>(e.Entity);
-		}
+		//auto jeep = m_World->GetComponent<Components::JeepSteering>(e.Entity);
+		//if(jeep)
+		//{
+		//	m_World->RemoveComponent<Components::JeepSteering>(e.Entity);
+		//}
 
-		auto tank = m_World->GetComponent<Components::TankSteering>(e.Entity);
-		if(tank)
-		{
-			m_World->RemoveComponent<Components::TankSteering>(e.Entity);
-		}
+		//auto tank = m_World->GetComponent<Components::TankSteering>(e.Entity);
+		//if(tank)
+		//{
+		//	m_World->RemoveComponent<Components::TankSteering>(e.Entity);
+		//}
 		
 	}
 	return true;
