@@ -24,13 +24,12 @@ public:
 	SoundSystem(World* world, std::shared_ptr<::EventBroker> eventBroker, std::shared_ptr<::ResourceManager> resourceManager)
 		: System(world, eventBroker, resourceManager)
 	{ }
-
+	~SoundSystem();
 	void RegisterComponents(ComponentFactory* cf) override;
 	void RegisterResourceTypes(std::shared_ptr<::ResourceManager> rm) override;
 	void Initialize() override;
 	void Update(double dt) override;
 	void UpdateEntity(double dt, EntityID entity, EntityID parent) override;
-	//void OnComponentRemoved(std::string type, Component* component);
 	void OnComponentRemoved(EntityID entity, std::string type, Component* component) override;
 	FMOD_SYSTEM* GetFMODSystem() const { return m_System; }
 private:
@@ -48,12 +47,13 @@ private:
 	void PlaySound(FMOD_CHANNEL**, FMOD_SOUND*, float volume, bool loop);
 	
 	FMOD_SYSTEM* m_System;
+	FMOD_BOOL m_isPlaying;
 	FMOD_CHANNEL* m_BGMChannel;
 	std::vector<EntityID> m_Listeners;
 	std::map<EntityID, FMOD_CHANNEL*> m_Channels;
 	std::map<EntityID, FMOD_CHANNEL*> m_DeleteChannels;
-	//std::map<EntityID, FMOD_SOUND*> m_Sounds;	
 	std::map<EntityID, FMOD_SOUND*> m_DeleteSounds;	
+	std::map<EntityID, FMOD_SOUND*> m_Sounds;	
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 	
 };

@@ -254,7 +254,8 @@ void Systems::PhysicsSystem::UpdateEntity(double dt, EntityID entity, EntityID p
 					
 				}
 			}*/
-			
+			auto vehicleComponent = m_World->GetComponent<Components::Vehicle>(car);
+			vehicleComponent->currentRPM = m_Vehicles[car]->calcRPM();
 			
 			
 			m_Vehicles[car]->getChassis()->activate();

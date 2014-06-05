@@ -5,6 +5,7 @@
 #include "GUI/HealthOverlay.h"
 
 #include "Events/GameStart.h"
+#include "Events/PlayBGM.h"
 
 namespace GUI
 {
@@ -27,6 +28,10 @@ public:
 		m_TargetCoordinate = m_CurrentCoordinate;
 		m_Buttons->X = m_CurrentCoordinate.x;
 		m_Buttons->Y = m_CurrentCoordinate.y;
+
+		Events::PlayBGM e;
+		e.Resource = "Sounds/BGM/DiesIrae.mp3";
+		EventBroker->Publish(e);
 	}
 
 	void Update(double dt) override
@@ -74,8 +79,11 @@ protected:
 			if (m_CurrentSelection == 0)
 			{
 				Hide();
-				Events::GameStart e;
-				EventBroker->Publish(e);
+				Events::GameStart e1;
+				EventBroker->Publish(e1);
+				Events::PlayBGM e2;
+				e2.Resource = "Sounds/BGM/FlightOfTheBumblebee.mp3";
+				EventBroker->Publish(e2);
 			}
 			// Quit
 			else if (m_CurrentSelection == 1)

@@ -650,6 +650,8 @@
     <ClInclude Include="..\..\src\Components\DamageModel.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\OnDead.h" />
+    <ClInclude Include="..\..\src\Systems\WallSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">
