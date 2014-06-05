@@ -51,7 +51,10 @@ void GameWorld::Initialize()
 	BindKey(GLFW_KEY_Z, "shoot", 1.f);
 	BindGamepadAxis(Gamepad::Axis::RightTrigger, "shoot", 1.f);
 	BindGamepadAxis(Gamepad::Axis::RightTrigger, "jeep_vertical", 1.f);
+	BindGamepadAxis(Gamepad::Axis::RightTrigger, "normal", 1.f);
 	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "jeep_vertical", -1.f);
+	BindGamepadAxis(Gamepad::Axis::LeftTrigger, "normal", -1.f);
+
 
 	BindKey(GLFW_KEY_X, "use", 1.f);
 	BindGamepadButton(Gamepad::Button::X, "use", 1.f);
@@ -443,6 +446,7 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register<Systems::FreeSteeringSystem>([this]() { return new Systems::FreeSteeringSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::TankSteeringSystem>([this]() { return new Systems::TankSteeringSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::JeepSteeringSystem>([this]() { return new Systems::JeepSteeringSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::HelicopterSteeringSystem>([this]() { return new Systems::HelicopterSteeringSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::WheelPairSystem>([this]() { return new Systems::WheelPairSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::SoundSystem>([this]() { return new Systems::SoundSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::PhysicsSystem>([this]() { return new Systems::PhysicsSystem(this, EventBroker, ResourceManager); });
@@ -468,6 +472,7 @@ void GameWorld::AddSystems()
 	AddSystem<Systems::FreeSteeringSystem>();
 	AddSystem<Systems::TankSteeringSystem>();
 	AddSystem<Systems::JeepSteeringSystem>();
+	AddSystem<Systems::HelicopterSteeringSystem>();
 	AddSystem<Systems::WheelPairSystem>();
 	AddSystem<Systems::SoundSystem>();
 	AddSystem<Systems::PhysicsSystem>();
