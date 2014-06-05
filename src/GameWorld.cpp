@@ -636,9 +636,9 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 
 	auto towerComponent = AddComponent<Components::Tower>(towerBase);
 
-	auto physics = AddComponent<Components::Physics>(towerBase);
-	physics->Mass = 100.f;
-	physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+// 	auto physics = AddComponent<Components::Physics>(towerBase);
+// 	physics->Mass = 100.f;
+// 	physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 
 	auto model = AddComponent<Components::Model>(towerBase);
 	model->ModelFile = "Models/Turret/Base/Base.obj";
@@ -646,12 +646,12 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 	auto health = AddComponent<Components::Health>(towerBase);
 	health->Amount = 50.f;
 
-	auto shape = CreateEntity(towerBase);
-	auto shapetransform = AddComponent<Components::Transform>(shape);
-	auto shapemesh = AddComponent<Components::MeshShape>(shape);
-	shapemesh->ResourceName = "Models/Turret/Base/Base.obj";
+// 	auto shape = CreateEntity(towerBase);
+// 	auto shapetransform = AddComponent<Components::Transform>(shape);
+// 	auto shapemesh = AddComponent<Components::MeshShape>(shape);
+// 	shapemesh->ResourceName = "Models/Turret/Base/Base.obj";
 
-	CommitEntity(shape);
+	//CommitEntity(shape);
 	{
 		auto towerGunRotation = CreateEntity(towerBase);
 		auto transform = AddComponent<Components::Transform>(towerGunRotation);
@@ -676,6 +676,40 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 			transform->Position = glm::vec3(0.f, 4.12801f, 1.18125f);
 			//transform->Orientation = glm::quat(glm::vec3(0, -glm::pi<float>() / 2.f, 0));
 
+#pragma region Turret_Shot_Template
+
+	{
+		auto shot = CreateEntity(towerGun);
+		auto transform = AddComponent<Components::Transform>(shot);
+		transform->Position = glm::vec3(0.f, 0.f, -4.f);
+		transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
+		transform->Scale = glm::vec3(2.f);
+		AddComponent<Components::Template>(shot);
+		auto physics = AddComponent<Components::Physics>(shot);
+		physics->Mass = 25.f;
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->CollisionEvent = true;
+		auto modelComponent = AddComponent<Components::Model>(shot);
+		modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
+		auto TurretShotComponent = AddComponent<Components::TurretShot>(shot);
+		TurretShotComponent->Damage = 20.f;
+		TurretShotComponent->ExplosionRadius = 30.f;
+		TurretShotComponent->ExplosionStrength = 300000.f;
+		{
+			auto shape = CreateEntity(shot);
+			auto transform = AddComponent<Components::Transform>(shape);
+			auto boxShape = AddComponent<Components::BoxShape>(shape);
+			boxShape->Width = 0.5f;
+			boxShape->Height = 0.5f;
+			boxShape->Depth = 0.5f;
+			CommitEntity(shape);
+		}
+		CommitEntity(shot);
+		m_ShotTemplate = shot;
+	}
+
+#pragma endregion
+
 			auto towerGunModel = CreateEntity(towerGun);
 			{
 				auto transform = AddComponent<Components::Transform>(towerGunModel);
@@ -696,10 +730,11 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 		towerComponent->GunBase = towerGunRotation;
 	}
 
-
-
-
 	towerComponent->ID = playerID;
+
+	auto turretComponent = AddComponent<Components::Turret>(towerBase);
+	turretComponent->ShotTemplate = m_ShotTemplate;
+	turretComponent->ShotSpeed = 40.f;
 
 	CommitEntity(towerBase);
 

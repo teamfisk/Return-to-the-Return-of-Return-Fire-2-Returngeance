@@ -88,6 +88,7 @@ private:
 	void CreateTerrain();
 	void CreateBase(glm::quat orientation, int playerID);
 	std::vector<EntityID> m_WallDebrisTemplates;
+	EntityID m_ShotTemplate;
 };
 
 #endif // GameWorld_h__

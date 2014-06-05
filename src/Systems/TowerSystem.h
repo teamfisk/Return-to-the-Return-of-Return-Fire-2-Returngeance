@@ -6,6 +6,10 @@
 #include "Systems/TransformSystem.h"
 #include "Components/Player.h"
 #include "Components/Tower.h"
+#include "Components/Turret.h"
+#include "Components/TurretShot.h"
+#include "Events/SetVelocity.h"
+#include "Events/CreateExplosion.h"
 
 
 
@@ -29,6 +33,8 @@ namespace Systems
 		//bool Damage(const Events::Damage &event);
 
 	private:
+		std::map<EntityID, double> m_TimeSinceLastShot;
+		float Temp_m_TimeSinceLastShot;
 
 	};
 
