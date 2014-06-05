@@ -166,11 +166,15 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 
 bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 {
-	
-	FMOD_Channel_Stop(m_BGMChannel);
+	FMOD_RESULT result;
+	result = FMOD_Channel_Stop(m_BGMChannel);
+	if(result != FMOD_OK)	
+		LOG_INFO("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
 	Sound* sound = ResourceManager->Load<Sound>("Sound2D", event.Resource);
 
-	FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_BGMChannel);
+	result = FMOD_System_PlaySound(m_System, FMOD_CHANNEL_FREE, *sound, false, &m_BGMChannel);
+	if(result != FMOD_OK)	
+		LOG_INFO("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
 	FMOD_Channel_SetMode(m_BGMChannel, FMOD_LOOP_NORMAL);
 	FMOD_Sound_SetLoopCount(*sound, -1);
 
