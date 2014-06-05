@@ -252,6 +252,7 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			e.Speed = 6;
 			e.SpreadAngle = glm::pi<float>();
 			e.spritePath = "Textures/Sprites/Blast1.png";
+			e.usePointLight = true;
 			e.Color = glm::vec4(2, 2, 2, 0.2);
 			EventBroker->Publish(e);
 			

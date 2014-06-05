@@ -5,6 +5,7 @@
 #include "Systems/TransformSystem.h"
 #include "Components/Transform.h"
 #include "Components/ParticleEmitter.h"
+#include "Components/PointLight.h"
 #include "Components/Particle.h"
 #include "Components/Sprite.h"
 #include "EventBroker.h"

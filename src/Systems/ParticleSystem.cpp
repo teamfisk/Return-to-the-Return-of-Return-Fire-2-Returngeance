@@ -268,6 +268,13 @@ bool Systems::ParticleSystem::CreateExplosion(const Events::CreateExplosion &e)
 	auto templateComponent = m_World->AddComponent<Components::Template>(particleEnt);
 	auto TEMP = m_World->AddComponent<Components::Transform>(particleEnt);
 	auto spriteComponent = m_World->AddComponent<Components::Sprite>(particleEnt);
+	if(e.usePointLight)
+	{
+		auto light = m_World->AddComponent<Components::PointLight>(particleEnt);
+		light->Diffuse = glm::vec3(231.f/255.f, 181.f/255.f, 48.f/255.f);
+		light->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		light->Radius = 20.f;
+	}
 	spriteComponent->SpriteFile = e.spritePath;
 	m_World->CommitEntity(particleEnt);
 	emitter->ParticleTemplate = particleEnt;
