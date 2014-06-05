@@ -86,6 +86,12 @@
     <ClCompile Include="..\..\src\Systems\JeepSteeringSystem.cpp">
       <Filter>Physics\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\WallSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Systems\TowerSystem.cpp">
+     <Filter>Game\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\Systems\GameStateSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
@@ -582,6 +588,21 @@
     <ClInclude Include="..\..\src\Components\SpawnPoint.h">
       <Filter>Game\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Events\OnDead.h" />
+    <ClInclude Include="..\..\src\Systems\WallSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Systems\TowerSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Tower.h">
+      <Filter>Game\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\Turret.h">
+      <Filter>Game\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Components\TurretShot.h">
+      <Filter>Physics\Components</Filter>
     <ClInclude Include="..\..\src\Components\Team.h">
       <Filter>Game\Components</Filter>
     </ClInclude>
@@ -633,6 +654,8 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Systems\FlagSystem.h">
       <Filter>Game\Systems</Filter>
+    <ClInclude Include="..\..\src\Events\OnDead.h" />
+    <ClInclude Include="..\..\src\Systems\WallSystem.h" />
     </ClInclude>
     <ClInclude Include="..\..\src\Events\Dead.h" />
   </ItemGroup>

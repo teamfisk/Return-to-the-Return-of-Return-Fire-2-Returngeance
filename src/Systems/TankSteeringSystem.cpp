@@ -30,6 +30,32 @@ void Systems::TankSteeringSystem::Update(double dt)
 
 void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
+	auto pEmitter = m_World->GetComponent<Components::ParticleEmitter>(entity);
+	if(pEmitter)
+	{
+		if(!m_World->GetComponent<Components::TankSteering>(parent))
+			return;
+		auto tankTransform = m_World->GetComponent<Components::Transform>(parent);
+		glm::vec2 velXZ = glm::vec2(tankTransform->Velocity.x, tankTransform->Velocity.z);
+		float speedMPDT = glm::length(velXZ);
+		if(speedMPDT < 1)
+		{
+			pEmitter->Emitting = false;
+			return;
+		}
+		else
+		{
+			pEmitter->Emitting = true;
+			pEmitter->ScaleSpectrum.erase(pEmitter->ScaleSpectrum.begin());
+			float scale = speedMPDT / 20;
+			scale = glm::clamp(scale, 0.3f, 20.f);
+			pEmitter->ScaleSpectrum.push_back(glm::vec3(speedMPDT / 20));
+			float spawnFrequency = 1 / speedMPDT;
+			spawnFrequency = glm::clamp(spawnFrequency, 0.1f, 2.f);
+			pEmitter->SpawnFrequency = 1 / speedMPDT;
+		}
+	}
+	
 	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity);
 	if(!tankSteeringComponent)
 		return;
@@ -146,15 +172,6 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 
 		m_TimeSinceLastShot[tankSteeringComponent->Barrel] += dt;
 	}
-
-// 	auto shot = m_World->GetComponent<Components::TankShell>(entity); 
-// 	if(shot)
-// 	{
-// 		if(inputController->Shoot && m_TimeSinceLastShot[tankSteeringComponent->Barrel] > 0.5)
-// 		{
-// 			
-// 		}
-// 	}
 }
 
 bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
@@ -226,33 +243,63 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			EventBroker->Publish(e);
 			
 			/*Events::CreateExplosion e;
-			e.LifeTime = 1.5;
-			e.ParticleScale.push_back(1);
-			e.ParticleScale.push_back(6);
 			e.ParticlesToSpawn = 20;
 			e.Position = shellTransform->Position;
-			e.SpreadAngle = glm::radians<float>(180) / 4;
-			e.RelativeUpOrientation = glm::angleAxis(glm::radians<float>(90), glm::vec3(1,0,0));
-			e.UseGoalVector = true;
-			e.GoalVelocity = glm::vec3(0,-12,0);
-			e.Speed = 12;
-			e.spritePath = "Textures/Sprites/Splash.png";
-			e.Color = glm::vec4(5.f,5.f,5.f,1);
-
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 3;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Smoke1.png";
+			e.Color = glm::vec4(0.6,0.6,0.6,1);
 			EventBroker->Publish(e);
-			e.LifeTime = 1.5;
-			e.ParticleScale.push_back(1);
-			e.ParticleScale.push_back(6);
-			e.ParticlesToSpawn = 20;
+			e.LifeTime = 0.7;
+			e.ParticleScale.push_back(12);
+			e.ParticlesToSpawn = 10;
 			e.Position = shellTransform->Position;
-			e.SpreadAngle = glm::radians<float>(180)/ 4;
-			e.RelativeUpOrientation = glm::angleAxis(glm::radians<float>(90), glm::vec3(1,0,0));
-			e.UseGoalVector = true;
-			e.GoalVelocity = glm::vec3(0,-12,0);
-			e.Speed = 12;
-			e.spritePath = "Textures/Sprites/Splash.png";
-			e.Color = glm::vec4(1.f,1.f,1.f,1);
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 17;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Fire.png";
+			EventBroker->Publish(e);
+			e.LifeTime = 0.2;
+			e.ParticleScale.push_back(1);
+			e.ParticleScale.push_back(15);
+			e.ParticlesToSpawn = 5;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
+			e.Speed = 6;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Blast1.png";
+			e.Color = glm::vec4(2, 2, 2, 0.2);
 			EventBroker->Publish(e);*/
+			
+// 			Events::CreateExplosion e;
+// 			e.LifeTime = 1.5;
+// 			e.ParticleScale.push_back(1);
+// 			e.ParticleScale.push_back(6);
+// 			e.ParticlesToSpawn = 20;
+// 			e.Position = shellTransform->Position;
+// 			e.SpreadAngle = glm::radians<float>(180) / 4;
+// 			e.RelativeUpOrientation = glm::angleAxis(glm::radians<float>(90), glm::vec3(1,0,0));
+// 			e.UseGoalVector = true;
+// 			e.GoalVelocity = glm::vec3(0,-12,0);
+// 			e.Speed = 12;
+// 			e.spritePath = "Textures/Sprites/Splash.png";
+// 			e.Color = glm::vec4(5.f,5.f,5.f,1);
+// 
+// 			EventBroker->Publish(e);
+// 			e.LifeTime = 1.5;
+// 			e.ParticleScale.push_back(1);
+// 			e.ParticleScale.push_back(6);
+// 			e.ParticlesToSpawn = 20;
+// 			e.Position = shellTransform->Position;
+// 			e.SpreadAngle = glm::radians<float>(180)/ 4;
+// 			e.RelativeUpOrientation = glm::angleAxis(glm::radians<float>(90), glm::vec3(1,0,0));
+// 			e.UseGoalVector = true;
+// 			e.GoalVelocity = glm::vec3(0,-12,0);
+// 			e.Speed = 12;
+// 			e.spritePath = "Textures/Sprites/Splash.png";
+// 			e.Color = glm::vec4(1.f,1.f,1.f,1);
+// 			EventBroker->Publish(e);
 		}
 		{
 			Events::PlaySFX e;
@@ -460,10 +507,14 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	player->ID = playerID;
 	auto tankSteering = m_World->AddComponent<Components::TankSteering>(tank);
 	m_World->AddComponent<Components::Input>(tank);
+	m_World->AddComponent<Components::Listener>(tank);
 	auto health = m_World->AddComponent<Components::Health>(tank);
 	health->Amount = 1.f;
-	m_World->AddComponent<Components::Listener>(tank);
+	
+	
 
+	
+	
 	{
 		auto shape = m_World->CreateEntity(tank);
 		auto transform = m_World->AddComponent<Components::Transform>(shape);
@@ -549,6 +600,8 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 					transform->Orientation = glm::quat(glm::vec3(-glm::radians(5.f), 0.f, 0.f));
 					auto cameraComp = m_World->AddComponent<Components::Camera>(cameraTower);
 					cameraComp->FarClip = 2000.f;
+
+
 					/*auto follow = m_World->AddComponent<Components::Follow>(cameraTower);
 					follow->Entity = barrel;
 					follow->Distance = 15.f;
@@ -597,31 +650,43 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	AddTankWheelPair(tank, glm::vec3(-1.68f, wheelOffset, 2.375), 1, false);
 #pragma endregion
 
+#pragma region DustParticles
+
+	std::vector<glm::vec3> ePos;
+	ePos.push_back(glm::vec3(-2, -1.7, 2.0));
+	ePos.push_back(glm::vec3(2, -1.7, 2.0));
+	ePos.push_back(glm::vec3(2, -1.7, -2.0));
+	ePos.push_back(glm::vec3(-2, -1.7, -2.0));
+
+	for (int i = 0; i < 4; i++)
 	{
 		auto entity = m_World->CreateEntity(tank);
 		auto transformComponent = m_World->AddComponent<Components::Transform>(entity);
-		transformComponent->Position = glm::vec3(-2, -1.7, 2.0);
+		transformComponent->Position = ePos[i];
 		transformComponent->Scale = glm::vec3(3, 3, 3);
 		transformComponent->Orientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
 		auto emitterComponent = m_World->AddComponent<Components::ParticleEmitter>(entity);
-		emitterComponent->SpawnCount = 2;
-		emitterComponent->SpawnFrequency = 0.005;
+		emitterComponent->SpawnCount = 1;
+		emitterComponent->SpawnFrequency = 0.1;
 		emitterComponent->SpreadAngle = glm::pi<float>();
 		emitterComponent->UseGoalVelocity = false;
-		emitterComponent->LifeTime = 0.5;
-		//emitterComponent->AngularVelocitySpectrum.push_back(glm::pi<float>() / 100);
-		emitterComponent->ScaleSpectrum.push_back(glm::vec3(0.05));
-		m_World->CommitEntity(entity);
-
+		emitterComponent->LifeTime = 0.3;
+		emitterComponent->Speed = 3;
+		emitterComponent->Emitting = true;
+		emitterComponent->Fade = true;
+		emitterComponent->ScaleSpectrum.push_back(glm::vec3(1));
+		//emitterComponent->Color = glm::vec4(1);
 		auto particleEntity = m_World->CreateEntity(entity);
-		auto TEMP = m_World->AddComponent<Components::Transform>(particleEntity);
-		TEMP->Scale = glm::vec3(0);
+		m_World->AddComponent<Components::Template>(particleEntity);
+		m_World->AddComponent<Components::Transform>(particleEntity);
 		auto spriteComponent = m_World->AddComponent<Components::Sprite>(particleEntity);
-		spriteComponent->SpriteFile = "Models/Textures/Sprites/Dust.png";
-		emitterComponent->ParticleTemplate = particleEntity;
-
+		spriteComponent->SpriteFile = "Textures/Sprites/Dirt.png"; 
 		m_World->CommitEntity(particleEntity);
+		emitterComponent->ParticleTemplate = particleEntity;
+		m_World->CommitEntity(entity);
 	}
+#pragma endregion
+		
 
 	m_World->CommitEntity(tank);
 

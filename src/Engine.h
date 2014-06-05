@@ -22,7 +22,8 @@ public:
 		m_ResourceManager = std::make_shared<ResourceManager>();
 		m_ResourceManager->RegisterType("OBJ", [](std::string resourceName) { return new OBJ(resourceName); });
 		auto rm = m_ResourceManager;
-		m_ResourceManager->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName)); });
+		m_ResourceManager->RegisterType("Model", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName), false); });
+		m_ResourceManager->RegisterType("AveragedModel", [rm](std::string resourceName) { return new Model(rm, *rm->Load<OBJ>("OBJ", resourceName), true); });
 		m_ResourceManager->RegisterType("Texture", [](std::string resourceName) { return new Texture(resourceName); });
 
 		m_FrameStack = new GUI::Frame(m_EventBroker, m_ResourceManager); 

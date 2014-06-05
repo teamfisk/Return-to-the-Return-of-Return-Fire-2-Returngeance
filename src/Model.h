@@ -17,7 +17,7 @@
 class Model : public Resource
 {
 public:
-	Model(std::shared_ptr<ResourceManager> resourceManager, OBJ &obj);
+	Model(std::shared_ptr<ResourceManager> resourceManager, OBJ &obj, bool average);
 
 	struct TextureGroup
 	{

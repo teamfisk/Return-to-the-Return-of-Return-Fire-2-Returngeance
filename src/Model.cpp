@@ -1,7 +1,7 @@
 #include "PrecompiledHeader.h"
 #include "Model.h"
 
-Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
+Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj, bool average)
 {
 	OBJ::MaterialInfo* currentMaterial = nullptr;
 	TextureGroup* currentTexGroup = nullptr;
@@ -93,7 +93,10 @@ Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
 	if (Vertices.size() > 0)
 	{
 		CreateTangents();
-		//getSimilarVertexIndex();
+		if (average)
+		{
+			getSimilarVertexIndex();
+		}
 		CreateBuffers(Vertices, Normals, TangentNormals, BiTangentNormals, TextureCoords);
 	}
 	else

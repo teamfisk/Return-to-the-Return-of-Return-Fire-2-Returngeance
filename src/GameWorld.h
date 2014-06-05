@@ -23,6 +23,7 @@
 #include "Systems/WheelPairSystem.h"
 #include "Systems/FollowSystem.h"
 #include "Systems/WallSystem.h"
+#include "Systems/TowerSystem.h"
 #include "Systems/GarageSystem.h"
 #include "Systems/JeepSteeringSystem.h"
 #include "Systems/FlagSystem.h"
@@ -87,11 +88,13 @@ private:
 	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
 	EntityID CreateJeep(int playerID);
 	EntityID CreateWall(EntityID parent, glm::vec3 pos, glm::quat orientation);
+	EntityID CreateTower(EntityID parent, glm::vec3 pos, int teamID);
 	EntityID CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int teamID);
 	void CreateTerrain();
 	void CreateBase(glm::quat orientation, int playerID);
 	void CreateFlag(EntityID parent, glm::vec3 position, glm::quat orientation, int TeamID);
 	std::vector<EntityID> m_WallDebrisTemplates;
+	EntityID m_ShotTemplate;
 };
 
 #endif // GameWorld_h__

@@ -21,7 +21,7 @@ struct ParticleEmitter : Component
 		, LifeTime(0)
 		, TimeSinceLastSpawn(100)
 		, Emitting(false)
-		, Color(glm::vec4(0)) { } 
+		, Color(glm::vec4(1)) { } 
 
 	EntityID ParticleTemplate;
 	float SpawnFrequency;

@@ -8,6 +8,7 @@
 #include "Components/Player.h"
 #include "Events/FlagCaptured.h"
 #include "Events/GameOver.h"
+#include "Events/PlayBGM.h"
 
 namespace Systems
 {
