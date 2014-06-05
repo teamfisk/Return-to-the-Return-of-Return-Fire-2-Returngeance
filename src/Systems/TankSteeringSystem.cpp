@@ -61,7 +61,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	if(vehicleComp)
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity);
-		if(transform->Position.y < -10)
+		if(transform->Position.y < 0)
 		{
 			Events::Dead e;
 			e.Entity = entity;

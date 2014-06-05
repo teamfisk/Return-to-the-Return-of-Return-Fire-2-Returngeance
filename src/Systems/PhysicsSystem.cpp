@@ -902,7 +902,7 @@ bool Systems::PhysicsSystem::OnDead( const Events::Dead &e )
 		m_World->RemoveComponent<Components::Camera>(camera);
 		auto transform = m_World->GetComponent<Components::Transform>(e.Entity);
 		transform->Position = glm::vec3(0, -10000.f, 0);
-		m_RigidBodies[e.Entity]->setPosition(hkVector4(0, -10000, 0));
+		//m_RigidBodies[e.Entity]->setPosition(hkVector4(0, -10000, 0));
 
 		/*m_Vehicles.erase(e.Entity);
 		m_RigidBodyEntities.erase(m_RigidBodies[e.Entity]);
