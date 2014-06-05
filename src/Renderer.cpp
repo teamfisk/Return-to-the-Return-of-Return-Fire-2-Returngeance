@@ -271,7 +271,6 @@ void Renderer::Draw(double dt)
 
 void Renderer::DrawFrame(RenderQueuePair &rq)
 {
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
@@ -479,7 +478,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, m_fbBasePass);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
-	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
+	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 
 	// Clear G-buffer
 	//GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_NONE , GL_NONE, GL_NONE };
@@ -561,7 +560,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, m_Width, m_Height);
-	glScissor(0, 0, m_Width, m_Height);
+	glScissor(m_Scissor.X, m_Height - m_Scissor.Y - m_Scissor.Height, m_Scissor.Width, m_Scissor.Height);
 
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
