@@ -88,6 +88,7 @@
 #include "Components/Template.h"
 
 #include "Events/EnterTrigger.h"
+#include "Events/JeepSteer.h"
 
 namespace Systems
 {
@@ -178,6 +179,8 @@ private:
 	// Events
 	EventRelay<PhysicsSystem, Events::TankSteer> m_ETankSteer;
 	bool OnTankSteer(const Events::TankSteer &event);
+	EventRelay<PhysicsSystem, Events::JeepSteer> m_EJeepSteer;
+	bool OnJeepSteer(const Events::JeepSteer &event);
 	EventRelay<PhysicsSystem, Events::SetVelocity> m_ESetVelocity;
 	bool OnSetVelocity(const Events::SetVelocity &event);
 	EventRelay<PhysicsSystem, Events::ApplyForce> m_EApplyForce;

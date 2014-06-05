@@ -4,6 +4,7 @@
 void Systems::DamageSystem::RegisterComponents( ComponentFactory* cf )
 {
 	cf->Register<Components::Health>([]() { return new Components::Health(); });
+	cf->Register<Components::DamageModel>([]() { return new Components::DamageModel(); });
 }
 
 void Systems::DamageSystem::Initialize()

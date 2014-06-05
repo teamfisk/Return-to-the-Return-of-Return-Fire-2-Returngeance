@@ -93,7 +93,7 @@ Model::Model(std::shared_ptr<ResourceManager> rm, OBJ &obj)
 	if (Vertices.size() > 0)
 	{
 		CreateTangents();
-		getSimilarVertexIndex();
+		//getSimilarVertexIndex();
 		CreateBuffers(Vertices, Normals, TangentNormals, BiTangentNormals, TextureCoords);
 	}
 	else

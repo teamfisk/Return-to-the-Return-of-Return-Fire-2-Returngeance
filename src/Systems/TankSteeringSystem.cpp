@@ -50,7 +50,6 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	eSteering.Handbrake = inputController->Handbrake;
 	EventBroker->Publish(eSteering);
 
-
 	auto towerSteeringComponent = m_World->GetComponent<Components::TowerSteering>(tankSteeringComponent->Turret);
 	auto barrelSteeringComponent = m_World->GetComponent<Components::BarrelSteering>(tankSteeringComponent->Barrel);
 
@@ -65,7 +64,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	{
 		auto tankTransform = m_World->GetComponent<Components::Transform>(entity);
 		auto transformComponent = m_World->GetComponent<Components::Transform>(tankSteeringComponent->Barrel);
-		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(tankSteeringComponent->Barrel);
+		
 		glm::quat orientation =  glm::angleAxis(barrelSteeringComponent->TurnSpeed * inputController->BarrelDirection * (float)dt, barrelSteeringComponent->Axis);
 		transformComponent->Orientation *= orientation;
 
@@ -81,7 +80,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			transformComponent->Orientation = glm::quat(angles);
 		}
 
-		
+		auto absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(tankSteeringComponent->Barrel);
 
 		if(inputController->Shoot && m_TimeSinceLastShot[tankSteeringComponent->Barrel] > 0.5)
 		{
@@ -138,7 +137,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 			auto clonePhysicsComponent = m_World->GetComponent<Components::Physics>(clone);
 			//1,670m/s
 			//25kg
-			Events::ApplyPointImpulse ePointImpulse ;
+			Events::ApplyPointImpulse ePointImpulse;
 			ePointImpulse.Entity = entity;
 			ePointImpulse.Position = absoluteTransform.Position;
 			ePointImpulse.Impulse = glm::normalize(absoluteTransform.Orientation * glm::vec3(0, 0, 1))  * clonePhysicsComponent->Mass * 6.f * 1670.f;
@@ -194,39 +193,39 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 		//auto otherTransform = m_World->GetComponent<Components::Transform>(otherEntity);
 
 		{
-// 			Events::CreateExplosion e;
-// 			e.LifeTime = 3;
-// 			e.ParticleScale.push_back(8);
-// 			e.ParticlesToSpawn = 20;
-// 			e.Position = shellTransform->Position;
-// 			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
-// 			e.Speed = 3;
-// 			e.SpreadAngle = glm::pi<float>();
-// 			e.spritePath = "Textures/Sprites/Smoke1.png";
-// 			e.Color = glm::vec4(0.6,0.6,0.6,1);
-// 			EventBroker->Publish(e);
-// 			e.LifeTime = 0.7;
-// 			e.ParticleScale.push_back(12);
-// 			e.ParticlesToSpawn = 10;
-// 			e.Position = shellTransform->Position;
-// 			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
-// 			e.Speed = 17;
-// 			e.SpreadAngle = glm::pi<float>();
-// 			e.spritePath = "Textures/Sprites/Fire.png";
-// 			EventBroker->Publish(e);
-// 			e.LifeTime = 0.2;
-// 			e.ParticleScale.push_back(1);
-// 			e.ParticleScale.push_back(15);
-// 			e.ParticlesToSpawn = 5;
-// 			e.Position = shellTransform->Position;
-// 			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1,0,0));
-// 			e.Speed = 6;
-// 			e.SpreadAngle = glm::pi<float>();
-// 			e.spritePath = "Textures/Sprites/Blast1.png";
-// 			e.Color = glm::vec4(2, 2, 2, 0.2);
-// 			EventBroker->Publish(e);
-			
 			Events::CreateExplosion e;
+			e.LifeTime = 3;
+			e.ParticleScale.push_back(8);
+			e.ParticlesToSpawn = 20;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
+			e.Speed = 3;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Smoke1.png";
+			e.Color = glm::vec4(0.6, 0.6, 0.6, 1);
+			EventBroker->Publish(e);
+			e.LifeTime = 0.7;
+			e.ParticleScale.push_back(12);
+			e.ParticlesToSpawn = 10;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
+			e.Speed = 17;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Fire.png";
+			EventBroker->Publish(e);
+			e.LifeTime = 0.2;
+			e.ParticleScale.push_back(1);
+			e.ParticleScale.push_back(15);
+			e.ParticlesToSpawn = 5;
+			e.Position = shellTransform->Position;
+			e.RelativeUpOrientation = glm::angleAxis(glm::pi<float>() / 2, glm::vec3(1, 0, 0));
+			e.Speed = 6;
+			e.SpreadAngle = glm::pi<float>();
+			e.spritePath = "Textures/Sprites/Blast1.png";
+			e.Color = glm::vec4(2, 2, 2, 0.2);
+			EventBroker->Publish(e);
+			
+			/*Events::CreateExplosion e;
 			e.LifeTime = 1.5;
 			e.ParticleScale.push_back(1);
 			e.ParticleScale.push_back(6);
@@ -253,7 +252,7 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			e.Speed = 12;
 			e.spritePath = "Textures/Sprites/Splash.png";
 			e.Color = glm::vec4(1.f,1.f,1.f,1);
-			EventBroker->Publish(e);
+			EventBroker->Publish(e);*/
 		}
 		{
 			Events::PlaySFX e;
@@ -263,27 +262,41 @@ bool Systems::TankSteeringSystem::OnCollision(const Events::Collision &e)
 			EventBroker->Publish(e);
 		}
 
+		// Direct damage
+		auto health = m_World->GetComponent<Components::Health>(otherEntity);
+		if (health)
+		{
+			Events::Damage d;
+			d.Entity = otherEntity;
+			d.Amount = shellComponent->Damage;
+			EventBroker->Publish(d);
+		}
+
+		// Splash damage
 		for (auto &physComponent : *physicsComponents)
 		{
-			EntityID physicsEntity = std::dynamic_pointer_cast<Components::Physics>(physComponent)->Entity;
-			auto physEntityTransform = m_World->GetComponent<Components::Transform>(physicsEntity);
+			EntityID physicsEntity = physComponent->Entity;
+			// No splash damage to the direct hit target
+			if (physicsEntity == otherEntity)
+				continue;
+			auto physEntityTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(physicsEntity);
 
-			float distance = glm::distance(physEntityTransform->Position, shellTransform->Position);
+			float distance = glm::distance(physEntityTransform.Position, shellTransform->Position);
 			if (distance <= shellComponent->ExplosionRadius)
 			{
 				// DO STUFF! :D
 				float radius = shellComponent->ExplosionRadius;
 				float strength = (1.f - pow(distance / radius, 2)) * shellComponent->ExplosionStrength;
-				glm::vec3 direction = glm::normalize(physEntityTransform->Position - shellTransform->Position);
+				glm::vec3 direction = glm::normalize(physEntityTransform.Position - shellTransform->Position);
 
 				Events::ApplyPointImpulse e;
 				e.Entity = physicsEntity;
 				e.Impulse = direction * strength;
-				e.Position = physEntityTransform->Position;
+				e.Position = physEntityTransform.Position;
 				EventBroker->Publish(e);
 
 				auto health = m_World->GetComponent<Components::Health>(physicsEntity);
-				if(health)
+				if (health && health->VulnerableToSplash)
 				{
 					Events::Damage d;
 					d.Entity = physicsEntity;
@@ -375,7 +388,7 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 {
 	if (event.VehicleType != "Tank")
 		return false;
-
+	
 	auto spawnPointComponents = m_World->GetComponentsOfType<Components::SpawnPoint>();
 	if (!spawnPointComponents)
 	{
@@ -387,8 +400,15 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 	{
 		auto spawnPoint = component->Entity;
 		auto spawnPointComponent = std::dynamic_pointer_cast<Components::SpawnPoint>(component);
-		auto playerComponent = m_World->GetComponent<Components::Player>(spawnPointComponent->Player);
-		if (!playerComponent || playerComponent->ID != event.PlayerID)
+		auto teamComponent =  m_World->GetComponent<Components::Team>(spawnPoint);
+
+		if(!teamComponent)
+		{
+			LOG_ERROR("SpawnPoint has no TeamComponent");
+			continue;
+		}
+
+		if (teamComponent->TeamID != event.PlayerID)
 			continue;
 		
 		Components::Transform absoluteTransform = m_World->GetSystem<Systems::TransformSystem>()->AbsoluteTransform(spawnPoint);
@@ -396,8 +416,8 @@ bool Systems::TankSteeringSystem::OnSpawnVehicle(const Events::SpawnVehicle &eve
 		// Create a tank
 		EntityID tank = CreateTank(event.PlayerID);
 		auto tankTransform = m_World->GetComponent<Components::Transform>(tank);
-		tankTransform->Position = absoluteTransform.Position;
-		tankTransform->Orientation = absoluteTransform.Orientation;
+ 		tankTransform->Position = absoluteTransform.Position;
+ 		tankTransform->Orientation = absoluteTransform.Orientation;
 		// Set the viewport correctly
 		Events::SetViewportCamera e;
 		e.CameraEntity = m_World->GetProperty<EntityID>(tank, "Camera");
@@ -424,6 +444,18 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	vehicle->MaxTorque = 8000.f;
 	vehicle->MaxSteeringAngle = 90.f;
 	vehicle->MaxSpeedFullSteeringAngle = 4.f;
+	vehicle->MinRPM = 200.0f; 
+	vehicle->OptimalRPM = 2500.0f,
+	vehicle->MaxRPM = 4000.0f; 
+	vehicle->TopSpeed = 90.0f;
+	vehicle->SpringDamping = 1.f;
+	vehicle->UpshiftRPM = 3500.0f;
+	vehicle->DownshiftRPM = 1000.0f;
+	vehicle->gearsRatio0 = 3.0f;
+	vehicle->gearsRatio1 = 2.25f; 
+	vehicle->gearsRatio2 = 1.5f;
+	vehicle->gearsRatio3 = 1.0f;
+
 	auto player = m_World->AddComponent<Components::Player>(tank);
 	player->ID = playerID;
 	auto tankSteering = m_World->AddComponent<Components::TankSteering>(tank);
@@ -494,8 +526,8 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 				modelComponent->ModelFile = "Models/Placeholders/rocket/Rocket.obj";
 				auto tankShellComponent = m_World->AddComponent<Components::TankShell>(shot);
 				tankShellComponent->Damage = 20.f;
-				tankShellComponent->ExplosionRadius = 30.f;
-				tankShellComponent->ExplosionStrength = 300000.f;
+				tankShellComponent->ExplosionRadius = 20.f;
+				tankShellComponent->ExplosionStrength = 140.f;
 				{
 					auto shape = m_World->CreateEntity(shot);
 					auto transform = m_World->AddComponent<Components::Transform>(shape);

@@ -25,11 +25,13 @@
 #include "Systems/WallSystem.h"
 #include "Systems/TowerSystem.h"
 #include "Systems/GarageSystem.h"
+#include "Systems/JeepSteeringSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
 #include "Components/Input.h"
 #include "Components/Model.h"
+#include "Components/DamageModel.h"
 #include "Components/ParticleEmitter.h"
 #include "Components/Particle.h"
 #include "Components/PointLight.h"
@@ -57,6 +59,7 @@
 #include "Components/TriggerRotate.h"
 #include "Components/Move.h"
 #include "Components/Rotate.h"
+#include "Components/Team.h"
 
 class GameWorld : public World
 {
@@ -79,12 +82,12 @@ private:
 	void BindGamepadAxis(Gamepad::Axis axis, std::string command, float value);
 	void BindGamepadButton(Gamepad::Button button, std::string command, float value);
 
-	void CreateGate(EntityID parent, glm::vec3 position, glm::quat orientation);
+	void CreateGate(EntityID parent, glm::vec3 position, glm::quat orientation, int teamID);
 	void AddTankWheelPair(EntityID tankEntity, glm::vec3 position, int axleID, bool steering);
 	EntityID CreateJeep(int playerID);
 	EntityID CreateWall(EntityID parent, glm::vec3 pos, glm::quat orientation);
-	EntityID CreateTower(EntityID parent, glm::vec3 pos, int playerID);
-	EntityID CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int playerID);
+	EntityID CreateTower(EntityID parent, glm::vec3 pos, int teamID);
+	EntityID CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int teamID);
 	void CreateTerrain();
 	void CreateBase(glm::quat orientation, int playerID);
 	std::vector<EntityID> m_WallDebrisTemplates;

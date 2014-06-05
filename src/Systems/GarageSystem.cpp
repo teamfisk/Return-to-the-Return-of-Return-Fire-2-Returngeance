@@ -34,6 +34,14 @@ bool Systems::GarageSystem::OnEnterTrigger(const Events::EnterTrigger &event)
 	if (!garageComponent)
 		return false;
 
+	auto teamComponent = m_World->GetComponent<Components::Team>(event.Trigger);
+	auto playerComponent = m_World->GetComponent<Components::Player>(event.Entity);
+
+	if(!teamComponent || !playerComponent)
+		return false;
+	if (teamComponent->TeamID != playerComponent->ID)
+		return false;
+
 	std::string name = m_World->GetProperty<std::string>(event.Trigger, "Name");
 
 	if (name == "BoundsTrigger")
@@ -56,6 +64,15 @@ bool Systems::GarageSystem::OnLeaveTrigger(const Events::LeaveTrigger &event)
 	if (!garageComponent)
 		return false;
 
+	auto teamComponent = m_World->GetComponent<Components::Team>(event.Trigger);
+	auto playerComponent = m_World->GetComponent<Components::Player>(event.Entity);
+
+	if(!teamComponent || !playerComponent)
+		return false;
+	if (teamComponent->TeamID != playerComponent->ID)
+		return false;
+
+
 	std::string name = m_World->GetProperty<std::string>(event.Trigger, "Name");
 
 	if (name == "BoundsTrigger")
@@ -76,18 +93,24 @@ bool Systems::GarageSystem::OnCommand(const Events::InputCommand &event)
 		{
 			EntityID trigger = pair.first;
 			auto entities = pair.second;
-
 			std::string name = m_World->GetProperty<std::string>(trigger, "Name");
 			if (name != "ElevatorShaftTrigger")
 				continue;
 
-			auto triggerBaseParent = m_World->GetEntityBaseParent(trigger);
-			auto triggerPlayerComponent = m_World->GetComponent<Components::Player>(triggerBaseParent);
+			auto triggerTeamComponent = m_World->GetComponent<Components::Team>(trigger);
+			if (!triggerTeamComponent)
+				continue;
 
 			for (EntityID entity : entities)
 			{
-				auto entityPlayerComponent = m_World->GetComponent<Components::Player>(triggerBaseParent);
-				if (triggerPlayerComponent == entityPlayerComponent)
+				auto entityPlayerComponent = m_World->GetComponent<Components::Player>(entity);
+				if(!entityPlayerComponent)
+					continue;
+
+				if (entityPlayerComponent->ID != event.PlayerID)
+					continue;
+
+				if (triggerTeamComponent->TeamID == entityPlayerComponent->ID)
 				{
 					EntityID garage = m_World->GetEntityParent(trigger);
 					auto garageComponent = m_World->GetComponent<Components::Garage>(garage);
