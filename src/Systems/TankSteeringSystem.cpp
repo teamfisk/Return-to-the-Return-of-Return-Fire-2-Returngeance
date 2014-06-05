@@ -30,12 +30,13 @@ void Systems::TankSteeringSystem::Update(double dt)
 
 void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, EntityID parent)
 {
+	
 	auto pEmitter = m_World->GetComponent<Components::ParticleEmitter>(entity);
 	if(pEmitter)
-	{
+	{auto tankTransform = m_World->GetComponent<Components::Transform>(parent);
 		if(!m_World->GetComponent<Components::TankSteering>(parent))
 			return;
-		auto tankTransform = m_World->GetComponent<Components::Transform>(parent);
+		
 		glm::vec2 velXZ = glm::vec2(tankTransform->Velocity.x, tankTransform->Velocity.z);
 		float speedMPDT = glm::length(velXZ);
 		if(speedMPDT < 1)
@@ -56,6 +57,18 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 		}
 	}
 	
+	auto vehicleComp = m_World->GetComponent<Components::Vehicle>(entity);
+	if(vehicleComp)
+	{
+		auto transform = m_World->GetComponent<Components::Transform>(entity);
+		if(transform->Position.y < -10)
+		{
+			Events::Dead e;
+			e.Entity = entity;
+			EventBroker->Publish(e);
+		}
+	}
+
 	auto tankSteeringComponent = m_World->GetComponent<Components::TankSteering>(entity);
 	if(!tankSteeringComponent)
 		return;

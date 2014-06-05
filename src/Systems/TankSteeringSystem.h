@@ -33,6 +33,7 @@
 
 #include "Events/PlaySFX.h"
 #include "Events/PlayBGM.h"
+#include "Events/Dead.h"
 
 #include "Events/Damage.h"
 #include "Components/Vehicle.h"
