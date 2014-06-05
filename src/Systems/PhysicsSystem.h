@@ -90,6 +90,7 @@
 #include "Events/EnterTrigger.h"
 #include "Events/JeepSteer.h"
 #include "Events/Dead.h"
+#include "Components/JeepSteering.h"
 
 namespace Systems
 {

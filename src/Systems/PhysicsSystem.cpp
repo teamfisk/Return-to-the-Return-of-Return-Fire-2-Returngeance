@@ -908,7 +908,17 @@ bool Systems::PhysicsSystem::OnDead( const Events::Dead &e )
 		m_RigidBodyEntities.erase(m_RigidBodies[e.Entity]);
 		m_RigidBodies.erase(e.Entity);*/
 
-		m_World->RemoveComponent<Components::TankSteering>(e.Entity);
+		auto jeep = m_World->GetComponent<Components::JeepSteering>(e.Entity);
+		if(jeep)
+		{
+			m_World->RemoveComponent<Components::JeepSteering>(e.Entity);
+		}
+
+		auto tank = m_World->GetComponent<Components::TankSteering>(e.Entity);
+		if(tank)
+		{
+			m_World->RemoveComponent<Components::TankSteering>(e.Entity);
+		}
 		
 	}
 	return true;
