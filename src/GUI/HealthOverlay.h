@@ -37,7 +37,7 @@ namespace GUI
 			if (!health)
 				return false;
 	
-			SetColor(glm::vec4(1.f, 1.f, 1.f, 1 - (health->Amount / 100.f * 2)));
+			SetColor(glm::vec4(1.f, 1.f, 1.f, 1 - (health->Amount / 100.f / 2.f)));
 
 			return true;
 		}

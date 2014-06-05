@@ -61,7 +61,7 @@ void Systems::TankSteeringSystem::UpdateEntity(double dt, EntityID entity, Entit
 	if(vehicleComp)
 	{
 		auto transform = m_World->GetComponent<Components::Transform>(entity);
-		if(transform->Position.y < 0)
+		if (transform->Position.y < -15 && transform->Position.y > -100)
 		{
 			Events::Dead e;
 			e.Entity = entity;
@@ -596,8 +596,8 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 					auto shape = m_World->CreateEntity(shot);
 					auto transform = m_World->AddComponent<Components::Transform>(shape);
 					auto boxShape = m_World->AddComponent<Components::BoxShape>(shape);
-					boxShape->Width = 0.5f;
-					boxShape->Height = 0.5f;
+					boxShape->Width = 0.1f;
+					boxShape->Height = 0.1f;
 					boxShape->Depth = 0.5f;
 					m_World->CommitEntity(shape);
 				}

@@ -63,6 +63,10 @@ namespace GUI
 		EventRelay<Frame, Events::Dead> m_EDead;
 		bool OnDead(const Events::Dead &event)
 		{
+			auto playerCo = m_World->GetComponent<Components::Player>(event.Entity);
+			if (!playerCo || m_PlayerID != playerCo->ID)
+				return false;
+
 			m_VehicleSelection->Show();
 			m_HealthOverlay->SetColor(glm::vec4(1, 1, 1, 0));
 			return true;

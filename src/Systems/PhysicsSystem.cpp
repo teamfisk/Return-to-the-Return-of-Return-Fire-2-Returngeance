@@ -919,6 +919,12 @@ bool Systems::PhysicsSystem::OnDead( const Events::Dead &e )
 		{
 			m_World->RemoveComponent<Components::TankSteering>(e.Entity);
 		}
+
+		auto listener = m_World->GetComponent<Components::Listener>(e.Entity);
+		if (listener)
+		{
+			m_World->RemoveComponent<Components::Listener>(e.Entity);
+		}
 		
 	}
 	return true;

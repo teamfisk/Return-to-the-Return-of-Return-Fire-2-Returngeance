@@ -87,6 +87,7 @@
 #include "Components/Trigger.h"
 #include "Components/Template.h"
 #include "Components/Camera.h"
+#include "Components/Listener.h"
 #include "Events/EnterTrigger.h"
 #include "Events/JeepSteer.h"
 #include "Events/Dead.h"
