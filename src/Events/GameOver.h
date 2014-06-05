@@ -8,7 +8,7 @@ namespace Events
 {
 	struct GameOver : Event
 	{
-		EntityID Winner;
+		unsigned int Player;
 	};
 }
 

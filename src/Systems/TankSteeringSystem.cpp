@@ -461,7 +461,7 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	auto tankSteering = m_World->AddComponent<Components::TankSteering>(tank);
 	m_World->AddComponent<Components::Input>(tank);
 	auto health = m_World->AddComponent<Components::Health>(tank);
-	health->Amount = 100.f;
+	health->Amount = 1.f;
 	m_World->AddComponent<Components::Listener>(tank);
 
 	{

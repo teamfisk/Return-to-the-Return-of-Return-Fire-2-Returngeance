@@ -86,9 +86,10 @@
 #include "Events/DisableCollisions.h"
 #include "Components/Trigger.h"
 #include "Components/Template.h"
-
+#include "Components/Camera.h"
 #include "Events/EnterTrigger.h"
 #include "Events/JeepSteer.h"
+#include "Events/Dead.h"
 
 namespace Systems
 {
@@ -192,6 +193,9 @@ private:
 	bool OnEnableCollisions(const Events::EnableCollisions &e);
 	EventRelay<PhysicsSystem, Events::DisableCollisions> m_EDisableCollisions;
 	bool OnDisableCollisions(const Events::DisableCollisions &e);
+	EventRelay<PhysicsSystem, Events::Dead> m_EDead;
+	bool OnDead(const Events::Dead &e);
+
 
 	void SetUpPhysicsState(EntityID entity, EntityID parent);
 	void TearDownPhysicsState(EntityID entity, EntityID parent);

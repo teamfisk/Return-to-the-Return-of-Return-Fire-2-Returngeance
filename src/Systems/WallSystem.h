@@ -4,7 +4,7 @@
 
 #include "System.h"
 #include "Systems/TransformSystem.h"
-#include "Events/OnDead.h"
+#include "Events/Dead.h"
 #include "Events/Damage.h"
 #include "Events/ApplyPointImpulse.h"
 #include "Components/Model.h"

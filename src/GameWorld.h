@@ -25,6 +25,8 @@
 #include "Systems/WallSystem.h"
 #include "Systems/GarageSystem.h"
 #include "Systems/JeepSteeringSystem.h"
+#include "Systems/FlagSystem.h"
+#include "Systems/GameStateSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/DirectionalLight.h"
@@ -88,6 +90,7 @@ private:
 	EntityID CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int teamID);
 	void CreateTerrain();
 	void CreateBase(glm::quat orientation, int playerID);
+	void CreateFlag(EntityID parent, glm::vec3 position, glm::quat orientation, int TeamID);
 	std::vector<EntityID> m_WallDebrisTemplates;
 };
 

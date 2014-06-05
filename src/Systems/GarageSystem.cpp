@@ -112,6 +112,27 @@ bool Systems::GarageSystem::OnCommand(const Events::InputCommand &event)
 
 				if (triggerTeamComponent->TeamID == entityPlayerComponent->ID)
 				{
+
+					auto components = m_World->GetComponentsOfType<Components::Flag>();
+
+					for (auto &component : *components)
+					{
+						auto teamComponent = m_World->GetComponent<Components::Team>(component->Entity);
+						if(!teamComponent)
+							continue;
+
+						auto parent = m_World->GetEntityParent(component->Entity);
+						if(parent != entity)
+							continue;
+
+						if(teamComponent->TeamID != entityPlayerComponent->ID)
+						{
+							Events::FlagCaptured e;
+							e.Player = entityPlayerComponent->ID;
+							EventBroker->Publish(e);
+						}
+					}
+
 					EntityID garage = m_World->GetEntityParent(trigger);
 					auto garageComponent = m_World->GetComponent<Components::Garage>(garage);
 					ToggleGarage(garageComponent);

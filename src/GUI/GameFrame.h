@@ -11,6 +11,7 @@
 #include "GameWorld.h"
 #include "Events/GameStart.h"
 #include "Events/GameOver.h"
+#include "Events/Dead.h"
 
 namespace GUI
 {

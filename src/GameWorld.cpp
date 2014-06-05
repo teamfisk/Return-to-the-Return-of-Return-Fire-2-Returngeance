@@ -296,37 +296,7 @@ void GameWorld::Initialize()
 
 	
 
-	{
-		auto flag = CreateEntity();
-		auto transform = AddComponent<Components::Transform>(flag);
-		transform->Position = glm::vec3(0, -50, 100);
-		auto model = AddComponent<Components::Model>(flag);
-		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
-		{
-			auto fish = CreateEntity(flag);
-			auto transform = AddComponent<Components::Transform>(fish);
-			transform->Position = glm::vec3(-1.3f, 1.0, 0);
-			auto model = AddComponent<Components::Model>(fish);
-			model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
-			CommitEntity(fish);
-		}
-
-		auto trigger = AddComponent<Components::Trigger>(flag);
-		{
-			auto shape = CreateEntity(flag);
-			auto transform = AddComponent<Components::Transform>(shape);
-			transform->Position = glm::vec3(-0.9f, 0.9f, 0);
-			auto box = AddComponent<Components::BoxShape>(shape);
-			box->Width = 1.1f;
-			box->Depth = 0.7f;
-			box->Height = 3.9f;
-			CommitEntity(shape);
-		}
-
-		auto flagComponent = AddComponent<Components::Flag>(flag);
-
-		CommitEntity(flag);
-	}
+	
 
 	//for (int i = 0; i < 500; i++)
 	//{
@@ -418,7 +388,6 @@ void GameWorld::RegisterComponents()
 	m_ComponentFactory.Register<Components::Transform>([]() { return new Components::Transform(); }); 
 	m_ComponentFactory.Register<Components::Template>([]() { return new Components::Template(); });	
 	m_ComponentFactory.Register<Components::Player>([]() { return new Components::Player(); });	
-	m_ComponentFactory.Register<Components::Flag>([]() { return new Components::Flag(); });
 	m_ComponentFactory.Register<Components::Move>([]() { return new Components::Move(); });
 	m_ComponentFactory.Register<Components::Rotate>([]() { return new Components::Rotate(); });
 	m_ComponentFactory.Register<Components::Team>([]() { return new Components::Team(); });
@@ -445,6 +414,8 @@ void GameWorld::RegisterSystems()
 	m_SystemFactory.Register<Systems::FollowSystem>([this]() { return new Systems::FollowSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::GarageSystem>([this]() { return new Systems::GarageSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::WallSystem>([this]() { return new Systems::WallSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::FlagSystem>([this]() { return new Systems::FlagSystem(this, EventBroker, ResourceManager); });
+	m_SystemFactory.Register<Systems::GameStateSystem>([this]() { return new Systems::GameStateSystem(this, EventBroker, ResourceManager); });
 	m_SystemFactory.Register<Systems::RenderSystem>([this]() { return new Systems::RenderSystem(this, EventBroker, ResourceManager); });
 }
 
@@ -469,6 +440,8 @@ void GameWorld::AddSystems()
 	AddSystem<Systems::FollowSystem>();
 	AddSystem<Systems::GarageSystem>();
 	AddSystem<Systems::WallSystem>();
+	AddSystem<Systems::FlagSystem>();
+	AddSystem<Systems::GameStateSystem>();
 	AddSystem<Systems::RenderSystem>();
 }
 
@@ -1096,6 +1069,8 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
+
+	CreateFlag(base, glm::vec3(291.f, 41.7412f, -36.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
 }
 
 EntityID GameWorld::CreateGarage(EntityID parent, glm::vec3 Position, glm::quat orientation, int teamID)
@@ -1274,4 +1249,48 @@ EntityID GameWorld::CreateGarage(EntityID parent, glm::vec3 Position, glm::quat 
 	}
 	
 	return garage;
+}
+
+void GameWorld::CreateFlag(EntityID parent, glm::vec3 position, glm::quat orientation, int TeamID)
+{
+	
+	auto flag = CreateEntity(parent);
+	SetProperty(flag, "Name", "Flag");
+	auto transform = AddComponent<Components::Transform>(flag);
+	transform->Position = position;
+	transform->Orientation = orientation;
+	auto flagComponent = AddComponent<Components::Flag>(flag);
+	auto trigger = AddComponent<Components::Trigger>(flag);
+	auto team = AddComponent<Components::Team>(flag);
+	team->TeamID = TeamID;
+	{
+		auto fish = CreateEntity(flag);
+		auto transform = AddComponent<Components::Transform>(fish);
+		transform->Position = glm::vec3(-1.3f, 1.0, 0);
+		auto model = AddComponent<Components::Model>(fish);
+		model->ModelFile = "Models/Flag/LeFish/Salmon.obj";
+		CommitEntity(fish);
+	}
+
+	{
+		auto rod = CreateEntity(flag);
+		auto transform = AddComponent<Components::Transform>(rod);
+		transform->Position = glm::vec3(-1.3f, 1.0, 0);
+		auto model = AddComponent<Components::Model>(rod);
+		model->ModelFile = "Models/Flag/FishingRod/FishingRod.obj";
+		CommitEntity(rod);
+	}
+	
+	{
+		auto shape = CreateEntity(flag);
+		auto transform = AddComponent<Components::Transform>(shape);
+		transform->Position = glm::vec3(-0.9f, 0.9f, 0);
+		auto box = AddComponent<Components::BoxShape>(shape);
+		box->Width = 1.1f;
+		box->Depth = 0.7f;
+		box->Height = 3.9f;
+		CommitEntity(shape);
+	}
+	CommitEntity(flag);
+	
 }

@@ -95,6 +95,9 @@
     <ClCompile Include="..\..\src\Systems\WallSystem.cpp">
       <Filter>Game\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Systems\FlagSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
@@ -585,7 +588,6 @@
     <ClInclude Include="..\..\src\Systems\JeepSteeringSystem.h">
       <Filter>Physics\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Events\OnDead.h" />
     <ClInclude Include="..\..\src\Systems\WallSystem.h" />
     <ClInclude Include="..\..\src\GUI\GameOverFrame.h">
       <Filter>GUI</Filter>
@@ -629,6 +631,10 @@
     <ClInclude Include="..\..\src\Components\DamageModel.h">
       <Filter>Rendering\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Systems\FlagSystem.h">
+      <Filter>Game\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\Dead.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shaders\Fragment2.glsl">

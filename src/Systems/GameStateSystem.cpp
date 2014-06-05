@@ -12,7 +12,7 @@ bool Systems::GameStateSystem::OnFlagCaptured(const Events::FlagCaptured &event)
 	m_InGame = false;
 
 	Events::GameOver e;
-	e.Winner = event.Player;
+	e.Player = event.Player;
 	EventBroker->Publish(e);
 
 	return true;

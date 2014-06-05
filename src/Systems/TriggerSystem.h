@@ -48,7 +48,6 @@ namespace Systems
 		EventRelay<TriggerSystem, Events::LeaveTrigger> m_ELeaveTrigger;
 		bool OnLeaveTrigger(const Events::LeaveTrigger &event);
 	private:
-		void Flag(EntityID entity, EntityID phantomEntity);
 		void Explosion(EntityID entity, EntityID phantomEntity);
 		void Move(EntityID entity, bool queue, bool swap);
 		void Rotate(EntityID entity, bool queue, bool swap);
