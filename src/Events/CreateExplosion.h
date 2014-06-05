@@ -11,6 +11,7 @@ namespace Events
 	{
 		CreateExplosion() : 
 			Color(glm::vec4(0)), 
+			usePointLight(false), 
 			UseGoalVector(false) {}
 
 		glm::vec3 Position;
@@ -21,6 +22,7 @@ namespace Events
 		glm::quat RelativeUpOrientation;
 		float Speed;
 		float SpreadAngle;
+		float usePointLight;
 		std::vector<float> ParticleScale;
 		bool UseGoalVector;
 		glm::vec3 GoalVelocity;
