@@ -55,7 +55,17 @@ public:
 			auto modelComponent = m_World->GetComponent<Components::Model>(entity);
 			if (modelComponent)
 			{
-				auto modelAsset = ResourceManager->Load<Model>("Model", modelComponent->ModelFile);
+				Model* modelAsset = nullptr;
+				if (modelComponent->AverageNormals)
+				{
+					modelAsset = ResourceManager->Load<Model>("AveragedModel", modelComponent->ModelFile);
+				}
+				else
+				{
+					modelAsset = ResourceManager->Load<Model>("Model", modelComponent->ModelFile);
+				}
+
+				
 				if (modelAsset)
 				{
 					Components::Transform absoluteTransform = m_TransformSystem->AbsoluteTransform(entity);

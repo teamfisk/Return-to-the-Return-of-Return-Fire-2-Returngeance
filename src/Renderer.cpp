@@ -169,7 +169,7 @@ void Renderer::LoadContent()
 	FrameBufferTextures();
 
 	m_sphereModel = ResourceManager->Load<Model>("Model", "Models/Placeholders/PhysicsTest/Sphere.obj");
-	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/sunset", "jpg");
+	m_Skybox = std::make_shared<Skybox>("Textures/Skybox/sky36", "jpg");
 }
 
 void Renderer::Draw(double dt)
@@ -376,6 +376,7 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_SCISSOR_TEST);
+	glDepthRange(0.0, 0.999);
 
 	//Sort forward rendering items by z value.
 	for(auto job : rq.Forward)
@@ -406,8 +407,7 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
-	//DrawSkybox();
-
+	
 	DrawFBOScene(rq.Deferred);
 
 	/*
@@ -552,6 +552,9 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 	//glDepthMask (GL_TRUE);
 	//glDisable (GL_BLEND);
 
+	glDepthRange(0.999, 1.0);
+	DrawSkybox();
+	
 	/*
 	Final pass
 	*/
@@ -613,6 +616,8 @@ void Renderer::Swap()
 
 void Renderer::DrawSkybox()
 {
+// 	glEnable(GL_CULL_FACE);
+// 	glCullFace(GL_BACK);
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
 	glScissor(m_Viewport.X, m_Height - m_Viewport.Y - m_Viewport.Height, m_Viewport.Width, m_Viewport.Height);
@@ -623,8 +628,10 @@ void Renderer::DrawSkybox()
 	//glm::mat4 cameraProjection = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
 	//glm::mat4 cameraMatrix = cameraProjection * m_Camera->ViewMatrix();
 
-	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height) * glm::inverse(glm::toMat4(m_Camera->Orientation()));
-	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramSkybox.GetHandle(), "MVP"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
+	glm::mat4 cameraMatrix = m_Camera->ProjectionMatrix((float)m_Viewport.Width / m_Viewport.Height);
+	glm::mat4 cameraView = glm::inverse(glm::toMat4(m_Camera->Orientation()));
+	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramSkybox.GetHandle(), "V"), 1, GL_FALSE, glm::value_ptr(cameraView));
+	glUniformMatrix4fv(glGetUniformLocation(m_ShaderProgramSkybox.GetHandle(), "P"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	m_Skybox->Draw();
 }

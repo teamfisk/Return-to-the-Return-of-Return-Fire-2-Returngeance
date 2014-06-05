@@ -8,8 +8,13 @@
 #include "Components/Tower.h"
 #include "Components/Turret.h"
 #include "Components/TurretShot.h"
+#include "Components/Health.h"
 #include "Events/SetVelocity.h"
 #include "Events/CreateExplosion.h"
+#include "Events/Collision.h"
+#include "Events/Damage.h"
+
+
 
 
 
@@ -29,8 +34,10 @@ namespace Systems
 		virtual void Update(double dt);
 		virtual void UpdateEntity(double dt, EntityID entity, EntityID parent);
 
-		//EventRelay<TowerSystem, Events::Damage> m_eDamage;
-		//bool Damage(const Events::Damage &event);
+
+		EventRelay<TowerSystem, Events::Collision> m_ECollision;
+		bool OnCollision(const Events::Collision &e);
+
 
 	private:
 		std::map<EntityID, double> m_TimeSinceLastShot;

@@ -634,7 +634,7 @@ void GameWorld::CreateGate(EntityID parent, glm::vec3 position, glm::quat orient
 	}
 }
 
-EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
+EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int teamID)
 {
 	auto towerBase = CreateEntity(parent);
 	auto transform = AddComponent<Components::Transform>(towerBase);
@@ -642,9 +642,9 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 
 	auto towerComponent = AddComponent<Components::Tower>(towerBase);
 
-// 	auto physics = AddComponent<Components::Physics>(towerBase);
-// 	physics->Mass = 100.f;
-// 	physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
+ 	auto physics = AddComponent<Components::Physics>(towerBase);
+ 	physics->Mass = 100.f;
+ 	physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
 
 	auto model = AddComponent<Components::Model>(towerBase);
 	model->ModelFile = "Models/Turret/Base/Base.obj";
@@ -652,12 +652,12 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 	auto health = AddComponent<Components::Health>(towerBase);
 	health->Amount = 50.f;
 
-// 	auto shape = CreateEntity(towerBase);
-// 	auto shapetransform = AddComponent<Components::Transform>(shape);
-// 	auto shapemesh = AddComponent<Components::MeshShape>(shape);
-// 	shapemesh->ResourceName = "Models/Turret/Base/Base.obj";
+ 	auto shape = CreateEntity(towerBase);
+ 	auto shapetransform = AddComponent<Components::Transform>(shape);
+ 	auto shapemesh = AddComponent<Components::MeshShape>(shape);
+ 	shapemesh->ResourceName = "Models/Turret/Base/Base.obj";
 
-	//CommitEntity(shape);
+	CommitEntity(shape);
 	{
 		auto towerGunRotation = CreateEntity(towerBase);
 		auto transform = AddComponent<Components::Transform>(towerGunRotation);
@@ -687,7 +687,7 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 	{
 		auto shot = CreateEntity(towerGun);
 		auto transform = AddComponent<Components::Transform>(shot);
-		transform->Position = glm::vec3(0.f, 0.f, -4.f);
+		transform->Position = glm::vec3(0.f, 0.f, -4.37612f);
 		transform->Orientation = glm::angleAxis(-glm::pi<float>() / 2.f, glm::vec3(1, 0, 0));
 		transform->Scale = glm::vec3(2.f);
 		AddComponent<Components::Template>(shot);
@@ -736,7 +736,7 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int playerID)
 		towerComponent->GunBase = towerGunRotation;
 	}
 
-	towerComponent->ID = playerID;
+	towerComponent->ID = teamID;
 
 	auto turretComponent = AddComponent<Components::Turret>(towerBase);
 	turretComponent->ShotTemplate = m_ShotTemplate;
@@ -844,6 +844,7 @@ void GameWorld::CreateTerrain()
 		auto transform = AddComponent<Components::Transform>(ground_middle);
 		auto model = AddComponent<Components::Model>(ground_middle);
 		model->ModelFile = "Models/TerrainFiveIstles/Middle.obj";
+		model->AverageNormals = true;
 		auto blendmap = AddComponent<Components::BlendMap>(ground_middle);
 		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
 		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
@@ -949,6 +950,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 		auto transform = AddComponent<Components::Transform>(ground_small);
 		auto model = AddComponent<Components::Model>(ground_small);
 		model->ModelFile = "Models/TerrainFiveIstles/Small.obj";
+		model->AverageNormals = true;
 		auto blendmap = AddComponent<Components::BlendMap>(ground_small);
 		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
 		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
@@ -997,6 +999,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 		auto transform = AddComponent<Components::Transform>(bridge_middle);
 		auto model = AddComponent<Components::Model>(bridge_middle);
 		model->ModelFile = "Models/TerrainFiveIstles/Bridges/MiddleBridge.obj";
+		model->AverageNormals = false;
 		auto physics = AddComponent<Components::Physics>(bridge_middle);
 		physics->Mass = 10;
 		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
@@ -1072,6 +1075,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 		auto transform = AddComponent<Components::Transform>(terrain_base);
 		auto model = AddComponent<Components::Model>(terrain_base);
 		model->ModelFile = "Models/TerrainFiveIstles/Base.obj";
+		model->AverageNormals = true;
 		auto blendmap = AddComponent<Components::BlendMap>(terrain_base);
 		blendmap->TextureRed = "Textures/Ground/SoilBeach0087_11_S.jpg";
 		blendmap->TextureRedNormal = "Textures/Ground/SoilBeach0087_11_SNM.png";
@@ -1140,6 +1144,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 		auto transform = AddComponent<Components::Transform>(bridge_base);
 		auto model = AddComponent<Components::Model>(bridge_base);
 		model->ModelFile = "Models/TerrainFiveIstles/Bridges/BaseBridge.obj";
+		model->AverageNormals = false;
 		auto physics = AddComponent<Components::Physics>(bridge_base);
 		physics->Mass = 10;
 		physics->MotionType = Components::Physics::MotionTypeEnum::Fixed;
@@ -1208,7 +1213,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 	CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), playerID);
+	CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), teamID);
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
 }
