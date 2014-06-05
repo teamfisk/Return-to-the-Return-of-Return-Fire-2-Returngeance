@@ -469,6 +469,16 @@ void Renderer::DrawWorld(RenderQueuePair &rq)
 
 void Renderer::ForwardRendering(RenderQueue &rq)
 {
+	/*
+	Skybochs
+	*/
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDepthRange(0.999, 1.0);
+	DrawSkybox();
+	glDepthRange(0.0, 0.999);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
@@ -549,11 +559,7 @@ void Renderer::ForwardRendering(RenderQueue &rq)
 		}
 	}
 	//glDepthMask (GL_TRUE);
-	//glDisable (GL_BLEND);
 
-	glDepthRange(0.999, 1.0);
-	DrawSkybox();
-	
 	/*
 	Final pass
 	*/
