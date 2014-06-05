@@ -445,9 +445,12 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 	player->ID = playerID;
 	auto tankSteering = m_World->AddComponent<Components::TankSteering>(tank);
 	m_World->AddComponent<Components::Input>(tank);
+	m_World->AddComponent<Components::Listener>(tank);
 	auto health = m_World->AddComponent<Components::Health>(tank);
 	health->Amount = 100.f;
-	m_World->AddComponent<Components::Listener>(tank);
+	
+	
+
 	
 	
 	{
@@ -535,6 +538,8 @@ EntityID Systems::TankSteeringSystem::CreateTank(int playerID)
 					transform->Orientation = glm::quat(glm::vec3(-glm::radians(5.f), 0.f, 0.f));
 					auto cameraComp = m_World->AddComponent<Components::Camera>(cameraTower);
 					cameraComp->FarClip = 2000.f;
+
+
 					/*auto follow = m_World->AddComponent<Components::Follow>(cameraTower);
 					follow->Entity = barrel;
 					follow->Distance = 15.f;

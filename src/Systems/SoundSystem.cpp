@@ -57,7 +57,7 @@ void Systems::SoundSystem::Update(double dt)
 		else
 		{
 // 			FMOD_Sound_Release(m_DeleteSounds[it->first]);
-// 			m_DeleteSounds.erase(it->first);
+ 			m_DeleteSounds.erase(it->first);
 			it = m_DeleteChannels.erase(it);
 		}
 
@@ -104,7 +104,7 @@ void Systems::SoundSystem::UpdateEntity(double dt, EntityID entity, EntityID par
 	if(emitter)
 	{
 		FMOD_CHANNEL* channel = m_Channels[entity];
-		//FMOD_SOUND* sound = m_Sounds[entity];
+		FMOD_SOUND* sound = m_Sounds[entity];
 		auto eTransform = m_World->GetComponent<Components::Transform>(entity);
 		
 		glm::vec3 tPos = m_TransformSystem->AbsolutePosition(entity);
@@ -137,9 +137,9 @@ bool Systems::SoundSystem::OnComponentCreated(const Events::ComponentCreated &ev
 		float maxDist = emitter->MaxDistance;
 		float minDist = emitter->MinDistance;
 		float pitch = emitter->Pitch;
-		//LoadSound(sound, path, maxDist, minDist);
+		LoadSound(sound, path, maxDist, minDist);
 		m_Channels.insert(std::make_pair(emitter->Entity, channel));
-//		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
+		m_Sounds.insert(std::make_pair(emitter->Entity, sound));
 	}
 	return true;
 }
@@ -157,7 +157,7 @@ bool Systems::SoundSystem::PlaySFX(const Events::PlaySFX &event)
 	
 	eComponent->type = Components::SoundEmitter::SoundType::SOUND_3D;
 	Sound* sound = ResourceManager->Load<Sound>("Sound3D", event.Resource);
-	//m_Sounds[eEntity] = *sound;
+	m_Sounds[eEntity] = *sound;
 	FMOD_Sound_Set3DMinMaxDistance(*sound, eComponent->MinDistance, eComponent->MaxDistance);
 
 	PlaySound(&m_Channels[eEntity], *sound, 1.0, eComponent->Loop);
@@ -180,6 +180,8 @@ bool Systems::SoundSystem::PlayBGM(const Events::PlayBGM &event)
 
 	return true;
 }
+
+
 
 bool Systems::SoundSystem::StopSound(const Events::StopSound &event)
 {
@@ -222,8 +224,8 @@ void Systems::SoundSystem::OnComponentRemoved(EntityID entity, std::string type,
 	if(emitter)
 	{
 		m_DeleteChannels.insert(std::make_pair(entity, m_Channels[entity]));
-		//m_DeleteSounds.insert(std::make_pair(entity, m_Sounds[entity]));
+		m_DeleteSounds.insert(std::make_pair(entity, m_Sounds[entity]));
 		m_Channels.erase(entity);
-		//m_Sounds.erase(entity);
+		m_Sounds.erase(entity);
 	}
 }

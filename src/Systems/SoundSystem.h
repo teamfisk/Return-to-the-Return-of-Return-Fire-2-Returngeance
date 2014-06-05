@@ -53,6 +53,7 @@ private:
 	std::map<EntityID, FMOD_CHANNEL*> m_Channels;
 	std::map<EntityID, FMOD_CHANNEL*> m_DeleteChannels;
 	std::map<EntityID, FMOD_SOUND*> m_DeleteSounds;	
+	std::map<EntityID, FMOD_SOUND*> m_Sounds;	
 	std::shared_ptr<Systems::TransformSystem> m_TransformSystem;
 	
 };
