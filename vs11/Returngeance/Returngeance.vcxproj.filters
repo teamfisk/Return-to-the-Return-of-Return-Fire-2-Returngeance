@@ -38,6 +38,9 @@
     <ClCompile Include="..\..\src\Systems\WheelPairSystem.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\World.cpp" />
+    <ClCompile Include="..\..\src\Systems\FlagSystem.cpp">
+      <Filter>Game\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Camera.h" />
@@ -180,9 +183,13 @@
     <ClInclude Include="..\..\src\Systems\TowerSystem.h" />
     <ClInclude Include="..\..\src\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\src\Systems\TriggerSystem.h" />
+    <ClInclude Include="..\..\src\Systems\FlagSystem.h">
+      <Filter>Game\Systems</Filter>
     <ClInclude Include="..\..\src\Systems\WallSystem.h" />
     <ClInclude Include="..\..\src\Systems\WheelPairSystem.h" />
     <ClInclude Include="..\..\src\Texture.h" />
+    </ClInclude>
+    <ClInclude Include="..\..\src\Events\Dead.h" />
     <ClInclude Include="..\..\src\Util\GLError.h" />
     <ClInclude Include="..\..\src\Util\Rectangle.h" />
     <ClInclude Include="..\..\src\Util\Logging.h" />

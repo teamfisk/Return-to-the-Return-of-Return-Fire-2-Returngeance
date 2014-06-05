@@ -39,6 +39,7 @@ void Systems::PhysicsSystem::Initialize()
 	EVENT_SUBSCRIBE_MEMBER(m_EApplyPointImpulse, &Systems::PhysicsSystem::OnApplyPointImpulse);
 	EVENT_SUBSCRIBE_MEMBER(m_EEnableCollisions, &Systems::PhysicsSystem::OnEnableCollisions);
 	EVENT_SUBSCRIBE_MEMBER(m_EDisableCollisions, &Systems::PhysicsSystem::OnDisableCollisions);
+	EVENT_SUBSCRIBE_MEMBER(m_EDead, &Systems::PhysicsSystem::OnDead);
 
 	hkMemorySystem::FrameInfo finfo(10000 * 1024);	// Allocate 10MB of Physics solver buffer
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, finfo);
@@ -786,7 +787,6 @@ void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string typ
 	
 	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		LOG_INFO("Removed Trigger of entity %i", entity);
 		m_PhysicsWorld->markForWrite();
 		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
 		m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
@@ -798,27 +798,19 @@ void Systems::PhysicsSystem::OnComponentRemoved(EntityID entity, std::string typ
 
 void Systems::PhysicsSystem::OnEntityRemoved( EntityID entity )
 {
-   	if(m_RigidBodies.find(entity) != m_RigidBodies.end())
+	/*
+   	else if(m_RigidBodies.find(entity) != m_RigidBodies.end())
 	{
-		LOG_INFO("Removed rigid body of entity %i", entity);
+		LOG_INFO("Removed rigid body of entity %i abogfusdkifbhdzfsgiudfhghdfhgdhfögödhfgödhfödhfödfjhödgfdgföuhudgf", entity);
+
 		m_PhysicsWorld->markForWrite();
-		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
-		if(m_ListShapes.find(entity) != m_ListShapes.end())
-		{
-			m_ListShapes[entity]->removeReference();
-			m_ListShapes.erase(entity);
-		}
-		
 		m_PhysicsWorld->removeEntity(m_RigidBodies[entity]);
+		m_PhysicsWorld->unmarkForWrite();
+
 		m_RigidBodies.erase(entity);
-		m_PhysicsWorld->unmarkForWrite();
-	}
-	if(m_Vehicles.find(entity) != m_Vehicles.end())
-	{
-		m_PhysicsWorld->markForWrite();
-		m_Vehicles[entity]->removeFromWorld();
-		m_PhysicsWorld->unmarkForWrite();
-	}
+		m_RigidBodyEntities.erase(m_RigidBodies[entity]);
+		
+	}*/
 }
 
 bool Systems::PhysicsSystem::OnEnableCollisions( const Events::EnableCollisions &e )
@@ -899,5 +891,25 @@ bool Systems::PhysicsSystem::OnJeepSteer( const Events::JeepSteer &event )
 		deviceStatus->m_handbrakeButtonPressed = event.Handbrake;
 	}
 
+	return true;
+}
+
+bool Systems::PhysicsSystem::OnDead( const Events::Dead &e )
+{
+	if(m_Vehicles.find(e.Entity) != m_Vehicles.end())
+	{
+		EntityID camera = m_World->GetProperty<EntityID>(e.Entity, "Camera");
+		m_World->RemoveComponent<Components::Camera>(camera);
+		auto transform = m_World->GetComponent<Components::Transform>(e.Entity);
+		transform->Position = glm::vec3(0, -10000.f, 0);
+		m_RigidBodies[e.Entity]->setPosition(hkVector4(0, -10000, 0));
+
+		/*m_Vehicles.erase(e.Entity);
+		m_RigidBodyEntities.erase(m_RigidBodies[e.Entity]);
+		m_RigidBodies.erase(e.Entity);*/
+
+		m_World->RemoveComponent<Components::TankSteering>(e.Entity);
+		
+	}
 	return true;
 }

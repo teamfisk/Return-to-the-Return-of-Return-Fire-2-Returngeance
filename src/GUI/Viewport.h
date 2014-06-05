@@ -51,7 +51,7 @@ public:
 			return;
 
 		Components::Transform absoluteTransform = m_TransformSystem->AbsoluteTransform(m_CameraEntity);
-
+		
 		m_Camera->SetFOV(cameraComponent->FOV);
 		m_Camera->SetNearClip(cameraComponent->NearClip);
 		m_Camera->SetFarClip(cameraComponent->FarClip);

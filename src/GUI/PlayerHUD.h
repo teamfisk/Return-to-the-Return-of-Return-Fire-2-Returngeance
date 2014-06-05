@@ -7,6 +7,7 @@
 #include "GUI/GameOverFrame.h"
 
 #include "Events/GameOver.h"
+#include "Events/Dead.h"
 #include "Components/Player.h"
 
 namespace GUI
@@ -20,7 +21,8 @@ namespace GUI
 			, m_World(world)
 			, m_PlayerID(playerID)
 		{
-			EVENT_SUBSCRIBE_MEMBER(m_EGameOver, &GUI::PlayerHUD::OnGameOver)
+			EVENT_SUBSCRIBE_MEMBER(m_EGameOver, &GUI::PlayerHUD::OnGameOver);
+			EVENT_SUBSCRIBE_MEMBER(m_EDead, &GUI::PlayerHUD::OnDead);
 
 			m_HealthOverlay = new HealthOverlay(this, "HealthOverlay", m_World, m_PlayerID);
 
@@ -35,6 +37,7 @@ namespace GUI
 			m_VehicleSelection = new VehicleSelection(this, "VehicleSelection", m_World, m_PlayerID);
 
 			m_GameOverFrame = new GameOverFrame(this, "GameOver");
+			m_GameOverFrame->Hide();
 		}
 
 	protected:
@@ -49,18 +52,19 @@ namespace GUI
 		EventRelay<Frame, Events::GameOver> m_EGameOver;
 		bool OnGameOver(const Events::GameOver &event)
 		{
-			auto playerComponent = m_World->GetComponent<Components::Player>(event.Winner);
-			if (!playerComponent)
-			{
-				LOG_ERROR("Winner is not a valid player!");
-				return false;
-			}
-
-			if (m_PlayerID == playerComponent->ID)
+			if (m_PlayerID == event.Player)
 				m_GameOverFrame->Show(true);
 			else
 				m_GameOverFrame->Show(false);
 
+			return true;
+		}
+
+		EventRelay<Frame, Events::Dead> m_EDead;
+		bool OnDead(const Events::Dead &event)
+		{
+			m_VehicleSelection->Show();
+			m_HealthOverlay->SetColor(glm::vec4(1, 1, 1, 0));
 			return true;
 		}
 
@@ -71,10 +75,10 @@ namespace GUI
 
 			if (event.Command == "interface_confirm" && event.Value > 0)
 			{
-				if (m_GameOverFrame->Visible())
+				/*if (m_GameOverFrame->Visible())
 				{
 					m_GameOverFrame->Hide();
-				}
+				}*/
 			}
 
 			return true;

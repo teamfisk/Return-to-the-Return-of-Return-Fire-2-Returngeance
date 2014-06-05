@@ -19,6 +19,8 @@
 #include "Components/Move.h"
 #include "Components/Rotate.h"
 #include "Components/Team.h"
+#include "Components/Flag.h"
+#include "Events/FlagCaptured.h"
 
 namespace Systems
 {

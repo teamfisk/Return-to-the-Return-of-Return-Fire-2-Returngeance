@@ -102,7 +102,6 @@ EntityID Systems::JeepSteeringSystem::CreateJeep(int playerID)
 {
 	auto jeep = m_World->CreateEntity();
 	auto transform = m_World->AddComponent<Components::Transform>(jeep);
-	transform->Position = glm::vec3(0, 5, 0);
 	//transform->Orientation = glm::angleAxis(0.f, glm::vec3(0, 1, 0));
 	auto physics = m_World->AddComponent<Components::Physics>(jeep);
 	physics->Mass = 2000;

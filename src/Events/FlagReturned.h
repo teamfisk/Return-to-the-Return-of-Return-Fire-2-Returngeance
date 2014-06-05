@@ -8,7 +8,7 @@ namespace Events
 {
 	struct FlagReturned : Event
 	{
-		EntityID Player;
+		unsigned int Player;
 	};
 }
 

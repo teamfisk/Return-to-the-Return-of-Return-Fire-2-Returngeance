@@ -12,7 +12,7 @@ bool Systems::GameStateSystem::OnFlagCaptured(const Events::FlagCaptured &event)
 	m_InGame = false;
 
 	Events::GameOver e1;
-	e1.Winner = event.Player;
+	e1.Player = event.Player;
 	EventBroker->Publish(e1);
 	Events::PlayBGM e2;
 	e2.Resource = "Sounds/BGM/WilliamTellOverture.mp3";

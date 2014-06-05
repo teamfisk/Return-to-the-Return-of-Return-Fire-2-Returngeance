@@ -53,19 +53,7 @@ bool Systems::TriggerSystem::OnEnterTrigger( const Events::EnterTrigger &event )
 	if (teamComponent->TeamID != playerComponent->ID)
 		return false;
 
-	auto flagComponent1 = m_World->GetComponent<Components::Flag>(event.Trigger);
-	auto flagComponent2 = m_World->GetComponent<Components::Flag>(event.Entity);
-
-	 //HACK: SIMON IS DISSING AMERICA
-	if(flagComponent1)
-	{
-		Flag(event.Entity, event.Trigger);
-	}
-	else if (flagComponent2)
-	{
-		Flag(event.Trigger, event.Entity);
-	}
-
+	
 
 	auto triggerMoveComponent = m_World->GetComponent<Components::TriggerMove>(event.Trigger);
 	if (triggerMoveComponent)
@@ -147,20 +135,6 @@ void Systems::TriggerSystem::Move(EntityID entity, bool queue, bool swap)
 		std::swap(move->GoalPosition, move->StartPosition);
 	}
 }
-
-
-void Systems::TriggerSystem::Flag( EntityID entity, EntityID phantomEntity )
-{
-	auto tankSteering = m_World->GetComponent<Components::TankSteering>(entity);
-	if (!tankSteering)
-		return;
-
-	m_World->RemoveComponent<Components::Trigger>(phantomEntity);
-	m_World->SetEntityParent(phantomEntity, entity);
-	auto phantomTransform = m_World->GetComponent<Components::Transform>(phantomEntity);
-	phantomTransform->Position = glm::vec3(-1.5f, 0.1f, 2.f);
-}
-
 
 void Systems::TriggerSystem::Explosion( EntityID entity, EntityID phantomEntity )
 {

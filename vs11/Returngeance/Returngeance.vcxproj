@@ -109,6 +109,7 @@
     <ClCompile Include="..\..\src\ShaderProgram.cpp" />
     <ClCompile Include="..\..\src\Skybox.cpp" />
     <ClCompile Include="..\..\src\Sound.cpp" />
+    <ClCompile Include="..\..\src\Systems\FlagSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\JeepSteeringSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\DamageSystem.cpp" />
     <ClCompile Include="..\..\src\Systems\DebugSystem.cpp" />
@@ -219,7 +220,7 @@
     <ClInclude Include="..\..\src\Events\MouseMove.h" />
     <ClInclude Include="..\..\src\Events\MousePress.h" />
     <ClInclude Include="..\..\src\Events\MouseRelease.h" />
-    <ClInclude Include="..\..\src\Events\OnDead.h" />
+    <ClInclude Include="..\..\src\Events\Dead.h" />
     <ClInclude Include="..\..\src\Events\Move.h" />
     <ClInclude Include="..\..\src\Events\PlayBGM.h" />
     <ClInclude Include="..\..\src\Events\PlaySFX.h" />
@@ -256,6 +257,7 @@
     <ClInclude Include="..\..\src\Skybox.h" />
     <ClInclude Include="..\..\src\Sound.h" />
     <ClInclude Include="..\..\src\System.h" />
+    <ClInclude Include="..\..\src\Systems\FlagSystem.h" />
     <ClInclude Include="..\..\src\Systems\JeepSteeringSystem.h" />
     <ClInclude Include="..\..\src\Systems\DamageSystem.h" />
     <ClInclude Include="..\..\src\Systems\DebugSystem.h" />
