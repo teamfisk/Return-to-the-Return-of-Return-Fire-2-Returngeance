@@ -112,6 +112,51 @@ void GameWorld::Initialize()
 		EventBroker->Publish(e);
 	}
 
+#pragma region Tower_Debris_Template
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(0.f, 4.12801f, 1.18125f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Turret/Gun/Gun.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Turret/Gun/Gun.obj";
+
+		m_TowerDebrisTemplates.push_back(debri);
+	}
+
+	{
+		auto debri = CreateEntity();
+		AddComponent<Components::Template>(debri);
+		auto transform = AddComponent<Components::Transform>(debri);
+		transform->Position = glm::vec3(0.f, 5.889f-0.92791f, 0.f);
+		auto model = AddComponent<Components::Model>(debri);
+		model->ModelFile = "Models/Turret/GunRotation/GunRotation.obj";
+		auto physics = AddComponent<Components::Physics>(debri);
+		physics->MotionType = Components::Physics::MotionTypeEnum::Dynamic;
+		physics->Mass = 200.f;
+		physics->Restitution = .04f;
+		physics->Friction = 0.9f;
+
+		auto shape = CreateEntity(debri);
+		auto shapetransform = AddComponent<Components::Transform>(shape);
+		auto shapemesh = AddComponent<Components::MeshShape>(shape);
+		shapemesh->ResourceName = "Models/Turret/GunRotation/GunRotation.obj";
+
+		m_TowerDebrisTemplates.push_back(debri);
+	}
+
+#pragma endregion
+
 #pragma region Wall_Debris_Template
 
 	{
@@ -734,6 +779,9 @@ EntityID GameWorld::CreateTower(EntityID parent, glm::vec3 pos, int teamID)
 	turretComponent->ShotTemplate = m_ShotTemplate;
 	turretComponent->ShotSpeed = 40.f;
 
+	auto debrisComponent = AddComponent<Components::TowerDebris>(towerBase);
+	debrisComponent->TowerDebrisIDs = m_TowerDebrisTemplates;
+
 	CommitEntity(towerBase);
 
 	return towerBase;
@@ -1330,7 +1378,7 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 	CreateWall(base, glm::vec3(273.f, 40.3f, -15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, 15.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
 	CreateWall(base, glm::vec3(273.f, 40.3f, 25.f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)));
-	CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), teamID);
+	//CreateTower(base, glm::vec3(290.f, 40.3f, 15.f), teamID);
 
 	// -Z
 	CreateWall(base, glm::vec3(280.f, 40.3f, -62.f), glm::quat(glm::vec3(0, 0, 0)));
@@ -1362,6 +1410,13 @@ void GameWorld::CreateBase(glm::quat orientation, int teamID)
 	CreateWall(base, glm::vec3(330.f, 40.3f, 32.f), glm::quat(glm::vec3(0, 0, 0)));
 	CreateWall(base, glm::vec3(340.f, 40.3f, 32.f), glm::quat(glm::vec3(0, 0, 0)));
 	CreateWall(base, glm::vec3(350.f, 40.3f, 32.f), glm::quat(glm::vec3(0, 0, 0)));
+
+	CreateTower(base, glm::vec3(273.01227f, 40.43885f, 32.99123f), teamID);
+	CreateTower(base, glm::vec3(273.01227f, 40.30102f, -62.82098f), teamID);
+	CreateTower(base, glm::vec3(357.36978f, 40.43885f, -62.82098f), teamID);
+	CreateTower(base, glm::vec3(357.36978f, 40.43885f, 32.99123f), teamID);
+	CreateTower(base, glm::vec3(119.64996f, 28.90156f, 16.63123f), teamID);
+	CreateTower(base, glm::vec3(119.05541f, 29.54314f, 18.33529f), teamID);
 
 	CreateGarage(base, glm::vec3(323.2f, 41.4f, -10.2f), glm::quat(glm::vec3(0, glm::pi<float>() / 2.f, 0)), teamID);
 

@@ -152,6 +152,7 @@
     <ClInclude Include="..\..\src\Components\Rotate.h" />
     <ClInclude Include="..\..\src\Components\Tower.h" />
     <ClInclude Include="..\..\src\Components\Team.h" />
+    <ClInclude Include="..\..\src\Components\TowerDebris.h" />
     <ClInclude Include="..\..\src\Components\TriggerMove.h" />
     <ClInclude Include="..\..\src\Components\Timer.h" />
     <ClInclude Include="..\..\src\Components\TriggerExplosion.h" />

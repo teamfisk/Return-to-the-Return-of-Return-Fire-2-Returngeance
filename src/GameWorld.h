@@ -94,6 +94,7 @@ private:
 	void CreateBase(glm::quat orientation, int playerID);
 	void CreateFlag(EntityID parent, glm::vec3 position, glm::quat orientation, int TeamID);
 	std::vector<EntityID> m_WallDebrisTemplates;
+	std::vector<EntityID> m_TowerDebrisTemplates;
 	EntityID m_ShotTemplate;
 };
 
