@@ -1,4 +1,4 @@
 [submodule "assets"]
 	path = assets
-	url = returngeance@shard.imon.nu:Assets
+	url = https://imon.nu/git/BTH/FishTanks-assets.git
 	branch = master
